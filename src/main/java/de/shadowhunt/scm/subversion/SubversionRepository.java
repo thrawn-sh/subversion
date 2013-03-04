@@ -37,6 +37,8 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
+
 @Immutable
 public class SubversionRepository {
 
@@ -53,8 +55,8 @@ public class SubversionRepository {
 		}
 
 		@Override
-		public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-			return null;
+		public X509Certificate[] getAcceptedIssuers() {
+			return new X509Certificate[0];
 		}
 
 	};
@@ -136,7 +138,7 @@ public class SubversionRepository {
 	private final String module;
 
 	public SubversionRepository(final URI host, final String module, final String username, final String password) throws Exception {
-		client = createClient(host, username, password);
+		this.client = createClient(host, username, password);
 		this.host = host;
 		this.module = module;
 
@@ -146,7 +148,7 @@ public class SubversionRepository {
 		EntityUtils.consumeQuietly(response.getEntity());
 	}
 
-	public void commit(final String resource, final String message, final InputStream content, final Collection<SubversionProperty> properties) throws Exception {
+	public void commit(final String resource, final String message, @Nullable final InputStream content, @Nullable final Collection<SubversionProperty> properties) throws Exception {
 		final UUID uuid = UUID.randomUUID();
 		final SubversionInfo info = info(resource);
 		final String version = info.getVersion();

@@ -7,7 +7,7 @@ class BasicHandler extends DefaultHandler {
 	private final StringBuilder buffer = new StringBuilder();
 
 	@Override
-	public final void characters(final char ch[], final int start, final int length) {
+	public final void characters(final char[] ch, final int start, final int length) {
 		buffer.append(ch, start, length);
 	}
 
