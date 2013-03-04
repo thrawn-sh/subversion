@@ -87,8 +87,7 @@ public class SubversionRepository {
 
 		final SchemeSocketFactory socketFactory = new SSLSocketFactory(sc);
 		final int sslPort = (port <= 0) ? 443 : port;
-		final Scheme scheme = new Scheme("https", sslPort, socketFactory);
-		return scheme;
+		return new Scheme("https", sslPort, socketFactory);
 	}
 
 	private static Credentials creteCredentials(final String user, final String password) throws Exception {
@@ -114,7 +113,7 @@ public class SubversionRepository {
 
 		if (!contains(statusCode, expectedStatusCodes)) {
 			EntityUtils.consumeQuietly(response.getEntity()); // in case of unexpected status code we consume everything
-			throw new RuntimeException("status code is: " + statusCode + ", expected was: "
+			throw new SubversionException("status code is: " + statusCode + ", expected was: "
 					+ Arrays.toString(expectedStatusCodes));
 		}
 

@@ -162,10 +162,6 @@ public class SubversionInfo {
 		this.direcotry = direcotry;
 	}
 
-	public void setDirectory(final boolean direcotry) {
-		this.direcotry = direcotry;
-	}
-
 	public void setFile(final boolean file) {
 		direcotry = !file;
 	}

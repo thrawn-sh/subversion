@@ -17,7 +17,7 @@ import org.apache.http.entity.StringEntity;
 
 final class SubversionRequestFactory {
 
-	static class DavTemplateRequest extends HttpEntityEnclosingRequestBase {
+	static final class DavTemplateRequest extends HttpEntityEnclosingRequestBase {
 
 		private static final int DEFAULT_DEPTH = 0;
 
