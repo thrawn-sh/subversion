@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+import javax.annotation.CheckForNull;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -36,8 +37,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-
-import edu.umd.cs.findbugs.annotations.Nullable;
 
 @Immutable
 public class SubversionRepository {
@@ -138,7 +137,7 @@ public class SubversionRepository {
 	private final String module;
 
 	public SubversionRepository(final URI host, final String module, final String username, final String password) throws Exception {
-		this.client = createClient(host, username, password);
+		client = createClient(host, username, password);
 		this.host = host;
 		this.module = module;
 
@@ -148,7 +147,7 @@ public class SubversionRepository {
 		EntityUtils.consumeQuietly(response.getEntity());
 	}
 
-	public void commit(final String resource, final String message, @Nullable final InputStream content, @Nullable final Collection<SubversionProperty> properties) throws Exception {
+	public void commit(final String resource, final String message, @CheckForNull final InputStream content, @CheckForNull final Collection<SubversionProperty> properties) throws Exception {
 		final UUID uuid = UUID.randomUUID();
 		final SubversionInfo info = info(resource);
 		final String version = info.getVersion();
