@@ -143,8 +143,8 @@
 				<artifactId>package-info-maven-plugin</artifactId>
 				<configuration>
 					<annotationLines>
-						<annotationLine>@edu.umd.cs.findbugs.annotations.ReturnValuesAreNonnullByDefault</annotationLine>
-						<annotationLine>@edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters(value = { edu.umd.cs.findbugs.annotations.NonNull.class })</annotationLine>
+						<annotationLine>@javax.annotation.CheckReturnValue(when = javax.annotation.meta.When.NEVER)</annotationLine>
+						<annotationLine>@javax.annotation.ParametersAreNonnullByDefault</annotationLine>
 					</annotationLines>
 				</configuration>
 				<executions>
