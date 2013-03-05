@@ -147,28 +147,6 @@ public class SubversionRepository {
 		EntityUtils.consumeQuietly(response.getEntity());
 	}
 
-	public void commit(final String resource, final String message, @CheckForNull final InputStream content, @CheckForNull final Collection<SubversionProperty> properties) throws Exception {
-		final UUID uuid = UUID.randomUUID();
-		final SubversionInfo info = info(resource);
-		final String version = info.getVersion();
-
-		createTemporyStructure(uuid);
-		try {
-			prepareCheckin(uuid);
-			setCommitMessage(uuid, version, message);
-			prepareContentUpload(resource, uuid, version);
-			if (properties != null) {
-				propertiesSet(resource, uuid, properties);
-			}
-			if (content != null) {
-				contentUpload(resource, uuid, content);
-			}
-			merge(uuid);
-		} finally {
-			deleteTemporyStructure(uuid);
-		}
-	}
-
 	private void contentUpload(final String resource, final UUID uuid, final InputStream content) throws Exception {
 		final URI uri = URI.create(host + module + "/!svn/wrk/" + uuid + resource);
 
@@ -364,7 +342,7 @@ public class SubversionRepository {
 	}
 
 	public void setProperties(final String resource, final String message, final Collection<SubversionProperty> properties) throws Exception {
-		commit(resource, message, null, properties);
+		uploadWithProperties(resource, message, null, properties);
 	}
 
 	public void unlock(final String resource, final String token) throws Exception {
@@ -376,6 +354,28 @@ public class SubversionRepository {
 	}
 
 	public void upload(final String resource, final String message, final InputStream content) throws Exception {
-		commit(resource, message, content, null);
+		uploadWithProperties(resource, message, content, null);
+	}
+
+	public void uploadWithProperties(final String resource, final String message, @CheckForNull final InputStream content, @CheckForNull final Collection<SubversionProperty> properties) throws Exception {
+		final UUID uuid = UUID.randomUUID();
+		final SubversionInfo info = info(resource);
+		final String version = info.getVersion();
+
+		createTemporyStructure(uuid);
+		try {
+			prepareCheckin(uuid);
+			setCommitMessage(uuid, version, message);
+			prepareContentUpload(resource, uuid, version);
+			if (properties != null) {
+				propertiesSet(resource, uuid, properties);
+			}
+			if (content != null) {
+				contentUpload(resource, uuid, content);
+			}
+			merge(uuid);
+		} finally {
+			deleteTemporyStructure(uuid);
+		}
 	}
 }
