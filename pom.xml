@@ -24,7 +24,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<sonar.switchoffviolations.configFile>${project.basedir}/sonar.ignore</sonar.switchoffviolations.configFile>
+		<sonar.switchoffviolations.configFile>${project.basedir}/target/sonar.ignore</sonar.switchoffviolations.configFile>
 	</properties>
 
 	<!-- scm config {{{1 -->
