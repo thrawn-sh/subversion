@@ -1,6 +1,5 @@
 .classpath
 .project
 .settings
-package-info.java
 sonar.ignore
 target
