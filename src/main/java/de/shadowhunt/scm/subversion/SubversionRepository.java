@@ -140,10 +140,7 @@ public class SubversionRepository {
 		this.host = host;
 		this.module = module;
 
-		// FIXME
-		final HttpUriRequest request = SubversionRequestFactory.createAuthRequest(URI.create(host + module));
-		final HttpResponse response = client.execute(request, getHttpContext());
-		EntityUtils.consumeQuietly(response.getEntity());
+		triggerAuthentication();
 	}
 
 	private void contentUpload(final String resource, final UUID uuid, final InputStream content) throws Exception {
@@ -351,6 +348,12 @@ public class SubversionRepository {
 
 	public void setProperties(final String resource, final String message, final SubversionProperty... properties) throws Exception {
 		uploadWithProperties(resource, message, null, properties);
+	}
+
+	private final void triggerAuthentication() throws Exception {
+		final HttpUriRequest request = SubversionRequestFactory.createAuthRequest(URI.create(host + module));
+		final HttpResponse response = client.execute(request, getHttpContext());
+		EntityUtils.consumeQuietly(response.getEntity());
 	}
 
 	public void unlock(final String resource, final String token) throws Exception {
