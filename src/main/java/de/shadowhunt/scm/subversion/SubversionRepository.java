@@ -198,6 +198,31 @@ public class SubversionRepository {
 		ensureResonse(response, HttpStatus.SC_CREATED);
 	}
 
+	public void delete(final String resource, final String message) throws Exception {
+		final UUID uuid = UUID.randomUUID();
+		final SubversionInfo info = info(resource);
+		final long version = info.getVersion();
+
+		createTemporyStructure(uuid);
+		try {
+			prepareCheckin(uuid);
+			setCommitMessage(uuid, version, message);
+			prepareContentUpload(resource, uuid, version);
+			delete(uuid, resource);
+			merge(uuid);
+		} finally {
+			deleteTemporyStructure(uuid);
+		}
+	}
+
+	private void delete(final UUID uuid, final String resource) throws Exception {
+		final URI uri = URI.create(host + module + "/!svn/wrk/" + uuid + resource);
+
+		final HttpUriRequest request = new HttpDelete(uri);
+		final HttpResponse response = client.execute(request, getHttpContext());
+		ensureResonse(response, HttpStatus.SC_NO_CONTENT);
+	}
+
 	private void deleteTemporyStructure(final UUID uuid) throws Exception {
 		final URI uri = URI.create(host + module + "/!svn/act/" + uuid);
 
@@ -366,10 +391,6 @@ public class SubversionRepository {
 
 	public void upload(final String resource, final String message, final InputStream content) throws Exception {
 		uploadWithProperties(resource, message, content, (SubversionProperty[]) null);
-	}
-
-	public void delete(final String resource, final String message) throws Exception {
-		throw new UnsupportedOperationException();
 	}
 
 	public void uploadWithProperties(final String resource, final String message, @CheckForNull final InputStream content, @CheckForNull final SubversionProperty... properties) throws Exception {
