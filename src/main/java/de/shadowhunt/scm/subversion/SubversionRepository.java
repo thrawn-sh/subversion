@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -17,7 +17,6 @@ import javax.net.ssl.X509TrustManager;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.annotation.Immutable;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.NTCredentials;
@@ -37,7 +36,6 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
-@Immutable
 public class SubversionRepository {
 
 	private static final TrustManager DUMMY_MANAGER = new X509TrustManager() {
@@ -393,7 +391,7 @@ public class SubversionRepository {
 		uploadWithProperties(resource, message, content, (SubversionProperty[]) null);
 	}
 
-	public void uploadWithProperties(final String resource, final String message, @CheckForNull final InputStream content, @CheckForNull final SubversionProperty... properties) throws Exception {
+	public void uploadWithProperties(final String resource, final String message, @Nullable final InputStream content, @Nullable final SubversionProperty... properties) throws Exception {
 		final UUID uuid = UUID.randomUUID();
 		final SubversionInfo info = info(resource);
 		final long version = info.getVersion();
