@@ -4,11 +4,11 @@
 
 	<groupId>de.shadowhunt</groupId>
 	<version>1.0.0-SNAPSHOT</version>
-	<inceptionYear>2013</inceptionYear>
-
 	<artifactId>scm</artifactId>
-	<name>Shadowhunt SCM</name>
 	<packaging>jar</packaging>
+
+	<name>Shadowhunt SCM</name>
+	<inceptionYear>2013</inceptionYear>
 
 	<organization>
 		<name>shadowhunt</name>
@@ -29,6 +29,7 @@
 
 	<!-- scm config {{{1 -->
 	<scm>
+		<tag>HEAD</tag>
 		<connection>scm:git:ssh://gitolite@git.shadowhunt.de/scm.git</connection>
 		<developerConnection>scm:git:ssh://gitolite@git.shadowhunt.de/scm.git</developerConnection>
 		<url>https://git.shadowhunt.de/scm.git</url>
@@ -57,7 +58,7 @@
 				<plugin>
 					<groupId>de.shadowhunt.maven.plugins</groupId>
 					<artifactId>package-info-maven-plugin</artifactId>
-					<version>1.3.2</version>
+					<version>1.4.0</version>
 				</plugin>
 				<plugin>
 					<groupId>de.shadowhunt.maven.plugins</groupId>
@@ -81,6 +82,11 @@
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>2.6</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-deploy-plugin</artifactId>
 					<version>2.7</version>
 				</plugin>
@@ -88,6 +94,11 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-eclipse-plugin</artifactId>
 					<version>2.9</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-help-plugin</artifactId>
+					<version>2.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -139,6 +150,11 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>2.13</version>
 				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>versions-maven-plugin</artifactId>
+					<version>2.0</version>
+				</plugin>
 			</plugins>
 		</pluginManagement><!-- }}}1 -->
 		<plugins><!-- {{{1 -->
@@ -154,7 +170,7 @@
 				</configuration>
 				<executions>
 					<execution>
-						<phase>process-classes</phase>
+						<phase>generate-sources</phase>
 						<goals>
 							<goal>package-info</goal>
 						</goals>
@@ -165,8 +181,8 @@
 				<groupId>de.shadowhunt.maven.plugins</groupId>
 				<artifactId>sonarignore-maven-plugin</artifactId>
 				<configuration>
-					<ignoreAnnotations/>
-					<forceCheckAnnotations/>
+					<ignoreAnnotations />
+					<forceCheckAnnotations />
 
 					<ignoreEquals>true</ignoreEquals>
 					<ignoreGetterAndSetter>true</ignoreGetterAndSetter>
@@ -204,6 +220,21 @@
 					<source>1.6</source>
 					<target>1.6</target>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>analyze</id>
+						<goals>
+							<goal>analyze-only</goal>
+						</goals>
+						<configuration>
+							<failOnWarning>true</failOnWarning>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -275,9 +306,9 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-scm-plugin</artifactId>
+				<artifactId>maven-release-plugin</artifactId>
 				<configuration>
-					<username>gitolite</username>
+					<tagNameFormat>v@{project.version}</tagNameFormat>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -316,17 +347,12 @@
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>annotations</artifactId>
 			<version>2.0.1</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -337,6 +363,12 @@
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<version>4.2.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+			<version>4.2.2</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 </project>
