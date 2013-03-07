@@ -2,7 +2,6 @@ package de.shadowhunt.scm.subversion;
 
 import java.io.InputStream;
 import java.net.URI;
-import java.util.Collection;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -150,7 +149,7 @@ final class SubversionRequestFactory {
 		return request;
 	}
 
-	public static HttpUriRequest createSetPropertiesRequest(final URI uri, final Collection<SubversionProperty> properties) {
+	public static HttpUriRequest createSetPropertiesRequest(final URI uri, final SubversionProperty... properties) {
 		final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH");
 		request.setURI(uri);
 		final StringBuilder sb = new StringBuilder(XML_PREAMBLE);

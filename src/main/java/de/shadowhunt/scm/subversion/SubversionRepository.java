@@ -6,7 +6,6 @@ import java.net.URI;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -325,7 +324,7 @@ public class SubversionRepository {
 		ensureResonse(response, HttpStatus.SC_CREATED);
 	}
 
-	private void propertiesSet(final String resource, final UUID uuid, final Collection<SubversionProperty> properties) throws Exception {
+	private void propertiesSet(final String resource, final UUID uuid, final SubversionProperty... properties) throws Exception {
 		final URI uri = URI.create(host + module + "/!svn/wrk/" + uuid + resource);
 
 		final HttpUriRequest request = SubversionRequestFactory.createSetPropertiesRequest(uri, properties);
@@ -341,7 +340,7 @@ public class SubversionRepository {
 		ensureResonse(response, HttpStatus.SC_MULTI_STATUS);
 	}
 
-	public void setProperties(final String resource, final String message, final Collection<SubversionProperty> properties) throws Exception {
+	public void setProperties(final String resource, final String message, final SubversionProperty... properties) throws Exception {
 		uploadWithProperties(resource, message, null, properties);
 	}
 
