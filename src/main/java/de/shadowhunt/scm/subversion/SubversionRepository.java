@@ -162,7 +162,7 @@ public class SubversionRepository {
 		try {
 			final String infoResource = createMissingFolders(resource, uuid);
 			final SubversionInfo info = info(infoResource);
-			final String version = info.getVersion();
+			final long version = info.getVersion();
 			prepareCheckin(uuid);
 			setCommitMessage(uuid, version, message);
 			contentUpload(resource, uuid, content);
@@ -220,7 +220,7 @@ public class SubversionRepository {
 		return response.getEntity().getContent();
 	}
 
-	public InputStream download(final String resource, final String version) throws Exception {
+	public InputStream download(final String resource, final long version) throws Exception {
 		final URI uri = URI.create(host + module + "/!svn/bc/" + version + resource);
 
 		final HttpUriRequest request = SubversionRequestFactory.createDownloadRequest(uri);
@@ -289,7 +289,7 @@ public class SubversionRepository {
 		final URI uri = URI.create(host + module + resource);
 
 		final SubversionInfo info = info(resource);
-		final HttpUriRequest request = SubversionRequestFactory.createLogRequest(uri, info.getVersion(), "0");
+		final HttpUriRequest request = SubversionRequestFactory.createLogRequest(uri, info.getVersion(), 0L);
 		final HttpResponse response = client.execute(request, getHttpContext());
 		ensureResonse(response, false, HttpStatus.SC_OK);
 
@@ -317,7 +317,7 @@ public class SubversionRepository {
 		ensureResonse(response, HttpStatus.SC_CREATED);
 	}
 
-	private void prepareContentUpload(final String resource, final UUID uuid, final String version) throws Exception {
+	private void prepareContentUpload(final String resource, final UUID uuid, final long version) throws Exception {
 		final URI uri = URI.create(host + module + "/!svn/ver/" + version + resource);
 
 		final HttpUriRequest request = SubversionRequestFactory.createCheckoutRequest(uri, uuid);
@@ -333,7 +333,7 @@ public class SubversionRepository {
 		ensureResonse(response, HttpStatus.SC_MULTI_STATUS);
 	}
 
-	private void setCommitMessage(final UUID uuid, final String version, final String message) throws Exception {
+	private void setCommitMessage(final UUID uuid, final long version, final String message) throws Exception {
 		final URI uri = URI.create(host + module + "/!svn/wbl/" + uuid + "/" + version);
 
 		final HttpUriRequest request = SubversionRequestFactory.createCommitMessageRequest(uri, message);
@@ -354,13 +354,17 @@ public class SubversionRepository {
 	}
 
 	public void upload(final String resource, final String message, final InputStream content) throws Exception {
-		uploadWithProperties(resource, message, content, null);
+		uploadWithProperties(resource, message, content, (SubversionProperty[]) null);
 	}
 
-	public void uploadWithProperties(final String resource, final String message, @CheckForNull final InputStream content, @CheckForNull final Collection<SubversionProperty> properties) throws Exception {
+	public void delete(final String resource, final String message) throws Exception {
+		throw new UnsupportedOperationException();
+	}
+
+	public void uploadWithProperties(final String resource, final String message, @CheckForNull final InputStream content, @CheckForNull final SubversionProperty... properties) throws Exception {
 		final UUID uuid = UUID.randomUUID();
 		final SubversionInfo info = info(resource);
-		final String version = info.getVersion();
+		final long version = info.getVersion();
 
 		createTemporyStructure(uuid);
 		try {

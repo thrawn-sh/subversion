@@ -117,15 +117,15 @@ final class SubversionRequestFactory {
 		return request;
 	}
 
-	public static HttpUriRequest createLogRequest(final URI uri, final String start, final String end) {
+	public static HttpUriRequest createLogRequest(final URI uri, final long start, final long end) {
 		final DavTemplateRequest request = new DavTemplateRequest("REPORT");
 		request.setURI(uri);
 
 		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
 		body.append("<log-report xmlns=\"svn:\"><start-revision>");
-		body.append(StringEscapeUtils.escapeXml(start));
+		body.append(start);
 		body.append("</start-revision><end-revision>");
-		body.append(StringEscapeUtils.escapeXml(end));
+		body.append(end);
 		body.append("</end-revision><encode-binary-props/><revprop>svn:author</revprop><revprop>svn:date</revprop><revprop>svn:log</revprop><path/></log-report>");
 
 		request.setEntity(new StringEntity(body.toString(), XML_CONTENT_TYPE));
