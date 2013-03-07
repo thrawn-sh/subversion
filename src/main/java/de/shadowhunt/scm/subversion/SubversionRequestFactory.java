@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -92,6 +93,10 @@ final class SubversionRequestFactory {
 
 	public static HttpUriRequest createDownloadRequest(final URI uri) {
 		return new HttpGet(uri);
+	}
+
+	public static HttpUriRequest createExistsRequest(final URI uri) {
+		return new HttpHead(uri);
 	}
 
 	public static HttpUriRequest createInfoRequest(final URI uri, final int depth) {

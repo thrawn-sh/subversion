@@ -229,6 +229,15 @@ public class SubversionRepository {
 		return response.getEntity().getContent();
 	}
 
+	public boolean exisits(final String resource) throws Exception {
+		final URI uri = URI.create(host + module + resource);
+
+		final HttpUriRequest request = SubversionRequestFactory.createExistsRequest(uri);
+		final HttpResponse response = client.execute(request, getHttpContext());
+		ensureResonse(response, /* found */HttpStatus.SC_OK, /* not found */HttpStatus.SC_NOT_FOUND);
+		return (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK);
+	}
+
 	private HttpContext getHttpContext() {
 		HttpContext httpContext = context.get();
 		if (httpContext == null) {
