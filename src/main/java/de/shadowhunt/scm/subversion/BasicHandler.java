@@ -27,6 +27,17 @@ class BasicHandler extends DefaultHandler {
 		return qName;
 	}
 
+	protected final String getNamespaceFromQName(final String qName) {
+		if (qName == null) {
+			return null;
+		}
+		final int index = qName.indexOf(':');
+		if (index >= 0) {
+			return qName.substring(0, index);
+		}
+		return qName;
+	}
+
 	protected String getText() {
 		return buffer.toString();
 	}
