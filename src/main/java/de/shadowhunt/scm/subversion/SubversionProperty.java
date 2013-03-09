@@ -87,6 +87,6 @@ public class SubversionProperty {
 
 	@Override
 	public String toString() {
-		return "SubversionProperties [name=" + name + ", type=" + type + ", value=" + value + "]";
+		return "SubversionProperty [name=" + name + ", type=" + type + ", value=" + value + "]";
 	}
 }
