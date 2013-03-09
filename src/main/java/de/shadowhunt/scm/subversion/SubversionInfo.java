@@ -2,6 +2,7 @@ package de.shadowhunt.scm.subversion;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.xml.parsers.SAXParser;
@@ -9,11 +10,15 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.Attributes;
 
+import de.shadowhunt.scm.subversion.SubversionProperty.Type;
+
 public class SubversionInfo {
 
 	static class SubversionInfoHandler extends BasicHandler {
 
 		private SubversionInfo current = null;
+
+		private List<SubversionProperty> customProperties;
 
 		private final List<SubversionInfo> infos = new ArrayList<SubversionInfo>();
 
@@ -21,11 +26,22 @@ public class SubversionInfo {
 
 		private boolean resourceType = false;
 
+		private final boolean withCustomProperties;
+
+		SubversionInfoHandler(final boolean withCustomProperties) {
+			this.withCustomProperties = withCustomProperties;
+		}
+
 		@Override
 		public void endElement(final String uri, final String localName, final String qName) {
 			final String name = getNameFromQName(qName);
 
 			if ("response".equals(name)) {
+				if (withCustomProperties) {
+					current.setCustomProperties(customProperties);
+					customProperties = null;
+				}
+
 				infos.add(current);
 				current = null;
 				return;
@@ -57,16 +73,25 @@ public class SubversionInfo {
 				return;
 			}
 
-			if ("PKIT_STATE".equals(name)) {
-				current.setState(getText());
-				return;
-			}
-
 			if ("version-name".equals(name)) {
 				final long version = Long.parseLong(getText());
 				current.setVersion(version);
 				return;
 			}
+
+			if (!withCustomProperties) {
+				return;
+			}
+
+			final String namespace = getNamespaceFromQName(qName);
+			if ("C".equals(namespace)) {
+				final SubversionProperty property = new SubversionProperty(Type.CUSTOM, name, getText());
+				customProperties.add(property);
+			}
+		}
+
+		public List<SubversionInfo> getInfos() {
+			return infos;
 		}
 
 		@Override
@@ -77,6 +102,10 @@ public class SubversionInfo {
 
 			if ("response".equals(name)) {
 				current = new SubversionInfo();
+
+				if (withCustomProperties) {
+					customProperties = new ArrayList<SubversionProperty>();
+				}
 				return;
 			}
 
@@ -90,26 +119,26 @@ public class SubversionInfo {
 				return;
 			}
 		}
-
-		public List<SubversionInfo> getInfos() {
-			return infos;
-		}
 	}
 
-	public static SubversionInfo read(final InputStream in) throws Exception {
-		return readList(in).get(0);
+	private static List<SubversionProperty> EMPTY = Collections.emptyList();
+
+	public static SubversionInfo read(final InputStream in, final boolean withCustomProperties) throws Exception {
+		return readList(in, withCustomProperties).get(0);
 	}
 
-	public static List<SubversionInfo> readList(final InputStream in) throws Exception {
+	public static List<SubversionInfo> readList(final InputStream in, final boolean withCustomProperties) throws Exception {
 		final SAXParserFactory factory = SAXParserFactory.newInstance();
 		factory.setNamespaceAware(false);
 		factory.setValidating(false);
 		final SAXParser saxParser = factory.newSAXParser();
-		final SubversionInfoHandler handler = new SubversionInfoHandler();
+		final SubversionInfoHandler handler = new SubversionInfoHandler(withCustomProperties);
 
 		saxParser.parse(in, handler);
 		return handler.getInfos();
 	}
+
+	private List<SubversionProperty> customProperties = new ArrayList<SubversionProperty>();
 
 	private boolean direcotry;
 
@@ -119,12 +148,14 @@ public class SubversionInfo {
 
 	private String repositoryUuid;
 
-	private String state;
-
 	private long version;
 
 	SubversionInfo() {
 		// prevent direct instantiation
+	}
+
+	public List<SubversionProperty> getCustomProperties() {
+		return (customProperties == EMPTY) ? EMPTY : new ArrayList<SubversionProperty>(customProperties);
 	}
 
 	public String getLockToken() {
@@ -137,10 +168,6 @@ public class SubversionInfo {
 
 	public String getRepositoryUuid() {
 		return repositoryUuid;
-	}
-
-	public String getState() {
-		return state;
 	}
 
 	public long getVersion() {
@@ -157,6 +184,11 @@ public class SubversionInfo {
 
 	public boolean isLocked() {
 		return lockToken != null;
+	}
+
+	public void setCustomProperties(final List<SubversionProperty> customProperties) {
+		final boolean nullOrEmpty = (customProperties == null) || customProperties.isEmpty();
+		this.customProperties = nullOrEmpty ? EMPTY : new ArrayList<SubversionProperty>(customProperties);
 	}
 
 	public void setDirecotry(final boolean direcotry) {
@@ -179,17 +211,26 @@ public class SubversionInfo {
 		this.repositoryUuid = repositoryUuid;
 	}
 
-	public void setState(final String state) {
-		this.state = state;
-	}
-
 	public void setVersion(final long version) {
 		this.version = version;
 	}
 
 	@Override
 	public String toString() {
-		return "SubversionInfo [direcotry=" + direcotry + ", lockToken=" + lockToken + ", md5=" + md5
-				+ ", repositoryUuid=" + repositoryUuid + ", state=" + state + ", version=" + version + "]";
+		final StringBuilder builder = new StringBuilder();
+		builder.append("SubversionInfo [customProperties=");
+		builder.append(customProperties);
+		builder.append(", direcotry=");
+		builder.append(direcotry);
+		builder.append(", lockToken=");
+		builder.append(lockToken);
+		builder.append(", md5=");
+		builder.append(md5);
+		builder.append(", repositoryUuid=");
+		builder.append(repositoryUuid);
+		builder.append(", version=");
+		builder.append(version);
+		builder.append("]");
+		return builder.toString();
 	}
 }

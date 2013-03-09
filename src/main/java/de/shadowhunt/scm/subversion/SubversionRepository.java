@@ -155,7 +155,7 @@ public class SubversionRepository {
 		createTemporyStructure(uuid);
 		try {
 			final String infoResource = createMissingFolders(resource, uuid);
-			final SubversionInfo info = info(infoResource);
+			final SubversionInfo info = info(infoResource, false);
 			final long version = info.getVersion();
 			prepareCheckin(uuid);
 			setCommitMessage(uuid, version, message);
@@ -198,7 +198,7 @@ public class SubversionRepository {
 
 	public void delete(final String resource, final String message) throws Exception {
 		final UUID uuid = UUID.randomUUID();
-		final SubversionInfo info = info(resource);
+		final SubversionInfo info = info(resource, false);
 		final long version = info.getVersion();
 
 		createTemporyStructure(uuid);
@@ -274,7 +274,7 @@ public class SubversionRepository {
 		return httpContext;
 	}
 
-	public SubversionInfo info(final String resource) throws Exception {
+	public SubversionInfo info(final String resource, final boolean withCustomProperties) throws Exception {
 		final URI uri = URI.create(host + module + resource);
 
 		final HttpUriRequest request = SubversionRequestFactory.createInfoRequest(uri, 0);
@@ -283,14 +283,14 @@ public class SubversionRepository {
 
 		final InputStream in = response.getEntity().getContent();
 		try {
-			return SubversionInfo.read(in);
+			return SubversionInfo.read(in, withCustomProperties);
 		} finally {
 			in.close();
 		}
 	}
 
-	public List<SubversionInfo> list(final String resource, final int depth) throws Exception {
-		final SubversionInfo info = info(resource);
+	public List<SubversionInfo> list(final String resource, final int depth, final boolean withCustomProperties) throws Exception {
+		final SubversionInfo info = info(resource, false);
 		final URI uri = URI.create(host + module + "/!svn/bc/" + info.getVersion() + resource);
 
 		final HttpUriRequest request = SubversionRequestFactory.createInfoRequest(uri, depth);
@@ -299,7 +299,7 @@ public class SubversionRepository {
 
 		final InputStream in = response.getEntity().getContent();
 		try {
-			return SubversionInfo.readList(in);
+			return SubversionInfo.readList(in, withCustomProperties);
 		} finally {
 			in.close();
 		}
@@ -316,7 +316,7 @@ public class SubversionRepository {
 	public List<SubversionLog> log(final String resource) throws Exception {
 		final URI uri = URI.create(host + module + resource);
 
-		final SubversionInfo info = info(resource);
+		final SubversionInfo info = info(resource, false);
 		final HttpUriRequest request = SubversionRequestFactory.createLogRequest(uri, info.getVersion(), 0L);
 		final HttpResponse response = client.execute(request, getHttpContext());
 		ensureResonse(response, false, HttpStatus.SC_OK);
@@ -393,7 +393,7 @@ public class SubversionRepository {
 
 	public void uploadWithProperties(final String resource, final String message, @Nullable final InputStream content, @Nullable final SubversionProperty... properties) throws Exception {
 		final UUID uuid = UUID.randomUUID();
-		final SubversionInfo info = info(resource);
+		final SubversionInfo info = info(resource, false);
 		final long version = info.getVersion();
 
 		createTemporyStructure(uuid);
