@@ -65,6 +65,10 @@ public class SubversionLog {
 			}
 		}
 
+		public List<SubversionLog> getLogs() {
+			return logs;
+		}
+
 		@Override
 		public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
 			clearText();
@@ -75,10 +79,6 @@ public class SubversionLog {
 				current = new SubversionLog();
 				return;
 			}
-		}
-
-		public List<SubversionLog> getLogs() {
-			return logs;
 		}
 	}
 
@@ -105,6 +105,45 @@ public class SubversionLog {
 		// prevent direct instantiation
 	}
 
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final SubversionLog other = (SubversionLog) obj;
+		if (comment == null) {
+			if (other.comment != null) {
+				return false;
+			}
+		} else if (!comment.equals(other.comment)) {
+			return false;
+		}
+		if (date == null) {
+			if (other.date != null) {
+				return false;
+			}
+		} else if (!date.equals(other.date)) {
+			return false;
+		}
+		if (user == null) {
+			if (other.user != null) {
+				return false;
+			}
+		} else if (!user.equals(other.user)) {
+			return false;
+		}
+		if (version != other.version) {
+			return false;
+		}
+		return true;
+	}
+
 	public String getComment() {
 		return comment;
 	}
@@ -119,6 +158,17 @@ public class SubversionLog {
 
 	public long getVersion() {
 		return version;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = (prime * result) + ((comment == null) ? 0 : comment.hashCode());
+		result = (prime * result) + ((date == null) ? 0 : date.hashCode());
+		result = (prime * result) + ((user == null) ? 0 : user.hashCode());
+		result = (prime * result) + (int) (version ^ (version >>> 32));
+		return result;
 	}
 
 	public void setComment(final String comment) {
