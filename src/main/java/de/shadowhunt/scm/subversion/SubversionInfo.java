@@ -29,6 +29,7 @@ public class SubversionInfo {
 		private final boolean withCustomProperties;
 
 		SubversionInfoHandler(final boolean withCustomProperties) {
+			super();
 			this.withCustomProperties = withCustomProperties;
 		}
 
@@ -90,25 +91,6 @@ public class SubversionInfo {
 			}
 		}
 
-		@Override
-		public String toString() {
-			final StringBuilder builder = new StringBuilder();
-			builder.append("SubversionInfoHandler [current=");
-			builder.append(current);
-			builder.append(", customProperties=");
-			builder.append(customProperties);
-			builder.append(", infos=");
-			builder.append(infos);
-			builder.append(", locktoken=");
-			builder.append(locktoken);
-			builder.append(", resourceType=");
-			builder.append(resourceType);
-			builder.append(", withCustomProperties=");
-			builder.append(withCustomProperties);
-			builder.append("]");
-			return builder.toString();
-		}
-
 		public List<SubversionInfo> getInfos() {
 			return infos;
 		}
@@ -138,9 +120,28 @@ public class SubversionInfo {
 				return;
 			}
 		}
+
+		@Override
+		public String toString() {
+			final StringBuilder builder = new StringBuilder();
+			builder.append("SubversionInfoHandler [current=");
+			builder.append(current);
+			builder.append(", customProperties=");
+			builder.append(customProperties);
+			builder.append(", infos=");
+			builder.append(infos);
+			builder.append(", locktoken=");
+			builder.append(locktoken);
+			builder.append(", resourceType=");
+			builder.append(resourceType);
+			builder.append(", withCustomProperties=");
+			builder.append(withCustomProperties);
+			builder.append("]");
+			return builder.toString();
+		}
 	}
 
-	private static SubversionProperty[] EMPTY = new SubversionProperty[0];
+	private static final SubversionProperty[] EMPTY = new SubversionProperty[0];
 
 	public static SubversionInfo read(final InputStream in, final boolean withCustomProperties) throws Exception {
 		return readList(in, withCustomProperties).get(0);
