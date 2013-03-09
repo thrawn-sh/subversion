@@ -2,7 +2,7 @@ package de.shadowhunt.scm.subversion;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.parsers.SAXParser;
@@ -38,7 +38,7 @@ public class SubversionInfo {
 
 			if ("response".equals(name)) {
 				if (withCustomProperties) {
-					current.setCustomProperties(customProperties);
+					current.setCustomProperties(customProperties.toArray(new SubversionProperty[customProperties.size()]));
 					customProperties = null;
 				}
 
@@ -90,6 +90,25 @@ public class SubversionInfo {
 			}
 		}
 
+		@Override
+		public String toString() {
+			final StringBuilder builder = new StringBuilder();
+			builder.append("SubversionInfoHandler [current=");
+			builder.append(current);
+			builder.append(", customProperties=");
+			builder.append(customProperties);
+			builder.append(", infos=");
+			builder.append(infos);
+			builder.append(", locktoken=");
+			builder.append(locktoken);
+			builder.append(", resourceType=");
+			builder.append(resourceType);
+			builder.append(", withCustomProperties=");
+			builder.append(withCustomProperties);
+			builder.append("]");
+			return builder.toString();
+		}
+
 		public List<SubversionInfo> getInfos() {
 			return infos;
 		}
@@ -121,7 +140,7 @@ public class SubversionInfo {
 		}
 	}
 
-	private static List<SubversionProperty> EMPTY = Collections.emptyList();
+	private static SubversionProperty[] EMPTY = new SubversionProperty[0];
 
 	public static SubversionInfo read(final InputStream in, final boolean withCustomProperties) throws Exception {
 		return readList(in, withCustomProperties).get(0);
@@ -138,7 +157,7 @@ public class SubversionInfo {
 		return handler.getInfos();
 	}
 
-	private List<SubversionProperty> customProperties = new ArrayList<SubversionProperty>();
+	private SubversionProperty[] customProperties = EMPTY;
 
 	private boolean direcotry;
 
@@ -154,8 +173,8 @@ public class SubversionInfo {
 		// prevent direct instantiation
 	}
 
-	public List<SubversionProperty> getCustomProperties() {
-		return (customProperties == EMPTY) ? EMPTY : new ArrayList<SubversionProperty>(customProperties);
+	public SubversionProperty[] getCustomProperties() {
+		return Arrays.copyOf(customProperties, customProperties.length);
 	}
 
 	public String getLockToken() {
@@ -186,9 +205,12 @@ public class SubversionInfo {
 		return lockToken != null;
 	}
 
-	public void setCustomProperties(final List<SubversionProperty> customProperties) {
-		final boolean nullOrEmpty = (customProperties == null) || customProperties.isEmpty();
-		this.customProperties = nullOrEmpty ? EMPTY : new ArrayList<SubversionProperty>(customProperties);
+	public void setCustomProperties(final SubversionProperty[] customProperties) {
+		if ((customProperties == null) || (customProperties.length == 0)) {
+			this.customProperties = EMPTY;
+		} else {
+			this.customProperties = Arrays.copyOf(customProperties, customProperties.length);
+		}
 	}
 
 	public void setDirecotry(final boolean direcotry) {
@@ -219,7 +241,7 @@ public class SubversionInfo {
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
 		builder.append("SubversionInfo [customProperties=");
-		builder.append(customProperties);
+		builder.append(Arrays.toString(customProperties));
 		builder.append(", direcotry=");
 		builder.append(direcotry);
 		builder.append(", lockToken=");
