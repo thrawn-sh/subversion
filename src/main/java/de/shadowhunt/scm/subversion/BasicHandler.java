@@ -1,5 +1,6 @@
 package de.shadowhunt.scm.subversion;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.xml.sax.helpers.DefaultHandler;
 
 class BasicHandler extends DefaultHandler {
@@ -39,6 +40,6 @@ class BasicHandler extends DefaultHandler {
 	}
 
 	protected String getText() {
-		return buffer.toString();
+		return StringEscapeUtils.unescapeXml(buffer.toString());
 	}
 }
