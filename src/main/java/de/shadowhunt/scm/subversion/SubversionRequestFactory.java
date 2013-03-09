@@ -91,6 +91,24 @@ final class SubversionRequestFactory {
 		return request;
 	}
 
+	public static HttpUriRequest createRemovePropertiesRequest(final URI uri, final SubversionProperty... properties) {
+		final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH");
+		request.setURI(uri);
+		final StringBuilder sb = new StringBuilder(XML_PREAMBLE);
+		sb.append("<propertyupdate xmlns=\"DAV:\" xmlns:C=\"http://subversion.tigris.org/xmlns/custom/\" xmlns:S=\"http://subversion.tigris.org/xmlns/svn/\" xmlns:V=\"http://subversion.tigris.org/xmlns/dav/\"><remove>");
+		for (final SubversionProperty property : properties) {
+			sb.append("<prop>");
+			sb.append('<');
+			sb.append(property.getType().getPrefix());
+			sb.append(property.getName());
+			sb.append("/>");
+			sb.append("</prop>");
+		}
+		sb.append("</remove></propertyupdate>");
+		request.setEntity(new StringEntity(sb.toString(), XML_CONTENT_TYPE));
+		return request;
+	}
+
 	public static HttpUriRequest createDownloadRequest(final URI uri) {
 		return new HttpGet(uri);
 	}

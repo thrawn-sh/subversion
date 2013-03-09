@@ -221,6 +221,23 @@ public class SubversionRepository {
 		ensureResonse(response, HttpStatus.SC_NO_CONTENT);
 	}
 
+	public void deleteProperties(final String resource, final String message, final SubversionProperty... properties) throws Exception {
+		final UUID uuid = UUID.randomUUID();
+		final SubversionInfo info = info(resource, false);
+		final long version = info.getVersion();
+
+		createTemporyStructure(uuid);
+		try {
+			prepareCheckin(uuid);
+			setCommitMessage(uuid, version, message);
+			prepareContentUpload(resource, uuid, version);
+			propertiesRemove(resource, uuid, properties);
+			merge(uuid);
+		} finally {
+			deleteTemporyStructure(uuid);
+		}
+	}
+
 	private void deleteTemporyStructure(final UUID uuid) throws Exception {
 		final URI uri = URI.create(host + module + "/!svn/act/" + uuid);
 
@@ -351,6 +368,14 @@ public class SubversionRepository {
 		final HttpUriRequest request = SubversionRequestFactory.createCheckoutRequest(uri, uuid);
 		final HttpResponse response = client.execute(request, getHttpContext());
 		ensureResonse(response, HttpStatus.SC_CREATED);
+	}
+
+	private void propertiesRemove(final String resource, final UUID uuid, final SubversionProperty[] properties) throws Exception {
+		final URI uri = URI.create(host + module + "/!svn/wrk/" + uuid + resource);
+
+		final HttpUriRequest request = SubversionRequestFactory.createRemovePropertiesRequest(uri, properties);
+		final HttpResponse response = client.execute(request, getHttpContext());
+		ensureResonse(response, HttpStatus.SC_MULTI_STATUS);
 	}
 
 	private void propertiesSet(final String resource, final UUID uuid, final SubversionProperty... properties) throws Exception {
