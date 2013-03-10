@@ -14,6 +14,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -150,6 +151,10 @@ public class SubversionRepository {
 	}
 
 	public void create(final String resource, final String message, final InputStream content) throws Exception {
+		if (content == null) {
+			throw new IllegalArgumentException("content can not be null");
+		}
+
 		final UUID uuid = UUID.randomUUID();
 
 		createTemporyStructure(uuid);
@@ -371,17 +376,27 @@ public class SubversionRepository {
 	}
 
 	private void propertiesRemove(final String resource, final UUID uuid, final SubversionProperty[] properties) throws Exception {
+		final SubversionProperty[] filtered = SubversionProperty.filteroutSystemProperties(properties);
+		if (filtered.length == 0) {
+			return;
+		}
+
 		final URI uri = URI.create(host + module + "/!svn/wrk/" + uuid + resource);
 
-		final HttpUriRequest request = SubversionRequestFactory.createRemovePropertiesRequest(uri, properties);
+		final HttpUriRequest request = SubversionRequestFactory.createRemovePropertiesRequest(uri, filtered);
 		final HttpResponse response = client.execute(request, getHttpContext());
 		ensureResonse(response, HttpStatus.SC_MULTI_STATUS);
 	}
 
 	private void propertiesSet(final String resource, final UUID uuid, final SubversionProperty... properties) throws Exception {
+		final SubversionProperty[] filtered = SubversionProperty.filteroutSystemProperties(properties);
+		if (filtered.length == 0) {
+			return;
+		}
+
 		final URI uri = URI.create(host + module + "/!svn/wrk/" + uuid + resource);
 
-		final HttpUriRequest request = SubversionRequestFactory.createSetPropertiesRequest(uri, properties);
+		final HttpUriRequest request = SubversionRequestFactory.createSetPropertiesRequest(uri, filtered);
 		final HttpResponse response = client.execute(request, getHttpContext());
 		ensureResonse(response, HttpStatus.SC_MULTI_STATUS);
 	}
@@ -389,13 +404,14 @@ public class SubversionRepository {
 	private void setCommitMessage(final UUID uuid, final long version, final String message) throws Exception {
 		final URI uri = URI.create(host + module + "/!svn/wbl/" + uuid + "/" + version);
 
-		final HttpUriRequest request = SubversionRequestFactory.createCommitMessageRequest(uri, message);
+		final String trimmedMessage = StringUtils.trimToEmpty(message);
+		final HttpUriRequest request = SubversionRequestFactory.createCommitMessageRequest(uri, trimmedMessage);
 		final HttpResponse response = client.execute(request, getHttpContext());
 		ensureResonse(response, HttpStatus.SC_MULTI_STATUS);
 	}
 
 	public void setProperties(final String resource, final String message, final SubversionProperty... properties) throws Exception {
-		uploadWithProperties(resource, message, null, properties);
+		uploadWithProperties0(resource, message, null, properties);
 	}
 
 	private final void triggerAuthentication() throws Exception {
@@ -413,10 +429,20 @@ public class SubversionRepository {
 	}
 
 	public void upload(final String resource, final String message, final InputStream content) throws Exception {
-		uploadWithProperties(resource, message, content, (SubversionProperty[]) null);
+		if (content == null) {
+			throw new IllegalArgumentException("content can not be null");
+		}
+		uploadWithProperties0(resource, message, content, (SubversionProperty[]) null);
 	}
 
-	public void uploadWithProperties(final String resource, final String message, @Nullable final InputStream content, @Nullable final SubversionProperty... properties) throws Exception {
+	public void uploadWithProperties(final String resource, final String message, final InputStream content, final SubversionProperty... properties) throws Exception {
+		if ((content == null) && (properties == null)) {
+			throw new IllegalArgumentException("content and properties can not both be null");
+		}
+		uploadWithProperties0(resource, message, content, properties);
+	}
+
+	void uploadWithProperties0(final String resource, final String message, @Nullable final InputStream content, @Nullable final SubversionProperty... properties) throws Exception {
 		final UUID uuid = UUID.randomUUID();
 		final SubversionInfo info = info(resource, false);
 		final long version = info.getVersion();
@@ -426,9 +452,8 @@ public class SubversionRepository {
 			prepareCheckin(uuid);
 			setCommitMessage(uuid, version, message);
 			prepareContentUpload(resource, uuid, version);
-			if (properties != null) {
-				propertiesSet(resource, uuid, properties);
-			}
+			propertiesSet(resource, uuid, properties);
+
 			if (content != null) {
 				contentUpload(resource, uuid, content);
 			}
