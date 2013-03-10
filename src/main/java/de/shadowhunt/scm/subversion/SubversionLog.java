@@ -82,15 +82,20 @@ public class SubversionLog {
 		}
 	}
 
-	public static List<SubversionLog> read(final InputStream in) throws Exception {
+	public static List<SubversionLog> read(final InputStream in) {
 		final SAXParserFactory factory = SAXParserFactory.newInstance();
 		factory.setNamespaceAware(false);
 		factory.setValidating(false);
-		final SAXParser saxParser = factory.newSAXParser();
-		final SubversionLogHandler handler = new SubversionLogHandler();
 
-		saxParser.parse(in, handler);
-		return handler.getLogs();
+		try {
+			final SAXParser saxParser = factory.newSAXParser();
+			final SubversionLogHandler handler = new SubversionLogHandler();
+
+			saxParser.parse(in, handler);
+			return handler.getLogs();
+		} catch (final Exception e) {
+			throw new SubversionException("could not parse input", e);
+		}
 	}
 
 	private String comment;

@@ -143,19 +143,28 @@ public class SubversionInfo {
 
 	private static final SubversionProperty[] EMPTY = new SubversionProperty[0];
 
-	public static SubversionInfo read(final InputStream in, final boolean withCustomProperties) throws Exception {
-		return readList(in, withCustomProperties).get(0);
+	public static SubversionInfo read(final InputStream in, final boolean withCustomProperties) {
+		final List<SubversionInfo> infos = readList(in, withCustomProperties);
+		if (infos.isEmpty()) {
+			throw new SubversionException("could not find any SubversionInfo in input");
+		}
+		return infos.get(0);
 	}
 
-	public static List<SubversionInfo> readList(final InputStream in, final boolean withCustomProperties) throws Exception {
+	public static List<SubversionInfo> readList(final InputStream in, final boolean withCustomProperties) {
 		final SAXParserFactory factory = SAXParserFactory.newInstance();
 		factory.setNamespaceAware(false);
 		factory.setValidating(false);
-		final SAXParser saxParser = factory.newSAXParser();
-		final SubversionInfoHandler handler = new SubversionInfoHandler(withCustomProperties);
 
-		saxParser.parse(in, handler);
-		return handler.getInfos();
+		try {
+			final SAXParser saxParser = factory.newSAXParser();
+			final SubversionInfoHandler handler = new SubversionInfoHandler(withCustomProperties);
+
+			saxParser.parse(in, handler);
+			return handler.getInfos();
+		} catch (final Exception e) {
+			throw new SubversionException("could not parse input", e);
+		}
 	}
 
 	private SubversionProperty[] customProperties = EMPTY;
