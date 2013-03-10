@@ -58,7 +58,7 @@ public class SubversionRepository {
 
 	};
 
-	private static boolean contains(final int statusCode, final int... expectedStatusCodes) {
+	static boolean contains(final int statusCode, final int... expectedStatusCodes) {
 		for (final int expectedStatusCode : expectedStatusCodes) {
 			if (expectedStatusCode == statusCode) {
 				return true;
@@ -134,12 +134,16 @@ public class SubversionRepository {
 
 	private final String module;
 
-	public SubversionRepository(final URI host, final String module, final String username, final String password) throws Exception {
-		client = createClient(host, username, password);
+	SubversionRepository(final URI host, final String module, final HttpClient client) throws Exception {
+		this.client = client;
 		this.host = host;
 		this.module = module;
 
 		triggerAuthentication();
+	}
+
+	public SubversionRepository(final URI host, final String module, final String username, final String password) throws Exception {
+		this(host, module, createClient(host, username, password));
 	}
 
 	private void contentUpload(final String resource, final UUID uuid, final InputStream content) throws Exception {
