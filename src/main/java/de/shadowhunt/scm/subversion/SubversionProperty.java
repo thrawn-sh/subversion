@@ -1,5 +1,7 @@
 package de.shadowhunt.scm.subversion;
 
+import java.util.Arrays;
+
 public class SubversionProperty {
 
 	public enum Type {
@@ -19,13 +21,34 @@ public class SubversionProperty {
 		}
 	}
 
+	private static final SubversionProperty[] EMPTY = new SubversionProperty[0];
+
+	public static SubversionProperty createCustomProperty(final String name, final String value) {
+		return new SubversionProperty(Type.CUSTOM, name, value);
+	}
+
+	static SubversionProperty[] filteroutSystemProperties(final SubversionProperty... properties) {
+		if ((properties == null) || (properties.length == 0)) {
+			return EMPTY;
+		}
+
+		final SubversionProperty[] filtered = new SubversionProperty[properties.length];
+		int index = 0;
+		for (final SubversionProperty property : properties) {
+			if ((property != null) && ((Type.CUSTOM == property.type) || (Type.SVN == property.type))) {
+				filtered[index++] = property;
+			}
+		}
+		return Arrays.copyOf(filtered, index);
+	}
+
 	private final String name;
 
 	private final Type type;
 
 	private final String value;
 
-	public SubversionProperty(final Type type, final String name, final String value) {
+	SubversionProperty(final Type type, final String name, final String value) {
 		this.type = type;
 		this.name = name;
 		this.value = value;
