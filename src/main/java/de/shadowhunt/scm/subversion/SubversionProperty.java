@@ -21,15 +21,13 @@ public class SubversionProperty {
 		}
 	}
 
-	private static final SubversionProperty[] EMPTY = new SubversionProperty[0];
-
 	public static SubversionProperty createCustomProperty(final String name, final String value) {
 		return new SubversionProperty(Type.CUSTOM, name, value);
 	}
 
 	static SubversionProperty[] filteroutSystemProperties(final SubversionProperty... properties) {
-		if ((properties == null) || (properties.length == 0)) {
-			return EMPTY;
+		if (properties == null) {
+			return new SubversionProperty[0];
 		}
 
 		final SubversionProperty[] filtered = new SubversionProperty[properties.length];
