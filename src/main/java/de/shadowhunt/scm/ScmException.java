@@ -4,7 +4,8 @@ public abstract class ScmException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
-	/** Constructs a new ScmException exception with the specified detail message.
+	/**
+	 * Constructs a new ScmException exception with the specified detail message.
 	 * The cause is not initialized, and may subsequently be initialized by a
 	 * call to {@link #initCause}.
 	 *
