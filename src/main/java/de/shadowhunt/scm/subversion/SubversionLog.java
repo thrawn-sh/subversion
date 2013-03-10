@@ -189,6 +189,16 @@ public class SubversionLog {
 
 	@Override
 	public String toString() {
-		return "SubversionLog [comment=" + comment + ", date=" + date + ", user=" + user + ", version=" + version + "]";
+		final StringBuilder builder = new StringBuilder();
+		builder.append("SubversionLog [comment=");
+		builder.append(comment);
+		builder.append(", date=");
+		builder.append(date);
+		builder.append(", user=");
+		builder.append(user);
+		builder.append(", version=");
+		builder.append(version);
+		builder.append("]");
+		return builder.toString();
 	}
 }

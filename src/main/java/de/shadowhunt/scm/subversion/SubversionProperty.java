@@ -108,6 +108,14 @@ public class SubversionProperty {
 
 	@Override
 	public String toString() {
-		return "SubversionProperty [name=" + name + ", type=" + type + ", value=" + value + "]";
+		final StringBuilder builder = new StringBuilder();
+		builder.append("SubversionProperty [type=");
+		builder.append(type);
+		builder.append(", name=");
+		builder.append(name);
+		builder.append(", value=");
+		builder.append(value);
+		builder.append("]");
+		return builder.toString();
 	}
 }
