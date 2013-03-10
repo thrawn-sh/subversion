@@ -49,6 +49,11 @@ final class SubversionRequestFactory {
 			removeHeaders("Depth");
 			addHeader("Depth", Integer.toString(depth));
 		}
+
+		@Override
+		public String toString() {
+			return method + " " + getURI() + " " + getProtocolVersion();
+		}
 	}
 
 	private static final ContentType XML_CONTENT_TYPE = ContentType.create("text/xml", "UTF-8");
