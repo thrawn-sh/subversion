@@ -2,18 +2,19 @@ package de.shadowhunt.scm.subversion;
 
 import de.shadowhunt.scm.ScmException;
 
-public class SubversionException extends ScmException {
+class SubversionException extends ScmException {
 
 	private static final long serialVersionUID = 1L;
 
-	/** Constructs a new SubversionException exception with the specified detail message.
+	/**
+	 * Constructs a new SubversionException exception with the specified detail message.
 	 * The cause is not initialized, and may subsequently be initialized by a
 	 * call to {@link #initCause}.
 	 *
 	 * @param   message   the detail message. The detail message is saved for
 	 *          later retrieval by the {@link #getMessage()} method.
 	 */
-	protected SubversionException(final String message) {
+	SubversionException(final String message) {
 		super(message);
 	}
 
@@ -30,7 +31,7 @@ public class SubversionException extends ScmException {
 	 *         permitted, and indicates that the cause is nonexistent or
 	 *         unknown.)
 	 */
-	protected SubversionException(final String message, final Throwable cause) {
+	SubversionException(final String message, final Throwable cause) {
 		super(message, cause);
 	}
 }
