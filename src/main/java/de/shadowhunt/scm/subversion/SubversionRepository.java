@@ -58,6 +58,18 @@ public class SubversionRepository {
 
 	};
 
+	private static final String PREFIX_ACT = "/!svn/act/";
+
+	private static final String PREFIX_BC = "/!svn/bc/";
+
+	private static final String PREFIX_VCC = "/!svn/vcc/";
+
+	private static final String PREFIX_VER = "/!svn/ver/";
+
+	private static final String PREFIX_WBL = "/!svn/wbl/";
+
+	private static final String PREFIX_WRK = "/!svn/wrk/";
+
 	static boolean contains(final int statusCode, final int... expectedStatusCodes) {
 		for (final int expectedStatusCode : expectedStatusCodes) {
 			if (expectedStatusCode == statusCode) {
@@ -179,7 +191,7 @@ public class SubversionRepository {
 	}
 
 	private void contentUpload(final String sanatizedResource, final UUID uuid, final InputStream content) {
-		final URI uri = URI.create(repositoryRoot + "/!svn/wrk/" + uuid + sanatizedResource);
+		final URI uri = URI.create(repositoryRoot + PREFIX_WRK + uuid + sanatizedResource);
 
 		final HttpUriRequest request = SubversionRequestFactory.createUploadRequest(uri, content);
 		final HttpResponse response = execute(request);
@@ -218,7 +230,7 @@ public class SubversionRepository {
 			partial.append(resourceParts[i]);
 
 			final String partialResource = partial.toString();
-			final URI uri = URI.create(repositoryRoot + "/!svn/wrk/" + uuid + partialResource);
+			final URI uri = URI.create(repositoryRoot + PREFIX_WRK + uuid + partialResource);
 			final HttpUriRequest request = SubversionRequestFactory.createMakeFolderRequest(uri);
 			final HttpResponse response = execute(request);
 			final int status = ensureResonse(response, /* created */HttpStatus.SC_CREATED, /* existed */HttpStatus.SC_METHOD_NOT_ALLOWED);
@@ -231,7 +243,7 @@ public class SubversionRepository {
 	}
 
 	private void createTemporyStructure(final UUID uuid) {
-		final URI uri = URI.create(repositoryRoot + "/!svn/act/" + uuid);
+		final URI uri = URI.create(repositoryRoot + PREFIX_ACT + uuid);
 
 		final HttpUriRequest request = SubversionRequestFactory.createActivityRequest(uri);
 		final HttpResponse response = execute(request);
@@ -257,7 +269,7 @@ public class SubversionRepository {
 	}
 
 	private void delete(final String sanatizedResource, final UUID uuid) {
-		final URI uri = URI.create(repositoryRoot + "/!svn/wrk/" + uuid + sanatizedResource);
+		final URI uri = URI.create(repositoryRoot + PREFIX_WRK + uuid + sanatizedResource);
 
 		final HttpUriRequest request = new HttpDelete(uri);
 		final HttpResponse response = execute(request);
@@ -283,7 +295,7 @@ public class SubversionRepository {
 	}
 
 	private void deleteTemporyStructure(final UUID uuid) {
-		final URI uri = URI.create(repositoryRoot + "/!svn/act/" + uuid);
+		final URI uri = URI.create(repositoryRoot + PREFIX_ACT + uuid);
 
 		final HttpUriRequest request = new HttpDelete(uri);
 		final HttpResponse response = execute(request);
@@ -301,7 +313,7 @@ public class SubversionRepository {
 	}
 
 	public InputStream download(final String resource, final long version) {
-		final URI uri = URI.create(repositoryRoot + "/!svn/bc/" + version + sanatizeResource(resource));
+		final URI uri = URI.create(repositoryRoot + PREFIX_BC + version + sanatizeResource(resource));
 
 		final HttpUriRequest request = SubversionRequestFactory.createDownloadRequest(uri);
 		final HttpResponse response = execute(request);
@@ -377,7 +389,7 @@ public class SubversionRepository {
 	public List<SubversionInfo> list(final String resource, final int depth, final boolean withCustomProperties) {
 		final String sanatizedResource = sanatizeResource(resource);
 		final SubversionInfo info = info0(sanatizedResource, false);
-		final URI uri = URI.create(repositoryRoot + "/!svn/bc/" + info.getVersion() + sanatizedResource);
+		final URI uri = URI.create(repositoryRoot + PREFIX_BC + info.getVersion() + sanatizedResource);
 
 		final HttpUriRequest request = SubversionRequestFactory.createInfoRequest(uri, depth);
 		final HttpResponse response = execute(request);
@@ -427,7 +439,7 @@ public class SubversionRepository {
 	}
 
 	private void prepareCheckin(final UUID uuid) {
-		final URI uri = URI.create(repositoryRoot + "/!svn/vcc/default");
+		final URI uri = URI.create(repositoryRoot + PREFIX_VCC + "default");
 
 		final HttpUriRequest request = SubversionRequestFactory.createCheckoutRequest(uri, uuid);
 		final HttpResponse response = execute(request);
@@ -435,7 +447,7 @@ public class SubversionRepository {
 	}
 
 	private void prepareContentUpload(final String sanatizedResource, final UUID uuid, final long version) {
-		final URI uri = URI.create(repositoryRoot + "/!svn/ver/" + version + sanatizedResource);
+		final URI uri = URI.create(repositoryRoot + PREFIX_VER + version + sanatizedResource);
 
 		final HttpUriRequest request = SubversionRequestFactory.createCheckoutRequest(uri, uuid);
 		final HttpResponse response = execute(request);
@@ -448,7 +460,7 @@ public class SubversionRepository {
 			return;
 		}
 
-		final URI uri = URI.create(repositoryRoot + "/!svn/wrk/" + uuid + sanatizedResource);
+		final URI uri = URI.create(repositoryRoot + PREFIX_WRK + uuid + sanatizedResource);
 
 		final HttpUriRequest request = SubversionRequestFactory.createRemovePropertiesRequest(uri, filtered);
 		final HttpResponse response = execute(request);
@@ -461,7 +473,7 @@ public class SubversionRepository {
 			return;
 		}
 
-		final URI uri = URI.create(repositoryRoot + "/!svn/wrk/" + uuid + sanatizedResource);
+		final URI uri = URI.create(repositoryRoot + PREFIX_WRK + uuid + sanatizedResource);
 
 		final HttpUriRequest request = SubversionRequestFactory.createSetPropertiesRequest(uri, filtered);
 		final HttpResponse response = execute(request);
@@ -469,7 +481,7 @@ public class SubversionRepository {
 	}
 
 	private void setCommitMessage(final UUID uuid, final long version, final String message) {
-		final URI uri = URI.create(repositoryRoot + "/!svn/wbl/" + uuid + "/" + version);
+		final URI uri = URI.create(repositoryRoot + PREFIX_WBL + uuid + "/" + version);
 
 		final String trimmedMessage = StringUtils.trimToEmpty(message);
 		final HttpUriRequest request = SubversionRequestFactory.createCommitMessageRequest(uri, trimmedMessage);
