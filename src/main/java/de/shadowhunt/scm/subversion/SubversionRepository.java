@@ -344,7 +344,7 @@ public class SubversionRepository {
 	}
 
 	public SubversionInfo info(final String resource, final boolean withCustomProperties) {
-		return info(sanatizeResource(resource), withCustomProperties);
+		return info0(sanatizeResource(resource), withCustomProperties);
 	}
 
 	private SubversionInfo info0(final String sanatizedResource, final boolean withCustomProperties) {
