@@ -143,22 +143,19 @@ public class SubversionRepository {
 
 	private final URI host;
 
-	private final String module;
-
-	SubversionRepository(final URI host, final String module, final HttpClient client) {
+	SubversionRepository(final URI host, final HttpClient client) {
 		this.client = client;
 		this.host = host;
-		this.module = module;
 
 		triggerAuthentication();
 	}
 
-	public SubversionRepository(final URI host, final String module, final String username, final String password) {
-		this(host, module, username, password, null);
+	public SubversionRepository(final URI host, final String username, final String password) {
+		this(host, username, password, null);
 	}
 
-	public SubversionRepository(final URI host, final String module, final String username, final String password, @Nullable final String workstation) {
-		this(host, module, createClient(host, username, password, workstation));
+	public SubversionRepository(final URI host, final String username, final String password, @Nullable final String workstation) {
+		this(host, createClient(host, username, password, workstation));
 	}
 
 	private void closeQuiet(final InputStream in) {
@@ -170,7 +167,7 @@ public class SubversionRepository {
 	}
 
 	private void contentUpload(final String resource, final UUID uuid, final InputStream content) {
-		final URI uri = URI.create(host + module + "/!svn/wrk/" + uuid + resource);
+		final URI uri = URI.create(host + "/!svn/wrk/" + uuid + resource);
 
 		final HttpUriRequest request = SubversionRequestFactory.createUploadRequest(uri, content);
 		final HttpResponse response = execute(request);
@@ -208,7 +205,7 @@ public class SubversionRepository {
 			partial.append(resourceParts[i]);
 
 			final String partialResource = partial.toString();
-			final URI uri = URI.create(host + module + "/!svn/wrk/" + uuid + partialResource);
+			final URI uri = URI.create(host + "/!svn/wrk/" + uuid + partialResource);
 			final HttpUriRequest request = SubversionRequestFactory.createMakeFolderRequest(uri);
 			final HttpResponse response = execute(request);
 			final int status = ensureResonse(response, /* created */HttpStatus.SC_CREATED, /* existed */HttpStatus.SC_METHOD_NOT_ALLOWED);
@@ -221,7 +218,7 @@ public class SubversionRepository {
 	}
 
 	private void createTemporyStructure(final UUID uuid) {
-		final URI uri = URI.create(host + module + "/!svn/act/" + uuid);
+		final URI uri = URI.create(host + "/!svn/act/" + uuid);
 
 		final HttpUriRequest request = SubversionRequestFactory.createActivityRequest(uri);
 		final HttpResponse response = execute(request);
@@ -246,7 +243,7 @@ public class SubversionRepository {
 	}
 
 	private void delete(final UUID uuid, final String resource) {
-		final URI uri = URI.create(host + module + "/!svn/wrk/" + uuid + resource);
+		final URI uri = URI.create(host + "/!svn/wrk/" + uuid + resource);
 
 		final HttpUriRequest request = new HttpDelete(uri);
 		final HttpResponse response = execute(request);
@@ -271,7 +268,7 @@ public class SubversionRepository {
 	}
 
 	private void deleteTemporyStructure(final UUID uuid) {
-		final URI uri = URI.create(host + module + "/!svn/act/" + uuid);
+		final URI uri = URI.create(host + "/!svn/act/" + uuid);
 
 		final HttpUriRequest request = new HttpDelete(uri);
 		final HttpResponse response = execute(request);
@@ -279,7 +276,7 @@ public class SubversionRepository {
 	}
 
 	public InputStream download(final String resource) {
-		final URI uri = URI.create(host + module + resource);
+		final URI uri = URI.create(host + resource);
 
 		final HttpUriRequest request = SubversionRequestFactory.createDownloadRequest(uri);
 		final HttpResponse response = execute(request);
@@ -289,7 +286,7 @@ public class SubversionRepository {
 	}
 
 	public InputStream download(final String resource, final long version) {
-		final URI uri = URI.create(host + module + "/!svn/bc/" + version + resource);
+		final URI uri = URI.create(host + "/!svn/bc/" + version + resource);
 
 		final HttpUriRequest request = SubversionRequestFactory.createDownloadRequest(uri);
 		final HttpResponse response = execute(request);
@@ -307,7 +304,7 @@ public class SubversionRepository {
 	}
 
 	public boolean exisits(final String resource) {
-		final URI uri = URI.create(host + module + resource);
+		final URI uri = URI.create(host + resource);
 
 		final HttpUriRequest request = SubversionRequestFactory.createExistsRequest(uri);
 		final HttpResponse response = execute(request);
@@ -332,7 +329,7 @@ public class SubversionRepository {
 	}
 
 	public SubversionInfo info(final String resource, final boolean withCustomProperties) {
-		final URI uri = URI.create(host + module + resource);
+		final URI uri = URI.create(host + resource);
 
 		final HttpUriRequest request = SubversionRequestFactory.createInfoRequest(uri, 0);
 		final HttpResponse response = execute(request);
@@ -348,7 +345,7 @@ public class SubversionRepository {
 
 	public List<SubversionInfo> list(final String resource, final int depth, final boolean withCustomProperties) {
 		final SubversionInfo info = info(resource, false);
-		final URI uri = URI.create(host + module + "/!svn/bc/" + info.getVersion() + resource);
+		final URI uri = URI.create(host + "/!svn/bc/" + info.getVersion() + resource);
 
 		final HttpUriRequest request = SubversionRequestFactory.createInfoRequest(uri, depth);
 		final HttpResponse response = execute(request);
@@ -363,7 +360,7 @@ public class SubversionRepository {
 	}
 
 	public void lock(final String resource) {
-		final URI uri = URI.create(host + module + resource);
+		final URI uri = URI.create(host + resource);
 
 		final HttpUriRequest request = SubversionRequestFactory.createLockRequest(uri);
 		final HttpResponse response = execute(request);
@@ -371,7 +368,7 @@ public class SubversionRepository {
 	}
 
 	public List<SubversionLog> log(final String resource) {
-		final URI uri = URI.create(host + module + resource);
+		final URI uri = URI.create(host + resource);
 
 		final SubversionInfo info = info(resource, false);
 		final HttpUriRequest request = SubversionRequestFactory.createLogRequest(uri, info.getVersion(), 0L);
@@ -386,16 +383,34 @@ public class SubversionRepository {
 		}
 	}
 
-	private void merge(final UUID uuid) {
-		final URI uri = URI.create(host + module);
+	public SubversionLog lastLog(final String resource) {
+		final URI uri = URI.create(host + resource);
 
-		final HttpUriRequest request = SubversionRequestFactory.createMergeRequest(uri, uuid);
+		final SubversionInfo info = info(resource, false);
+		final HttpUriRequest request = SubversionRequestFactory.createLogRequest(uri, info.getVersion(), info.getVersion());
+		final HttpResponse response = execute(request);
+		ensureResonse(response, false, HttpStatus.SC_OK);
+
+		final InputStream in = getContent(response);
+		try {
+			final List<SubversionLog> logs = SubversionLog.read(in);
+			if (logs.isEmpty()) {
+				throw new SubversionException("no logs available");
+			}
+			return logs.get(0);
+		} finally {
+			closeQuiet(in);
+		}
+	}
+
+	private void merge(final UUID uuid) {
+		final HttpUriRequest request = SubversionRequestFactory.createMergeRequest(host, uuid);
 		final HttpResponse response = execute(request);
 		ensureResonse(response, HttpStatus.SC_OK);
 	}
 
 	private void prepareCheckin(final UUID uuid) {
-		final URI uri = URI.create(host + module + "/!svn/vcc/default");
+		final URI uri = URI.create(host + "/!svn/vcc/default");
 
 		final HttpUriRequest request = SubversionRequestFactory.createCheckoutRequest(uri, uuid);
 		final HttpResponse response = execute(request);
@@ -403,7 +418,7 @@ public class SubversionRepository {
 	}
 
 	private void prepareContentUpload(final String resource, final UUID uuid, final long version) {
-		final URI uri = URI.create(host + module + "/!svn/ver/" + version + resource);
+		final URI uri = URI.create(host + "/!svn/ver/" + version + resource);
 
 		final HttpUriRequest request = SubversionRequestFactory.createCheckoutRequest(uri, uuid);
 		final HttpResponse response = execute(request);
@@ -416,7 +431,7 @@ public class SubversionRepository {
 			return;
 		}
 
-		final URI uri = URI.create(host + module + "/!svn/wrk/" + uuid + resource);
+		final URI uri = URI.create(host + "/!svn/wrk/" + uuid + resource);
 
 		final HttpUriRequest request = SubversionRequestFactory.createRemovePropertiesRequest(uri, filtered);
 		final HttpResponse response = execute(request);
@@ -429,7 +444,7 @@ public class SubversionRepository {
 			return;
 		}
 
-		final URI uri = URI.create(host + module + "/!svn/wrk/" + uuid + resource);
+		final URI uri = URI.create(host + "/!svn/wrk/" + uuid + resource);
 
 		final HttpUriRequest request = SubversionRequestFactory.createSetPropertiesRequest(uri, filtered);
 		final HttpResponse response = execute(request);
@@ -437,7 +452,7 @@ public class SubversionRepository {
 	}
 
 	private void setCommitMessage(final UUID uuid, final long version, final String message) {
-		final URI uri = URI.create(host + module + "/!svn/wbl/" + uuid + "/" + version);
+		final URI uri = URI.create(host + "/!svn/wbl/" + uuid + "/" + version);
 
 		final String trimmedMessage = StringUtils.trimToEmpty(message);
 		final HttpUriRequest request = SubversionRequestFactory.createCommitMessageRequest(uri, trimmedMessage);
@@ -450,13 +465,13 @@ public class SubversionRepository {
 	}
 
 	private final void triggerAuthentication() {
-		final HttpUriRequest request = SubversionRequestFactory.createAuthRequest(URI.create(host + module));
+		final HttpUriRequest request = SubversionRequestFactory.createAuthRequest(host);
 		final HttpResponse response = execute(request);
 		EntityUtils.consumeQuietly(response.getEntity());
 	}
 
 	public void unlock(final String resource, final String token) {
-		final URI uri = URI.create(host + module + resource);
+		final URI uri = URI.create(host + resource);
 
 		final HttpUriRequest request = SubversionRequestFactory.createUnlockRequest(uri, "<" + token + ">");
 		final HttpResponse response = execute(request);
