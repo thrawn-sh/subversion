@@ -37,9 +37,9 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
-public class SubversionRepository {
+public abstract class SubversionRepository {
 
-	private static final TrustManager DUMMY_MANAGER = new X509TrustManager() {
+	static final TrustManager DUMMY_MANAGER = new X509TrustManager() {
 
 		@Override
 		public void checkClientTrusted(final X509Certificate[] certs, final String authType) {
@@ -58,17 +58,19 @@ public class SubversionRepository {
 
 	};
 
-	private static final String PREFIX_ACT = "/!svn/act/";
+	protected static final String PREFIX_ACT = "/!svn/act/";
 
-	private static final String PREFIX_BC = "/!svn/bc/";
+	protected static final String PREFIX_BC = "/!svn/bc/";
 
-	private static final String PREFIX_VCC = "/!svn/vcc/";
+	protected static final String PREFIX_TXN = "/!svn/txn/";
 
-	private static final String PREFIX_VER = "/!svn/ver/";
+	protected static final String PREFIX_VCC = "/!svn/vcc/";
 
-	private static final String PREFIX_WBL = "/!svn/wbl/";
+	protected static final String PREFIX_VER = "/!svn/ver/";
 
-	private static final String PREFIX_WRK = "/!svn/wrk/";
+	protected static final String PREFIX_WBL = "/!svn/wbl/";
+
+	protected static final String PREFIX_WRK = "/!svn/wrk/";
 
 	static boolean contains(final int statusCode, final int... expectedStatusCodes) {
 		for (final int expectedStatusCode : expectedStatusCodes) {
@@ -79,7 +81,7 @@ public class SubversionRepository {
 		return false;
 	}
 
-	private static HttpClient createClient(final URI host, final String username, final String password, @Nullable final String workstation) {
+	static HttpClient createClient(final URI host, final String username, final String password, @Nullable final String workstation) {
 		final DefaultHttpClient client = new DefaultHttpClient();
 
 		final Credentials credentials = creteCredentials(username, password, workstation);
@@ -92,7 +94,7 @@ public class SubversionRepository {
 		return new DecompressingHttpClient(client); // add gzip support
 	}
 
-	private static Scheme createTrustingAnySslCertScheme(final int port) {
+	static Scheme createTrustingAnySslCertScheme(final int port) {
 		try {
 			final SSLContext sc = SSLContext.getInstance("SSL");
 			sc.init(null, new TrustManager[] { DUMMY_MANAGER }, new SecureRandom());
@@ -105,7 +107,7 @@ public class SubversionRepository {
 		}
 	}
 
-	private static Credentials creteCredentials(final String user, final String password, @Nullable final String workstation) {
+	static Credentials creteCredentials(final String user, final String password, @Nullable final String workstation) {
 		final String username;
 		final String domain;
 		final int index = user.indexOf('\\');
@@ -119,7 +121,7 @@ public class SubversionRepository {
 		return new NTCredentials(username, password, workstation, domain);
 	}
 
-	private static int ensureResonse(final HttpResponse response, final boolean consume, final int... expectedStatusCodes) {
+	static int ensureResonse(final HttpResponse response, final boolean consume, final int... expectedStatusCodes) {
 		final int statusCode = response.getStatusLine().getStatusCode();
 		if (consume) {
 			EntityUtils.consumeQuietly(response.getEntity());
@@ -134,11 +136,11 @@ public class SubversionRepository {
 		return statusCode;
 	}
 
-	private static int ensureResonse(final HttpResponse response, final int... expectedStatusCodes) {
+	static int ensureResonse(final HttpResponse response, final int... expectedStatusCodes) {
 		return ensureResonse(response, true, expectedStatusCodes);
 	}
 
-	private static InputStream getContent(final HttpResponse response) {
+	static InputStream getContent(final HttpResponse response) {
 		try {
 			return response.getEntity().getContent();
 		} catch (final Exception e) {
@@ -146,7 +148,7 @@ public class SubversionRepository {
 		}
 	}
 
-	private static String sanatizeResource(final String resource) {
+	static String sanatizeResource(final String resource) {
 		final String trimmed = StringUtils.trimToNull(resource);
 		if (trimmed == null) {
 			return "/";
@@ -158,31 +160,21 @@ public class SubversionRepository {
 		return "/" + trimmed;
 	}
 
-	private final HttpClient client;
+	protected final HttpClient client;
 
 	/**
 	 * HttpContext is *NOT threadsafe, use getHttpContext() to retrieve it
 	 */
 	private final ThreadLocal<HttpContext> context = new ThreadLocal<HttpContext>();
 
-	private final URI repositoryRoot;
+	protected final URI repositoryRoot;
 
-	SubversionRepository(final HttpClient client, final URI repositoryRoot) {
+	protected SubversionRepository(final HttpClient client, final URI repositoryRoot) {
 		this.client = client;
 		this.repositoryRoot = repositoryRoot;
-
-		triggerAuthentication();
 	}
 
-	public SubversionRepository(final URI repositoryRoot, final String username, final String password) {
-		this(repositoryRoot, username, password, null);
-	}
-
-	public SubversionRepository(final URI repositoryRoot, final String username, final String password, @Nullable final String workstation) {
-		this(createClient(repositoryRoot, username, password, workstation), repositoryRoot);
-	}
-
-	private void closeQuiet(final InputStream in) {
+	void closeQuiet(final InputStream in) {
 		try {
 			in.close();
 		} catch (final IOException e) {
@@ -190,7 +182,7 @@ public class SubversionRepository {
 		}
 	}
 
-	private void contentUpload(final String sanatizedResource, final UUID uuid, final InputStream content) {
+	void contentUpload(final String sanatizedResource, final UUID uuid, final InputStream content) {
 		final URI uri = URI.create(repositoryRoot + PREFIX_WRK + uuid + sanatizedResource);
 
 		final HttpUriRequest request = SubversionRequestFactory.createUploadRequest(uri, content);
@@ -202,25 +194,10 @@ public class SubversionRepository {
 		if (content == null) {
 			throw new IllegalArgumentException("content can not be null");
 		}
-
-		final String sanatizedResource = sanatizeResource(resource);
-		final UUID uuid = UUID.randomUUID();
-
-		createTemporyStructure(uuid);
-		try {
-			final String infoResource = createMissingFolders(sanatizedResource, uuid);
-			final SubversionInfo info = info0(infoResource, false);
-			final long version = info.getVersion();
-			prepareCheckin(uuid);
-			setCommitMessage(uuid, version, message);
-			contentUpload(sanatizedResource, uuid, content);
-			merge(uuid);
-		} finally {
-			deleteTemporyStructure(uuid);
-		}
+		createWithProperties0(sanatizeResource(resource), message, content, (SubversionProperty[]) null);
 	}
 
-	private String createMissingFolders(final String sanatizedResource, final UUID uuid) {
+	String createMissingFolders(final String sanatizedResource, final UUID uuid) {
 		final String[] resourceParts = sanatizedResource.split("/");
 
 		String infoResource = "/";
@@ -242,7 +219,7 @@ public class SubversionRepository {
 		return infoResource;
 	}
 
-	private void createTemporyStructure(final UUID uuid) {
+	void createTemporyStructure(final UUID uuid) {
 		final URI uri = URI.create(repositoryRoot + PREFIX_ACT + uuid);
 
 		final HttpUriRequest request = SubversionRequestFactory.createActivityRequest(uri);
@@ -250,56 +227,33 @@ public class SubversionRepository {
 		ensureResonse(response, HttpStatus.SC_CREATED);
 	}
 
-	public void delete(final String resource, final String message) {
-		final String sanatizedResource = sanatizeResource(resource);
-		final UUID uuid = UUID.randomUUID();
-		final SubversionInfo info = info0(sanatizedResource, false);
-		final long version = info.getVersion();
-
-		createTemporyStructure(uuid);
-		try {
-			prepareCheckin(uuid);
-			setCommitMessage(uuid, version, message);
-			prepareContentUpload(sanatizedResource, uuid, version);
-			delete(sanatizedResource, uuid);
-			merge(uuid);
-		} finally {
-			deleteTemporyStructure(uuid);
+	public void createWithProperties(final String resource, final String message, final InputStream content, final SubversionProperty... properties) {
+		if ((content == null) && (properties == null)) {
+			throw new IllegalArgumentException("content and properties can not both be null");
 		}
+		createWithProperties0(sanatizeResource(resource), message, content, properties);
 	}
 
-	private void delete(final String sanatizedResource, final UUID uuid) {
+	abstract void createWithProperties0(final String sanatizedResource, final String message, final InputStream content, final SubversionProperty... properties);
+
+	public abstract void delete(final String resource, final String message);
+
+	void delete(final String sanatizedResource, final UUID uuid) {
 		final URI uri = URI.create(repositoryRoot + PREFIX_WRK + uuid + sanatizedResource);
+		delete(uri);
+	}
 
+	void delete(final URI uri) {
 		final HttpUriRequest request = new HttpDelete(uri);
 		final HttpResponse response = execute(request);
 		ensureResonse(response, HttpStatus.SC_NO_CONTENT);
 	}
 
-	public void deleteProperties(final String resource, final String message, final SubversionProperty... properties) {
-		final String sanatizedResource = sanatizeResource(resource);
-		final UUID uuid = UUID.randomUUID();
-		final SubversionInfo info = info0(sanatizedResource, false);
-		final long version = info.getVersion();
+	public abstract void deleteProperties(final String resource, final String message, final SubversionProperty... properties);
 
-		createTemporyStructure(uuid);
-		try {
-			prepareCheckin(uuid);
-			setCommitMessage(uuid, version, message);
-			prepareContentUpload(sanatizedResource, uuid, version);
-			propertiesRemove(sanatizedResource, uuid, properties);
-			merge(uuid);
-		} finally {
-			deleteTemporyStructure(uuid);
-		}
-	}
-
-	private void deleteTemporyStructure(final UUID uuid) {
+	void deleteTemporyStructure(final UUID uuid) {
 		final URI uri = URI.create(repositoryRoot + PREFIX_ACT + uuid);
-
-		final HttpUriRequest request = new HttpDelete(uri);
-		final HttpResponse response = execute(request);
-		ensureResonse(response, HttpStatus.SC_NO_CONTENT);
+		delete(uri);
 	}
 
 	public InputStream download(final String resource) {
@@ -322,7 +276,7 @@ public class SubversionRepository {
 		return getContent(response);
 	}
 
-	private HttpResponse execute(final HttpUriRequest request) {
+	HttpResponse execute(final HttpUriRequest request) {
 		try {
 			return client.execute(request, getHttpContext());
 		} catch (final Exception e) {
@@ -339,7 +293,7 @@ public class SubversionRepository {
 		return (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK);
 	}
 
-	private HttpContext getHttpContext() {
+	HttpContext getHttpContext() {
 		HttpContext httpContext = context.get();
 		if (httpContext == null) {
 			httpContext = new BasicHttpContext();
@@ -359,7 +313,7 @@ public class SubversionRepository {
 		return info0(sanatizeResource(resource), withCustomProperties);
 	}
 
-	private SubversionInfo info0(final String sanatizedResource, final boolean withCustomProperties) {
+	SubversionInfo info0(final String sanatizedResource, final boolean withCustomProperties) {
 		final URI uri = URI.create(repositoryRoot + sanatizedResource);
 
 		final HttpUriRequest request = SubversionRequestFactory.createInfoRequest(uri, 0);
@@ -432,68 +386,17 @@ public class SubversionRepository {
 		}
 	}
 
-	private void merge(final UUID uuid) {
-		final HttpUriRequest request = SubversionRequestFactory.createMergeRequest(repositoryRoot, uuid);
+	void merge(final String path) {
+		final HttpUriRequest request = SubversionRequestFactory.createMergeRequest(repositoryRoot, path);
 		final HttpResponse response = execute(request);
 		ensureResonse(response, HttpStatus.SC_OK);
-	}
-
-	private void prepareCheckin(final UUID uuid) {
-		final URI uri = URI.create(repositoryRoot + PREFIX_VCC + "default");
-
-		final HttpUriRequest request = SubversionRequestFactory.createCheckoutRequest(uri, uuid);
-		final HttpResponse response = execute(request);
-		ensureResonse(response, HttpStatus.SC_CREATED);
-	}
-
-	private void prepareContentUpload(final String sanatizedResource, final UUID uuid, final long version) {
-		final URI uri = URI.create(repositoryRoot + PREFIX_VER + version + sanatizedResource);
-
-		final HttpUriRequest request = SubversionRequestFactory.createCheckoutRequest(uri, uuid);
-		final HttpResponse response = execute(request);
-		ensureResonse(response, HttpStatus.SC_CREATED);
-	}
-
-	private void propertiesRemove(final String sanatizedResource, final UUID uuid, final SubversionProperty[] properties) {
-		final SubversionProperty[] filtered = SubversionProperty.filteroutSystemProperties(properties);
-		if (filtered.length == 0) {
-			return;
-		}
-
-		final URI uri = URI.create(repositoryRoot + PREFIX_WRK + uuid + sanatizedResource);
-
-		final HttpUriRequest request = SubversionRequestFactory.createRemovePropertiesRequest(uri, filtered);
-		final HttpResponse response = execute(request);
-		ensureResonse(response, HttpStatus.SC_MULTI_STATUS);
-	}
-
-	private void propertiesSet(final String sanatizedResource, final UUID uuid, final SubversionProperty... properties) {
-		final SubversionProperty[] filtered = SubversionProperty.filteroutSystemProperties(properties);
-		if (filtered.length == 0) {
-			return;
-		}
-
-		final URI uri = URI.create(repositoryRoot + PREFIX_WRK + uuid + sanatizedResource);
-
-		final HttpUriRequest request = SubversionRequestFactory.createSetPropertiesRequest(uri, filtered);
-		final HttpResponse response = execute(request);
-		ensureResonse(response, HttpStatus.SC_MULTI_STATUS);
-	}
-
-	private void setCommitMessage(final UUID uuid, final long version, final String message) {
-		final URI uri = URI.create(repositoryRoot + PREFIX_WBL + uuid + "/" + version);
-
-		final String trimmedMessage = StringUtils.trimToEmpty(message);
-		final HttpUriRequest request = SubversionRequestFactory.createCommitMessageRequest(uri, trimmedMessage);
-		final HttpResponse response = execute(request);
-		ensureResonse(response, HttpStatus.SC_MULTI_STATUS);
 	}
 
 	public void setProperties(final String resource, final String message, final SubversionProperty... properties) {
 		uploadWithProperties0(sanatizeResource(resource), message, null, properties);
 	}
 
-	private final void triggerAuthentication() {
+	final void triggerAuthentication() {
 		final HttpUriRequest request = SubversionRequestFactory.createAuthRequest(repositoryRoot);
 		final HttpResponse response = execute(request);
 		EntityUtils.consumeQuietly(response.getEntity());
@@ -521,24 +424,6 @@ public class SubversionRepository {
 		uploadWithProperties0(sanatizeResource(resource), message, content, properties);
 	}
 
-	private void uploadWithProperties0(final String sanatizedResource, final String message, @Nullable final InputStream content, @Nullable final SubversionProperty... properties) {
-		final UUID uuid = UUID.randomUUID();
-		final SubversionInfo info = info0(sanatizedResource, false);
-		final long version = info.getVersion();
+	abstract void uploadWithProperties0(final String sanatizedResource, final String message, @Nullable final InputStream content, @Nullable final SubversionProperty... properties);
 
-		createTemporyStructure(uuid);
-		try {
-			prepareCheckin(uuid);
-			setCommitMessage(uuid, version, message);
-			prepareContentUpload(sanatizedResource, uuid, version);
-			propertiesSet(sanatizedResource, uuid, properties);
-
-			if (content != null) {
-				contentUpload(sanatizedResource, uuid, content);
-			}
-			merge(uuid);
-		} finally {
-			deleteTemporyStructure(uuid);
-		}
-	}
 }
