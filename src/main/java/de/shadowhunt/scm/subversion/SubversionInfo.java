@@ -74,6 +74,15 @@ public class SubversionInfo {
 				return;
 			}
 
+			if ("version-controlled-configuration".equals(name)) {
+				final String config = getText();
+				final int index = config.indexOf('!');
+				if (index >= 1) {
+					current.setRoot(config.substring(0, index - 1));
+				}
+				return;
+			}
+
 			if ("version-name".equals(name)) {
 				final long version = Long.parseLong(getText());
 				current.setVersion(version);
@@ -143,6 +152,76 @@ public class SubversionInfo {
 
 	private static final SubversionProperty[] EMPTY = new SubversionProperty[0];
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = (prime * result) + Arrays.hashCode(customProperties);
+		result = (prime * result) + (direcotry ? 1231 : 1237);
+		result = (prime * result) + ((lockToken == null) ? 0 : lockToken.hashCode());
+		result = (prime * result) + ((md5 == null) ? 0 : md5.hashCode());
+		result = (prime * result) + ((repositoryUuid == null) ? 0 : repositoryUuid.hashCode());
+		result = (prime * result) + ((root == null) ? 0 : root.hashCode());
+		result = (prime * result) + (int) (version ^ (version >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof SubversionInfo)) {
+			return false;
+		}
+		final SubversionInfo other = (SubversionInfo) obj;
+		if (!Arrays.equals(customProperties, other.customProperties)) {
+			return false;
+		}
+		if (direcotry != other.direcotry) {
+			return false;
+		}
+		if (lockToken == null) {
+			if (other.lockToken != null) {
+				return false;
+			}
+		} else if (!lockToken.equals(other.lockToken)) {
+			return false;
+		}
+		if (md5 == null) {
+			if (other.md5 != null) {
+				return false;
+			}
+		} else if (!md5.equals(other.md5)) {
+			return false;
+		}
+		if (repositoryUuid == null) {
+			if (other.repositoryUuid != null) {
+				return false;
+			}
+		} else if (!repositoryUuid.equals(other.repositoryUuid)) {
+			return false;
+		}
+		if (root == null) {
+			if (other.root != null) {
+				return false;
+			}
+		} else if (!root.equals(other.root)) {
+			return false;
+		}
+		if (version != other.version) {
+			return false;
+		}
+		return true;
+	}
+
+	public static SubversionProperty[] getEmpty() {
+		return EMPTY;
+	}
+
 	public static SubversionInfo read(final InputStream in, final boolean withCustomProperties) {
 		final List<SubversionInfo> infos = readList(in, withCustomProperties);
 		if (infos.isEmpty()) {
@@ -177,6 +256,8 @@ public class SubversionInfo {
 
 	private String repositoryUuid;
 
+	private String root;
+
 	private long version;
 
 	SubversionInfo() {
@@ -197,6 +278,10 @@ public class SubversionInfo {
 
 	public String getRepositoryUuid() {
 		return repositoryUuid;
+	}
+
+	public String getRoot() {
+		return root;
 	}
 
 	public long getVersion() {
@@ -243,6 +328,10 @@ public class SubversionInfo {
 		this.repositoryUuid = repositoryUuid;
 	}
 
+	public void setRoot(final String root) {
+		this.root = root;
+	}
+
 	public void setVersion(final long version) {
 		this.version = version;
 	}
@@ -260,6 +349,8 @@ public class SubversionInfo {
 		builder.append(md5);
 		builder.append(", repositoryUuid=");
 		builder.append(repositoryUuid);
+		builder.append(", root=");
+		builder.append(root);
 		builder.append(", version=");
 		builder.append(version);
 		builder.append("]");
