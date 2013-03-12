@@ -37,7 +37,7 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
-public abstract class SubversionRepository<T extends SubversionRequestFactory> {
+public abstract class SubversionRepository<T extends AbstractSubversionRequestFactory> {
 
 	protected static final TrustManager DUMMY_MANAGER = new X509TrustManager() {
 

@@ -7,7 +7,7 @@ import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
 
-public abstract class SubversionRequestFactory {
+public abstract class AbstractSubversionRequestFactory {
 
 	public static final class DavTemplateRequest extends HttpEntityEnclosingRequestBase {
 

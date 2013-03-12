@@ -13,9 +13,9 @@ import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
 
 import de.shadowhunt.scm.subversion.SubversionProperty;
-import de.shadowhunt.scm.subversion.SubversionRequestFactory;
+import de.shadowhunt.scm.subversion.AbstractSubversionRequestFactory;
 
-class SubversionRequestFactory1_6 extends SubversionRequestFactory {
+class SubversionRequestFactory extends AbstractSubversionRequestFactory {
 
 	@Override
 	public HttpUriRequest createActivityRequest(final URI uri) {

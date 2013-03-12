@@ -15,10 +15,12 @@ import org.apache.http.client.methods.HttpUriRequest;
 import de.shadowhunt.scm.subversion.SubversionProperty;
 import de.shadowhunt.scm.subversion.SubversionRepository;
 
-public class SubversionRepository1_7 extends SubversionRepository<SubversionRequestFactory1_7> {
+public class SubversionRepository1_7 extends SubversionRepository<SubversionRequestFactory> {
+
+	private static final String PREFIX_TXR = "/!svn/txr";
 
 	public SubversionRepository1_7(final HttpClient client, final URI repositoryRoot) {
-		super(client, repositoryRoot, new SubversionRequestFactory1_7());
+		super(client, repositoryRoot, new SubversionRequestFactory());
 
 		triggerAuthentication();
 	}
@@ -29,28 +31,31 @@ public class SubversionRepository1_7 extends SubversionRepository<SubversionRequ
 
 	@Override
 	protected void createWithProperties0(final String sanatizedResource, final String message, final InputStream content, final SubversionProperty... properties) {
-		final UUID uuid = UUID.randomUUID();
-
-		createTemporyStructure(uuid);
-		try {
-			//			prepareCheckin();
-			createMissingFolders(sanatizedResource, uuid);
-			setCommitMessage(uuid, message);
-			contentUpload(sanatizedResource, uuid, content);
-			propertiesSet(sanatizedResource, uuid, properties);
-			merge(repository.getPath() + PREFIX_TXN + uuid);
-		} finally {
-			deleteTemporyStructure(uuid);
-		}
+		final String uuid = prepareCheckin();
+		//				createMissingFolders(sanatizedResource, uuid);
+		setCommitMessage(uuid, message);
+		contentUpload(sanatizedResource, uuid, content);
+		//		propertiesSet(sanatizedResource, uuid, properties);
+		merge(repository.getPath() + PREFIX_TXN + uuid);
 	}
 
-	//	protected void prepareCheckin() {
-	//		final URI uri = URI.create(repository + "/!svn/me");
-	//
-	//		final HttpUriRequest request = requestFactory.createPostRequest(uri, "( create-txn )");
-	//		final HttpResponse response = execute(request);
-	//		ensureResonse(response, HttpStatus.SC_CREATED);
-	//	}
+	protected String prepareCheckin() {
+		final URI uri = URI.create(repository + "/!svn/me");
+
+		final HttpUriRequest request = requestFactory.createPostRequest(uri, "( create-txn )");
+		final HttpResponse response = execute(request);
+		ensureResonse(response, HttpStatus.SC_CREATED);
+
+		return response.getFirstHeader("SVN-Txn-Name").getValue();
+	}
+
+	protected void contentUpload(final String sanatizedResource, final String uuid, final InputStream content) {
+		final URI uri = URI.create(repository + PREFIX_TXR + "/" + uuid + sanatizedResource);
+
+		final HttpUriRequest request = requestFactory.createUploadRequest(uri, content);
+		final HttpResponse response = execute(request);
+		ensureResonse(response, HttpStatus.SC_CREATED, HttpStatus.SC_NO_CONTENT);
+	}
 
 	protected void propertiesSet(final String sanatizedResource, final UUID uuid, final SubversionProperty... properties) {
 		final SubversionProperty[] filtered = SubversionProperty.filteroutSystemProperties(properties);
@@ -65,8 +70,8 @@ public class SubversionRepository1_7 extends SubversionRepository<SubversionRequ
 		ensureResonse(response, HttpStatus.SC_MULTI_STATUS);
 	}
 
-	protected void setCommitMessage(final UUID uuid, final String message) {
-		final URI uri = URI.create(repository + PREFIX_WRK + uuid);
+	protected void setCommitMessage(final String uuid, final String message) {
+		final URI uri = URI.create(repository + PREFIX_TXN + "/" + uuid);
 
 		final String trimmedMessage = StringUtils.trimToEmpty(message);
 		final HttpUriRequest request = requestFactory.createCommitMessageRequest(uri, trimmedMessage);

@@ -16,10 +16,10 @@ import de.shadowhunt.scm.subversion.SubversionInfo;
 import de.shadowhunt.scm.subversion.SubversionProperty;
 import de.shadowhunt.scm.subversion.SubversionRepository;
 
-public class SubversionRepository1_6 extends SubversionRepository<SubversionRequestFactory1_6> {
+public class SubversionRepository1_6 extends SubversionRepository<SubversionRequestFactory> {
 
 	public SubversionRepository1_6(final HttpClient client, final URI repository) {
-		super(client, repository, new SubversionRequestFactory1_6());
+		super(client, repository, new SubversionRequestFactory());
 
 		triggerAuthentication();
 	}
