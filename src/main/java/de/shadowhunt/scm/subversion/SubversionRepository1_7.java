@@ -35,14 +35,14 @@ class SubversionRepository1_7 extends SubversionRepository {
 			setCommitMessage(uuid, message);
 			contentUpload(sanatizedResource, uuid, content);
 			propertiesSet(sanatizedResource, uuid, properties);
-			merge(repositoryRoot.getPath() + PREFIX_TXN + uuid);
+			merge(repository.getPath() + PREFIX_TXN + uuid);
 		} finally {
 			deleteTemporyStructure(uuid);
 		}
 	}
 
 	void prepareCheckin() {
-		final URI uri = URI.create(repositoryRoot + "/!svn/me");
+		final URI uri = URI.create(repository + "/!svn/me");
 
 		final HttpUriRequest request = SubversionRequestFactory.createPostRequest(uri, "( create-txn )");
 		final HttpResponse response = execute(request);
@@ -55,7 +55,7 @@ class SubversionRepository1_7 extends SubversionRepository {
 			return;
 		}
 
-		final URI uri = URI.create(repositoryRoot + PREFIX_TXN + uuid + sanatizedResource);
+		final URI uri = URI.create(repository + PREFIX_TXN + uuid + sanatizedResource);
 
 		final HttpUriRequest request = SubversionRequestFactory.createSetPropertiesRequest(uri, filtered);
 		final HttpResponse response = execute(request);
@@ -63,7 +63,7 @@ class SubversionRepository1_7 extends SubversionRepository {
 	}
 
 	private void setCommitMessage(final UUID uuid, final String message) {
-		final URI uri = URI.create(repositoryRoot + PREFIX_WRK + uuid);
+		final URI uri = URI.create(repository + PREFIX_WRK + uuid);
 
 		final String trimmedMessage = StringUtils.trimToEmpty(message);
 		final HttpUriRequest request = SubversionRequestFactory.createCommitMessageRequest(uri, trimmedMessage);
