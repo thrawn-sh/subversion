@@ -9,10 +9,6 @@ import de.shadowhunt.scm.subversion.v1_7.SubversionRepository1_7;
 
 public final class SubversionFactory {
 
-	private SubversionFactory() {
-		// prevent instantiation
-	}
-
 	public static final SubversionRepository<?> getInstance(final URI root, final String user, final String password, @Nullable final String workstation, final ServerVersion version) {
 		if (version != null) {
 			switch (version) {
@@ -23,5 +19,9 @@ public final class SubversionFactory {
 			}
 		}
 		throw new SubversionException("unsupported subversion version: " + version);
+	}
+
+	private SubversionFactory() {
+		// prevent instantiation
 	}
 }

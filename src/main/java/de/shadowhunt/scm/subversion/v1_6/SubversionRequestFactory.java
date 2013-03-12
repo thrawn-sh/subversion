@@ -12,8 +12,8 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
 
-import de.shadowhunt.scm.subversion.SubversionProperty;
 import de.shadowhunt.scm.subversion.AbstractSubversionRequestFactory;
+import de.shadowhunt.scm.subversion.SubversionProperty;
 
 class SubversionRequestFactory extends AbstractSubversionRequestFactory {
 

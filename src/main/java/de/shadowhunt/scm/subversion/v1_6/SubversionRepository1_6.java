@@ -18,6 +18,12 @@ import de.shadowhunt.scm.subversion.SubversionRepository;
 
 public class SubversionRepository1_6 extends SubversionRepository<SubversionRequestFactory> {
 
+	protected static final String PREFIX_VCC = "/!svn/vcc/";
+
+	protected static final String PREFIX_VER = "/!svn/ver/";
+
+	protected static final String PREFIX_WBL = "/!svn/wbl/";
+
 	public SubversionRepository1_6(final HttpClient client, final URI repository) {
 		super(client, repository, new SubversionRequestFactory());
 

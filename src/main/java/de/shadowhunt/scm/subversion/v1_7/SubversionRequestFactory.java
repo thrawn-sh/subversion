@@ -131,6 +131,12 @@ class SubversionRequestFactory extends AbstractSubversionRequestFactory {
 		return request;
 	}
 
+	public HttpUriRequest createPostRequest(final URI uri, final String content) {
+		final HttpPost request = new HttpPost(uri);
+		request.setEntity(new StringEntity(content, CONTENT_TYPE_SVNSKEL));
+		return request;
+	}
+
 	@Override
 	public HttpUriRequest createRemovePropertiesRequest(final URI uri, final SubversionProperty... properties) {
 		final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH");
@@ -188,12 +194,6 @@ class SubversionRequestFactory extends AbstractSubversionRequestFactory {
 	public HttpUriRequest createUploadRequest(final URI uri, final InputStream content) {
 		final HttpPut request = new HttpPut(uri);
 		request.setEntity(new InputStreamEntity(content, -1));
-		return request;
-	}
-
-	public HttpUriRequest createPostRequest(final URI uri, final String content) {
-		final HttpPost request = new HttpPost(uri);
-		request.setEntity(new StringEntity(content, CONTENT_TYPE_SVNSKEL));
 		return request;
 	}
 }

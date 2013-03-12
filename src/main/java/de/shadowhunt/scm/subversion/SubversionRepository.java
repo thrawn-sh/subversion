@@ -58,19 +58,9 @@ public abstract class SubversionRepository<T extends AbstractSubversionRequestFa
 
 	};
 
-	protected final T requestFactory;
-
 	protected static final String PREFIX_ACT = "/!svn/act/";
 
 	protected static final String PREFIX_BC = "/!svn/bc/";
-
-	protected static final String PREFIX_TXN = "/!svn/txn/";
-
-	protected static final String PREFIX_VCC = "/!svn/vcc/";
-
-	protected static final String PREFIX_VER = "/!svn/ver/";
-
-	protected static final String PREFIX_WBL = "/!svn/wbl/";
 
 	protected static final String PREFIX_WRK = "/!svn/wrk/";
 
@@ -170,6 +160,8 @@ public abstract class SubversionRepository<T extends AbstractSubversionRequestFa
 	private final ThreadLocal<HttpContext> context = new ThreadLocal<HttpContext>();
 
 	protected final URI repository;
+
+	protected final T requestFactory;
 
 	protected SubversionRepository(final HttpClient client, final URI repository, final T requestFactory) {
 		this.client = client;

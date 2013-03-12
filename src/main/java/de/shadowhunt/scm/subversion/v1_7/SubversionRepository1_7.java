@@ -17,7 +17,9 @@ import de.shadowhunt.scm.subversion.SubversionRepository;
 
 public class SubversionRepository1_7 extends SubversionRepository<SubversionRequestFactory> {
 
-	private static final String PREFIX_TXR = "/!svn/txr";
+	protected static final String PREFIX_TXN = "/!svn/txn/";
+
+	protected static final String PREFIX_TXR = "/!svn/txr/";
 
 	public SubversionRepository1_7(final HttpClient client, final URI repositoryRoot) {
 		super(client, repositoryRoot, new SubversionRequestFactory());
@@ -27,6 +29,14 @@ public class SubversionRepository1_7 extends SubversionRepository<SubversionRequ
 
 	public SubversionRepository1_7(final URI repositoryRoot, final String username, final String password, @Nullable final String workstation) {
 		this(createClient(repositoryRoot, username, password, workstation), repositoryRoot);
+	}
+
+	protected void contentUpload(final String sanatizedResource, final String uuid, final InputStream content) {
+		final URI uri = URI.create(repository + PREFIX_TXR + uuid + sanatizedResource);
+
+		final HttpUriRequest request = requestFactory.createUploadRequest(uri, content);
+		final HttpResponse response = execute(request);
+		ensureResonse(response, HttpStatus.SC_CREATED, HttpStatus.SC_NO_CONTENT);
 	}
 
 	@Override
@@ -39,6 +49,18 @@ public class SubversionRepository1_7 extends SubversionRepository<SubversionRequ
 		merge(repository.getPath() + PREFIX_TXN + uuid);
 	}
 
+	@Override
+	public void delete(final String resource, final String message) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void deleteProperties(final String resource, final String message, final SubversionProperty... properties) {
+		// TODO Auto-generated method stub
+
+	}
+
 	protected String prepareCheckin() {
 		final URI uri = URI.create(repository + "/!svn/me");
 
@@ -47,14 +69,6 @@ public class SubversionRepository1_7 extends SubversionRepository<SubversionRequ
 		ensureResonse(response, HttpStatus.SC_CREATED);
 
 		return response.getFirstHeader("SVN-Txn-Name").getValue();
-	}
-
-	protected void contentUpload(final String sanatizedResource, final String uuid, final InputStream content) {
-		final URI uri = URI.create(repository + PREFIX_TXR + "/" + uuid + sanatizedResource);
-
-		final HttpUriRequest request = requestFactory.createUploadRequest(uri, content);
-		final HttpResponse response = execute(request);
-		ensureResonse(response, HttpStatus.SC_CREATED, HttpStatus.SC_NO_CONTENT);
 	}
 
 	protected void propertiesSet(final String sanatizedResource, final UUID uuid, final SubversionProperty... properties) {
@@ -71,24 +85,12 @@ public class SubversionRepository1_7 extends SubversionRepository<SubversionRequ
 	}
 
 	protected void setCommitMessage(final String uuid, final String message) {
-		final URI uri = URI.create(repository + PREFIX_TXN + "/" + uuid);
+		final URI uri = URI.create(repository + PREFIX_TXN + uuid);
 
 		final String trimmedMessage = StringUtils.trimToEmpty(message);
 		final HttpUriRequest request = requestFactory.createCommitMessageRequest(uri, trimmedMessage);
 		final HttpResponse response = execute(request);
 		ensureResonse(response, HttpStatus.SC_MULTI_STATUS);
-	}
-
-	@Override
-	public void delete(final String resource, final String message) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void deleteProperties(final String resource, final String message, final SubversionProperty... properties) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

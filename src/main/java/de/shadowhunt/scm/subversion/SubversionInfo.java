@@ -152,18 +152,50 @@ public class SubversionInfo {
 
 	private static final SubversionProperty[] EMPTY = new SubversionProperty[0];
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = (prime * result) + Arrays.hashCode(customProperties);
-		result = (prime * result) + (direcotry ? 1231 : 1237);
-		result = (prime * result) + ((lockToken == null) ? 0 : lockToken.hashCode());
-		result = (prime * result) + ((md5 == null) ? 0 : md5.hashCode());
-		result = (prime * result) + ((repositoryUuid == null) ? 0 : repositoryUuid.hashCode());
-		result = (prime * result) + ((root == null) ? 0 : root.hashCode());
-		result = (prime * result) + (int) (version ^ (version >>> 32));
-		return result;
+	public static SubversionProperty[] getEmpty() {
+		return EMPTY;
+	}
+
+	public static SubversionInfo read(final InputStream in, final boolean withCustomProperties) {
+		final List<SubversionInfo> infos = readList(in, withCustomProperties);
+		if (infos.isEmpty()) {
+			throw new SubversionException("could not find any SubversionInfo in input");
+		}
+		return infos.get(0);
+	}
+
+	public static List<SubversionInfo> readList(final InputStream in, final boolean withCustomProperties) {
+		final SAXParserFactory factory = SAXParserFactory.newInstance();
+		factory.setNamespaceAware(false);
+		factory.setValidating(false);
+
+		try {
+			final SAXParser saxParser = factory.newSAXParser();
+			final SubversionInfoHandler handler = new SubversionInfoHandler(withCustomProperties);
+
+			saxParser.parse(in, handler);
+			return handler.getInfos();
+		} catch (final Exception e) {
+			throw new SubversionException("could not parse input", e);
+		}
+	}
+
+	private SubversionProperty[] customProperties = EMPTY;
+
+	private boolean direcotry;
+
+	private String lockToken;
+
+	private String md5;
+
+	private String repositoryUuid;
+
+	private String root;
+
+	private long version;
+
+	SubversionInfo() {
+		// prevent direct instantiation
 	}
 
 	@Override
@@ -218,52 +250,6 @@ public class SubversionInfo {
 		return true;
 	}
 
-	public static SubversionProperty[] getEmpty() {
-		return EMPTY;
-	}
-
-	public static SubversionInfo read(final InputStream in, final boolean withCustomProperties) {
-		final List<SubversionInfo> infos = readList(in, withCustomProperties);
-		if (infos.isEmpty()) {
-			throw new SubversionException("could not find any SubversionInfo in input");
-		}
-		return infos.get(0);
-	}
-
-	public static List<SubversionInfo> readList(final InputStream in, final boolean withCustomProperties) {
-		final SAXParserFactory factory = SAXParserFactory.newInstance();
-		factory.setNamespaceAware(false);
-		factory.setValidating(false);
-
-		try {
-			final SAXParser saxParser = factory.newSAXParser();
-			final SubversionInfoHandler handler = new SubversionInfoHandler(withCustomProperties);
-
-			saxParser.parse(in, handler);
-			return handler.getInfos();
-		} catch (final Exception e) {
-			throw new SubversionException("could not parse input", e);
-		}
-	}
-
-	private SubversionProperty[] customProperties = EMPTY;
-
-	private boolean direcotry;
-
-	private String lockToken;
-
-	private String md5;
-
-	private String repositoryUuid;
-
-	private String root;
-
-	private long version;
-
-	SubversionInfo() {
-		// prevent direct instantiation
-	}
-
 	public SubversionProperty[] getCustomProperties() {
 		return Arrays.copyOf(customProperties, customProperties.length);
 	}
@@ -286,6 +272,20 @@ public class SubversionInfo {
 
 	public long getVersion() {
 		return version;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = (prime * result) + Arrays.hashCode(customProperties);
+		result = (prime * result) + (direcotry ? 1231 : 1237);
+		result = (prime * result) + ((lockToken == null) ? 0 : lockToken.hashCode());
+		result = (prime * result) + ((md5 == null) ? 0 : md5.hashCode());
+		result = (prime * result) + ((repositoryUuid == null) ? 0 : repositoryUuid.hashCode());
+		result = (prime * result) + ((root == null) ? 0 : root.hashCode());
+		result = (prime * result) + (int) (version ^ (version >>> 32));
+		return result;
 	}
 
 	public boolean isDirecotry() {
