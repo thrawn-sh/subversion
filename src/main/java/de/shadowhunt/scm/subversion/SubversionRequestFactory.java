@@ -3,21 +3,13 @@ package de.shadowhunt.scm.subversion;
 import java.io.InputStream;
 import java.net.URI;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpHead;
-import org.apache.http.client.methods.HttpOptions;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.entity.StringEntity;
 
-final class SubversionRequestFactory {
+public abstract class SubversionRequestFactory {
 
-	static final class DavTemplateRequest extends HttpEntityEnclosingRequestBase {
+	public static final class DavTemplateRequest extends HttpEntityEnclosingRequestBase {
 
 		private static final int DEFAULT_DEPTH = 0;
 
@@ -25,11 +17,11 @@ final class SubversionRequestFactory {
 
 		private final String method;
 
-		DavTemplateRequest(final String method) {
+		public DavTemplateRequest(final String method) {
 			this(method, DEFAULT_DEPTH);
 		}
 
-		DavTemplateRequest(final String method, final int depth) {
+		public DavTemplateRequest(final String method, final int depth) {
 			super();
 			this.method = method;
 			setDepth(depth);
@@ -56,174 +48,37 @@ final class SubversionRequestFactory {
 		}
 	}
 
-	private static final ContentType CONTENT_TYPE_XML = ContentType.create("text/xml", "UTF-8");
+	protected static final ContentType CONTENT_TYPE_XML = ContentType.create("text/xml", "UTF-8");
 
-	private static final ContentType CONTENT_TYPE_SVNSKEL = ContentType.create("application/vnd.svn-skel", (String) null);
+	protected static final String XML_PREAMBLE = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
 
-	private static final String XML_PREAMBLE = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
+	public abstract HttpUriRequest createActivityRequest(final URI uri);
 
-	public static HttpUriRequest createActivityRequest(final URI uri) {
-		final DavTemplateRequest request = new DavTemplateRequest("MKACTIVITY");
-		request.setURI(uri);
-		return request;
-	}
+	public abstract HttpUriRequest createAuthRequest(final URI uri);
 
-	public static HttpUriRequest createAuthRequest(final URI uri) {
-		return new HttpOptions(uri);
-	}
+	public abstract HttpUriRequest createCheckoutRequest(final URI uri, final String path);
 
-	public static HttpUriRequest createCheckoutRequest(final URI uri, final String path) {
-		final DavTemplateRequest request = new DavTemplateRequest("CHECKOUT");
-		request.setURI(uri);
+	public abstract HttpUriRequest createCommitMessageRequest(final URI uri, final String message);
 
-		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
-		body.append("<checkout xmlns=\"DAV:\"><activity-set><href>");
-		body.append(StringEscapeUtils.escapeXml(path));
-		body.append("</href></activity-set><apply-to-version/></checkout>");
+	public abstract HttpUriRequest createDownloadRequest(final URI uri);
 
-		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
-		return request;
-	}
+	public abstract HttpUriRequest createExistsRequest(final URI uri);
 
-	public static HttpUriRequest createCommitMessageRequest(final URI uri, final String message) {
-		final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH");
-		request.setURI(uri);
+	public abstract HttpUriRequest createInfoRequest(final URI uri, final int depth);
 
-		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
-		body.append("<propertyupdate xmlns=\"DAV:\" xmlns:S=\"http://subversion.tigris.org/xmlns/svn/\"><set><prop><S:log>");
-		body.append(StringEscapeUtils.escapeXml(message));
-		body.append("</S:log></prop></set></propertyupdate>");
+	public abstract HttpUriRequest createLockRequest(final URI uri);
 
-		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
-		return request;
-	}
+	public abstract HttpUriRequest createLogRequest(final URI uri, final long start, final long end);
 
-	public static HttpUriRequest createDownloadRequest(final URI uri) {
-		return new HttpGet(uri);
-	}
+	public abstract HttpUriRequest createMakeFolderRequest(final URI uri);
 
-	public static HttpUriRequest createExistsRequest(final URI uri) {
-		return new HttpHead(uri);
-	}
+	public abstract HttpUriRequest createMergeRequest(final URI uri, final String path);
 
-	public static HttpUriRequest createInfoRequest(final URI uri, final int depth) {
-		final DavTemplateRequest request = new DavTemplateRequest("PROPFIND", depth);
-		request.setURI(uri);
+	public abstract HttpUriRequest createRemovePropertiesRequest(final URI uri, final SubversionProperty... properties);
 
-		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
-		body.append("<propfind xmlns=\"DAV:\"><allprop/></propfind>");
+	public abstract HttpUriRequest createSetPropertiesRequest(final URI uri, final SubversionProperty... properties);
 
-		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
-		return request;
-	}
+	public abstract HttpUriRequest createUnlockRequest(final URI uri, final String token);
 
-	public static HttpUriRequest createLockRequest(final URI uri) {
-		final DavTemplateRequest request = new DavTemplateRequest("LOCK");
-		request.setURI(uri);
-
-		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
-		body.append("<lockinfo xmlns=\"DAV:\"><lockscope><exclusive/></lockscope><locktype><write/></locktype></lockinfo>");
-
-		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
-		return request;
-	}
-
-	public static HttpUriRequest createLogRequest(final URI uri, final long start, final long end) {
-		final DavTemplateRequest request = new DavTemplateRequest("REPORT");
-		request.setURI(uri);
-
-		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
-		body.append("<log-report xmlns=\"svn:\"><start-revision>");
-		body.append(start);
-		body.append("</start-revision><end-revision>");
-		body.append(end);
-		body.append("</end-revision><encode-binary-props/><revprop>svn:author</revprop><revprop>svn:date</revprop><revprop>svn:log</revprop><path/></log-report>");
-
-		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
-		return request;
-	}
-
-	public static HttpUriRequest createMakeFolderRequest(final URI uri) {
-		final DavTemplateRequest request = new DavTemplateRequest("MKCOL");
-		request.setURI(uri);
-		return request;
-	}
-
-	public static HttpUriRequest createMergeRequest(final URI uri, final String path) {
-		final DavTemplateRequest request = new DavTemplateRequest("MERGE");
-		request.setURI(uri);
-
-		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
-		body.append("<merge xmlns=\"DAV:\"><source><href>");
-		body.append(StringEscapeUtils.escapeXml(path));
-		body.append("</href></source><no-auto-merge/><no-checkout/><prop><checked-in/><version-name/><resourcetype/><creationdate/><creator-displayname/></prop></merge>");
-		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
-		return request;
-	}
-
-	public static HttpUriRequest createPostRequest(final URI uri, final String content) {
-		final HttpPost request = new HttpPost(uri);
-		request.setEntity(new StringEntity(content, CONTENT_TYPE_SVNSKEL));
-		return request;
-	}
-
-	public static HttpUriRequest createRemovePropertiesRequest(final URI uri, final SubversionProperty... properties) {
-		final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH");
-		request.setURI(uri);
-		final StringBuilder sb = new StringBuilder(XML_PREAMBLE);
-		sb.append("<propertyupdate xmlns=\"DAV:\" xmlns:C=\"http://subversion.tigris.org/xmlns/custom/\" xmlns:S=\"http://subversion.tigris.org/xmlns/svn/\" xmlns:V=\"http://subversion.tigris.org/xmlns/dav/\"><remove>");
-		for (final SubversionProperty property : properties) {
-			sb.append("<prop>");
-			sb.append('<');
-			sb.append(property.getType().getPrefix());
-			sb.append(property.getName());
-			sb.append("/>");
-			sb.append("</prop>");
-		}
-		sb.append("</remove></propertyupdate>");
-		request.setEntity(new StringEntity(sb.toString(), CONTENT_TYPE_XML));
-		return request;
-	}
-
-	public static HttpUriRequest createSetPropertiesRequest(final URI uri, final SubversionProperty... properties) {
-		final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH");
-		request.setURI(uri);
-		final StringBuilder sb = new StringBuilder(XML_PREAMBLE);
-		sb.append("<propertyupdate xmlns=\"DAV:\" xmlns:C=\"http://subversion.tigris.org/xmlns/custom/\" xmlns:S=\"http://subversion.tigris.org/xmlns/svn/\" xmlns:V=\"http://subversion.tigris.org/xmlns/dav/\"><set>");
-		for (final SubversionProperty property : properties) {
-			final String prefix = property.getType().getPrefix();
-			final String name = property.getName();
-			sb.append("<prop>");
-			sb.append('<');
-			sb.append(prefix);
-			sb.append(name);
-			sb.append('>');
-			sb.append(StringEscapeUtils.escapeXml(property.getValue()));
-			sb.append("</");
-			sb.append(prefix);
-			sb.append(name);
-			sb.append('>');
-			sb.append("</prop>");
-		}
-		sb.append("</set></propertyupdate>");
-		request.setEntity(new StringEntity(sb.toString(), CONTENT_TYPE_XML));
-		return request;
-	}
-
-	public static HttpUriRequest createUnlockRequest(final URI uri, final String token) {
-		final DavTemplateRequest request = new DavTemplateRequest("UNLOCK");
-		request.setURI(uri);
-		request.addHeader("Lock-Token", token);
-		return request;
-	}
-
-	public static HttpUriRequest createUploadRequest(final URI uri, final InputStream content) {
-		final HttpPut request = new HttpPut(uri);
-		request.setEntity(new InputStreamEntity(content, -1));
-		return request;
-	}
-
-	private SubversionRequestFactory() {
-		// prevent instantiation
-	}
+	public abstract HttpUriRequest createUploadRequest(final URI uri, final InputStream content);
 }

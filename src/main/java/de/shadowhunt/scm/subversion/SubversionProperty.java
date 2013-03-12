@@ -16,7 +16,7 @@ public class SubversionProperty {
 			this.prefix = prefix;
 		}
 
-		String getPrefix() {
+		public String getPrefix() {
 			return prefix;
 		}
 	}
@@ -25,7 +25,7 @@ public class SubversionProperty {
 		return new SubversionProperty(Type.CUSTOM, name, value);
 	}
 
-	static SubversionProperty[] filteroutSystemProperties(final SubversionProperty... properties) {
+	public static SubversionProperty[] filteroutSystemProperties(final SubversionProperty... properties) {
 		if (properties == null) {
 			return new SubversionProperty[0];
 		}

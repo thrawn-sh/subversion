@@ -1,4 +1,4 @@
-package de.shadowhunt.scm.subversion;
+package de.shadowhunt.scm.subversion.v1_7;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -12,25 +12,28 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 
-class SubversionRepository1_7 extends SubversionRepository {
+import de.shadowhunt.scm.subversion.SubversionProperty;
+import de.shadowhunt.scm.subversion.SubversionRepository;
 
-	SubversionRepository1_7(final HttpClient client, final URI repositoryRoot) {
-		super(client, repositoryRoot);
+public class SubversionRepository1_7 extends SubversionRepository<SubversionRequestFactory1_7> {
+
+	public SubversionRepository1_7(final HttpClient client, final URI repositoryRoot) {
+		super(client, repositoryRoot, new SubversionRequestFactory1_7());
 
 		triggerAuthentication();
 	}
 
-	SubversionRepository1_7(final URI repositoryRoot, final String username, final String password, @Nullable final String workstation) {
+	public SubversionRepository1_7(final URI repositoryRoot, final String username, final String password, @Nullable final String workstation) {
 		this(createClient(repositoryRoot, username, password, workstation), repositoryRoot);
 	}
 
 	@Override
-	void createWithProperties0(final String sanatizedResource, final String message, final InputStream content, final SubversionProperty... properties) {
+	protected void createWithProperties0(final String sanatizedResource, final String message, final InputStream content, final SubversionProperty... properties) {
 		final UUID uuid = UUID.randomUUID();
 
 		createTemporyStructure(uuid);
 		try {
-			prepareCheckin();
+			//			prepareCheckin();
 			createMissingFolders(sanatizedResource, uuid);
 			setCommitMessage(uuid, message);
 			contentUpload(sanatizedResource, uuid, content);
@@ -41,15 +44,15 @@ class SubversionRepository1_7 extends SubversionRepository {
 		}
 	}
 
-	void prepareCheckin() {
-		final URI uri = URI.create(repository + "/!svn/me");
+	//	protected void prepareCheckin() {
+	//		final URI uri = URI.create(repository + "/!svn/me");
+	//
+	//		final HttpUriRequest request = requestFactory.createPostRequest(uri, "( create-txn )");
+	//		final HttpResponse response = execute(request);
+	//		ensureResonse(response, HttpStatus.SC_CREATED);
+	//	}
 
-		final HttpUriRequest request = SubversionRequestFactory.createPostRequest(uri, "( create-txn )");
-		final HttpResponse response = execute(request);
-		ensureResonse(response, HttpStatus.SC_CREATED);
-	}
-
-	void propertiesSet(final String sanatizedResource, final UUID uuid, final SubversionProperty... properties) {
+	protected void propertiesSet(final String sanatizedResource, final UUID uuid, final SubversionProperty... properties) {
 		final SubversionProperty[] filtered = SubversionProperty.filteroutSystemProperties(properties);
 		if (filtered.length == 0) {
 			return;
@@ -57,16 +60,16 @@ class SubversionRepository1_7 extends SubversionRepository {
 
 		final URI uri = URI.create(repository + PREFIX_TXN + uuid + sanatizedResource);
 
-		final HttpUriRequest request = SubversionRequestFactory.createSetPropertiesRequest(uri, filtered);
+		final HttpUriRequest request = requestFactory.createSetPropertiesRequest(uri, filtered);
 		final HttpResponse response = execute(request);
 		ensureResonse(response, HttpStatus.SC_MULTI_STATUS);
 	}
 
-	private void setCommitMessage(final UUID uuid, final String message) {
+	protected void setCommitMessage(final UUID uuid, final String message) {
 		final URI uri = URI.create(repository + PREFIX_WRK + uuid);
 
 		final String trimmedMessage = StringUtils.trimToEmpty(message);
-		final HttpUriRequest request = SubversionRequestFactory.createCommitMessageRequest(uri, trimmedMessage);
+		final HttpUriRequest request = requestFactory.createCommitMessageRequest(uri, trimmedMessage);
 		final HttpResponse response = execute(request);
 		ensureResonse(response, HttpStatus.SC_MULTI_STATUS);
 	}
@@ -84,7 +87,7 @@ class SubversionRepository1_7 extends SubversionRepository {
 	}
 
 	@Override
-	void uploadWithProperties0(final String sanatizedResource, final String message, final InputStream content, final SubversionProperty... properties) {
+	protected void uploadWithProperties0(final String sanatizedResource, final String message, final InputStream content, final SubversionProperty... properties) {
 		// TODO Auto-generated method stub
 
 	}

@@ -1,4 +1,4 @@
-package de.shadowhunt.scm.subversion;
+package de.shadowhunt.scm.subversion.v1_6;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -12,22 +12,24 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 
-class SubversionRepository1_6 extends SubversionRepository {
+import de.shadowhunt.scm.subversion.SubversionInfo;
+import de.shadowhunt.scm.subversion.SubversionProperty;
+import de.shadowhunt.scm.subversion.SubversionRepository;
 
-	String repositoryRoot = null;
+public class SubversionRepository1_6 extends SubversionRepository<SubversionRequestFactory1_6> {
 
-	SubversionRepository1_6(final HttpClient client, final URI repository) {
-		super(client, repository);
+	public SubversionRepository1_6(final HttpClient client, final URI repository) {
+		super(client, repository, new SubversionRequestFactory1_6());
 
 		triggerAuthentication();
 	}
 
-	SubversionRepository1_6(final URI repository, final String username, final String password, @Nullable final String workstation) {
+	public SubversionRepository1_6(final URI repository, final String username, final String password, @Nullable final String workstation) {
 		this(createClient(repository, username, password, workstation), repository);
 	}
 
 	@Override
-	void createWithProperties0(final String sanatizedResource, final String message, final InputStream content, final SubversionProperty... properties) {
+	protected void createWithProperties0(final String sanatizedResource, final String message, final InputStream content, final SubversionProperty... properties) {
 		final UUID uuid = UUID.randomUUID();
 
 		createTemporyStructure(uuid);
@@ -86,8 +88,7 @@ class SubversionRepository1_6 extends SubversionRepository {
 	void prepareCheckin(final UUID uuid) {
 		final URI uri = URI.create(repository + PREFIX_VCC + "default");
 
-		final HttpUriRequest request = SubversionRequestFactory.createCheckoutRequest(uri, repository + PREFIX_ACT
-				+ uuid);
+		final HttpUriRequest request = requestFactory.createCheckoutRequest(uri, repository + PREFIX_ACT + uuid);
 		final HttpResponse response = execute(request);
 		ensureResonse(response, HttpStatus.SC_CREATED);
 	}
@@ -95,8 +96,7 @@ class SubversionRepository1_6 extends SubversionRepository {
 	void prepareContentUpload(final String sanatizedResource, final UUID uuid, final long version) {
 		final URI uri = URI.create(repository + PREFIX_VER + version + sanatizedResource);
 
-		final HttpUriRequest request = SubversionRequestFactory.createCheckoutRequest(uri, repository + PREFIX_ACT
-				+ uuid);
+		final HttpUriRequest request = requestFactory.createCheckoutRequest(uri, repository + PREFIX_ACT + uuid);
 		final HttpResponse response = execute(request);
 		ensureResonse(response, HttpStatus.SC_CREATED);
 	}
@@ -109,7 +109,7 @@ class SubversionRepository1_6 extends SubversionRepository {
 
 		final URI uri = URI.create(repository + PREFIX_WRK + uuid + sanatizedResource);
 
-		final HttpUriRequest request = SubversionRequestFactory.createRemovePropertiesRequest(uri, filtered);
+		final HttpUriRequest request = requestFactory.createRemovePropertiesRequest(uri, filtered);
 		final HttpResponse response = execute(request);
 		ensureResonse(response, HttpStatus.SC_MULTI_STATUS);
 	}
@@ -122,7 +122,7 @@ class SubversionRepository1_6 extends SubversionRepository {
 
 		final URI uri = URI.create(repository + PREFIX_WRK + uuid + sanatizedResource);
 
-		final HttpUriRequest request = SubversionRequestFactory.createSetPropertiesRequest(uri, filtered);
+		final HttpUriRequest request = requestFactory.createSetPropertiesRequest(uri, filtered);
 		final HttpResponse response = execute(request);
 		ensureResonse(response, HttpStatus.SC_MULTI_STATUS);
 	}
@@ -131,13 +131,13 @@ class SubversionRepository1_6 extends SubversionRepository {
 		final URI uri = URI.create(repository + PREFIX_WBL + uuid + "/" + version);
 
 		final String trimmedMessage = StringUtils.trimToEmpty(message);
-		final HttpUriRequest request = SubversionRequestFactory.createCommitMessageRequest(uri, trimmedMessage);
+		final HttpUriRequest request = requestFactory.createCommitMessageRequest(uri, trimmedMessage);
 		final HttpResponse response = execute(request);
 		ensureResonse(response, HttpStatus.SC_MULTI_STATUS);
 	}
 
 	@Override
-	void uploadWithProperties0(final String sanatizedResource, final String message, @Nullable final InputStream content, @Nullable final SubversionProperty... properties) {
+	protected void uploadWithProperties0(final String sanatizedResource, final String message, @Nullable final InputStream content, @Nullable final SubversionProperty... properties) {
 		final UUID uuid = UUID.randomUUID();
 		final SubversionInfo info = info0(sanatizedResource, false);
 		final long version = info.getVersion();
