@@ -2,7 +2,6 @@ package de.shadowhunt.scm.subversion.v1_7;
 
 import java.io.InputStream;
 import java.net.URI;
-import java.util.UUID;
 
 import javax.annotation.Nullable;
 
@@ -32,6 +31,10 @@ public class SubversionRepository1_7 extends SubversionRepository<SubversionRequ
 	}
 
 	protected void contentUpload(final String sanatizedResource, final String uuid, final InputStream content) {
+		if (content == null) {
+			return;
+		}
+
 		final URI uri = URI.create(repository + PREFIX_TXR + uuid + sanatizedResource);
 
 		final HttpUriRequest request = requestFactory.createUploadRequest(uri, content);
@@ -40,25 +43,39 @@ public class SubversionRepository1_7 extends SubversionRepository<SubversionRequ
 	}
 
 	@Override
-	protected void createWithProperties0(final String sanatizedResource, final String message, final InputStream content, final SubversionProperty... properties) {
+	public void delete(final String resource, final String message) {
+		final String sanatizedResource = sanatizeResource(resource);
 		final String uuid = prepareCheckin();
-		//				createMissingFolders(sanatizedResource, uuid);
 		setCommitMessage(uuid, message);
-		contentUpload(sanatizedResource, uuid, content);
-		//		propertiesSet(sanatizedResource, uuid, properties);
+		deleteAAA(sanatizedResource, uuid);
 		merge(repository.getPath() + PREFIX_TXN + uuid);
 	}
 
-	@Override
-	public void delete(final String resource, final String message) {
-		// TODO Auto-generated method stub
-
+	protected void deleteAAA(final String sanatizedResource, final String uuid) {
+		final URI uri = URI.create(repository + PREFIX_TXR + uuid + sanatizedResource);
+		delete(uri);
 	}
 
 	@Override
 	public void deleteProperties(final String resource, final String message, final SubversionProperty... properties) {
-		// TODO Auto-generated method stub
+		final String sanatizedResource = sanatizeResource(resource);
+		final String uuid = prepareCheckin();
+		setCommitMessage(uuid, message);
+		propertiesRemove(sanatizedResource, uuid, properties);
+		merge(repository.getPath() + PREFIX_TXN + uuid);
+	}
 
+	protected void propertiesRemove(final String sanatizedResource, final String uuid, final SubversionProperty[] properties) {
+		final SubversionProperty[] filtered = SubversionProperty.filteroutSystemProperties(properties);
+		if (filtered.length == 0) {
+			return;
+		}
+
+		final URI uri = URI.create(repository + PREFIX_TXR + uuid + sanatizedResource);
+
+		final HttpUriRequest request = requestFactory.createRemovePropertiesRequest(uri, filtered);
+		final HttpResponse response = execute(request);
+		ensureResonse(response, HttpStatus.SC_MULTI_STATUS);
 	}
 
 	protected String prepareCheckin() {
@@ -71,13 +88,13 @@ public class SubversionRepository1_7 extends SubversionRepository<SubversionRequ
 		return response.getFirstHeader("SVN-Txn-Name").getValue();
 	}
 
-	protected void propertiesSet(final String sanatizedResource, final UUID uuid, final SubversionProperty... properties) {
+	protected void propertiesSet(final String sanatizedResource, final String uuid, final SubversionProperty... properties) {
 		final SubversionProperty[] filtered = SubversionProperty.filteroutSystemProperties(properties);
 		if (filtered.length == 0) {
 			return;
 		}
 
-		final URI uri = URI.create(repository + PREFIX_TXN + uuid + sanatizedResource);
+		final URI uri = URI.create(repository + PREFIX_TXR + uuid + sanatizedResource);
 
 		final HttpUriRequest request = requestFactory.createSetPropertiesRequest(uri, filtered);
 		final HttpResponse response = execute(request);
@@ -95,8 +112,11 @@ public class SubversionRepository1_7 extends SubversionRepository<SubversionRequ
 
 	@Override
 	protected void uploadWithProperties0(final String sanatizedResource, final String message, final InputStream content, final SubversionProperty... properties) {
-		// TODO Auto-generated method stub
-
+		final String uuid = prepareCheckin();
+		//				createMissingFolders(sanatizedResource, uuid);
+		setCommitMessage(uuid, message);
+		contentUpload(sanatizedResource, uuid, content);
+		propertiesSet(sanatizedResource, uuid, properties);
+		merge(repository.getPath() + PREFIX_TXN + uuid);
 	}
-
 }

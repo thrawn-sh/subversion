@@ -35,25 +35,6 @@ public class SubversionRepository1_6 extends SubversionRepository<SubversionRequ
 	}
 
 	@Override
-	protected void createWithProperties0(final String sanatizedResource, final String message, final InputStream content, final SubversionProperty... properties) {
-		final UUID uuid = UUID.randomUUID();
-
-		createTemporyStructure(uuid);
-		try {
-			final String infoResource = createMissingFolders(sanatizedResource, uuid);
-			final SubversionInfo info = info0(infoResource, false);
-			final long version = info.getVersion();
-			prepareCheckin(uuid);
-			setCommitMessage(uuid, version, message);
-			contentUpload(sanatizedResource, uuid, content);
-			propertiesSet(sanatizedResource, uuid, properties);
-			merge(repository + PREFIX_ACT + uuid);
-		} finally {
-			deleteTemporyStructure(uuid);
-		}
-	}
-
-	@Override
 	public void delete(final String resource, final String message) {
 		final String sanatizedResource = sanatizeResource(resource);
 		final UUID uuid = UUID.randomUUID();
@@ -91,7 +72,7 @@ public class SubversionRepository1_6 extends SubversionRepository<SubversionRequ
 		}
 	}
 
-	void prepareCheckin(final UUID uuid) {
+	protected void prepareCheckin(final UUID uuid) {
 		final URI uri = URI.create(repository + PREFIX_VCC + "default");
 
 		final HttpUriRequest request = requestFactory.createCheckoutRequest(uri, repository + PREFIX_ACT + uuid);
@@ -99,7 +80,7 @@ public class SubversionRepository1_6 extends SubversionRepository<SubversionRequ
 		ensureResonse(response, HttpStatus.SC_CREATED);
 	}
 
-	void prepareContentUpload(final String sanatizedResource, final UUID uuid, final long version) {
+	protected void prepareContentUpload(final String sanatizedResource, final UUID uuid, final long version) {
 		final URI uri = URI.create(repository + PREFIX_VER + version + sanatizedResource);
 
 		final HttpUriRequest request = requestFactory.createCheckoutRequest(uri, repository + PREFIX_ACT + uuid);
@@ -107,7 +88,7 @@ public class SubversionRepository1_6 extends SubversionRepository<SubversionRequ
 		ensureResonse(response, HttpStatus.SC_CREATED);
 	}
 
-	void propertiesRemove(final String sanatizedResource, final UUID uuid, final SubversionProperty[] properties) {
+	protected void propertiesRemove(final String sanatizedResource, final UUID uuid, final SubversionProperty[] properties) {
 		final SubversionProperty[] filtered = SubversionProperty.filteroutSystemProperties(properties);
 		if (filtered.length == 0) {
 			return;
@@ -120,7 +101,7 @@ public class SubversionRepository1_6 extends SubversionRepository<SubversionRequ
 		ensureResonse(response, HttpStatus.SC_MULTI_STATUS);
 	}
 
-	void propertiesSet(final String sanatizedResource, final UUID uuid, final SubversionProperty... properties) {
+	protected void propertiesSet(final String sanatizedResource, final UUID uuid, final SubversionProperty... properties) {
 		final SubversionProperty[] filtered = SubversionProperty.filteroutSystemProperties(properties);
 		if (filtered.length == 0) {
 			return;
@@ -133,7 +114,7 @@ public class SubversionRepository1_6 extends SubversionRepository<SubversionRequ
 		ensureResonse(response, HttpStatus.SC_MULTI_STATUS);
 	}
 
-	void setCommitMessage(final UUID uuid, final long version, final String message) {
+	protected void setCommitMessage(final UUID uuid, final long version, final String message) {
 		final URI uri = URI.create(repository + PREFIX_WBL + uuid + "/" + version);
 
 		final String trimmedMessage = StringUtils.trimToEmpty(message);
@@ -145,19 +126,20 @@ public class SubversionRepository1_6 extends SubversionRepository<SubversionRequ
 	@Override
 	protected void uploadWithProperties0(final String sanatizedResource, final String message, @Nullable final InputStream content, @Nullable final SubversionProperty... properties) {
 		final UUID uuid = UUID.randomUUID();
-		final SubversionInfo info = info0(sanatizedResource, false);
-		final long version = info.getVersion();
 
 		createTemporyStructure(uuid);
 		try {
+			final String infoResource = createMissingFolders(sanatizedResource, uuid);
+			final boolean updateExisiting = infoResource.equals(sanatizedResource);
+			final SubversionInfo info = info0(infoResource, false);
+			final long version = info.getVersion();
 			prepareCheckin(uuid);
 			setCommitMessage(uuid, version, message);
-			prepareContentUpload(sanatizedResource, uuid, version);
-			propertiesSet(sanatizedResource, uuid, properties);
-
-			if (content != null) {
-				contentUpload(sanatizedResource, uuid, content);
+			if (updateExisiting) {
+				prepareContentUpload(sanatizedResource, uuid, version);
 			}
+			contentUpload(sanatizedResource, uuid, content);
+			propertiesSet(sanatizedResource, uuid, properties);
 			merge(repository + PREFIX_ACT + uuid);
 		} finally {
 			deleteTemporyStructure(uuid);

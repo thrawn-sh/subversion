@@ -178,18 +178,15 @@ public abstract class SubversionRepository<T extends AbstractSubversionRequestFa
 	}
 
 	protected void contentUpload(final String sanatizedResource, final UUID uuid, final InputStream content) {
+		if (content == null) {
+			return;
+		}
+
 		final URI uri = URI.create(repository + PREFIX_WRK + uuid + sanatizedResource);
 
 		final HttpUriRequest request = requestFactory.createUploadRequest(uri, content);
 		final HttpResponse response = execute(request);
 		ensureResonse(response, HttpStatus.SC_CREATED, HttpStatus.SC_NO_CONTENT);
-	}
-
-	public void create(final String resource, final String message, final InputStream content) {
-		if (content == null) {
-			throw new IllegalArgumentException("content can not be null");
-		}
-		createWithProperties0(sanatizeResource(resource), message, content, (SubversionProperty[]) null);
 	}
 
 	protected String createMissingFolders(final String sanatizedResource, final UUID uuid) {
@@ -221,15 +218,6 @@ public abstract class SubversionRepository<T extends AbstractSubversionRequestFa
 		final HttpResponse response = execute(request);
 		ensureResonse(response, HttpStatus.SC_CREATED);
 	}
-
-	public void createWithProperties(final String resource, final String message, final InputStream content, final SubversionProperty... properties) {
-		if ((content == null) && (properties == null)) {
-			throw new IllegalArgumentException("content and properties can not both be null");
-		}
-		createWithProperties0(sanatizeResource(resource), message, content, properties);
-	}
-
-	protected abstract void createWithProperties0(final String sanatizedResource, final String message, final InputStream content, final SubversionProperty... properties);
 
 	public abstract void delete(final String resource, final String message);
 
@@ -420,5 +408,4 @@ public abstract class SubversionRepository<T extends AbstractSubversionRequestFa
 	}
 
 	protected abstract void uploadWithProperties0(final String sanatizedResource, final String message, @Nullable final InputStream content, @Nullable final SubversionProperty... properties);
-
 }
