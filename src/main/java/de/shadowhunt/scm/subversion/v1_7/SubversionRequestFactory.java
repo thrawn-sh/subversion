@@ -19,7 +19,7 @@ import de.shadowhunt.scm.subversion.SubversionProperty;
 
 class SubversionRequestFactory extends AbstractSubversionRequestFactory {
 
-	private static final ContentType CONTENT_TYPE_SVNSKEL = ContentType.create("application/vnd.svn-skel", (String) null);
+	private static final ContentType CONTENT_TYPE_SVNSKEL = ContentType.create("application/vnd.svn-skel");
 
 	@Override
 	public HttpUriRequest createActivityRequest(final URI uri) {
