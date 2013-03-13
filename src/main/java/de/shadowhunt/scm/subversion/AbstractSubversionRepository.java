@@ -190,10 +190,6 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	protected abstract InputStream download0(final String sanatizeResource, final long version);
 
-	protected HttpResponse execute(final HttpUriRequest request, final int... expectedStatusCodes) {
-		return execute(request, true, expectedStatusCodes);
-	}
-
 	protected HttpResponse execute(final HttpUriRequest request, final boolean consume, final int... expectedStatusCodes) {
 		try {
 			final HttpResponse response = client.execute(request, getHttpContext());
@@ -202,6 +198,10 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		} catch (final Exception e) {
 			throw new SubversionException("could not execute request (" + request + ")", e);
 		}
+	}
+
+	protected HttpResponse execute(final HttpUriRequest request, final int... expectedStatusCodes) {
+		return execute(request, true, expectedStatusCodes);
 	}
 
 	@Override
@@ -294,7 +294,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	protected final void triggerAuthentication() {
 		final HttpUriRequest request = requestFactory.createAuthRequest(repository);
-		final HttpResponse response = execute(request, null);
+		execute(request, null);
 	}
 
 	@Override
