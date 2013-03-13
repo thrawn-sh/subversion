@@ -246,13 +246,20 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 
 		createTemporyStructure(uuid);
 		try {
-			final String infoResource = createMissingFolders(sanatizedResource, uuid);
-			final boolean updateExisiting = infoResource.equals(sanatizedResource);
+			final boolean exisits = exisits0(sanatizedResource);
+
+			final String infoResource;
+			if (exisits) {
+				infoResource = sanatizedResource;
+			} else {
+				infoResource = createMissingFolders(sanatizedResource, uuid);
+			}
+
 			final SubversionInfo info = info0(infoResource, HEAD_VERSION, false);
 			final long version = info.getVersion();
 			prepareCheckin(uuid);
 			setCommitMessage(uuid, version, message);
-			if (updateExisiting) {
+			if (exisits) {
 				prepareContentUpload(sanatizedResource, uuid, version);
 			}
 			contentUpload(sanatizedResource, uuid, content);

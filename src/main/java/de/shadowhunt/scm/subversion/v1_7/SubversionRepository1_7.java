@@ -196,7 +196,14 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 	@Override
 	protected void uploadWithProperties0(final String sanatizedResource, final String message, final InputStream content, final SubversionProperty... properties) {
 		final String uuid = prepareCheckin();
-		final String infoResource = createMissingFolders(sanatizedResource, uuid);
+		final boolean exisits = exisits0(sanatizedResource);
+
+		final String infoResource;
+		if (exisits) {
+			infoResource = sanatizedResource;
+		} else {
+			infoResource = createMissingFolders(sanatizedResource, uuid);
+		}
 		final SubversionInfo info = info0(infoResource, HEAD_VERSION, false);
 		setCommitMessage(uuid, message);
 		contentUpload(sanatizedResource, info, uuid, content);
