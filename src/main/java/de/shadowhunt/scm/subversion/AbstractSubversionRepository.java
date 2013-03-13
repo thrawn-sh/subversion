@@ -56,7 +56,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	};
 
-	protected static final String PREFIX_BC = "/!svn/bc/";
+	protected static final long HEAD_VERSION = 0L;
 
 	protected static boolean contains(final int statusCode, final int... expectedStatusCodes) {
 		for (final int expectedStatusCode : expectedStatusCodes) {
@@ -179,25 +179,18 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	@Override
 	public InputStream download(final String resource) {
-		final URI uri = URI.create(repository + sanatizeResource(resource));
-
-		final HttpUriRequest request = requestFactory.createDownloadRequest(uri);
-		final HttpResponse response = execute(request);
-		ensureResonse(response, false, HttpStatus.SC_OK);
-
-		return getContent(response);
+		return download0(sanatizeResource(resource), HEAD_VERSION);
 	}
 
 	@Override
 	public InputStream download(final String resource, final long version) {
-		final URI uri = URI.create(repository + PREFIX_BC + version + sanatizeResource(resource));
-
-		final HttpUriRequest request = requestFactory.createDownloadRequest(uri);
-		final HttpResponse response = execute(request);
-		ensureResonse(response, false, HttpStatus.SC_OK);
-
-		return getContent(response);
+		if (version <= 0L) {
+			throw new IllegalArgumentException("version must be greater than 0, was:" + version);
+		}
+		return download0(sanatizeResource(resource), version);
 	}
+
+	protected abstract InputStream download0(final String sanatizeResource, final long version);
 
 	protected HttpResponse execute(final HttpUriRequest request) {
 		try {
@@ -235,53 +228,30 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	@Override
 	public SubversionInfo info(final String resource, final boolean withCustomProperties) {
-		return info0(sanatizeResource(resource), withCustomProperties);
+		return info0(sanatizeResource(resource), HEAD_VERSION, withCustomProperties);
 	}
 
-	protected SubversionInfo info0(final String sanatizedResource, final boolean withCustomProperties) {
-		final URI uri = URI.create(repository + sanatizedResource);
-
-		final HttpUriRequest request = requestFactory.createInfoRequest(uri, 0);
-		final HttpResponse response = execute(request);
-		ensureResonse(response, false, HttpStatus.SC_MULTI_STATUS);
-
-		final InputStream in = getContent(response);
-		try {
-			return SubversionInfo.read(in, withCustomProperties);
-		} finally {
-			closeQuiet(in);
+	@Override
+	public SubversionInfo info(final String resource, final long version, final boolean withCustomProperties) {
+		if (version <= 0L) {
+			throw new IllegalArgumentException("version must be greater than 0, was:" + version);
 		}
+		return info0(sanatizeResource(resource), version, withCustomProperties);
 	}
+
+	protected abstract SubversionInfo info0(String sanatizeResource, long version, boolean withCustomProperties);
 
 	@Override
 	public SubversionLog lastLog(final String resource) {
 		final String sanatizedResource = sanatizeResource(resource);
 		final URI uri = URI.create(repository + sanatizedResource);
 
-		final SubversionInfo info = info0(sanatizedResource, false);
+		final SubversionInfo info = info0(sanatizedResource, HEAD_VERSION, false);
 		final List<SubversionLog> logs = log(uri, info.getVersion(), info.getVersion());
 		if (logs.isEmpty()) {
 			throw new SubversionException("no logs available");
 		}
 		return logs.get(0);
-	}
-
-	@Override
-	public List<SubversionInfo> list(final String resource, final int depth, final boolean withCustomProperties) {
-		final String sanatizedResource = sanatizeResource(resource);
-		final SubversionInfo info = info0(sanatizedResource, false);
-		final URI uri = URI.create(repository + PREFIX_BC + info.getVersion() + sanatizedResource);
-
-		final HttpUriRequest request = requestFactory.createInfoRequest(uri, depth);
-		final HttpResponse response = execute(request);
-		ensureResonse(response, false, HttpStatus.SC_MULTI_STATUS);
-
-		final InputStream in = getContent(response);
-		try {
-			return SubversionInfo.readList(in, withCustomProperties);
-		} finally {
-			closeQuiet(in);
-		}
 	}
 
 	@Override
@@ -298,7 +268,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		final String sanatizedResource = sanatizeResource(resource);
 		final URI uri = URI.create(repository + sanatizedResource);
 
-		final SubversionInfo info = info0(sanatizedResource, false);
+		final SubversionInfo info = info0(sanatizedResource, HEAD_VERSION, false);
 		return log(uri, info.getVersion(), 0L);
 	}
 

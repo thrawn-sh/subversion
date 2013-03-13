@@ -2,6 +2,7 @@ package de.shadowhunt.scm.subversion.v1_6;
 
 import java.io.InputStream;
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -20,6 +21,8 @@ import de.shadowhunt.scm.subversion.SubversionProperty;
 public class SubversionRepository1_6 extends AbstractSubversionRepository<SubversionRequestFactory> {
 
 	protected static final String PREFIX_ACT = "/!svn/act/";
+
+	protected static final String PREFIX_BC = "/!svn/bc/";
 
 	protected static final String PREFIX_VCC = "/!svn/vcc/";
 
@@ -85,7 +88,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 	public void delete(final String resource, final String message) {
 		final String sanatizedResource = sanatizeResource(resource);
 		final UUID uuid = UUID.randomUUID();
-		final SubversionInfo info = info0(sanatizedResource, false);
+		final SubversionInfo info = info0(sanatizedResource, HEAD_VERSION, false);
 		final long version = info.getVersion();
 
 		createTemporyStructure(uuid);
@@ -111,7 +114,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 	public void deleteProperties(final String resource, final String message, final SubversionProperty... properties) {
 		final String sanatizedResource = sanatizeResource(resource);
 		final UUID uuid = UUID.randomUUID();
-		final SubversionInfo info = info0(sanatizedResource, false);
+		final SubversionInfo info = info0(sanatizedResource, HEAD_VERSION, false);
 		final long version = info.getVersion();
 
 		createTemporyStructure(uuid);
@@ -131,6 +134,61 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 		final HttpUriRequest request = new HttpDelete(uri);
 		final HttpResponse response = execute(request);
 		ensureResonse(response, HttpStatus.SC_NO_CONTENT);
+	}
+
+	@Override
+	protected InputStream download0(final String sanatizedResource, final long version) {
+		final URI uri;
+		if (version == HEAD_VERSION) {
+			uri = URI.create(repository + sanatizedResource);
+		} else {
+			uri = URI.create(repository + PREFIX_BC + version + sanatizedResource);
+		}
+
+		final HttpUriRequest request = requestFactory.createDownloadRequest(uri);
+		final HttpResponse response = execute(request);
+		ensureResonse(response, false, HttpStatus.SC_OK);
+
+		return getContent(response);
+	}
+
+	@Override
+	protected SubversionInfo info0(final String sanatizedResource, final long version, final boolean withCustomProperties) {
+		final URI uri;
+		if (version == HEAD_VERSION) {
+			uri = URI.create(repository + sanatizedResource);
+		} else {
+			uri = URI.create(repository + PREFIX_BC + version + sanatizedResource);
+		}
+
+		final HttpUriRequest request = requestFactory.createInfoRequest(uri, 0);
+		final HttpResponse response = execute(request);
+		ensureResonse(response, false, HttpStatus.SC_MULTI_STATUS);
+
+		final InputStream in = getContent(response);
+		try {
+			return SubversionInfo.read(in, withCustomProperties);
+		} finally {
+			closeQuiet(in);
+		}
+	}
+
+	@Override
+	public List<SubversionInfo> list(final String resource, final int depth, final boolean withCustomProperties) {
+		final String sanatizedResource = sanatizeResource(resource);
+		final SubversionInfo info = info0(sanatizedResource, HEAD_VERSION, false);
+		final URI uri = URI.create(repository + PREFIX_BC + info.getVersion() + sanatizedResource);
+
+		final HttpUriRequest request = requestFactory.createInfoRequest(uri, depth);
+		final HttpResponse response = execute(request);
+		ensureResonse(response, false, HttpStatus.SC_MULTI_STATUS);
+
+		final InputStream in = getContent(response);
+		try {
+			return SubversionInfo.readList(in, withCustomProperties);
+		} finally {
+			closeQuiet(in);
+		}
 	}
 
 	protected void merge(final UUID uuid) {
@@ -199,7 +257,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 		try {
 			final String infoResource = createMissingFolders(sanatizedResource, uuid);
 			final boolean updateExisiting = infoResource.equals(sanatizedResource);
-			final SubversionInfo info = info0(infoResource, false);
+			final SubversionInfo info = info0(infoResource, HEAD_VERSION, false);
 			final long version = info.getVersion();
 			prepareCheckin(uuid);
 			setCommitMessage(uuid, version, message);

@@ -18,6 +18,8 @@ public interface SubversionRepository {
 
 	public SubversionInfo info(String resource, boolean withCustomProperties);
 
+	public SubversionInfo info(String resource, long version, boolean withCustomProperties);
+
 	public SubversionLog lastLog(String resource);
 
 	public List<SubversionInfo> list(String resource, int depth, boolean withCustomProperties);
