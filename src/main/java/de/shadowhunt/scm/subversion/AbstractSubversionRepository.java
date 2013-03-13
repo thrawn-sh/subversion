@@ -58,7 +58,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	protected static final long HEAD_VERSION = 0L;
 
-	protected static boolean contains(final int statusCode, final int... expectedStatusCodes) {
+	protected static boolean contains(final int statusCode, @Nullable final int... expectedStatusCodes) {
 		if (expectedStatusCodes == null) {
 			return true;
 		}
@@ -111,7 +111,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		return new NTCredentials(username, password, workstation, domain);
 	}
 
-	static void ensureResonse(final HttpResponse response, final boolean consume, final int... expectedStatusCodes) throws IOException {
+	static void ensureResonse(final HttpResponse response, final boolean consume, @Nullable final int... expectedStatusCodes) throws IOException {
 		final int statusCode = response.getStatusLine().getStatusCode();
 		if (consume) {
 			EntityUtils.consume(response.getEntity());
@@ -190,7 +190,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	protected abstract InputStream download0(final String sanatizeResource, final long version);
 
-	protected HttpResponse execute(final HttpUriRequest request, final boolean consume, final int... expectedStatusCodes) {
+	protected HttpResponse execute(final HttpUriRequest request, final boolean consume, @Nullable final int... expectedStatusCodes) {
 		try {
 			final HttpResponse response = client.execute(request, getHttpContext());
 			ensureResonse(response, consume, expectedStatusCodes);
@@ -200,7 +200,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		}
 	}
 
-	protected HttpResponse execute(final HttpUriRequest request, final int... expectedStatusCodes) {
+	protected HttpResponse execute(final HttpUriRequest request, @Nullable final int... expectedStatusCodes) {
 		return execute(request, true, expectedStatusCodes);
 	}
 
