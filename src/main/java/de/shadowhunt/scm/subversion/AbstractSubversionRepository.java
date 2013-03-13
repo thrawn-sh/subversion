@@ -59,6 +59,10 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	protected static final long HEAD_VERSION = 0L;
 
 	protected static boolean contains(final int statusCode, final int... expectedStatusCodes) {
+		if (expectedStatusCodes == null) {
+			return true;
+		}
+
 		for (final int expectedStatusCode : expectedStatusCodes) {
 			if (expectedStatusCode == statusCode) {
 				return true;
@@ -107,23 +111,17 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		return new NTCredentials(username, password, workstation, domain);
 	}
 
-	protected static int ensureResonse(final HttpResponse response, final boolean consume, final int... expectedStatusCodes) {
+	static void ensureResonse(final HttpResponse response, final boolean consume, final int... expectedStatusCodes) throws IOException {
 		final int statusCode = response.getStatusLine().getStatusCode();
 		if (consume) {
-			EntityUtils.consumeQuietly(response.getEntity());
+			EntityUtils.consume(response.getEntity());
 		}
 
 		if (!contains(statusCode, expectedStatusCodes)) {
-			EntityUtils.consumeQuietly(response.getEntity()); // in case of unexpected status code we consume everything
+			EntityUtils.consume(response.getEntity()); // in case of unexpected status code we consume everything
 			throw new SubversionException("status code is: " + statusCode + ", expected was: "
 					+ Arrays.toString(expectedStatusCodes));
 		}
-
-		return statusCode;
-	}
-
-	protected static int ensureResonse(final HttpResponse response, final int... expectedStatusCodes) {
-		return ensureResonse(response, true, expectedStatusCodes);
 	}
 
 	protected static InputStream getContent(final HttpResponse response) {
@@ -192,9 +190,15 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	protected abstract InputStream download0(final String sanatizeResource, final long version);
 
-	protected HttpResponse execute(final HttpUriRequest request) {
+	protected HttpResponse execute(final HttpUriRequest request, final int... expectedStatusCodes) {
+		return execute(request, true, expectedStatusCodes);
+	}
+
+	protected HttpResponse execute(final HttpUriRequest request, final boolean consume, final int... expectedStatusCodes) {
 		try {
-			return client.execute(request, getHttpContext());
+			final HttpResponse response = client.execute(request, getHttpContext());
+			ensureResonse(response, consume, expectedStatusCodes);
+			return response;
 		} catch (final Exception e) {
 			throw new SubversionException("could not execute request (" + request + ")", e);
 		}
@@ -205,8 +209,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		final URI uri = URI.create(repository + sanatizeResource(resource));
 
 		final HttpUriRequest request = requestFactory.createExistsRequest(uri);
-		final HttpResponse response = execute(request);
-		ensureResonse(response, /* found */HttpStatus.SC_OK, /* not found */HttpStatus.SC_NOT_FOUND);
+		final HttpResponse response = execute(request, /* found */HttpStatus.SC_OK, /* not found */HttpStatus.SC_NOT_FOUND);
 		return (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK);
 	}
 
@@ -259,8 +262,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		final URI uri = URI.create(repository + sanatizeResource(resource));
 
 		final HttpUriRequest request = requestFactory.createLockRequest(uri);
-		final HttpResponse response = execute(request);
-		ensureResonse(response, HttpStatus.SC_OK);
+		execute(request, HttpStatus.SC_OK);
 	}
 
 	@Override
@@ -275,8 +277,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	@Override
 	public List<SubversionLog> log(final URI uri, final long start, final long end) {
 		final HttpUriRequest request = requestFactory.createLogRequest(uri, start, end);
-		final HttpResponse response = execute(request);
-		ensureResonse(response, false, HttpStatus.SC_OK);
+		final HttpResponse response = execute(request, false, HttpStatus.SC_OK);
 
 		final InputStream in = getContent(response);
 		try {
@@ -293,8 +294,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	protected final void triggerAuthentication() {
 		final HttpUriRequest request = requestFactory.createAuthRequest(repository);
-		final HttpResponse response = execute(request);
-		EntityUtils.consumeQuietly(response.getEntity());
+		final HttpResponse response = execute(request, null);
 	}
 
 	@Override
@@ -302,8 +302,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		final URI uri = URI.create(repository + sanatizeResource(resource));
 
 		final HttpUriRequest request = requestFactory.createUnlockRequest(uri, "<" + token + ">");
-		final HttpResponse response = execute(request);
-		ensureResonse(response, HttpStatus.SC_NO_CONTENT);
+		execute(request, HttpStatus.SC_NO_CONTENT);
 	}
 
 	@Override

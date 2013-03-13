@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.annotation.CheckForNull;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -264,6 +265,16 @@ public class SubversionInfo {
 
 	public String getRoot() {
 		return root;
+	}
+
+	@CheckForNull
+	public String getSubversionPropertyValue(final String name) {
+		for (final SubversionProperty property : customProperties) {
+			if (name.equals(property.getName())) {
+				return property.getValue();
+			}
+		}
+		return null;
 	}
 
 	public long getVersion() {
