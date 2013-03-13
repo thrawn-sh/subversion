@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import javax.annotation.CheckForNull;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -149,14 +150,17 @@ public class SubversionLog {
 		return true;
 	}
 
+	@CheckForNull
 	public String getComment() {
 		return comment;
 	}
 
+	@CheckForNull
 	public Date getDate() {
 		return (date == null) ? null : new Date(date.getTime());
 	}
 
+	@CheckForNull
 	public String getUser() {
 		return user;
 	}

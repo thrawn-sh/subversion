@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -265,22 +266,27 @@ public class SubversionInfo {
 		return Arrays.copyOf(customProperties, customProperties.length);
 	}
 
+	@CheckForNull
 	public String getLockToken() {
 		return lockToken;
 	}
 
+	@CheckForNull
 	public String getMd5() {
 		return md5;
 	}
 
+	@CheckForNull
 	public String getRelativePath() {
 		return relativePath;
 	}
 
+	@CheckForNull
 	public String getRepositoryUuid() {
 		return repositoryUuid;
 	}
 
+	@CheckForNull
 	public String getRoot() {
 		return root;
 	}
@@ -326,7 +332,7 @@ public class SubversionInfo {
 		return lockToken != null;
 	}
 
-	public void setCustomProperties(final SubversionProperty[] customProperties) {
+	public void setCustomProperties(@Nullable final SubversionProperty[] customProperties) {
 		if ((customProperties == null) || (customProperties.length == 0)) {
 			this.customProperties = EMPTY;
 		} else {
