@@ -32,7 +32,7 @@ public interface SubversionRepository {
 
 	public void setProperties(String resource, String message, SubversionProperty... properties);
 
-	public void unlock(String resource, String token);
+	public void unlock(String resource, SubversionInfo info);
 
 	public void upload(String resource, String message, InputStream content);
 

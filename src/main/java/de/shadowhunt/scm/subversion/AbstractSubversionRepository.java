@@ -298,10 +298,10 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	}
 
 	@Override
-	public void unlock(final String resource, final String token) {
+	public void unlock(final String resource, final SubversionInfo info) {
 		final URI uri = URI.create(repository + sanatizeResource(resource));
 
-		final HttpUriRequest request = requestFactory.createUnlockRequest(uri, "<" + token + ">");
+		final HttpUriRequest request = requestFactory.createUnlockRequest(uri, info);
 		execute(request, HttpStatus.SC_NO_CONTENT);
 	}
 

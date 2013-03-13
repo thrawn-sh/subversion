@@ -1,11 +1,13 @@
 package de.shadowhunt.scm.subversion;
 
-import java.io.InputStream;
 import java.net.URI;
 
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 
 public abstract class AbstractSubversionRequestFactory {
 
@@ -52,33 +54,44 @@ public abstract class AbstractSubversionRequestFactory {
 
 	protected static final String XML_PREAMBLE = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
 
-	public abstract HttpUriRequest createActivityRequest(final URI uri);
+	public HttpUriRequest createAuthRequest(final URI uri) {
+		return new HttpOptions(uri);
+	}
 
-	public abstract HttpUriRequest createAuthRequest(final URI uri);
+	public HttpUriRequest createExistsRequest(final URI uri) {
+		return new HttpHead(uri);
+	}
 
-	public abstract HttpUriRequest createCheckoutRequest(final URI uri, final String path);
+	public HttpUriRequest createLockRequest(final URI uri) {
+		final DavTemplateRequest request = new DavTemplateRequest("LOCK");
+		request.setURI(uri);
 
-	public abstract HttpUriRequest createCommitMessageRequest(final URI uri, final String message);
+		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
+		body.append("<lockinfo xmlns=\"DAV:\"><lockscope><exclusive/></lockscope><locktype><write/></locktype></lockinfo>");
 
-	public abstract HttpUriRequest createDownloadRequest(final URI uri);
+		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
+		return request;
+	}
 
-	public abstract HttpUriRequest createExistsRequest(final URI uri);
+	public HttpUriRequest createLogRequest(final URI uri, final long start, final long end) {
+		final DavTemplateRequest request = new DavTemplateRequest("REPORT");
+		request.setURI(uri);
 
-	public abstract HttpUriRequest createInfoRequest(final URI uri, final int depth);
+		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
+		body.append("<log-report xmlns=\"svn:\"><start-revision>");
+		body.append(start);
+		body.append("</start-revision><end-revision>");
+		body.append(end);
+		body.append("</end-revision><encode-binary-props/><revprop>svn:author</revprop><revprop>svn:date</revprop><revprop>svn:log</revprop><path/></log-report>");
 
-	public abstract HttpUriRequest createLockRequest(final URI uri);
+		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
+		return request;
+	}
 
-	public abstract HttpUriRequest createLogRequest(final URI uri, final long start, final long end);
-
-	public abstract HttpUriRequest createMakeFolderRequest(final URI uri);
-
-	public abstract HttpUriRequest createMergeRequest(final URI uri, final String path);
-
-	public abstract HttpUriRequest createRemovePropertiesRequest(final URI uri, final SubversionProperty... properties);
-
-	public abstract HttpUriRequest createSetPropertiesRequest(final URI uri, final SubversionProperty... properties);
-
-	public abstract HttpUriRequest createUnlockRequest(final URI uri, final String token);
-
-	public abstract HttpUriRequest createUploadRequest(final URI uri, final InputStream content);
+	public HttpUriRequest createUnlockRequest(final URI uri, final SubversionInfo info) {
+		final DavTemplateRequest request = new DavTemplateRequest("UNLOCK");
+		request.setURI(uri);
+		request.addHeader("Lock-Token", "<" + info.getLockToken() + ">");
+		return request;
+	}
 }
