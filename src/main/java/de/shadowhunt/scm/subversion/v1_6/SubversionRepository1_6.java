@@ -10,19 +10,24 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpUriRequest;
 
+import de.shadowhunt.scm.subversion.AbstractSubversionRepository;
 import de.shadowhunt.scm.subversion.SubversionInfo;
 import de.shadowhunt.scm.subversion.SubversionProperty;
-import de.shadowhunt.scm.subversion.SubversionRepository;
 
-public class SubversionRepository1_6 extends SubversionRepository<SubversionRequestFactory> {
+public class SubversionRepository1_6 extends AbstractSubversionRepository<SubversionRequestFactory> {
+
+	protected static final String PREFIX_ACT = "/!svn/act/";
 
 	protected static final String PREFIX_VCC = "/!svn/vcc/";
 
 	protected static final String PREFIX_VER = "/!svn/ver/";
 
 	protected static final String PREFIX_WBL = "/!svn/wbl/";
+
+	protected static final String PREFIX_WRK = "/!svn/wrk/";
 
 	public SubversionRepository1_6(final HttpClient client, final URI repository) {
 		super(client, repository, new SubversionRequestFactory());
@@ -32,6 +37,48 @@ public class SubversionRepository1_6 extends SubversionRepository<SubversionRequ
 
 	public SubversionRepository1_6(final URI repository, final String username, final String password, @Nullable final String workstation) {
 		this(createClient(repository, username, password, workstation), repository);
+	}
+
+	protected void contentUpload(final String sanatizedResource, final UUID uuid, final InputStream content) {
+		if (content == null) {
+			return;
+		}
+
+		final URI uri = URI.create(repository + PREFIX_WRK + uuid + sanatizedResource);
+
+		final HttpUriRequest request = requestFactory.createUploadRequest(uri, content);
+		final HttpResponse response = execute(request);
+		ensureResonse(response, HttpStatus.SC_CREATED, HttpStatus.SC_NO_CONTENT);
+	}
+
+	protected String createMissingFolders(final String sanatizedResource, final UUID uuid) {
+		final String[] resourceParts = sanatizedResource.split("/");
+
+		String infoResource = "/";
+		final StringBuilder partial = new StringBuilder();
+		for (int i = 1; i < (resourceParts.length - 1); i++) {
+			partial.append('/');
+			partial.append(resourceParts[i]);
+
+			final String partialResource = partial.toString();
+			final URI uri = URI.create(repository + PREFIX_WRK + uuid + partialResource);
+			final HttpUriRequest request = requestFactory.createMakeFolderRequest(uri);
+			final HttpResponse response = execute(request);
+			final int status = ensureResonse(response, /* created */HttpStatus.SC_CREATED, /* existed */HttpStatus.SC_METHOD_NOT_ALLOWED);
+			if (status == HttpStatus.SC_METHOD_NOT_ALLOWED) {
+				infoResource = partialResource;
+			}
+		}
+
+		return infoResource;
+	}
+
+	protected void createTemporyStructure(final UUID uuid) {
+		final URI uri = URI.create(repository + PREFIX_ACT + uuid);
+
+		final HttpUriRequest request = requestFactory.createActivityRequest(uri);
+		final HttpResponse response = execute(request);
+		ensureResonse(response, HttpStatus.SC_CREATED);
 	}
 
 	@Override
@@ -47,10 +94,17 @@ public class SubversionRepository1_6 extends SubversionRepository<SubversionRequ
 			setCommitMessage(uuid, version, message);
 			prepareContentUpload(sanatizedResource, uuid, version);
 			delete(sanatizedResource, uuid);
-			merge(repository + PREFIX_ACT + uuid);
+			merge(uuid);
 		} finally {
 			deleteTemporyStructure(uuid);
 		}
+	}
+
+	protected void delete(final String sanatizedResource, final UUID uuid) {
+		final URI uri = URI.create(repository + PREFIX_WRK + uuid + sanatizedResource);
+		final HttpUriRequest request = new HttpDelete(uri);
+		final HttpResponse response = execute(request);
+		ensureResonse(response, HttpStatus.SC_NO_CONTENT);
 	}
 
 	@Override
@@ -66,10 +120,24 @@ public class SubversionRepository1_6 extends SubversionRepository<SubversionRequ
 			setCommitMessage(uuid, version, message);
 			prepareContentUpload(sanatizedResource, uuid, version);
 			propertiesRemove(sanatizedResource, uuid, properties);
-			merge(repository + PREFIX_ACT + uuid);
+			merge(uuid);
 		} finally {
 			deleteTemporyStructure(uuid);
 		}
+	}
+
+	protected void deleteTemporyStructure(final UUID uuid) {
+		final URI uri = URI.create(repository + PREFIX_ACT + uuid);
+		final HttpUriRequest request = new HttpDelete(uri);
+		final HttpResponse response = execute(request);
+		ensureResonse(response, HttpStatus.SC_NO_CONTENT);
+	}
+
+	protected void merge(final UUID uuid) {
+		final String path = repository.getPath() + PREFIX_ACT + uuid;
+		final HttpUriRequest request = requestFactory.createMergeRequest(repository, path);
+		final HttpResponse response = execute(request);
+		ensureResonse(response, HttpStatus.SC_OK);
 	}
 
 	protected void prepareCheckin(final UUID uuid) {
@@ -140,7 +208,7 @@ public class SubversionRepository1_6 extends SubversionRepository<SubversionRequ
 			}
 			contentUpload(sanatizedResource, uuid, content);
 			propertiesSet(sanatizedResource, uuid, properties);
-			merge(repository + PREFIX_ACT + uuid);
+			merge(uuid);
 		} finally {
 			deleteTemporyStructure(uuid);
 		}

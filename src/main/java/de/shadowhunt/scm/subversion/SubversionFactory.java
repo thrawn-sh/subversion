@@ -9,7 +9,7 @@ import de.shadowhunt.scm.subversion.v1_7.SubversionRepository1_7;
 
 public final class SubversionFactory {
 
-	public static final SubversionRepository<?> getInstance(final URI root, final String user, final String password, @Nullable final String workstation, final ServerVersion version) {
+	public static final SubversionRepository getInstance(final URI root, final String user, final String password, @Nullable final String workstation, final ServerVersion version) {
 		if (version != null) {
 			switch (version) {
 				case V1_6:
