@@ -35,21 +35,21 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		this(createClient(repositoryRoot, username, password, workstation), repositoryRoot);
 	}
 
-	protected void contentUpload(final String sanatizedResource, final String uuid, final InputStream content) {
+	protected void contentUpload(final String sanatizedResource, final SubversionInfo info, final String uuid, final InputStream content) {
 		if (content == null) {
 			return;
 		}
 
 		final URI uri = URI.create(repository + PREFIX_TXR + uuid + sanatizedResource);
+		final URI aaa = URI.create(repository + sanatizedResource);
 
-		final HttpUriRequest request = requestFactory.createUploadRequest(uri, content);
+		final HttpUriRequest request = requestFactory.createUploadRequest(uri, aaa, info, content);
 		execute(request, HttpStatus.SC_CREATED, HttpStatus.SC_NO_CONTENT);
 	}
 
 	protected String createMissingFolders(final String sanatizedResource, final String uuid) {
 		final String[] resourceParts = sanatizedResource.split("/");
 
-		int existing = 1;
 		String infoResource = "/";
 		final StringBuilder partial = new StringBuilder();
 		for (int i = 1; i < (resourceParts.length - 1); i++) {
@@ -63,13 +63,9 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 			final int status = response.getStatusLine().getStatusCode();
 			if (status == HttpStatus.SC_METHOD_NOT_ALLOWED) {
 				infoResource = partialResource;
-				existing++;
 			}
 		}
 
-		if (existing == (resourceParts.length - 1)) {
-			return sanatizedResource;
-		}
 		return infoResource;
 	}
 
@@ -79,7 +75,8 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		final String uuid = prepareCheckin();
 		setCommitMessage(uuid, message);
 		delete0(sanatizedResource, uuid);
-		merge(uuid);
+		final SubversionInfo info = info0(sanatizedResource, HEAD_VERSION, false);
+		merge(info, uuid);
 	}
 
 	protected void delete0(final String sanatizedResource, final String uuid) {
@@ -94,7 +91,8 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		final String uuid = prepareCheckin();
 		setCommitMessage(uuid, message);
 		propertiesRemove(sanatizedResource, uuid, properties);
-		merge(uuid);
+		final SubversionInfo info = info0(sanatizedResource, HEAD_VERSION, false);
+		merge(info, uuid);
 	}
 
 	@Override
@@ -148,16 +146,16 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		}
 	}
 
-	protected void merge(final String uuid) {
+	protected void merge(final SubversionInfo info, final String uuid) {
 		final String path = repository.getPath() + PREFIX_TXN + uuid;
-		final HttpUriRequest request = requestFactory.createMergeRequest(repository, path);
+		final HttpUriRequest request = requestFactory.createMergeRequest(repository, path, info);
 		execute(request, HttpStatus.SC_OK);
 	}
 
 	protected String prepareCheckin() {
 		final URI uri = URI.create(repository + "/!svn/me");
 
-		final HttpUriRequest request = requestFactory.createPostRequest(uri, "( create-txn )");
+		final HttpUriRequest request = requestFactory.createPrepareRequest(uri, "( create-txn )");
 		final HttpResponse response = execute(request, HttpStatus.SC_CREATED);
 
 		return response.getFirstHeader("SVN-Txn-Name").getValue();
@@ -198,10 +196,11 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 	@Override
 	protected void uploadWithProperties0(final String sanatizedResource, final String message, final InputStream content, final SubversionProperty... properties) {
 		final String uuid = prepareCheckin();
-		createMissingFolders(sanatizedResource, uuid);
+		final String infoResource = createMissingFolders(sanatizedResource, uuid);
+		final SubversionInfo info = info0(infoResource, HEAD_VERSION, false);
 		setCommitMessage(uuid, message);
-		contentUpload(sanatizedResource, uuid, content);
+		contentUpload(sanatizedResource, info, uuid, content);
 		propertiesSet(sanatizedResource, uuid, properties);
-		merge(uuid);
+		merge(info, uuid);
 	}
 }

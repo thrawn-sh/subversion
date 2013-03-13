@@ -56,6 +56,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 	protected String createMissingFolders(final String sanatizedResource, final UUID uuid) {
 		final String[] resourceParts = sanatizedResource.split("/");
 
+		int existing = 1;
 		String infoResource = "/";
 		final StringBuilder partial = new StringBuilder();
 		for (int i = 1; i < (resourceParts.length - 1); i++) {
@@ -69,9 +70,13 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 			final int status = response.getStatusLine().getStatusCode();
 			if (status == HttpStatus.SC_METHOD_NOT_ALLOWED) {
 				infoResource = partialResource;
+				existing++;
 			}
 		}
 
+		if (existing == (resourceParts.length - 1)) {
+			return sanatizedResource;
+		}
 		return infoResource;
 	}
 
