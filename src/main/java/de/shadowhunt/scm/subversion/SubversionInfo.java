@@ -53,6 +53,11 @@ public class SubversionInfo {
 				return;
 			}
 
+			if ("baseline-relative-path".equals(name)) {
+				current.setRelativePath(getText());
+				return;
+			}
+
 			if (resourceType && "collection".equals(name)) {
 				current.setDirecotry(true);
 				resourceType = false;
@@ -185,6 +190,8 @@ public class SubversionInfo {
 
 	private String md5;
 
+	private String relativePath;
+
 	private String repositoryUuid;
 
 	private String root;
@@ -203,7 +210,7 @@ public class SubversionInfo {
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof SubversionInfo)) {
+		if (getClass() != obj.getClass()) {
 			return false;
 		}
 		final SubversionInfo other = (SubversionInfo) obj;
@@ -225,6 +232,13 @@ public class SubversionInfo {
 				return false;
 			}
 		} else if (!md5.equals(other.md5)) {
+			return false;
+		}
+		if (relativePath == null) {
+			if (other.relativePath != null) {
+				return false;
+			}
+		} else if (!relativePath.equals(other.relativePath)) {
 			return false;
 		}
 		if (repositoryUuid == null) {
@@ -259,6 +273,10 @@ public class SubversionInfo {
 		return md5;
 	}
 
+	public String getRelativePath() {
+		return relativePath;
+	}
+
 	public String getRepositoryUuid() {
 		return repositoryUuid;
 	}
@@ -289,6 +307,7 @@ public class SubversionInfo {
 		result = (prime * result) + (direcotry ? 1231 : 1237);
 		result = (prime * result) + ((lockToken == null) ? 0 : lockToken.hashCode());
 		result = (prime * result) + ((md5 == null) ? 0 : md5.hashCode());
+		result = (prime * result) + ((relativePath == null) ? 0 : relativePath.hashCode());
 		result = (prime * result) + ((repositoryUuid == null) ? 0 : repositoryUuid.hashCode());
 		result = (prime * result) + ((root == null) ? 0 : root.hashCode());
 		result = (prime * result) + (int) (version ^ (version >>> 32));
@@ -331,6 +350,10 @@ public class SubversionInfo {
 		this.md5 = md5;
 	}
 
+	public void setRelativePath(final String relativePath) {
+		this.relativePath = relativePath;
+	}
+
 	public void setRepositoryUuid(final String repositoryUuid) {
 		this.repositoryUuid = repositoryUuid;
 	}
@@ -360,6 +383,8 @@ public class SubversionInfo {
 		builder.append(root);
 		builder.append(", version=");
 		builder.append(version);
+		builder.append(", relativePath=");
+		builder.append(relativePath);
 		builder.append("]");
 		return builder.toString();
 	}
