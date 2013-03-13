@@ -206,7 +206,11 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	@Override
 	public boolean exisits(final String resource) {
-		final URI uri = URI.create(repository + sanatizeResource(resource));
+		return exisits0(sanatizeResource(resource));
+	}
+
+	protected boolean exisits0(final String sanatizedResource) {
+		final URI uri = URI.create(repository + sanatizedResource);
 
 		final HttpUriRequest request = requestFactory.createExistsRequest(uri);
 		final HttpResponse response = execute(request, /* found */HttpStatus.SC_OK, /* not found */HttpStatus.SC_NOT_FOUND);
