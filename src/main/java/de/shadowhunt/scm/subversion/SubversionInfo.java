@@ -152,10 +152,6 @@ public class SubversionInfo {
 
 	private static final SubversionProperty[] EMPTY = new SubversionProperty[0];
 
-	public static SubversionProperty[] getEmpty() {
-		return EMPTY;
-	}
-
 	public static SubversionInfo read(final InputStream in, final boolean withCustomProperties) {
 		final List<SubversionInfo> infos = readList(in, withCustomProperties);
 		if (infos.isEmpty()) {

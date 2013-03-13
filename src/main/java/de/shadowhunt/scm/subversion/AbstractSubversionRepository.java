@@ -341,7 +341,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		if (content == null) {
 			throw new IllegalArgumentException("content can not be null");
 		}
-		uploadWithProperties0(sanatizeResource(resource), message, content, (SubversionProperty[]) null);
+		uploadWithProperties0(sanatizeResource(resource), message, content, (SubversionProperty) null);
 	}
 
 	@Override

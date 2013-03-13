@@ -85,7 +85,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		return response.getFirstHeader("SVN-Txn-Name").getValue();
 	}
 
-	protected void propertiesRemove(final String sanatizedResource, final String uuid, final SubversionProperty[] properties) {
+	protected void propertiesRemove(final String sanatizedResource, final String uuid, final SubversionProperty... properties) {
 		final SubversionProperty[] filtered = SubversionProperty.filteroutSystemProperties(properties);
 		if (filtered.length == 0) {
 			return;

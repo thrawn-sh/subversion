@@ -156,7 +156,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 		ensureResonse(response, HttpStatus.SC_CREATED);
 	}
 
-	protected void propertiesRemove(final String sanatizedResource, final UUID uuid, final SubversionProperty[] properties) {
+	protected void propertiesRemove(final String sanatizedResource, final UUID uuid, final SubversionProperty... properties) {
 		final SubversionProperty[] filtered = SubversionProperty.filteroutSystemProperties(properties);
 		if (filtered.length == 0) {
 			return;
