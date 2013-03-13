@@ -141,9 +141,9 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		}
 
 		if (trimmed.charAt(0) == '/') {
-			return trimmed;
+			return StringUtils.removeEnd(trimmed, "/");
 		}
-		return "/" + trimmed;
+		return "/" + StringUtils.removeEnd(trimmed, "/");
 	}
 
 	protected final HttpClient client;
