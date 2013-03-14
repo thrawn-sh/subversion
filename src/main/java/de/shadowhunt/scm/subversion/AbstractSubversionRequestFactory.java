@@ -170,9 +170,15 @@ public abstract class AbstractSubversionRequestFactory {
 		return request;
 	}
 
-	public HttpUriRequest createRemovePropertiesRequest(final URI uri, final SubversionProperty... properties) {
+	public HttpUriRequest createRemovePropertiesRequest(final URI uri, final URI resource, final SubversionInfo info, final SubversionProperty... properties) {
 		final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH");
 		request.setURI(uri);
+
+		final String token = info.getLockToken();
+		if (token != null) {
+			request.addHeader("If", "<" + resource + "> (<" + token + ">)");
+		}
+
 		final StringBuilder sb = new StringBuilder(XML_PREAMBLE);
 		sb.append("<propertyupdate xmlns=\"DAV:\" xmlns:C=\"http://subversion.tigris.org/xmlns/custom/\" xmlns:S=\"http://subversion.tigris.org/xmlns/svn/\" xmlns:V=\"http://subversion.tigris.org/xmlns/dav/\"><remove>");
 		for (final SubversionProperty property : properties) {
@@ -188,9 +194,15 @@ public abstract class AbstractSubversionRequestFactory {
 		return request;
 	}
 
-	public HttpUriRequest createSetPropertiesRequest(final URI uri, final SubversionProperty... properties) {
+	public HttpUriRequest createSetPropertiesRequest(final URI uri, final URI resource, final SubversionInfo info, final SubversionProperty... properties) {
 		final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH");
 		request.setURI(uri);
+
+		final String token = info.getLockToken();
+		if (token != null) {
+			request.addHeader("If", "<" + resource + "> (<" + token + ">)");
+		}
+
 		final StringBuilder sb = new StringBuilder(XML_PREAMBLE);
 		sb.append("<propertyupdate xmlns=\"DAV:\" xmlns:C=\"http://subversion.tigris.org/xmlns/custom/\" xmlns:S=\"http://subversion.tigris.org/xmlns/svn/\" xmlns:V=\"http://subversion.tigris.org/xmlns/dav/\"><set>");
 		for (final SubversionProperty property : properties) {

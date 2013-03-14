@@ -90,8 +90,8 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		final String sanatizedResource = sanatizeResource(resource);
 		final String uuid = prepareCheckin();
 		setCommitMessage(uuid, message);
-		propertiesRemove(sanatizedResource, uuid, properties);
 		final SubversionInfo info = info0(sanatizedResource, HEAD_VERSION, false);
+		propertiesRemove(sanatizedResource, info, uuid, properties);
 		merge(info, uuid);
 	}
 
@@ -161,27 +161,29 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		return response.getFirstHeader("SVN-Txn-Name").getValue();
 	}
 
-	protected void propertiesRemove(final String sanatizedResource, final String uuid, final SubversionProperty... properties) {
+	protected void propertiesRemove(final String sanatizedResource, final SubversionInfo info, final String uuid, final SubversionProperty... properties) {
 		final SubversionProperty[] filtered = SubversionProperty.filteroutSystemProperties(properties);
 		if (filtered.length == 0) {
 			return;
 		}
 
 		final URI uri = URI.create(repository + PREFIX_TXR + uuid + sanatizedResource);
+		final URI resourceUri = URI.create(repository + sanatizedResource);
 
-		final HttpUriRequest request = requestFactory.createRemovePropertiesRequest(uri, filtered);
+		final HttpUriRequest request = requestFactory.createRemovePropertiesRequest(uri, resourceUri, info, filtered);
 		execute(request, HttpStatus.SC_MULTI_STATUS);
 	}
 
-	protected void propertiesSet(final String sanatizedResource, final String uuid, final SubversionProperty... properties) {
+	protected void propertiesSet(final String sanatizedResource, final SubversionInfo info, final String uuid, final SubversionProperty... properties) {
 		final SubversionProperty[] filtered = SubversionProperty.filteroutSystemProperties(properties);
 		if (filtered.length == 0) {
 			return;
 		}
 
 		final URI uri = URI.create(repository + PREFIX_TXR + uuid + sanatizedResource);
+		final URI resourceUri = URI.create(repository + sanatizedResource);
 
-		final HttpUriRequest request = requestFactory.createSetPropertiesRequest(uri, filtered);
+		final HttpUriRequest request = requestFactory.createSetPropertiesRequest(uri, resourceUri, info, filtered);
 		execute(request, HttpStatus.SC_MULTI_STATUS);
 	}
 
@@ -207,7 +209,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		final SubversionInfo info = info0(infoResource, HEAD_VERSION, false);
 		setCommitMessage(uuid, message);
 		contentUpload(sanatizedResource, info, uuid, content);
-		propertiesSet(sanatizedResource, uuid, properties);
+		propertiesSet(sanatizedResource, info, uuid, properties);
 		merge(info, uuid);
 	}
 }

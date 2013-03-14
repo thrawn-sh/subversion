@@ -63,7 +63,7 @@ public abstract class AbstractSubversionRepositoryTest {
 
 	@Test
 	public void testDeleteProperties() throws IOException {
-		final String resource = BASE + "/set_properties.txt";
+		final String resource = BASE + "/delete_properties.txt";
 		upload(resource, "properties");
 
 		REPO.setProperties(resource, "set", PROPERTY);
@@ -73,6 +73,27 @@ public abstract class AbstractSubversionRepositoryTest {
 
 		REPO.deleteProperties(resource, "delete", PROPERTY);
 		final SubversionInfo afterDelete = REPO.info(resource, true);
+		Assert.assertEquals("property still present", 0, afterDelete.getCustomProperties().length);
+		Assert.assertNull("property has wrong value", afterDelete.getSubversionPropertyValue("testname"));
+	}
+
+	@Test
+	public void testDeletePropertiesWithLockedResource() throws IOException {
+		final String resource = BASE + "/delete_properties.txt";
+		upload(resource, "properties");
+
+		REPO.setProperties(resource, "set", PROPERTY);
+		final SubversionInfo afterCreate = REPO.info(resource, true);
+		Assert.assertEquals("property is missing", 1, afterCreate.getCustomProperties().length);
+		Assert.assertEquals("property has wrong value", "testvalue", afterCreate.getSubversionPropertyValue("testname"));
+
+		REPO.lock(resource);
+		final SubversionInfo afterLock = REPO.info(resource, false);
+		Assert.assertNotNull("resource is not locked", afterLock.getLockToken());
+
+		REPO.deleteProperties(resource, "delete", PROPERTY);
+		final SubversionInfo afterDelete = REPO.info(resource, true);
+		Assert.assertNull("resource is locked", afterDelete.getLockToken());
 		Assert.assertEquals("property still present", 0, afterDelete.getCustomProperties().length);
 		Assert.assertNull("property has wrong value", afterDelete.getSubversionPropertyValue("testname"));
 	}
@@ -213,6 +234,21 @@ public abstract class AbstractSubversionRepositoryTest {
 		final SubversionInfo info = REPO.info(resource, true);
 		Assert.assertEquals("property is missing", 1, info.getCustomProperties().length);
 		Assert.assertEquals("property has wrong value", "testvalue", info.getSubversionPropertyValue("testname"));
+	}
+
+	@Test
+	public void testSetPropertiesWithLockedResource() throws IOException {
+		final String resource = BASE + "/set_properties_locked.txt";
+		upload(resource, "properties");
+		REPO.lock(resource);
+		final SubversionInfo afterLock = REPO.info(resource, false);
+		Assert.assertNotNull("resource is not locked", afterLock.getLockToken());
+
+		REPO.setProperties(resource, "set", PROPERTY);
+		final SubversionInfo afterSet = REPO.info(resource, true);
+		Assert.assertNull("resource is locked", afterSet.getLockToken());
+		Assert.assertEquals("property is missing", 1, afterSet.getCustomProperties().length);
+		Assert.assertEquals("property has wrong value", "testvalue", afterSet.getSubversionPropertyValue("testname"));
 	}
 
 	@Test

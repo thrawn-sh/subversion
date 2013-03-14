@@ -120,7 +120,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 			prepareCheckin(uuid);
 			setCommitMessage(uuid, version, message);
 			prepareContentUpload(sanatizedResource, uuid, version);
-			propertiesRemove(sanatizedResource, uuid, properties);
+			propertiesRemove(sanatizedResource, info, uuid, properties);
 			merge(info, uuid);
 		} finally {
 			deleteTemporyStructure(uuid);
@@ -204,27 +204,29 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 		execute(request, HttpStatus.SC_CREATED);
 	}
 
-	protected void propertiesRemove(final String sanatizedResource, final UUID uuid, final SubversionProperty... properties) {
+	protected void propertiesRemove(final String sanatizedResource, final SubversionInfo info, final UUID uuid, final SubversionProperty... properties) {
 		final SubversionProperty[] filtered = SubversionProperty.filteroutSystemProperties(properties);
 		if (filtered.length == 0) {
 			return;
 		}
 
 		final URI uri = URI.create(repository + PREFIX_WRK + uuid + sanatizedResource);
+		final URI resourceUri = URI.create(repository + sanatizedResource);
 
-		final HttpUriRequest request = requestFactory.createRemovePropertiesRequest(uri, filtered);
+		final HttpUriRequest request = requestFactory.createRemovePropertiesRequest(uri, resourceUri, info, filtered);
 		execute(request, HttpStatus.SC_MULTI_STATUS);
 	}
 
-	protected void propertiesSet(final String sanatizedResource, final UUID uuid, final SubversionProperty... properties) {
+	protected void propertiesSet(final String sanatizedResource, final SubversionInfo info, final UUID uuid, final SubversionProperty... properties) {
 		final SubversionProperty[] filtered = SubversionProperty.filteroutSystemProperties(properties);
 		if (filtered.length == 0) {
 			return;
 		}
 
 		final URI uri = URI.create(repository + PREFIX_WRK + uuid + sanatizedResource);
+		final URI resourceUri = URI.create(repository + sanatizedResource);
 
-		final HttpUriRequest request = requestFactory.createSetPropertiesRequest(uri, filtered);
+		final HttpUriRequest request = requestFactory.createSetPropertiesRequest(uri, resourceUri, info, filtered);
 		execute(request, HttpStatus.SC_MULTI_STATUS);
 	}
 
@@ -240,16 +242,16 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 	protected void uploadWithProperties0(final String sanatizedResource, final String message, @Nullable final InputStream content, @Nullable final SubversionProperty... properties) {
 		final UUID uuid = UUID.randomUUID();
 
-		final boolean exisits = exisits0(sanatizedResource);
-		final String infoResource;
-		if (exisits) {
-			infoResource = sanatizedResource;
-		} else {
-			infoResource = createMissingFolders(sanatizedResource, uuid);
-		}
-
 		createTemporyStructure(uuid);
 		try {
+			final boolean exisits = exisits0(sanatizedResource);
+			final String infoResource;
+			if (exisits) {
+				infoResource = sanatizedResource;
+			} else {
+				infoResource = createMissingFolders(sanatizedResource, uuid);
+			}
+
 			final SubversionInfo info = info0(infoResource, HEAD_VERSION, false);
 			final long version = info.getVersion();
 			prepareCheckin(uuid);
@@ -258,7 +260,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 				prepareContentUpload(sanatizedResource, uuid, version);
 			}
 			contentUpload(sanatizedResource, info, uuid, content);
-			propertiesSet(sanatizedResource, uuid, properties);
+			propertiesSet(sanatizedResource, info, uuid, properties);
 			merge(info, uuid);
 		} finally {
 			deleteTemporyStructure(uuid);
