@@ -42,21 +42,21 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 		this(createClient(repository, username, password, workstation), repository);
 	}
 
-	protected void contentUpload(final String sanatizedResource, final UUID uuid, final InputStream content) {
+	protected void contentUpload(final String sanatizedResource, final SubversionInfo info, final UUID uuid, final InputStream content) {
 		if (content == null) {
 			return;
 		}
 
 		final URI uri = URI.create(repository + PREFIX_WRK + uuid + sanatizedResource);
+		final URI resourceUri = URI.create(repository + sanatizedResource);
 
-		final HttpUriRequest request = requestFactory.createUploadRequest(uri, content);
+		final HttpUriRequest request = requestFactory.createUploadRequest(uri, resourceUri, info, content);
 		execute(request, HttpStatus.SC_CREATED, HttpStatus.SC_NO_CONTENT);
 	}
 
 	protected String createMissingFolders(final String sanatizedResource, final UUID uuid) {
 		final String[] resourceParts = sanatizedResource.split("/");
 
-		int existing = 1;
 		String infoResource = "/";
 		final StringBuilder partial = new StringBuilder();
 		for (int i = 1; i < (resourceParts.length - 1); i++) {
@@ -70,13 +70,9 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 			final int status = response.getStatusLine().getStatusCode();
 			if (status == HttpStatus.SC_METHOD_NOT_ALLOWED) {
 				infoResource = partialResource;
-				existing++;
 			}
 		}
 
-		if (existing == (resourceParts.length - 1)) {
-			return sanatizedResource;
-		}
 		return infoResource;
 	}
 
@@ -100,7 +96,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 			setCommitMessage(uuid, version, message);
 			prepareContentUpload(sanatizedResource, uuid, version);
 			delete(sanatizedResource, uuid);
-			merge(uuid);
+			merge(info, uuid);
 		} finally {
 			deleteTemporyStructure(uuid);
 		}
@@ -125,7 +121,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 			setCommitMessage(uuid, version, message);
 			prepareContentUpload(sanatizedResource, uuid, version);
 			propertiesRemove(sanatizedResource, uuid, properties);
-			merge(uuid);
+			merge(info, uuid);
 		} finally {
 			deleteTemporyStructure(uuid);
 		}
@@ -188,9 +184,9 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 		}
 	}
 
-	protected void merge(final UUID uuid) {
+	protected void merge(final SubversionInfo info, final UUID uuid) {
 		final String path = repository.getPath() + PREFIX_ACT + uuid;
-		final HttpUriRequest request = requestFactory.createMergeRequest(repository, path);
+		final HttpUriRequest request = requestFactory.createMergeRequest(repository, path, info);
 		execute(request, HttpStatus.SC_OK);
 	}
 
@@ -244,17 +240,16 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 	protected void uploadWithProperties0(final String sanatizedResource, final String message, @Nullable final InputStream content, @Nullable final SubversionProperty... properties) {
 		final UUID uuid = UUID.randomUUID();
 
+		final boolean exisits = exisits0(sanatizedResource);
+		final String infoResource;
+		if (exisits) {
+			infoResource = sanatizedResource;
+		} else {
+			infoResource = createMissingFolders(sanatizedResource, uuid);
+		}
+
 		createTemporyStructure(uuid);
 		try {
-			final boolean exisits = exisits0(sanatizedResource);
-
-			final String infoResource;
-			if (exisits) {
-				infoResource = sanatizedResource;
-			} else {
-				infoResource = createMissingFolders(sanatizedResource, uuid);
-			}
-
 			final SubversionInfo info = info0(infoResource, HEAD_VERSION, false);
 			final long version = info.getVersion();
 			prepareCheckin(uuid);
@@ -262,9 +257,9 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 			if (exisits) {
 				prepareContentUpload(sanatizedResource, uuid, version);
 			}
-			contentUpload(sanatizedResource, uuid, content);
+			contentUpload(sanatizedResource, info, uuid, content);
 			propertiesSet(sanatizedResource, uuid, properties);
-			merge(uuid);
+			merge(info, uuid);
 		} finally {
 			deleteTemporyStructure(uuid);
 		}

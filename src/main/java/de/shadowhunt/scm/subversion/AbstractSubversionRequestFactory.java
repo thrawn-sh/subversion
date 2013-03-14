@@ -1,5 +1,6 @@
 package de.shadowhunt.scm.subversion;
 
+import java.io.InputStream;
 import java.net.URI;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -7,8 +8,10 @@ import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpOptions;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
 
 public abstract class AbstractSubversionRequestFactory {
@@ -143,6 +146,30 @@ public abstract class AbstractSubversionRequestFactory {
 		return request;
 	}
 
+	public HttpUriRequest createMergeRequest(final URI uri, final String path, final SubversionInfo info) {
+		final DavTemplateRequest request = new DavTemplateRequest("MERGE");
+		request.setURI(uri);
+
+		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
+		body.append("<merge xmlns=\"DAV:\"><source><href>");
+		body.append(StringEscapeUtils.escapeXml(path));
+		body.append("</href></source><no-auto-merge/><no-checkout/><prop><checked-in/><version-name/><resourcetype/><creationdate/><creator-displayname/></prop>");
+		final String token = info.getLockToken();
+		if (token != null) {
+			request.addHeader("X-SVN-Options", "release-locks");
+
+			body.append("<S:lock-token-list xmlns:S=\"svn:\"><S:lock><S:lock-path>");
+			body.append(StringEscapeUtils.escapeXml(info.getRelativePath()));
+			body.append("</S:lock-path>");
+			body.append("<S:lock-token>");
+			body.append(token);
+			body.append("</S:lock-token></S:lock></S:lock-token-list>");
+		}
+		body.append("</merge>");
+		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
+		return request;
+	}
+
 	public HttpUriRequest createRemovePropertiesRequest(final URI uri, final SubversionProperty... properties) {
 		final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH");
 		request.setURI(uri);
@@ -190,6 +217,17 @@ public abstract class AbstractSubversionRequestFactory {
 		final DavTemplateRequest request = new DavTemplateRequest("UNLOCK");
 		request.setURI(uri);
 		request.addHeader("Lock-Token", "<" + info.getLockToken() + ">");
+		return request;
+	}
+
+	public HttpUriRequest createUploadRequest(final URI uri, final URI resource, final SubversionInfo info, final InputStream content) {
+		final HttpPut request = new HttpPut(uri);
+
+		final String token = info.getLockToken();
+		if (token != null) {
+			request.addHeader("If", "<" + resource + "> (<" + token + ">)");
+		}
+		request.setEntity(new InputStreamEntity(content, -1));
 		return request;
 	}
 }

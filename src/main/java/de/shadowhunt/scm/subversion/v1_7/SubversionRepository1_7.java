@@ -41,9 +41,9 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		}
 
 		final URI uri = URI.create(repository + PREFIX_TXR + uuid + sanatizedResource);
-		final URI aaa = URI.create(repository + sanatizedResource);
+		final URI resourceUri = URI.create(repository + sanatizedResource);
 
-		final HttpUriRequest request = requestFactory.createUploadRequest(uri, aaa, info, content);
+		final HttpUriRequest request = requestFactory.createUploadRequest(uri, resourceUri, info, content);
 		execute(request, HttpStatus.SC_CREATED, HttpStatus.SC_NO_CONTENT);
 	}
 

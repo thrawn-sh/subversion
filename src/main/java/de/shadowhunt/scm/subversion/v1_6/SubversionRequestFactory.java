@@ -1,12 +1,9 @@
 package de.shadowhunt.scm.subversion.v1_6;
 
-import java.io.InputStream;
 import java.net.URI;
 
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
 
 import de.shadowhunt.scm.subversion.AbstractSubversionRequestFactory;
@@ -25,9 +22,4 @@ class SubversionRequestFactory extends AbstractSubversionRequestFactory {
 		return request;
 	}
 
-	HttpUriRequest createUploadRequest(final URI uri, final InputStream content) {
-		final HttpPut request = new HttpPut(uri);
-		request.setEntity(new InputStreamEntity(content, -1));
-		return request;
-	}
 }
