@@ -56,7 +56,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	};
 
-	protected static final long HEAD_VERSION = 0L;
+	protected static final long HEAD_VERSION = -1L;
 
 	protected static boolean contains(final int statusCode, @Nullable final int... expectedStatusCodes) {
 		if (expectedStatusCodes == null) {
@@ -303,6 +303,9 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	@Override
 	public void unlock(final String resource, final SubversionInfo info) {
+		if (info.getLockToken() == null) {
+			return;
+		}
 		final URI uri = URI.create(repository + sanatizeResource(resource));
 
 		final HttpUriRequest request = requestFactory.createUnlockRequest(uri, info);
@@ -319,8 +322,8 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	@Override
 	public void uploadWithProperties(final String resource, final String message, final InputStream content, final SubversionProperty... properties) {
-		if ((content == null) && (properties == null)) {
-			throw new IllegalArgumentException("content and properties can not both be null");
+		if (content == null) {
+			throw new IllegalArgumentException("content can not be null");
 		}
 		uploadWithProperties0(sanatizeResource(resource), message, content, properties);
 	}
