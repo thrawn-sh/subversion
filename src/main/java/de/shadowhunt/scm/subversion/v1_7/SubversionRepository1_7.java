@@ -4,12 +4,9 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpUriRequest;
 
@@ -25,14 +22,8 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 
 	protected static final String PREFIX_TXR = "/!svn/txr/";
 
-	public SubversionRepository1_7(final HttpClient client, final URI repositoryRoot) {
-		super(client, repositoryRoot, new SubversionRequestFactory());
-
-		triggerAuthentication();
-	}
-
-	public SubversionRepository1_7(final URI repositoryRoot, final String username, final String password, @Nullable final String workstation) {
-		this(createClient(repositoryRoot, username, password, workstation), repositoryRoot);
+	public SubversionRepository1_7(final URI repositoryRoot) {
+		super(repositoryRoot, new SubversionRequestFactory());
 	}
 
 	protected void contentUpload(final String sanatizedResource, final SubversionInfo info, final String uuid, final InputStream content) {

@@ -10,7 +10,6 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpUriRequest;
 
@@ -32,14 +31,8 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 
 	protected static final String PREFIX_WRK = "/!svn/wrk/";
 
-	public SubversionRepository1_6(final HttpClient client, final URI repository) {
-		super(client, repository, new SubversionRequestFactory());
-
-		triggerAuthentication();
-	}
-
-	public SubversionRepository1_6(final URI repository, final String username, final String password, @Nullable final String workstation) {
-		this(createClient(repository, username, password, workstation), repository);
+	public SubversionRepository1_6(final URI repository) {
+		super(repository, new SubversionRequestFactory());
 	}
 
 	protected void contentUpload(final String sanatizedResource, final SubversionInfo info, final UUID uuid, final InputStream content) {

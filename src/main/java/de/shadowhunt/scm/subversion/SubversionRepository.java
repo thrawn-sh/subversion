@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 public interface SubversionRepository {
 
 	public void delete(String resource, String message);
@@ -37,5 +39,7 @@ public interface SubversionRepository {
 	public void upload(String resource, String message, InputStream content);
 
 	public void uploadWithProperties(String resource, String message, InputStream content, SubversionProperty... properties);
+
+	public void setCredentials(URI root, @Nullable String user, @Nullable String password, @Nullable String workstation);
 
 }

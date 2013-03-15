@@ -8,6 +8,7 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -21,6 +22,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.NTCredentials;
 import org.apache.http.client.AuthCache;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.ClientContext;
@@ -31,6 +33,7 @@ import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DecompressingHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
@@ -71,17 +74,17 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		return false;
 	}
 
-	protected static HttpClient createClient(final URI host, final String username, final String password, @Nullable final String workstation) {
-		final DefaultHttpClient client = new DefaultHttpClient();
-
-		final Credentials credentials = creteCredentials(username, password, workstation);
-		final AuthScope authscope = new AuthScope(host.getHost(), AuthScope.ANY_PORT);
-		client.getCredentialsProvider().setCredentials(authscope, credentials);
+	protected static DefaultHttpClient createClient(final URI host) {
+		final PoolingClientConnectionManager connectionManager = new PoolingClientConnectionManager();
+		connectionManager.setMaxTotal(100); // TODO
+		connectionManager.setDefaultMaxPerRoute(100); // TODO
 
 		final Scheme scheme = createTrustingAnySslCertScheme(host.getPort());
-		client.getConnectionManager().getSchemeRegistry().register(scheme);
+		connectionManager.getSchemeRegistry().register(scheme);
 
-		return new DecompressingHttpClient(client); // add gzip support
+		final DefaultHttpClient client = new DefaultHttpClient(connectionManager);
+		client.setCredentialsProvider(new ThreadLocalCredentialsProvider());
+		return client;
 	}
 
 	protected static Scheme createTrustingAnySslCertScheme(final int port) {
@@ -97,7 +100,12 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		}
 	}
 
+	@CheckForNull
 	protected static Credentials creteCredentials(final String user, final String password, @Nullable final String workstation) {
+		if (user == null) {
+			return null;
+		}
+
 		final String username;
 		final String domain;
 		final int index = user.indexOf('\\');
@@ -144,6 +152,8 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		return "/" + StringUtils.removeEnd(trimmed, "/");
 	}
 
+	private final DefaultHttpClient backend;
+
 	protected final HttpClient client;
 
 	/**
@@ -155,10 +165,15 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	protected final T requestFactory;
 
-	protected AbstractSubversionRepository(final HttpClient client, final URI repository, final T requestFactory) {
-		this.client = client;
+	protected AbstractSubversionRepository(final DefaultHttpClient backend, final URI repository, final T requestFactory) {
+		this.client = new DecompressingHttpClient(backend);
+		this.backend = backend;
 		this.repository = repository;
 		this.requestFactory = requestFactory;
+	}
+
+	protected AbstractSubversionRepository(final URI repository, final T requestFactory) {
+		this(createClient(repository), repository, requestFactory);
 	}
 
 	protected void closeQuiet(final InputStream in) {
@@ -292,13 +307,33 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	}
 
 	@Override
+	public final void setCredentials(final URI host, @Nullable final String username, @Nullable final String password, @Nullable final String workstation) {
+		final Credentials credentials = creteCredentials(username, password, workstation);
+		final AuthScope authscope = new AuthScope(host.getHost(), AuthScope.ANY_PORT);
+		final CredentialsProvider credentialsProvider = backend.getCredentialsProvider();
+
+		if (!credentials.equals(credentialsProvider.getCredentials(authscope))) {
+			credentialsProvider.setCredentials(authscope, credentials);
+
+			// if we use new credentials we must reset the authCache 
+			final HttpContext httpContext = getHttpContext();
+			final AuthCache authCache = (AuthCache) httpContext.getAttribute(ClientContext.AUTH_CACHE);
+			if (authCache != null) {
+				authCache.clear();
+			}
+
+			triggerAuthentication();
+		}
+	}
+
+	@Override
 	public void setProperties(final String resource, final String message, final SubversionProperty... properties) {
 		uploadWithProperties0(sanatizeResource(resource), message, null, properties);
 	}
 
 	protected final void triggerAuthentication() {
 		final HttpUriRequest request = requestFactory.createAuthRequest(repository);
-		execute(request, null);
+		execute(request, HttpStatus.SC_OK);
 	}
 
 	@Override
