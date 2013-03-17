@@ -31,6 +31,10 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 			return;
 		}
 
+		if (!isAuthenticated()) {
+			triggerAuthentication();
+		}
+
 		final URI uri = URI.create(repository + PREFIX_TXR + uuid + sanatizedResource);
 		final URI resourceUri = URI.create(repository + sanatizedResource);
 

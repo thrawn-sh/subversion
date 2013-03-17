@@ -40,6 +40,10 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 			return;
 		}
 
+		if (!isAuthenticated()) {
+			triggerAuthentication();
+		}
+
 		final URI uri = URI.create(repository + PREFIX_WRK + uuid + sanatizedResource);
 		final URI resourceUri = URI.create(repository + sanatizedResource);
 

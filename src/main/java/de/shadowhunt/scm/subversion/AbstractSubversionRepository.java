@@ -18,13 +18,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.auth.AuthProtocolState;
 import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.AuthState;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.NTCredentials;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeSocketFactory;
@@ -213,6 +216,15 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		} catch (final Exception e) {
 			throw new SubversionException("could not execute request (" + request + ")", e);
 		}
+	}
+
+	protected boolean isAuthenticated() {
+		final HttpContext httpContext = getHttpContext();
+		final AuthState authState = (AuthState) httpContext.getAttribute(ClientContext.TARGET_AUTH_STATE);
+		if (authState != null) {
+			return authState.getState() == AuthProtocolState.SUCCESS;
+		}
+		return false;
 	}
 
 	protected HttpResponse execute(final HttpUriRequest request, @Nullable final int... expectedStatusCodes) {
