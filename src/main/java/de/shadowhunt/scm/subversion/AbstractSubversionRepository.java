@@ -5,7 +5,9 @@ import java.io.InputStream;
 import java.net.URI;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.CheckForNull;
@@ -77,17 +79,31 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		return false;
 	}
 
-	protected static DefaultHttpClient createClient(final URI host) {
+	protected static DefaultHttpClient createClient(final URI host, final int maxConnections, final boolean addSvnHeader) {
 		final PoolingClientConnectionManager connectionManager = new PoolingClientConnectionManager();
-		connectionManager.setMaxTotal(100); // TODO
-		connectionManager.setDefaultMaxPerRoute(100); // TODO
+		connectionManager.setMaxTotal(maxConnections);
+		connectionManager.setDefaultMaxPerRoute(maxConnections);
 
 		final Scheme scheme = createTrustingAnySslCertScheme(host.getPort());
 		connectionManager.getSchemeRegistry().register(scheme);
 
-		final DefaultHttpClient client = new DefaultHttpClient(connectionManager);
-		client.setCredentialsProvider(new ThreadLocalCredentialsProvider());
-		return client;
+		final DefaultHttpClient defaultClient = new DefaultHttpClient(connectionManager);
+		defaultClient.setCredentialsProvider(new ThreadLocalCredentialsProvider());
+		if (addSvnHeader) {
+			defaultClient.getParams().setParameter(ClientPNames.DEFAULT_HEADERS, createDefaultHeaders());
+		}
+		return defaultClient;
+	}
+
+	private static Collection<Header> createDefaultHeaders() {
+		final Collection<Header> parameters = new ArrayList<Header>();
+		parameters.add(new BasicHeader("User-Agent", "SVN/1.7.5 neon/0.29.6"));
+		parameters.add(new BasicHeader("Connection", "TE"));
+		parameters.add(new BasicHeader("TE", "trailers"));
+		parameters.add(new BasicHeader("DAV", "http://subversion.tigris.org/xmlns/dav/svn/depth"));
+		parameters.add(new BasicHeader("DAV", "http://subversion.tigris.org/xmlns/dav/svn/mergeinfo"));
+		parameters.add(new BasicHeader("DAV", "http://subversion.tigris.org/xmlns/dav/svn/log-revprops"));
+		return parameters;
 	}
 
 	protected static Scheme createTrustingAnySslCertScheme(final int port) {
@@ -155,6 +171,8 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		return "/" + StringUtils.removeEnd(trimmed, "/");
 	}
 
+	protected final AuthScope authscope;
+
 	private final DefaultHttpClient backend;
 
 	protected final HttpClient client;
@@ -165,8 +183,6 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	protected final T requestFactory;
 
-	protected final AuthScope authscope;
-
 	protected AbstractSubversionRepository(final DefaultHttpClient backend, final URI repository, final T requestFactory) {
 		this.client = new DecompressingHttpClient(backend);
 		this.backend = backend;
@@ -176,7 +192,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	}
 
 	protected AbstractSubversionRepository(final URI repository, final T requestFactory) {
-		this(createClient(repository), repository, requestFactory);
+		this(createClient(repository, 100, false), repository, requestFactory);
 	}
 
 	protected void closeQuiet(final InputStream in) {
@@ -218,14 +234,6 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		}
 	}
 
-	protected boolean isAuthenticated() {
-		final AuthState authState = (AuthState) context.getAttribute(ClientContext.TARGET_AUTH_STATE);
-		if (authState != null) {
-			return authState.getState() == AuthProtocolState.SUCCESS;
-		}
-		return false;
-	}
-
 	protected HttpResponse execute(final HttpUriRequest request, @Nullable final int... expectedStatusCodes) {
 		return execute(request, true, expectedStatusCodes);
 	}
@@ -257,6 +265,14 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	}
 
 	protected abstract SubversionInfo info0(String sanatizeResource, long version, boolean withCustomProperties);
+
+	protected boolean isAuthenticated() {
+		final AuthState authState = (AuthState) context.getAttribute(ClientContext.TARGET_AUTH_STATE);
+		if (authState != null) {
+			return authState.getState() == AuthProtocolState.SUCCESS;
+		}
+		return false;
+	}
 
 	@Override
 	public SubversionLog lastLog(final String resource) {
