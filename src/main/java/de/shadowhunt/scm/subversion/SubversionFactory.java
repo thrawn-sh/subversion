@@ -23,7 +23,7 @@ public final class SubversionFactory {
 		}
 
 		if (user != null) {
-			reposiotry.setCredentials(root, user, password, workstation);
+			reposiotry.setCredentials(user, password, workstation);
 		}
 		return reposiotry;
 	}

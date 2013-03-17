@@ -15,7 +15,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpHost;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthProtocolState;
@@ -32,14 +32,14 @@ import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeSocketFactory;
 import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DecompressingHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
+
+import de.shadowhunt.http.client.ThreadLocalCredentialsProvider;
+import de.shadowhunt.http.protocol.ThreadLocalHttpContext;
 
 public abstract class AbstractSubversionRepository<T extends AbstractSubversionRequestFactory> implements SubversionRepository {
 
@@ -159,20 +159,20 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	protected final HttpClient client;
 
-	/**
-	 * HttpContext is *NOT threadsafe, use getHttpContext() to retrieve it
-	 */
-	private final ThreadLocal<HttpContext> context = new ThreadLocal<HttpContext>();
+	private final ThreadLocalHttpContext context = new ThreadLocalHttpContext();
 
 	protected final URI repository;
 
 	protected final T requestFactory;
+
+	protected final AuthScope authscope;
 
 	protected AbstractSubversionRepository(final DefaultHttpClient backend, final URI repository, final T requestFactory) {
 		this.client = new DecompressingHttpClient(backend);
 		this.backend = backend;
 		this.repository = repository;
 		this.requestFactory = requestFactory;
+		this.authscope = new AuthScope(repository.getHost(), AuthScope.ANY_PORT);
 	}
 
 	protected AbstractSubversionRepository(final URI repository, final T requestFactory) {
@@ -210,7 +210,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	protected HttpResponse execute(final HttpUriRequest request, final boolean consume, @Nullable final int... expectedStatusCodes) {
 		try {
-			final HttpResponse response = client.execute(request, getHttpContext());
+			final HttpResponse response = client.execute(request, context);
 			ensureResonse(response, consume, expectedStatusCodes);
 			return response;
 		} catch (final Exception e) {
@@ -219,8 +219,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	}
 
 	protected boolean isAuthenticated() {
-		final HttpContext httpContext = getHttpContext();
-		final AuthState authState = (AuthState) httpContext.getAttribute(ClientContext.TARGET_AUTH_STATE);
+		final AuthState authState = (AuthState) context.getAttribute(ClientContext.TARGET_AUTH_STATE);
 		if (authState != null) {
 			return authState.getState() == AuthProtocolState.SUCCESS;
 		}
@@ -242,22 +241,6 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		final HttpUriRequest request = requestFactory.createExistsRequest(uri);
 		final HttpResponse response = execute(request, /* found */HttpStatus.SC_OK, /* not found */HttpStatus.SC_NOT_FOUND);
 		return (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK);
-	}
-
-	HttpContext getHttpContext() {
-		HttpContext httpContext = context.get();
-		if (httpContext == null) {
-			httpContext = new BasicHttpContext();
-
-			// enable preemptive authentication for basic
-			final AuthCache authCache = new BasicAuthCache();
-			final HttpHost httpHost = new HttpHost(repository.getHost(), repository.getPort(), repository.getScheme());
-			authCache.put(httpHost, new BasicScheme());
-			httpContext.setAttribute(ClientContext.AUTH_CACHE, authCache);
-
-			context.set(httpContext);
-		}
-		return httpContext;
 	}
 
 	@Override
@@ -319,19 +302,22 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	}
 
 	@Override
-	public final void setCredentials(final URI host, @Nullable final String username, @Nullable final String password, @Nullable final String workstation) {
+	public final void setCredentials(@Nullable final String username, @Nullable final String password, @Nullable final String workstation) {
 		final Credentials credentials = creteCredentials(username, password, workstation);
-		final AuthScope authscope = new AuthScope(host.getHost(), AuthScope.ANY_PORT);
 		final CredentialsProvider credentialsProvider = backend.getCredentialsProvider();
 
 		if (!credentials.equals(credentialsProvider.getCredentials(authscope))) {
 			credentialsProvider.setCredentials(authscope, credentials);
 
 			// if we use new credentials we must reset the authCache 
-			final HttpContext httpContext = getHttpContext();
-			final AuthCache authCache = (AuthCache) httpContext.getAttribute(ClientContext.AUTH_CACHE);
+			final AuthCache authCache = (AuthCache) context.getAttribute(ClientContext.AUTH_CACHE);
 			if (authCache != null) {
 				authCache.clear();
+			}
+
+			final AuthState authState = (AuthState) context.getAttribute(ClientContext.TARGET_AUTH_STATE);
+			if (authState != null) {
+				authState.reset();
 			}
 
 			triggerAuthentication();

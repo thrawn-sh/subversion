@@ -1,4 +1,4 @@
-package de.shadowhunt.scm.subversion;
+package de.shadowhunt.http.client;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +12,7 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.client.CredentialsProvider;
 
 @ThreadSafe
-class ThreadLocalCredentialsProvider implements CredentialsProvider {
+public class ThreadLocalCredentialsProvider implements CredentialsProvider {
 
 	private final ThreadLocal<Map<AuthScope, Credentials>> threadLocalCredentials = new ThreadLocal<Map<AuthScope, Credentials>>();
 
@@ -65,5 +65,4 @@ class ThreadLocalCredentialsProvider implements CredentialsProvider {
 		final Map<AuthScope, Credentials> credentialsMap = getCredentialsMap();
 		credentialsMap.put(authscope, credentials);
 	}
-
 }

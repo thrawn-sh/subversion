@@ -40,6 +40,6 @@ public interface SubversionRepository {
 
 	public void uploadWithProperties(String resource, String message, InputStream content, SubversionProperty... properties);
 
-	public void setCredentials(URI root, @Nullable String user, @Nullable String password, @Nullable String workstation);
+	public void setCredentials(@Nullable String user, @Nullable String password, @Nullable String workstation);
 
 }
