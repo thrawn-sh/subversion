@@ -20,18 +20,19 @@ public abstract class AbstractSubversionRequestFactory {
 
 		private static final int DEFAULT_DEPTH = 0;
 
-		private int depth;
+		private final int depth;
 
 		private final String method;
 
 		public DavTemplateRequest(final String method) {
-			this(method, DEFAULT_DEPTH);
+			this.method = method;
+			depth = DEFAULT_DEPTH;
 		}
 
 		public DavTemplateRequest(final String method, final int depth) {
-			super();
 			this.method = method;
-			setDepth(depth);
+			this.depth = depth;
+			setHeader("Depth", Integer.toString(depth));
 		}
 
 		public int getDepth() {
@@ -41,12 +42,6 @@ public abstract class AbstractSubversionRequestFactory {
 		@Override
 		public String getMethod() {
 			return method;
-		}
-
-		public void setDepth(final int depth) {
-			this.depth = depth;
-			removeHeaders("Depth");
-			addHeader("Depth", Integer.toString(depth));
 		}
 
 		@Override
@@ -66,7 +61,9 @@ public abstract class AbstractSubversionRequestFactory {
 	}
 
 	public HttpUriRequest createAuthRequest(final URI uri) {
-		return new HttpOptions(uri);
+		final HttpOptions request = new HttpOptions(uri);
+		request.addHeader("Keep-Alive", "");
+		return request;
 	}
 
 	public HttpUriRequest createCheckoutRequest(final URI uri, final String path) {
@@ -149,6 +146,7 @@ public abstract class AbstractSubversionRequestFactory {
 	public HttpUriRequest createMergeRequest(final URI uri, final String path, final SubversionInfo info) {
 		final DavTemplateRequest request = new DavTemplateRequest("MERGE");
 		request.setURI(uri);
+		request.setHeader("X-SVN-Options", "release-locks");
 
 		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
 		body.append("<merge xmlns=\"DAV:\"><source><href>");
