@@ -42,10 +42,7 @@ public class ThreadLocalCredentialsProvider implements CredentialsProvider {
 			}
 		}
 
-		if (bestMatch != null) {
-			return credentialsMap.get(bestMatch);
-		}
-		return null;
+		return credentialsMap.get(bestMatch);
 	}
 
 	protected Map<AuthScope, Credentials> getCredentialsMap() {
