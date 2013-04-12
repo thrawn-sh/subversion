@@ -1,0 +1,133 @@
+<VirtualHost *:443 *:8443>
+	ServerAdmin webmaster@localhost
+
+	DocumentRoot /var/www
+	<Directory />
+		Options FollowSymLinks
+		AllowOverride None
+	</Directory>
+	<Directory /var/www/>
+		Options Indexes FollowSymLinks MultiViews
+		AllowOverride None
+		Order allow,deny
+		allow from all
+	</Directory>
+
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+
+	# Possible values include: debug, info, notice, warn, error, crit,
+	# alert, emerg.
+	LogLevel warn
+	CustomLog ${APACHE_LOG_DIR}/ssl_access.log combined
+
+	#   SSL Engine Switch:
+	#   Enable/Disable SSL for this virtual host.
+	SSLEngine on
+
+	#   A self-signed (snakeoil) certificate can be created by installing
+	#   the ssl-cert package. See
+	#   /usr/share/doc/apache2.2-common/README.Debian.gz for more info.
+	#   If both key and certificate are stored in the same file, only the
+	#   SSLCertificateFile directive is needed.
+	SSLCertificateFile    /etc/ssl/certs/ssl-cert-snakeoil.pem
+	SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+
+	<Location /svn-non>
+		DAV                     svn
+		DavDepthInfinity        On
+
+		SVNParentPath           /var/www/svn
+
+		LimitXMLRequestBody     20971520
+		#DavGenericLockDB        /var/lock/httpd/DavLock.svn
+
+		Order allow,deny
+		Allow from all
+	</Location>
+
+	<Location /svn-basic>
+		DAV                     svn
+		DavDepthInfinity        On
+
+		SVNParentPath           /var/www/svn
+
+		LimitXMLRequestBody     20971520
+		#DavGenericLockDB        /var/lock/httpd/DavLock.svn
+
+		AuthType                Basic
+		AuthName                "SVN Repository Basic"
+		AuthBasicProvider       file
+		AuthUserFile            /var/www/passwd.basic
+
+		## restrict read access
+		<Limit GET PROPFIND OPTIONS REPORT>
+			require valid-user
+		</Limit>
+
+		## allow write access
+		<LimitExcept GET PROPFIND>
+			require valid-user
+		</LimitExcept>
+
+		Order allow,deny
+		Allow from all
+	</Location>
+
+	<Location /svn-digest>
+		DAV                     svn
+		DavDepthInfinity        On
+
+		SVNParentPath           /var/www/svn
+
+		LimitXMLRequestBody     20971520
+		#DavGenericLockDB        /var/lock/httpd/DavLock.svn
+
+		AuthType                Digest
+		AuthDigestDomain        /svn-digest/
+		AuthName                "SVN Repository Digest"
+		AuthDigestProvider      file
+		AuthUserFile            /var/www/passwd.digest
+
+		## restrict read access
+		<Limit GET PROPFIND OPTIONS REPORT>
+			require valid-user
+		</Limit>
+
+		## allow write access
+		<LimitExcept GET PROPFIND>
+			require valid-user
+		</LimitExcept>
+
+		Order allow,deny
+		Allow from all
+	</Location>
+
+	<Location /svn-ntlm>
+		DAV                     svn
+		DavDepthInfinity        On
+
+		SVNParentPath           /var/www/svn
+
+		LimitXMLRequestBody     20971520
+		#DavGenericLockDB        /var/lock/httpd/DavLock.svn
+
+		AuthName                "SVN Repository NTLM"
+		NTLMAuth on
+		NTLMAuthHelper          "/usr/bin/ntlm_auth --helper-protocol=squid-2.5-ntlmssp"
+		NTLMBasicAuthoritative  off
+		AuthType NTLM
+
+		## restrict read access
+		<Limit GET PROPFIND OPTIONS REPORT>
+			require valid-user
+		</Limit>
+
+		## allow write access
+		<LimitExcept GET PROPFIND>
+			require valid-user
+		</LimitExcept>
+
+		Order allow,deny
+		Allow from all
+	</Location>
+</VirtualHost>
