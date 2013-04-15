@@ -40,6 +40,7 @@ import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 
+import de.shadowhunt.http.auth.NtlmSchemeFactory;
 import de.shadowhunt.http.client.ThreadLocalCredentialsProvider;
 import de.shadowhunt.http.protocol.ThreadLocalHttpContext;
 
@@ -92,7 +93,21 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		if (addSvnHeader) {
 			defaultClient.getParams().setParameter(ClientPNames.DEFAULT_HEADERS, createDefaultHeaders());
 		}
+
+		if (hasJcifsSupport()) {
+			defaultClient.getAuthSchemes().register("ntlm", new NtlmSchemeFactory());
+		}
+
 		return defaultClient;
+	}
+
+	private static boolean hasJcifsSupport() {
+		try {
+			Class.forName("jcifs.ntlmssp.NtlmFlags");
+			return true;
+		} catch (final ClassNotFoundException e) {
+			return false;
+		}
 	}
 
 	private static Collection<Header> createDefaultHeaders() {
@@ -133,7 +148,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 			domain = user.substring(0, index);
 		} else {
 			username = user;
-			domain = null;
+			domain = "";
 		}
 		return new NTCredentials(username, password, workstation, domain);
 	}
