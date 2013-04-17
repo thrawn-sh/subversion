@@ -24,7 +24,7 @@ public interface SubversionRepository {
 
 	public SubversionLog lastLog(String resource);
 
-	public List<SubversionInfo> list(String resource, int depth, boolean withCustomProperties);
+	public List<SubversionInfo> list(String resource, Depth depth, boolean withCustomProperties);
 
 	public void lock(String resource);
 

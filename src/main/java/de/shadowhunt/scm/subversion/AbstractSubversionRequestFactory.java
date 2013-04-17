@@ -18,24 +18,22 @@ public abstract class AbstractSubversionRequestFactory {
 
 	public static final class DavTemplateRequest extends HttpEntityEnclosingRequestBase {
 
-		private static final int DEFAULT_DEPTH = 0;
-
-		private final int depth;
+		private final Depth depth;
 
 		private final String method;
 
 		public DavTemplateRequest(final String method) {
 			this.method = method;
-			depth = DEFAULT_DEPTH;
+			depth = Depth.EMPTY;
 		}
 
-		public DavTemplateRequest(final String method, final int depth) {
+		public DavTemplateRequest(final String method, final Depth depth) {
 			this.method = method;
 			this.depth = depth;
-			setHeader("Depth", Integer.toString(depth));
+			setHeader("Depth", depth.value);
 		}
 
-		public int getDepth() {
+		public Depth getDepth() {
 			return depth;
 		}
 
@@ -100,7 +98,7 @@ public abstract class AbstractSubversionRequestFactory {
 		return new HttpHead(uri);
 	}
 
-	public HttpUriRequest createInfoRequest(final URI uri, final int depth) {
+	public HttpUriRequest createInfoRequest(final URI uri, final Depth depth) {
 		final DavTemplateRequest request = new DavTemplateRequest("PROPFIND", depth);
 		request.setURI(uri);
 

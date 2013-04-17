@@ -11,6 +11,7 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpUriRequest;
 
 import de.shadowhunt.scm.subversion.AbstractSubversionRepository;
+import de.shadowhunt.scm.subversion.Depth;
 import de.shadowhunt.scm.subversion.SubversionInfo;
 import de.shadowhunt.scm.subversion.SubversionProperty;
 
@@ -113,7 +114,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 			uri = URI.create(repository + PREFIX_RVR + version + sanatizedResource);
 		}
 
-		final HttpUriRequest request = requestFactory.createInfoRequest(uri, 0);
+		final HttpUriRequest request = requestFactory.createInfoRequest(uri, Depth.EMPTY);
 		final HttpResponse response = execute(request, false, HttpStatus.SC_MULTI_STATUS);
 
 		final InputStream in = getContent(response);
@@ -125,7 +126,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 	}
 
 	@Override
-	public List<SubversionInfo> list(final String resource, final int depth, final boolean withCustomProperties) {
+	public List<SubversionInfo> list(final String resource, final Depth depth, final boolean withCustomProperties) {
 		final String sanatizedResource = sanatizeResource(resource);
 		final SubversionInfo info = info0(sanatizedResource, HEAD_VERSION, false);
 		final URI uri = URI.create(repository + PREFIX_RVR + info.getVersion() + sanatizedResource);
@@ -135,7 +136,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 
 		final InputStream in = getContent(response);
 		try {
-			return SubversionInfo.readList(in, withCustomProperties);
+			return SubversionInfo.readList(in, withCustomProperties, (Depth.FILES != depth));
 		} finally {
 			closeQuiet(in);
 		}

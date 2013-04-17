@@ -167,7 +167,7 @@ public abstract class AbstractSubversionRepositoryTest {
 		upload(base + "/l2.txt", "list");
 		upload(base + "/l3.txt", "list");
 
-		final List<SubversionInfo> list = REPO.list(base, 1, false);
+		final List<SubversionInfo> list = REPO.list(base, Depth.IMMEDIATES, false);
 		Assert.assertEquals("missing entries in list", 4, list.size());
 	}
 

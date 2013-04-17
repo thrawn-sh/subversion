@@ -30,14 +30,21 @@ public class SubversionInfo {
 
 		private final boolean withCustomProperties;
 
-		SubversionInfoHandler(final boolean withCustomProperties) {
+		private final boolean includeDirectories;
+
+		SubversionInfoHandler(final boolean withCustomProperties, final boolean includeDirectories) {
 			super();
 			this.withCustomProperties = withCustomProperties;
+			this.includeDirectories = includeDirectories;
 		}
 
 		@Override
 		public void endElement(final String uri, final String localName, final String qName) {
 			final String name = getNameFromQName(qName);
+
+			if (current == null) {
+				return;
+			}
 
 			if ("response".equals(name)) {
 				if (withCustomProperties) {
@@ -50,16 +57,18 @@ public class SubversionInfo {
 				return;
 			}
 
-			if (current == null) {
-				return;
-			}
-
 			if ("baseline-relative-path".equals(name)) {
 				current.setRelativePath(getText());
 				return;
 			}
 
 			if (resourceType && "collection".equals(name)) {
+				if (!includeDirectories) {
+					// we don't want to include directories in our result list
+					current = null;
+					return;
+				}
+
 				current.setDirecotry(true);
 				resourceType = false;
 				return;
@@ -119,6 +128,8 @@ public class SubversionInfo {
 
 			if ("response".equals(name)) {
 				current = new SubversionInfo();
+				locktoken = false;
+				resourceType = false;
 
 				if (withCustomProperties) {
 					customProperties = new ArrayList<SubversionProperty>();
@@ -160,21 +171,21 @@ public class SubversionInfo {
 	private static final SubversionProperty[] EMPTY = new SubversionProperty[0];
 
 	public static SubversionInfo read(final InputStream in, final boolean withCustomProperties) {
-		final List<SubversionInfo> infos = readList(in, withCustomProperties);
+		final List<SubversionInfo> infos = readList(in, withCustomProperties, true);
 		if (infos.isEmpty()) {
 			throw new SubversionException("could not find any SubversionInfo in input");
 		}
 		return infos.get(0);
 	}
 
-	public static List<SubversionInfo> readList(final InputStream in, final boolean withCustomProperties) {
+	public static List<SubversionInfo> readList(final InputStream in, final boolean withCustomProperties, final boolean includeDirectories) {
 		final SAXParserFactory factory = SAXParserFactory.newInstance();
 		factory.setNamespaceAware(false);
 		factory.setValidating(false);
 
 		try {
 			final SAXParser saxParser = factory.newSAXParser();
-			final SubversionInfoHandler handler = new SubversionInfoHandler(withCustomProperties);
+			final SubversionInfoHandler handler = new SubversionInfoHandler(withCustomProperties, includeDirectories);
 
 			saxParser.parse(in, handler);
 			return handler.getInfos();
