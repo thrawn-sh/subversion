@@ -13,6 +13,9 @@ import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
@@ -34,6 +37,7 @@ import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeSocketFactory;
 import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.client.DecompressingHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
@@ -45,6 +49,29 @@ import de.shadowhunt.http.client.ThreadLocalCredentialsProvider;
 import de.shadowhunt.http.protocol.ThreadLocalHttpContext;
 
 public abstract class AbstractSubversionRepository<T extends AbstractSubversionRequestFactory> implements SubversionRepository {
+
+	protected static final X509HostnameVerifier DUMMY_VERIFIER = new X509HostnameVerifier() {
+
+		@Override
+		public boolean verify(final String hostname, final SSLSession session) {
+			return true;
+		}
+
+		@Override
+		public void verify(final String host, final SSLSocket ssl) throws IOException {
+			// do nothing
+		}
+
+		@Override
+		public void verify(final String host, final X509Certificate cert) throws SSLException {
+			// do nothing
+		}
+
+		@Override
+		public void verify(final String host, final String[] cns, final String[] subjectAlts) throws SSLException {
+			// do nothing
+		}
+	};
 
 	protected static final TrustManager DUMMY_MANAGER = new X509TrustManager() {
 
@@ -126,7 +153,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 			final SSLContext sc = SSLContext.getInstance("SSL");
 			sc.init(null, new TrustManager[] { DUMMY_MANAGER }, new SecureRandom());
 
-			final SchemeSocketFactory socketFactory = new SSLSocketFactory(sc);
+			final SchemeSocketFactory socketFactory = new SSLSocketFactory(sc, DUMMY_VERIFIER);
 			final int sslPort = (port <= 0) ? 443 : port;
 			return new Scheme("https", sslPort, socketFactory);
 		} catch (final Exception e) {
