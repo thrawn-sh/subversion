@@ -80,7 +80,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		return false;
 	}
 
-	protected static DefaultHttpClient createClient(final URI host, final int maxConnections, final boolean addSvnHeader) {
+	protected static DefaultHttpClient createClient(final int maxConnections, final boolean addSvnHeader) {
 		final PoolingClientConnectionManager connectionManager = new PoolingClientConnectionManager();
 		connectionManager.setMaxTotal(maxConnections);
 		connectionManager.setDefaultMaxPerRoute(maxConnections);
