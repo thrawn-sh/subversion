@@ -85,7 +85,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		connectionManager.setMaxTotal(maxConnections);
 		connectionManager.setDefaultMaxPerRoute(maxConnections);
 
-		final Scheme scheme = createTrustingAnySslCertScheme(host.getPort());
+		final Scheme scheme = createTrustingAnySslCertScheme();
 		connectionManager.getSchemeRegistry().register(scheme);
 
 		final DefaultHttpClient defaultClient = new DefaultHttpClient(connectionManager);
@@ -121,14 +121,13 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		return parameters;
 	}
 
-	protected static Scheme createTrustingAnySslCertScheme(final int port) {
+	protected static Scheme createTrustingAnySslCertScheme() {
 		try {
 			final SSLContext sc = SSLContext.getInstance("SSL");
 			sc.init(null, new TrustManager[] { DUMMY_MANAGER }, new SecureRandom());
 
 			final SchemeSocketFactory socketFactory = new SSLSocketFactory(sc, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-			final int sslPort = (port <= 0) ? 443 : port;
-			return new Scheme("https", sslPort, socketFactory);
+			return new Scheme("https", 443, socketFactory);
 		} catch (final Exception e) {
 			throw new SubversionException("could not create ssl scheme", e);
 		}
@@ -207,7 +206,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	}
 
 	protected AbstractSubversionRepository(final URI repository, final T requestFactory) {
-		this(createClient(repository, 100, false), repository, requestFactory);
+		this(createClient(100, false), repository, requestFactory);
 	}
 
 	protected void closeQuiet(final InputStream in) {
