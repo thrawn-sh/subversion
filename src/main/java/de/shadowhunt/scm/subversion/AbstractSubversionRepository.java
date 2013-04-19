@@ -66,7 +66,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	};
 
-	protected static final long HEAD_VERSION = -1L;
+	protected static final int HEAD_VERSION = -1;
 
 	protected static boolean contains(final int statusCode, @Nullable final int... expectedStatusCodes) {
 		if (expectedStatusCodes == null) {
@@ -230,14 +230,14 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	}
 
 	@Override
-	public InputStream download(final String resource, final long version) {
+	public InputStream download(final String resource, final int version) {
 		if (version <= 0L) {
 			throw new IllegalArgumentException("version must be greater than 0, was:" + version);
 		}
 		return download0(sanatizeResource(resource), version);
 	}
 
-	protected abstract InputStream download0(final String sanatizeResource, final long version);
+	protected abstract InputStream download0(final String sanatizeResource, final int version);
 
 	protected HttpResponse execute(final HttpUriRequest request, final boolean consume, @Nullable final int... expectedStatusCodes) {
 		try {
@@ -272,14 +272,14 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	}
 
 	@Override
-	public SubversionInfo info(final String resource, final long version, final boolean withCustomProperties) {
+	public SubversionInfo info(final String resource, final int version, final boolean withCustomProperties) {
 		if (version <= 0L) {
 			throw new IllegalArgumentException("version must be greater than 0, was:" + version);
 		}
 		return info0(sanatizeResource(resource), version, withCustomProperties);
 	}
 
-	protected abstract SubversionInfo info0(String sanatizeResource, long version, boolean withCustomProperties);
+	protected abstract SubversionInfo info0(String sanatizeResource, int version, boolean withCustomProperties);
 
 	protected boolean isAuthenticated() {
 		final AuthState authState = (AuthState) context.getAttribute(ClientContext.TARGET_AUTH_STATE);
@@ -316,12 +316,12 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		final URI uri = URI.create(repository + sanatizedResource);
 
 		final SubversionInfo info = info0(sanatizedResource, HEAD_VERSION, false);
-		return log(uri, info.getVersion(), 0L);
+		return log(uri, info.getVersion(), 0);
 	}
 
 	@Override
-	public List<SubversionLog> log(final URI uri, final long start, final long end) {
-		final HttpUriRequest request = requestFactory.createLogRequest(uri, start, end);
+	public List<SubversionLog> log(final URI uri, final int startVersion, final int endVersion) {
+		final HttpUriRequest request = requestFactory.createLogRequest(uri, startVersion, endVersion);
 		final HttpResponse response = execute(request, false, HttpStatus.SC_OK);
 
 		final InputStream in = getContent(response);

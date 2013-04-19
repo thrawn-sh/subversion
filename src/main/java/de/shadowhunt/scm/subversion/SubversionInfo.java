@@ -100,7 +100,7 @@ public class SubversionInfo {
 			}
 
 			if ("version-name".equals(name)) {
-				final long version = Long.parseLong(getText());
+				final int version = Integer.parseInt(getText());
 				current.setVersion(version);
 				return;
 			}
@@ -208,7 +208,7 @@ public class SubversionInfo {
 
 	private String root;
 
-	private long version;
+	private int version;
 
 	SubversionInfo() {
 		// prevent direct instantiation
@@ -312,7 +312,7 @@ public class SubversionInfo {
 		return null;
 	}
 
-	public long getVersion() {
+	public int getVersion() {
 		return version;
 	}
 
@@ -327,7 +327,7 @@ public class SubversionInfo {
 		result = (prime * result) + ((relativePath == null) ? 0 : relativePath.hashCode());
 		result = (prime * result) + ((repositoryUuid == null) ? 0 : repositoryUuid.hashCode());
 		result = (prime * result) + ((root == null) ? 0 : root.hashCode());
-		result = (prime * result) + (int) (version ^ (version >>> 32));
+		result = (prime * result) + (version ^ (version >>> 32));
 		return result;
 	}
 
@@ -379,7 +379,7 @@ public class SubversionInfo {
 		this.root = root;
 	}
 
-	public void setVersion(final long version) {
+	public void setVersion(final int version) {
 		this.version = version;
 	}
 

@@ -18,8 +18,8 @@ abstract class AbstractRevisionCommand extends AbstractCommand {
 		return options;
 	}
 
-	protected Long getRevision(final CommandLine cmdl) {
+	protected Integer getRevision(final CommandLine cmdl) {
 		final String revision = cmdl.getOptionValue(REVISION_OPTION);
-		return Long.valueOf(revision);
+		return Integer.valueOf(revision);
 	}
 }

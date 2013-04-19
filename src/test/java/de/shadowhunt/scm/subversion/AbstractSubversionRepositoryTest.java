@@ -26,7 +26,7 @@ public abstract class AbstractSubversionRepositoryTest {
 		}
 	}
 
-	protected String download(final String resource, final long version) throws IOException {
+	protected String download(final String resource, final int version) throws IOException {
 		final InputStream download = REPO.download(resource, version);
 		try {
 			return IOUtils.toString(download, "UTF-8");

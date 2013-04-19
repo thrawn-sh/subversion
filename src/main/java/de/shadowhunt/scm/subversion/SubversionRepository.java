@@ -14,13 +14,13 @@ public interface SubversionRepository {
 
 	public InputStream download(String resource);
 
-	public InputStream download(String resource, long version);
+	public InputStream download(String resource, int version);
 
 	public boolean exisits(String resource);
 
 	public SubversionInfo info(String resource, boolean withCustomProperties);
 
-	public SubversionInfo info(String resource, long version, boolean withCustomProperties);
+	public SubversionInfo info(String resource, int version, boolean withCustomProperties);
 
 	public SubversionLog lastLog(String resource);
 
@@ -30,7 +30,7 @@ public interface SubversionRepository {
 
 	public List<SubversionLog> log(String resource);
 
-	public List<SubversionLog> log(URI uri, long start, long end);
+	public List<SubversionLog> log(URI uri, int startVersion, int endVersion);
 
 	public void setProperties(String resource, String message, SubversionProperty... properties);
 

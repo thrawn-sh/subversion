@@ -24,7 +24,7 @@ abstract class AbstractInfoCommand extends AbstractRevisionCommand {
 
 		final SubversionRepository repositry = SubversionFactory.getInstance(root, user, password, workstation, version);
 		final String resource = getTargetResource(cmdl);
-		final Long revision = getRevision(cmdl);
+		final Integer revision = getRevision(cmdl);
 		if (revision == null) {
 			return repositry.info(resource, false);
 		}

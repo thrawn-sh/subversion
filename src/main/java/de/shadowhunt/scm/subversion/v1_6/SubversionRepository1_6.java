@@ -132,7 +132,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 	}
 
 	@Override
-	protected InputStream download0(final String sanatizedResource, final long version) {
+	protected InputStream download0(final String sanatizedResource, final int version) {
 		final URI uri;
 		if (version == HEAD_VERSION) {
 			uri = URI.create(repository + sanatizedResource);
@@ -146,7 +146,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 	}
 
 	@Override
-	protected SubversionInfo info0(final String sanatizedResource, final long version, final boolean withCustomProperties) {
+	protected SubversionInfo info0(final String sanatizedResource, final int version, final boolean withCustomProperties) {
 		final URI uri;
 		if (version == HEAD_VERSION) {
 			uri = URI.create(repository + sanatizedResource);
