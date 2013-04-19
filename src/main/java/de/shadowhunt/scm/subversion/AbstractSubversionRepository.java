@@ -29,6 +29,7 @@ import org.apache.http.client.AuthCache;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.params.AuthPolicy;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.conn.scheme.Scheme;
@@ -95,7 +96,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		}
 
 		if (hasJcifsSupport()) {
-			defaultClient.getAuthSchemes().register("ntlm", new NtlmSchemeFactory());
+			defaultClient.getAuthSchemes().register(AuthPolicy.NTLM, new NtlmSchemeFactory());
 		}
 
 		return defaultClient;
