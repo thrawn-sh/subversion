@@ -86,7 +86,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 		final String sanatizedResource = sanatizeResource(resource);
 		final UUID uuid = UUID.randomUUID();
 		final SubversionInfo info = info0(sanatizedResource, HEAD_VERSION, false);
-		final long version = info.getVersion();
+		final int version = info.getVersion();
 
 		createTemporyStructure(uuid);
 		try {
@@ -111,7 +111,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 		final String sanatizedResource = sanatizeResource(resource);
 		final UUID uuid = UUID.randomUUID();
 		final SubversionInfo info = info0(sanatizedResource, HEAD_VERSION, false);
-		final long version = info.getVersion();
+		final int version = info.getVersion();
 
 		createTemporyStructure(uuid);
 		try {
@@ -195,7 +195,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 		execute(request, HttpStatus.SC_CREATED);
 	}
 
-	protected void prepareContentUpload(final String sanatizedResource, final UUID uuid, final long version) {
+	protected void prepareContentUpload(final String sanatizedResource, final UUID uuid, final int version) {
 		final URI uri = URI.create(repository + PREFIX_VER + version + sanatizedResource);
 
 		final HttpUriRequest request = requestFactory.createCheckoutRequest(uri, repository + PREFIX_ACT + uuid);
@@ -228,7 +228,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 		execute(request, HttpStatus.SC_MULTI_STATUS);
 	}
 
-	protected void setCommitMessage(final UUID uuid, final long version, final String message) {
+	protected void setCommitMessage(final UUID uuid, final int version, final String message) {
 		final URI uri = URI.create(repository + PREFIX_WBL + uuid + "/" + version);
 
 		final String trimmedMessage = StringUtils.trimToEmpty(message);
@@ -251,7 +251,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 			}
 
 			final SubversionInfo info = info0(infoResource, HEAD_VERSION, false);
-			final long version = info.getVersion();
+			final int version = info.getVersion();
 			prepareCheckin(uuid);
 			setCommitMessage(uuid, version, message);
 			if (exisits) {

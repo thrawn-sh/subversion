@@ -60,7 +60,7 @@ public class SubversionLog {
 			}
 
 			if ("version-name".equals(name)) {
-				final long version = Long.parseLong(getText());
+				final int version = Integer.parseInt(getText());
 				current.setVersion(version);
 				return;
 			}
@@ -105,7 +105,7 @@ public class SubversionLog {
 
 	private String user;
 
-	private long version;
+	private int version;
 
 	SubversionLog() {
 		// prevent direct instantiation
@@ -165,7 +165,7 @@ public class SubversionLog {
 		return user;
 	}
 
-	public long getVersion() {
+	public int getVersion() {
 		return version;
 	}
 
@@ -192,7 +192,7 @@ public class SubversionLog {
 		this.user = user;
 	}
 
-	public void setVersion(final long version) {
+	public void setVersion(final int version) {
 		this.version = version;
 	}
 
