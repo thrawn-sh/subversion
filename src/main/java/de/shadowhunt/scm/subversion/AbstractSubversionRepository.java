@@ -231,7 +231,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	@Override
 	public InputStream download(final String resource, final int version) {
-		if (version <= 0L) {
+		if (version <= HEAD_VERSION) {
 			throw new IllegalArgumentException("version must be greater than 0, was:" + version);
 		}
 		return download0(sanatizeResource(resource), version);
@@ -273,7 +273,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	@Override
 	public SubversionInfo info(final String resource, final int version, final boolean withCustomProperties) {
-		if (version <= 0L) {
+		if (version <= HEAD_VERSION) {
 			throw new IllegalArgumentException("version must be greater than 0, was:" + version);
 		}
 		return info0(sanatizeResource(resource), version, withCustomProperties);
