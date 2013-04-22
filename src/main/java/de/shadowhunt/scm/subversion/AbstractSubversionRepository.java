@@ -16,6 +16,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -337,7 +338,8 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		final Credentials credentials = creteCredentials(username, password, workstation);
 		final CredentialsProvider credentialsProvider = backend.getCredentialsProvider();
 
-		if (!credentials.equals(credentialsProvider.getCredentials(authscope))) {
+		final Credentials oldCredentials = credentialsProvider.getCredentials(authscope);
+		if (!ObjectUtils.equals(credentials, oldCredentials)) {
 			credentialsProvider.setCredentials(authscope, credentials);
 
 			// if we use new credentials we must reset the authCache 
