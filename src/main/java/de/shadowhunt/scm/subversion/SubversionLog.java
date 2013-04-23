@@ -176,7 +176,7 @@ public class SubversionLog {
 		result = (prime * result) + ((comment == null) ? 0 : comment.hashCode());
 		result = (prime * result) + ((date == null) ? 0 : date.hashCode());
 		result = (prime * result) + ((user == null) ? 0 : user.hashCode());
-		result = (prime * result) + (int) (version ^ (version >>> 32));
+		result = (prime * result) + version;
 		return result;
 	}
 

@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -103,15 +105,6 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		return defaultClient;
 	}
 
-	private static boolean hasJcifsSupport() {
-		try {
-			Class.forName("jcifs.ntlmssp.NtlmFlags");
-			return true;
-		} catch (final ClassNotFoundException e) {
-			return false;
-		}
-	}
-
 	private static Collection<Header> createDefaultHeaders() {
 		final Collection<Header> parameters = new ArrayList<Header>();
 		parameters.add(new BasicHeader("User-Agent", "SVN/1.7.5 neon/0.29.6"));
@@ -172,6 +165,15 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 			return response.getEntity().getContent();
 		} catch (final Exception e) {
 			throw new SubversionException("could not retrieve content stream", e);
+		}
+	}
+
+	private static boolean hasJcifsSupport() {
+		try {
+			Class.forName("jcifs.ntlmssp.NtlmFlags");
+			return true;
+		} catch (final ClassNotFoundException e) {
+			return false;
 		}
 	}
 
@@ -303,6 +305,34 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		return logs.get(0);
 	}
 
+	protected List<SubversionInfo> list(final URI uri, final Depth depth, final boolean withCustomProperties) {
+		final HttpUriRequest request = requestFactory.createInfoRequest(uri, depth);
+		final HttpResponse response = execute(request, false, HttpStatus.SC_MULTI_STATUS);
+
+		final InputStream in = getContent(response);
+		try {
+			return SubversionInfo.readList(in, withCustomProperties, (Depth.FILES != depth));
+		} finally {
+			closeQuiet(in);
+		}
+	}
+
+	protected void listRecursive(final String uriPrefix, final boolean withCustomProperties, final Collection<SubversionInfo> todo, final Set<SubversionInfo> done) {
+		for (final SubversionInfo info : todo) {
+			if (done.contains(info)) {
+				continue;
+			}
+
+			done.add(info);
+			if (info.isDirecotry()) {
+				final String path = info.getRelativePath();
+				final URI uri = URI.create(uriPrefix + "/" + path);
+				final List<SubversionInfo> children = list(uri, Depth.IMMEDIATES, withCustomProperties);
+				listRecursive(uriPrefix, withCustomProperties, children, done);
+			}
+		}
+	}
+
 	@Override
 	public void lock(final String resource) {
 		final URI uri = URI.create(repository + sanatizeResource(resource));
@@ -355,6 +385,18 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 			triggerAuthentication();
 		}
+	}
+
+	protected List<SubversionInfo> list(final String uriPrefix, final String sanatizedResource, final Depth depth, final boolean withCustomProperties) {
+		final URI uri = URI.create(uriPrefix + sanatizedResource);
+
+		if (depth == Depth.INFINITY) {
+			final List<SubversionInfo> root = list(uri, Depth.IMMEDIATES, withCustomProperties);
+			final Set<SubversionInfo> result = new TreeSet<SubversionInfo>(SubversionInfo.PATH_COMPARATOR);
+			listRecursive(uriPrefix, withCustomProperties, root, result);
+			return new ArrayList<SubversionInfo>(result);
+		}
+		return list(uri, depth, withCustomProperties);
 	}
 
 	@Override

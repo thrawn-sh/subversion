@@ -169,17 +169,8 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 	public List<SubversionInfo> list(final String resource, final Depth depth, final boolean withCustomProperties) {
 		final String sanatizedResource = sanatizeResource(resource);
 		final SubversionInfo info = info0(sanatizedResource, HEAD_VERSION, false);
-		final URI uri = URI.create(repository + PREFIX_BC + info.getVersion() + sanatizedResource);
-
-		final HttpUriRequest request = requestFactory.createInfoRequest(uri, depth);
-		final HttpResponse response = execute(request, false, HttpStatus.SC_MULTI_STATUS);
-
-		final InputStream in = getContent(response);
-		try {
-			return SubversionInfo.readList(in, withCustomProperties, (Depth.FILES != depth));
-		} finally {
-			closeQuiet(in);
-		}
+		final String uriPrefix = repository + PREFIX_BC + info.getVersion();
+		return list(uriPrefix, sanatizedResource, depth, withCustomProperties);
 	}
 
 	protected void merge(final SubversionInfo info, final UUID uuid) {

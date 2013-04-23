@@ -3,6 +3,7 @@ package de.shadowhunt.scm.subversion;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.annotation.CheckForNull;
@@ -168,6 +169,14 @@ public class SubversionInfo {
 		}
 	}
 
+	public static Comparator<SubversionInfo> PATH_COMPARATOR = new Comparator<SubversionInfo>() {
+
+		@Override
+		public int compare(final SubversionInfo si1, final SubversionInfo si2) {
+			return si1.getRelativePath().compareTo(si2.getRelativePath());
+		}
+	};
+
 	private static final SubversionProperty[] EMPTY = new SubversionProperty[0];
 
 	public static SubversionInfo read(final InputStream in, final boolean withCustomProperties) {
@@ -327,7 +336,7 @@ public class SubversionInfo {
 		result = (prime * result) + ((relativePath == null) ? 0 : relativePath.hashCode());
 		result = (prime * result) + ((repositoryUuid == null) ? 0 : repositoryUuid.hashCode());
 		result = (prime * result) + ((root == null) ? 0 : root.hashCode());
-		result = (prime * result) + (version ^ (version >>> 32));
+		result = (prime * result) + version;
 		return result;
 	}
 
