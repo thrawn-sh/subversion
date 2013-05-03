@@ -84,12 +84,8 @@ public class SubversionLog {
 	}
 
 	public static List<SubversionLog> read(final InputStream in) {
-		final SAXParserFactory factory = SAXParserFactory.newInstance();
-		factory.setNamespaceAware(false);
-		factory.setValidating(false);
-
 		try {
-			final SAXParser saxParser = factory.newSAXParser();
+			final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
 			final SubversionLogHandler handler = new SubversionLogHandler();
 
 			saxParser.parse(in, handler);

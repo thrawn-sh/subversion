@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.net.URI;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
@@ -56,6 +57,10 @@ public abstract class AbstractSubversionRequestFactory {
 		final DavTemplateRequest request = new DavTemplateRequest("MKACTIVITY");
 		request.setURI(uri);
 		return request;
+	}
+
+	public HttpUriRequest createDeleteRequest(final URI uri) {
+		return new HttpDelete(uri);
 	}
 
 	public HttpUriRequest createAuthRequest(final URI uri) {
@@ -152,8 +157,6 @@ public abstract class AbstractSubversionRequestFactory {
 		body.append("</href></source><no-auto-merge/><no-checkout/><prop><checked-in/><version-name/><resourcetype/><creationdate/><creator-displayname/></prop>");
 		final String token = info.getLockToken();
 		if (token != null) {
-			request.addHeader("X-SVN-Options", "release-locks");
-
 			body.append("<S:lock-token-list xmlns:S=\"svn:\"><S:lock><S:lock-path>");
 			body.append(StringEscapeUtils.escapeXml(info.getRelativePath()));
 			body.append("</S:lock-path>");

@@ -9,7 +9,6 @@ import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.Attributes;
 
@@ -70,7 +69,7 @@ public class SubversionInfo {
 					return;
 				}
 
-				current.setDirecotry(true);
+				current.setDirectory(true);
 				resourceType = false;
 				return;
 			}
@@ -148,25 +147,6 @@ public class SubversionInfo {
 				return;
 			}
 		}
-
-		@Override
-		public String toString() {
-			final StringBuilder builder = new StringBuilder();
-			builder.append("SubversionInfoHandler [current=");
-			builder.append(current);
-			builder.append(", customProperties=");
-			builder.append(customProperties);
-			builder.append(", infos=");
-			builder.append(infos);
-			builder.append(", locktoken=");
-			builder.append(locktoken);
-			builder.append(", resourceType=");
-			builder.append(resourceType);
-			builder.append(", withCustomProperties=");
-			builder.append(withCustomProperties);
-			builder.append("]");
-			return builder.toString();
-		}
 	}
 
 	public static Comparator<SubversionInfo> PATH_COMPARATOR = new Comparator<SubversionInfo>() {
@@ -188,12 +168,8 @@ public class SubversionInfo {
 	}
 
 	public static List<SubversionInfo> readList(final InputStream in, final boolean withCustomProperties, final boolean includeDirectories) {
-		final SAXParserFactory factory = SAXParserFactory.newInstance();
-		factory.setNamespaceAware(false);
-		factory.setValidating(false);
-
 		try {
-			final SAXParser saxParser = factory.newSAXParser();
+			final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
 			final SubversionInfoHandler handler = new SubversionInfoHandler(withCustomProperties, includeDirectories);
 
 			saxParser.parse(in, handler);
@@ -205,7 +181,7 @@ public class SubversionInfo {
 
 	private SubversionProperty[] customProperties = EMPTY;
 
-	private boolean direcotry;
+	private boolean directory;
 
 	private String lockToken;
 
@@ -238,7 +214,7 @@ public class SubversionInfo {
 		if (!Arrays.equals(customProperties, other.customProperties)) {
 			return false;
 		}
-		if (direcotry != other.direcotry) {
+		if (directory != other.directory) {
 			return false;
 		}
 		if (lockToken == null) {
@@ -330,7 +306,7 @@ public class SubversionInfo {
 		final int prime = 31;
 		int result = 1;
 		result = (prime * result) + Arrays.hashCode(customProperties);
-		result = (prime * result) + (direcotry ? 1231 : 1237);
+		result = (prime * result) + (directory ? 1231 : 1237);
 		result = (prime * result) + ((lockToken == null) ? 0 : lockToken.hashCode());
 		result = (prime * result) + ((md5 == null) ? 0 : md5.hashCode());
 		result = (prime * result) + ((relativePath == null) ? 0 : relativePath.hashCode());
@@ -340,12 +316,12 @@ public class SubversionInfo {
 		return result;
 	}
 
-	public boolean isDirecotry() {
-		return direcotry;
+	public boolean isDirectory() {
+		return directory;
 	}
 
 	public boolean isFile() {
-		return !direcotry;
+		return !directory;
 	}
 
 	public boolean isLocked() {
@@ -360,12 +336,12 @@ public class SubversionInfo {
 		}
 	}
 
-	public void setDirecotry(final boolean direcotry) {
-		this.direcotry = direcotry;
+	public void setDirectory(final boolean directory) {
+		this.directory = directory;
 	}
 
 	public void setFile(final boolean file) {
-		direcotry = !file;
+		directory = !file;
 	}
 
 	public void setLockToken(final String lockToken) {
@@ -397,8 +373,8 @@ public class SubversionInfo {
 		final StringBuilder builder = new StringBuilder();
 		builder.append("SubversionInfo [customProperties=");
 		builder.append(Arrays.toString(customProperties));
-		builder.append(", direcotry=");
-		builder.append(direcotry);
+		builder.append(", directory=");
+		builder.append(directory);
 		builder.append(", lockToken=");
 		builder.append(lockToken);
 		builder.append(", md5=");

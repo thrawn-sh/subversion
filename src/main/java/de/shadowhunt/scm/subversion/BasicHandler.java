@@ -1,9 +1,19 @@
 package de.shadowhunt.scm.subversion;
 
+import javax.xml.parsers.SAXParserFactory;
+
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.xml.sax.helpers.DefaultHandler;
 
 class BasicHandler extends DefaultHandler {
+
+	protected static final SAXParserFactory FACTORY;
+
+	static {
+		FACTORY = SAXParserFactory.newInstance();
+		FACTORY.setNamespaceAware(false);
+		FACTORY.setValidating(false);
+	}
 
 	private final StringBuilder buffer = new StringBuilder();
 
@@ -36,7 +46,7 @@ class BasicHandler extends DefaultHandler {
 		if (index >= 0) {
 			return qName.substring(0, index);
 		}
-		return qName;
+		return null;
 	}
 
 	protected String getText() {

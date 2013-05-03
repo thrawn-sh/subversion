@@ -17,6 +17,8 @@ import de.shadowhunt.scm.subversion.SubversionProperty;
 
 public class SubversionRepository1_7 extends AbstractSubversionRepository<SubversionRequestFactory> {
 
+	protected static final String PREFIX_ME = "/!svn/me";
+
 	protected static final String PREFIX_RVR = "/!svn/rvr/";
 
 	protected static final String PREFIX_TXN = "/!svn/txn/";
@@ -27,7 +29,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		super(repositoryRoot, new SubversionRequestFactory());
 	}
 
-	protected void contentUpload(final String sanatizedResource, final SubversionInfo info, final String uuid, final InputStream content) {
+	protected void contentUpload(final String normalizedResource, final SubversionInfo info, final String uuid, final InputStream content) {
 		if (content == null) {
 			return;
 		}
@@ -36,68 +38,46 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 			triggerAuthentication();
 		}
 
-		final URI uri = URI.create(repository + PREFIX_TXR + uuid + sanatizedResource);
-		final URI resourceUri = URI.create(repository + sanatizedResource);
+		final URI uri = URI.create(repository + PREFIX_TXR + uuid + normalizedResource);
+		final URI resourceUri = URI.create(repository + normalizedResource);
 
 		final HttpUriRequest request = requestFactory.createUploadRequest(uri, resourceUri, info, content);
 		execute(request, HttpStatus.SC_CREATED, HttpStatus.SC_NO_CONTENT);
 	}
 
-	protected String createMissingFolders(final String sanatizedResource, final String uuid) {
-		final String[] resourceParts = sanatizedResource.split("/");
-
-		String infoResource = "/";
-		final StringBuilder partial = new StringBuilder();
-		for (int i = 1; i < (resourceParts.length - 1); i++) {
-			partial.append('/');
-			partial.append(resourceParts[i]);
-
-			final String partialResource = partial.toString();
-			final URI uri = URI.create(repository + PREFIX_TXR + uuid + partialResource);
-			final HttpUriRequest request = requestFactory.createMakeFolderRequest(uri);
-			final HttpResponse response = execute(request, /* created */HttpStatus.SC_CREATED, /* existed */HttpStatus.SC_METHOD_NOT_ALLOWED);
-			final int status = response.getStatusLine().getStatusCode();
-			if (status == HttpStatus.SC_METHOD_NOT_ALLOWED) {
-				infoResource = partialResource;
-			}
-		}
-
-		return infoResource;
-	}
-
 	@Override
 	public void delete(final String resource, final String message) {
-		final String sanatizedResource = sanatizeResource(resource);
+		final String normalizedResource = normalizeResource(resource);
 		final String uuid = prepareCheckin();
 		setCommitMessage(uuid, message);
-		delete0(sanatizedResource, uuid);
-		final SubversionInfo info = info0(sanatizedResource, HEAD_VERSION, false);
+		delete0(normalizedResource, uuid);
+		final SubversionInfo info = info0(normalizedResource, HEAD_VERSION, false);
 		merge(info, uuid);
 	}
 
-	protected void delete0(final String sanatizedResource, final String uuid) {
-		final URI uri = URI.create(repository + PREFIX_TXR + uuid + sanatizedResource);
+	protected void delete0(final String normalizedResource, final String uuid) {
+		final URI uri = URI.create(repository + PREFIX_TXR + uuid + normalizedResource);
 		final HttpUriRequest request = new HttpDelete(uri);
 		execute(request, HttpStatus.SC_NO_CONTENT);
 	}
 
 	@Override
 	public void deleteProperties(final String resource, final String message, final SubversionProperty... properties) {
-		final String sanatizedResource = sanatizeResource(resource);
+		final String normalizedResource = normalizeResource(resource);
 		final String uuid = prepareCheckin();
 		setCommitMessage(uuid, message);
-		final SubversionInfo info = info0(sanatizedResource, HEAD_VERSION, false);
-		propertiesRemove(sanatizedResource, info, uuid, properties);
+		final SubversionInfo info = info0(normalizedResource, HEAD_VERSION, false);
+		propertiesRemove(normalizedResource, info, uuid, properties);
 		merge(info, uuid);
 	}
 
 	@Override
-	protected InputStream download0(final String sanatizedResource, final int version) {
+	protected InputStream download0(final String normalizedResource, final int version) {
 		final URI uri;
 		if (version == HEAD_VERSION) {
-			uri = URI.create(repository + sanatizedResource);
+			uri = URI.create(repository + normalizedResource);
 		} else {
-			uri = URI.create(repository + PREFIX_RVR + version + sanatizedResource);
+			uri = URI.create(repository + PREFIX_RVR + version + normalizedResource);
 		}
 
 		final HttpUriRequest request = requestFactory.createDownloadRequest(uri);
@@ -106,12 +86,12 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 	}
 
 	@Override
-	protected SubversionInfo info0(final String sanatizedResource, final int version, final boolean withCustomProperties) {
+	protected SubversionInfo info0(final String normalizedResource, final int version, final boolean withCustomProperties) {
 		final URI uri;
 		if (version == HEAD_VERSION) {
-			uri = URI.create(repository + sanatizedResource);
+			uri = URI.create(repository + normalizedResource);
 		} else {
-			uri = URI.create(repository + PREFIX_RVR + version + sanatizedResource);
+			uri = URI.create(repository + PREFIX_RVR + version + normalizedResource);
 		}
 
 		final HttpUriRequest request = requestFactory.createInfoRequest(uri, Depth.EMPTY);
@@ -127,10 +107,10 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 
 	@Override
 	public List<SubversionInfo> list(final String resource, final Depth depth, final boolean withCustomProperties) {
-		final String sanatizedResource = sanatizeResource(resource);
-		final SubversionInfo info = info0(sanatizedResource, HEAD_VERSION, false);
+		final String normalizedResource = normalizeResource(resource);
+		final SubversionInfo info = info0(normalizedResource, HEAD_VERSION, false);
 		final String uriPrefix = repository + PREFIX_RVR + info.getVersion();
-		return list(uriPrefix, sanatizedResource, depth, withCustomProperties);
+		return list(uriPrefix, normalizedResource, depth, withCustomProperties);
 	}
 
 	protected void merge(final SubversionInfo info, final String uuid) {
@@ -148,27 +128,27 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		return response.getFirstHeader("SVN-Txn-Name").getValue();
 	}
 
-	protected void propertiesRemove(final String sanatizedResource, final SubversionInfo info, final String uuid, final SubversionProperty... properties) {
+	protected void propertiesRemove(final String normalizedResource, final SubversionInfo info, final String uuid, final SubversionProperty... properties) {
 		final SubversionProperty[] filtered = SubversionProperty.filteroutSystemProperties(properties);
 		if (filtered.length == 0) {
 			return;
 		}
 
-		final URI uri = URI.create(repository + PREFIX_TXR + uuid + sanatizedResource);
-		final URI resourceUri = URI.create(repository + sanatizedResource);
+		final URI uri = URI.create(repository + PREFIX_TXR + uuid + normalizedResource);
+		final URI resourceUri = URI.create(repository + normalizedResource);
 
 		final HttpUriRequest request = requestFactory.createRemovePropertiesRequest(uri, resourceUri, info, filtered);
 		execute(request, HttpStatus.SC_MULTI_STATUS);
 	}
 
-	protected void propertiesSet(final String sanatizedResource, final SubversionInfo info, final String uuid, final SubversionProperty... properties) {
+	protected void propertiesSet(final String normalizedResource, final SubversionInfo info, final String uuid, final SubversionProperty... properties) {
 		final SubversionProperty[] filtered = SubversionProperty.filteroutSystemProperties(properties);
 		if (filtered.length == 0) {
 			return;
 		}
 
-		final URI uri = URI.create(repository + PREFIX_TXR + uuid + sanatizedResource);
-		final URI resourceUri = URI.create(repository + sanatizedResource);
+		final URI uri = URI.create(repository + PREFIX_TXR + uuid + normalizedResource);
+		final URI resourceUri = URI.create(repository + normalizedResource);
 
 		final HttpUriRequest request = requestFactory.createSetPropertiesRequest(uri, resourceUri, info, filtered);
 		execute(request, HttpStatus.SC_MULTI_STATUS);
@@ -183,20 +163,20 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 	}
 
 	@Override
-	protected void uploadWithProperties0(final String sanatizedResource, final String message, final InputStream content, final SubversionProperty... properties) {
+	protected void uploadWithProperties0(final String normalizedResource, final String message, final InputStream content, final SubversionProperty... properties) {
 		final String uuid = prepareCheckin();
-		final boolean exisits = exisits0(sanatizedResource);
+		final boolean exisits = exisits0(normalizedResource);
 
 		final String infoResource;
 		if (exisits) {
-			infoResource = sanatizedResource;
+			infoResource = normalizedResource;
 		} else {
-			infoResource = createMissingFolders(sanatizedResource, uuid);
+			infoResource = createMissingFolders(PREFIX_TXR, uuid, normalizedResource);
 		}
 		final SubversionInfo info = info0(infoResource, HEAD_VERSION, false);
 		setCommitMessage(uuid, message);
-		contentUpload(sanatizedResource, info, uuid, content);
-		propertiesSet(sanatizedResource, info, uuid, properties);
+		contentUpload(normalizedResource, info, uuid, content);
+		propertiesSet(normalizedResource, info, uuid, properties);
 		merge(info, uuid);
 	}
 }

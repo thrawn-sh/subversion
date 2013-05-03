@@ -9,8 +9,10 @@ import de.shadowhunt.jcifs.JcifsEngine;
 
 public class NtlmSchemeFactory implements AuthSchemeFactory {
 
+	public static final AuthSchemeFactory INSTANCE = new NtlmSchemeFactory();
+
 	@Override
 	public AuthScheme newInstance(final HttpParams params) {
-		return new NTLMScheme(new JcifsEngine());
+		return new NTLMScheme(JcifsEngine.INSTANCE);
 	}
 }

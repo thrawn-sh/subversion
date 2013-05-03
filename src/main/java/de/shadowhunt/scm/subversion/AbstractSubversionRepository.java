@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.security.SecureRandom;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,7 +15,6 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +26,6 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.AuthState;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.NTCredentials;
-import org.apache.http.client.AuthCache;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -46,28 +43,10 @@ import org.apache.http.util.EntityUtils;
 
 import de.shadowhunt.http.auth.NtlmSchemeFactory;
 import de.shadowhunt.http.client.ThreadLocalCredentialsProvider;
+import de.shadowhunt.http.conn.ssl.NonValidatingX509TrustManager;
 import de.shadowhunt.http.protocol.ThreadLocalHttpContext;
 
 public abstract class AbstractSubversionRepository<T extends AbstractSubversionRequestFactory> implements SubversionRepository {
-
-	protected static final TrustManager DUMMY_MANAGER = new X509TrustManager() {
-
-		@Override
-		public void checkClientTrusted(final X509Certificate[] certs, final String authType) {
-			// do nothing
-		}
-
-		@Override
-		public void checkServerTrusted(final X509Certificate[] certs, final String authType) {
-			// do nothing
-		}
-
-		@Override
-		public X509Certificate[] getAcceptedIssuers() {
-			return new X509Certificate[0];
-		}
-
-	};
 
 	protected static final int HEAD_VERSION = -1;
 
@@ -99,7 +78,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		}
 
 		if (hasJcifsSupport()) {
-			defaultClient.getAuthSchemes().register(AuthPolicy.NTLM, new NtlmSchemeFactory());
+			defaultClient.getAuthSchemes().register(AuthPolicy.NTLM, NtlmSchemeFactory.INSTANCE);
 		}
 
 		return defaultClient;
@@ -107,7 +86,6 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	private static Collection<Header> createDefaultHeaders() {
 		final Collection<Header> parameters = new ArrayList<Header>();
-		parameters.add(new BasicHeader("User-Agent", "SVN/1.7.5 neon/0.29.6"));
 		parameters.add(new BasicHeader("Connection", "TE"));
 		parameters.add(new BasicHeader("TE", "trailers"));
 		parameters.add(new BasicHeader("DAV", "http://subversion.tigris.org/xmlns/dav/svn/depth"));
@@ -119,7 +97,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	protected static Scheme createTrustingAnySslCertScheme() {
 		try {
 			final SSLContext sc = SSLContext.getInstance("SSL");
-			sc.init(null, new TrustManager[] { DUMMY_MANAGER }, new SecureRandom());
+			sc.init(null, new TrustManager[] { NonValidatingX509TrustManager.INSTANCE }, new SecureRandom());
 
 			final SchemeSocketFactory socketFactory = new SSLSocketFactory(sc, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 			return new Scheme("https", 443, socketFactory);
@@ -147,7 +125,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		return new NTCredentials(username, password, workstation, domain);
 	}
 
-	static void ensureResonse(final HttpResponse response, final boolean consume, @Nullable final int... expectedStatusCodes) throws IOException {
+	static void ensureResponse(final HttpResponse response, final boolean consume, @Nullable final int... expectedStatusCodes) throws IOException {
 		final int statusCode = response.getStatusLine().getStatusCode();
 		if (consume) {
 			EntityUtils.consume(response.getEntity());
@@ -177,7 +155,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		}
 	}
 
-	protected static String sanatizeResource(final String resource) {
+	protected static String normalizeResource(final String resource) {
 		final String trimmed = StringUtils.trimToNull(resource);
 		if (trimmed == null) {
 			return "/";
@@ -221,6 +199,29 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		}
 	}
 
+	protected String createMissingFolders(final String prefix, final String uuid, final String normalizedResource) {
+		final String[] resourceParts = normalizedResource.split("/");
+
+		String infoResource = "/";
+		final StringBuilder partial = new StringBuilder();
+		for (int i = 1; i < (resourceParts.length - 1); i++) {
+			partial.append('/');
+			partial.append(resourceParts[i]);
+
+			final String partialResource = partial.toString();
+			final URI uri = URI.create(repository + prefix + uuid + partialResource);
+			final HttpUriRequest request = requestFactory.createMakeFolderRequest(uri);
+			final HttpResponse response = execute(request, /* created */HttpStatus.SC_CREATED, /* existed */
+					HttpStatus.SC_METHOD_NOT_ALLOWED);
+			final int status = response.getStatusLine().getStatusCode();
+			if (status == HttpStatus.SC_METHOD_NOT_ALLOWED) {
+				infoResource = partialResource;
+			}
+		}
+
+		return infoResource;
+	}
+
 	@Override
 	public abstract void delete(final String resource, final String message);
 
@@ -229,7 +230,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	@Override
 	public InputStream download(final String resource) {
-		return download0(sanatizeResource(resource), HEAD_VERSION);
+		return download0(normalizeResource(resource), HEAD_VERSION);
 	}
 
 	@Override
@@ -237,15 +238,15 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		if (version <= HEAD_VERSION) {
 			throw new IllegalArgumentException("version must be greater than 0, was:" + version);
 		}
-		return download0(sanatizeResource(resource), version);
+		return download0(normalizeResource(resource), version);
 	}
 
-	protected abstract InputStream download0(final String sanatizeResource, final int version);
+	protected abstract InputStream download0(final String normalizeResource, final int version);
 
 	protected HttpResponse execute(final HttpUriRequest request, final boolean consume, @Nullable final int... expectedStatusCodes) {
 		try {
 			final HttpResponse response = client.execute(request, context);
-			ensureResonse(response, consume, expectedStatusCodes);
+			ensureResponse(response, consume, expectedStatusCodes);
 			return response;
 		} catch (final Exception e) {
 			throw new SubversionException("could not execute request (" + request + ")", e);
@@ -258,11 +259,11 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	@Override
 	public boolean exisits(final String resource) {
-		return exisits0(sanatizeResource(resource));
+		return exisits0(normalizeResource(resource));
 	}
 
-	protected boolean exisits0(final String sanatizedResource) {
-		final URI uri = URI.create(repository + sanatizedResource);
+	protected boolean exisits0(final String normalizedResource) {
+		final URI uri = URI.create(repository + normalizedResource);
 
 		final HttpUriRequest request = requestFactory.createExistsRequest(uri);
 		final HttpResponse response = execute(request, /* found */HttpStatus.SC_OK, /* not found */HttpStatus.SC_NOT_FOUND);
@@ -271,7 +272,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	@Override
 	public SubversionInfo info(final String resource, final boolean withCustomProperties) {
-		return info0(sanatizeResource(resource), HEAD_VERSION, withCustomProperties);
+		return info0(normalizeResource(resource), HEAD_VERSION, withCustomProperties);
 	}
 
 	@Override
@@ -279,10 +280,10 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		if (version <= HEAD_VERSION) {
 			throw new IllegalArgumentException("version must be greater than 0, was:" + version);
 		}
-		return info0(sanatizeResource(resource), version, withCustomProperties);
+		return info0(normalizeResource(resource), version, withCustomProperties);
 	}
 
-	protected abstract SubversionInfo info0(String sanatizeResource, int version, boolean withCustomProperties);
+	protected abstract SubversionInfo info0(String normalizeResource, int version, boolean withCustomProperties);
 
 	protected boolean isAuthenticated() {
 		final AuthState authState = (AuthState) context.getAttribute(ClientContext.TARGET_AUTH_STATE);
@@ -294,15 +295,27 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	@Override
 	public SubversionLog lastLog(final String resource) {
-		final String sanatizedResource = sanatizeResource(resource);
-		final URI uri = URI.create(repository + sanatizedResource);
+		final String normalizedResource = normalizeResource(resource);
+		final URI uri = URI.create(repository + normalizedResource);
 
-		final SubversionInfo info = info0(sanatizedResource, HEAD_VERSION, false);
+		final SubversionInfo info = info0(normalizedResource, HEAD_VERSION, false);
 		final List<SubversionLog> logs = log(uri, info.getVersion(), info.getVersion());
 		if (logs.isEmpty()) {
 			throw new SubversionException("no logs available");
 		}
 		return logs.get(0);
+	}
+
+	protected List<SubversionInfo> list(final String uriPrefix, final String normalizedResource, final Depth depth, final boolean withCustomProperties) {
+		final URI uri = URI.create(uriPrefix + normalizedResource);
+
+		if (depth == Depth.INFINITY) {
+			final List<SubversionInfo> root = list(uri, Depth.IMMEDIATES, withCustomProperties);
+			final Set<SubversionInfo> result = new TreeSet<SubversionInfo>(SubversionInfo.PATH_COMPARATOR);
+			listRecursive(uriPrefix, withCustomProperties, root, result);
+			return new ArrayList<SubversionInfo>(result);
+		}
+		return list(uri, depth, withCustomProperties);
 	}
 
 	protected List<SubversionInfo> list(final URI uri, final Depth depth, final boolean withCustomProperties) {
@@ -324,7 +337,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 			}
 
 			done.add(info);
-			if (info.isDirecotry()) {
+			if (info.isDirectory()) {
 				final String path = info.getRelativePath();
 				final URI uri = URI.create(uriPrefix + "/" + path);
 				final List<SubversionInfo> children = list(uri, Depth.IMMEDIATES, withCustomProperties);
@@ -335,7 +348,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	@Override
 	public void lock(final String resource) {
-		final URI uri = URI.create(repository + sanatizeResource(resource));
+		final URI uri = URI.create(repository + normalizeResource(resource));
 
 		final HttpUriRequest request = requestFactory.createLockRequest(uri);
 		execute(request, HttpStatus.SC_OK);
@@ -343,10 +356,10 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	@Override
 	public List<SubversionLog> log(final String resource) {
-		final String sanatizedResource = sanatizeResource(resource);
-		final URI uri = URI.create(repository + sanatizedResource);
+		final String normalizedResource = normalizeResource(resource);
+		final URI uri = URI.create(repository + normalizedResource);
 
-		final SubversionInfo info = info0(sanatizedResource, HEAD_VERSION, false);
+		final SubversionInfo info = info0(normalizedResource, HEAD_VERSION, false);
 		return log(uri, info.getVersion(), 0);
 	}
 
@@ -371,37 +384,14 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		final Credentials oldCredentials = credentialsProvider.getCredentials(authscope);
 		if (!ObjectUtils.equals(credentials, oldCredentials)) {
 			credentialsProvider.setCredentials(authscope, credentials);
-
-			// if we use new credentials we must reset the authCache 
-			final AuthCache authCache = (AuthCache) context.getAttribute(ClientContext.AUTH_CACHE);
-			if (authCache != null) {
-				authCache.clear();
-			}
-
-			final AuthState authState = (AuthState) context.getAttribute(ClientContext.TARGET_AUTH_STATE);
-			if (authState != null) {
-				authState.reset();
-			}
-
+			context.clear();
 			triggerAuthentication();
 		}
 	}
 
-	protected List<SubversionInfo> list(final String uriPrefix, final String sanatizedResource, final Depth depth, final boolean withCustomProperties) {
-		final URI uri = URI.create(uriPrefix + sanatizedResource);
-
-		if (depth == Depth.INFINITY) {
-			final List<SubversionInfo> root = list(uri, Depth.IMMEDIATES, withCustomProperties);
-			final Set<SubversionInfo> result = new TreeSet<SubversionInfo>(SubversionInfo.PATH_COMPARATOR);
-			listRecursive(uriPrefix, withCustomProperties, root, result);
-			return new ArrayList<SubversionInfo>(result);
-		}
-		return list(uri, depth, withCustomProperties);
-	}
-
 	@Override
 	public void setProperties(final String resource, final String message, final SubversionProperty... properties) {
-		uploadWithProperties0(sanatizeResource(resource), message, null, properties);
+		uploadWithProperties0(normalizeResource(resource), message, null, properties);
 	}
 
 	protected final void triggerAuthentication() {
@@ -414,7 +404,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		if (info.getLockToken() == null) {
 			return;
 		}
-		final URI uri = URI.create(repository + sanatizeResource(resource));
+		final URI uri = URI.create(repository + normalizeResource(resource));
 
 		final HttpUriRequest request = requestFactory.createUnlockRequest(uri, info);
 		execute(request, HttpStatus.SC_NO_CONTENT);
@@ -425,7 +415,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		if (content == null) {
 			throw new IllegalArgumentException("content can not be null");
 		}
-		uploadWithProperties0(sanatizeResource(resource), message, content, (SubversionProperty) null);
+		uploadWithProperties0(normalizeResource(resource), message, content, (SubversionProperty) null);
 	}
 
 	@Override
@@ -433,8 +423,8 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		if (content == null) {
 			throw new IllegalArgumentException("content can not be null");
 		}
-		uploadWithProperties0(sanatizeResource(resource), message, content, properties);
+		uploadWithProperties0(normalizeResource(resource), message, content, properties);
 	}
 
-	protected abstract void uploadWithProperties0(final String sanatizedResource, final String message, @Nullable final InputStream content, @Nullable final SubversionProperty... properties);
+	protected abstract void uploadWithProperties0(final String normalizedResource, final String message, @Nullable final InputStream content, @Nullable final SubversionProperty... properties);
 }

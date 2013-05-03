@@ -18,7 +18,7 @@ public class InfoCommand extends AbstractInfoCommand {
 		System.out.println("Repository Root: " + info.getRoot());
 		System.out.println("Repository UUID:" + info.getRepositoryUuid());
 		System.out.println("Revision: " + info.getVersion());
-		if (info.isDirecotry()) {
+		if (info.isDirectory()) {
 			System.out.println("Node Kind: directory");
 		} else {
 			System.out.println("Node Kind: file");

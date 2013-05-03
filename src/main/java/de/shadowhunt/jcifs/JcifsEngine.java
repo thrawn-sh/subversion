@@ -13,6 +13,8 @@ import org.apache.http.impl.auth.NTLMEngineException;
 
 public final class JcifsEngine implements NTLMEngine {
 
+	public static final NTLMEngine INSTANCE = new JcifsEngine();
+
 	private static final int TYPE_3_FLAGS_MASK = 0xffffffff ^ (NtlmFlags.NTLMSSP_TARGET_TYPE_DOMAIN | NtlmFlags.NTLMSSP_TARGET_TYPE_SERVER);
 
 	private static final int TYPE_1_FLAGS = NtlmFlags.NTLMSSP_NEGOTIATE_56 | NtlmFlags.NTLMSSP_NEGOTIATE_128
