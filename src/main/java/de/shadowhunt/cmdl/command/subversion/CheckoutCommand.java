@@ -11,11 +11,11 @@ import org.apache.commons.io.IOUtils;
 
 public class CheckoutCommand extends AbstractContentCommand {
 
+	private static final String OUTPUT_OPTION = "output";
+
 	public CheckoutCommand() {
 		super("checkout");
 	}
-
-	private static final String OUTPUT_OPTION = "output";
 
 	@Override
 	protected void execute0(final CommandLine cmdl) throws Exception {

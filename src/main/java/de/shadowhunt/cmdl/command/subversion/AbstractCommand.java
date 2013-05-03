@@ -72,6 +72,10 @@ abstract class AbstractCommand implements Command {
 
 	protected abstract void execute0(final CommandLine cmdl) throws Exception;
 
+	public String getName() {
+		return name;
+	}
+
 	protected Options getOptions() {
 		final Options options = new Options();
 		options.addOption(new Option("h", HELP_OPTION, false, "print this help message"));
@@ -89,10 +93,6 @@ abstract class AbstractCommand implements Command {
 				+ Arrays.toString(ServerVersion.values())));
 
 		return options;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	protected final String getPassword(final CommandLine cmdl) {

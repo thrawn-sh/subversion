@@ -59,10 +59,6 @@ public abstract class AbstractSubversionRequestFactory {
 		return request;
 	}
 
-	public HttpUriRequest createDeleteRequest(final URI uri) {
-		return new HttpDelete(uri);
-	}
-
 	public HttpUriRequest createAuthRequest(final URI uri) {
 		final HttpOptions request = new HttpOptions(uri);
 		request.addHeader("Keep-Alive", "");
@@ -93,6 +89,10 @@ public abstract class AbstractSubversionRequestFactory {
 
 		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
 		return request;
+	}
+
+	public HttpUriRequest createDeleteRequest(final URI uri) {
+		return new HttpDelete(uri);
 	}
 
 	public HttpUriRequest createDownloadRequest(final URI uri) {

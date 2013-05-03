@@ -32,6 +32,8 @@ public interface SubversionRepository {
 
 	public List<SubversionLog> log(URI uri, int startVersion, int endVersion);
 
+	public void setCredentials(@Nullable String user, @Nullable String password, @Nullable String workstation);
+
 	public void setProperties(String resource, String message, SubversionProperty... properties);
 
 	public void unlock(String resource, SubversionInfo info);
@@ -39,7 +41,5 @@ public interface SubversionRepository {
 	public void upload(String resource, String message, InputStream content);
 
 	public void uploadWithProperties(String resource, String message, InputStream content, SubversionProperty... properties);
-
-	public void setCredentials(@Nullable String user, @Nullable String password, @Nullable String workstation);
 
 }

@@ -22,6 +22,8 @@ public class SubversionInfo {
 
 		private List<SubversionProperty> customProperties;
 
+		private final boolean includeDirectories;
+
 		private final List<SubversionInfo> infos = new ArrayList<SubversionInfo>();
 
 		private boolean locktoken = false;
@@ -29,8 +31,6 @@ public class SubversionInfo {
 		private boolean resourceType = false;
 
 		private final boolean withCustomProperties;
-
-		private final boolean includeDirectories;
 
 		SubversionInfoHandler(final boolean withCustomProperties, final boolean includeDirectories) {
 			super();
@@ -149,6 +149,8 @@ public class SubversionInfo {
 		}
 	}
 
+	private static final SubversionProperty[] EMPTY = new SubversionProperty[0];
+
 	public static Comparator<SubversionInfo> PATH_COMPARATOR = new Comparator<SubversionInfo>() {
 
 		@Override
@@ -156,8 +158,6 @@ public class SubversionInfo {
 			return si1.getRelativePath().compareTo(si2.getRelativePath());
 		}
 	};
-
-	private static final SubversionProperty[] EMPTY = new SubversionProperty[0];
 
 	public static SubversionInfo read(final InputStream in, final boolean withCustomProperties) {
 		final List<SubversionInfo> infos = readList(in, withCustomProperties, true);

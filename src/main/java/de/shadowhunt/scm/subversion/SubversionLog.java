@@ -11,7 +11,6 @@ import java.util.Locale;
 
 import javax.annotation.CheckForNull;
 import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
