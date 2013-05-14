@@ -26,7 +26,23 @@ public class ThreadLocalCredentialsProvider implements CredentialsProvider {
 	@CheckForNull
 	public Credentials getCredentials(final AuthScope authscope) {
 		final Map<AuthScope, Credentials> credentialsMap = getCredentialsMap();
-		return credentialsMap.get(authscope);
+		final Credentials directHit = credentialsMap.get(authscope);
+		if (directHit != null) {
+			return directHit;
+		}
+
+		// Do a full scan
+		int bestMatchFactor = Integer.MIN_VALUE;
+		AuthScope bestMatch = null;
+		for (final AuthScope current : credentialsMap.keySet()) {
+			final int factor = authscope.match(current);
+			if (factor > bestMatchFactor) {
+				bestMatchFactor = factor;
+				bestMatch = current;
+			}
+		}
+
+		return credentialsMap.get(bestMatch);
 	}
 
 	protected Map<AuthScope, Credentials> getCredentialsMap() {
