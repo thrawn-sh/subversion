@@ -134,7 +134,7 @@ public abstract class AbstractSubversionRequestFactory {
 		body.append(startVersion);
 		body.append("</start-revision><end-revision>");
 		body.append(endVersion);
-		body.append("</end-revision><encode-binary-props/><revprop>svn:author</revprop><revprop>svn:date</revprop><revprop>svn:log</revprop><path/></log-report>");
+		body.append("</end-revision><encode-binary-props/><all-revprops/><path/></log-report>");
 
 		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
 		return request;
