@@ -5,7 +5,6 @@ import java.net.URI;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -91,26 +90,6 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 			return URI.create(repository + normalizedResource);
 		}
 		return URI.create(repository + PREFIX_RVR + revision + normalizedResource);
-	}
-
-	@Override
-	protected SubversionInfo info0(final String normalizedResource, final int revision, final boolean withCustomProperties) {
-		final URI uri = downloadURI0(normalizedResource, revision);
-
-		final HttpUriRequest request = requestFactory.createInfoRequest(uri, Depth.EMPTY);
-		final HttpResponse response = execute(request, false, HttpStatus.SC_MULTI_STATUS);
-
-		final InputStream in = getContent(response);
-		try {
-			final SubversionInfo info = SubversionInfo.read(in, withCustomProperties);
-			if (info.isLocked()) {
-				final Header header = response.getFirstHeader(LOCK_OWNER_HEADER);
-				info.setLockOwner(header.getValue());
-			}
-			return info;
-		} finally {
-			closeQuiet(in);
-		}
 	}
 
 	@Override

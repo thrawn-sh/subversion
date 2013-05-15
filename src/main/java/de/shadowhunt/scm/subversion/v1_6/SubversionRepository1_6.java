@@ -8,7 +8,6 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -127,26 +126,6 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 		final URI uri = URI.create(repository + PREFIX_ACT + uuid);
 		final HttpUriRequest request = requestFactory.createDeleteRequest(uri);
 		execute(request, HttpStatus.SC_NO_CONTENT);
-	}
-
-	@Override
-	protected SubversionInfo info0(final String normalizedResource, final int revision, final boolean withCustomProperties) {
-		final URI uri = downloadURI0(normalizedResource, revision);
-
-		final HttpUriRequest request = requestFactory.createInfoRequest(uri, Depth.EMPTY);
-		final HttpResponse response = execute(request, false, HttpStatus.SC_MULTI_STATUS);
-
-		final InputStream in = getContent(response);
-		try {
-			final SubversionInfo info = SubversionInfo.read(in, withCustomProperties);
-			if (info.isLocked()) {
-				final Header header = response.getFirstHeader(LOCK_OWNER_HEADER);
-				info.setLockOwner(header.getValue());
-			}
-			return info;
-		} finally {
-			closeQuiet(in);
-		}
 	}
 
 	@Override
