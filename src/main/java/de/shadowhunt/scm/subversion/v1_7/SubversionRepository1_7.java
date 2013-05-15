@@ -25,8 +25,8 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 
 	protected static final String PREFIX_TXR = "/!svn/txr/";
 
-	public SubversionRepository1_7(final URI repositoryRoot) {
-		super(repositoryRoot, new SubversionRequestFactory1_7());
+	public SubversionRepository1_7(final URI repositoryRoot, final boolean trustServerCertificat) {
+		super(repositoryRoot, trustServerCertificat, new SubversionRequestFactory1_7());
 	}
 
 	protected void contentUpload(final String normalizedResource, final SubversionInfo info, final String uuid, final InputStream content) {

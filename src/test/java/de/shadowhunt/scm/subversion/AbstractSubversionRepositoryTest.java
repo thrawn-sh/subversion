@@ -40,9 +40,9 @@ public abstract class AbstractSubversionRepositoryTest {
 		final String resource = BASE + "/delete.txt";
 		upload(resource, "delete");
 
-		Assert.assertTrue("resource does not exist", REPO.exisits(resource));
+		Assert.assertTrue("resource does not exist", REPO.exists(resource));
 		REPO.delete(resource, "del");
-		Assert.assertFalse("resource does still exist", REPO.exisits(resource));
+		Assert.assertFalse("resource does still exist", REPO.exists(resource));
 	}
 
 	@Test
@@ -130,7 +130,7 @@ public abstract class AbstractSubversionRepositoryTest {
 	public void testExistingResource() throws IOException {
 		final String resource = BASE + "/existing.txt";
 		upload(resource, "exisiting");
-		Assert.assertTrue("resource does not exist", REPO.exisits(resource));
+		Assert.assertTrue("resource does not exist", REPO.exists(resource));
 	}
 
 	@Test
@@ -212,7 +212,7 @@ public abstract class AbstractSubversionRepositoryTest {
 	@Test
 	public void testNonExistingResource() {
 		final String resource = BASE + "/nonexisting.txt";
-		Assert.assertFalse("resource already exists", REPO.exisits(resource));
+		Assert.assertFalse("resource already exists", REPO.exists(resource));
 	}
 
 	@Test

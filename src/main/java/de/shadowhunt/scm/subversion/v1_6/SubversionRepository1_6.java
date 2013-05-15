@@ -32,8 +32,8 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 
 	protected static final String PREFIX_WRK = "/!svn/wrk/";
 
-	public SubversionRepository1_6(final URI repository) {
-		super(repository, new SubversionRequestFactory1_6());
+	public SubversionRepository1_6(final URI repository, final boolean trustServerCertificat) {
+		super(repository, trustServerCertificat, new SubversionRequestFactory1_6());
 	}
 
 	protected void checkout(final UUID uuid) {

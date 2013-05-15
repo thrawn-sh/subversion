@@ -65,13 +65,15 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		return false;
 	}
 
-	protected static DefaultHttpClient createClient(final int maxConnections, final boolean addSvnHeader) {
+	protected static DefaultHttpClient createClient(final int maxConnections, final boolean trustServerCertificat) {
 		final PoolingClientConnectionManager connectionManager = new PoolingClientConnectionManager();
 		connectionManager.setMaxTotal(maxConnections);
 		connectionManager.setDefaultMaxPerRoute(maxConnections);
 
-		final Scheme scheme = createTrustingAnySslCertScheme();
-		connectionManager.getSchemeRegistry().register(scheme);
+		if (trustServerCertificat) {
+			final Scheme scheme = createTrustingAnySslCertScheme();
+			connectionManager.getSchemeRegistry().register(scheme);
+		}
 
 		final DefaultHttpClient defaultClient = new DefaultHttpClient(connectionManager);
 		defaultClient.setCredentialsProvider(new ThreadLocalCredentialsProvider());
@@ -177,8 +179,8 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		this.authscope = new AuthScope(repository.getHost(), AuthScope.ANY_PORT);
 	}
 
-	protected AbstractSubversionRepository(final URI repository, final T requestFactory) {
-		this(createClient(100, false), repository, requestFactory);
+	protected AbstractSubversionRepository(final URI repository, final boolean trustServerCertificat, final T requestFactory) {
+		this(createClient(100, trustServerCertificat), repository, requestFactory);
 	}
 
 	protected void closeQuiet(final InputStream in) {
@@ -224,6 +226,16 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	}
 
 	@Override
+	public InputStream download(final String resource, final int version) {
+		if (version <= HEAD_VERSION) {
+			throw new IllegalArgumentException("version must be greater than 0, was:" + version);
+		}
+		return download0(normalizeResource(resource), version);
+	}
+
+	protected abstract InputStream download0(final String normalizeResource, final int version);
+
+	@Override
 	public URI downloadURI(final String resource) {
 		return downloadURI0(normalizeResource(resource), HEAD_VERSION);
 	}
@@ -236,17 +248,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		return downloadURI0(normalizeResource(resource), version);
 	}
 
-	@Override
-	public InputStream download(final String resource, final int version) {
-		if (version <= HEAD_VERSION) {
-			throw new IllegalArgumentException("version must be greater than 0, was:" + version);
-		}
-		return download0(normalizeResource(resource), version);
-	}
-
 	protected abstract URI downloadURI0(String normalizedResource, int version);
-
-	protected abstract InputStream download0(final String normalizeResource, final int version);
 
 	protected HttpResponse execute(final HttpUriRequest request, final boolean consume, @Nullable final int... expectedStatusCodes) {
 		try {
