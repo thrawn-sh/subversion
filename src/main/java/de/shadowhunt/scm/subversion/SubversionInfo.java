@@ -100,8 +100,8 @@ public class SubversionInfo {
 			}
 
 			if ("version-name".equals(name)) {
-				final int version = Integer.parseInt(getText());
-				current.setVersion(version);
+				final int revision = Integer.parseInt(getText());
+				current.setRevision(revision);
 				return;
 			}
 
@@ -194,9 +194,9 @@ public class SubversionInfo {
 
 	private String repositoryUuid;
 
-	private String root;
+	private int revision;
 
-	private int version;
+	private String root;
 
 	SubversionInfo() {
 		// prevent direct instantiation
@@ -255,14 +255,14 @@ public class SubversionInfo {
 		} else if (!repositoryUuid.equals(other.repositoryUuid)) {
 			return false;
 		}
+		if (revision != other.revision) {
+			return false;
+		}
 		if (root == null) {
 			if (other.root != null) {
 				return false;
 			}
 		} else if (!root.equals(other.root)) {
-			return false;
-		}
-		if (version != other.version) {
 			return false;
 		}
 		return true;
@@ -295,6 +295,10 @@ public class SubversionInfo {
 		return repositoryUuid;
 	}
 
+	public int getRevision() {
+		return revision;
+	}
+
 	@CheckForNull
 	public String getRoot() {
 		return root;
@@ -310,10 +314,6 @@ public class SubversionInfo {
 		return null;
 	}
 
-	public int getVersion() {
-		return version;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -325,8 +325,8 @@ public class SubversionInfo {
 		result = (prime * result) + ((md5 == null) ? 0 : md5.hashCode());
 		result = (prime * result) + ((relativePath == null) ? 0 : relativePath.hashCode());
 		result = (prime * result) + ((repositoryUuid == null) ? 0 : repositoryUuid.hashCode());
+		result = (prime * result) + revision;
 		result = (prime * result) + ((root == null) ? 0 : root.hashCode());
-		result = (prime * result) + version;
 		return result;
 	}
 
@@ -378,12 +378,12 @@ public class SubversionInfo {
 		this.repositoryUuid = repositoryUuid;
 	}
 
-	public void setRoot(final String root) {
-		this.root = root;
+	public void setRevision(final int revision) {
+		this.revision = revision;
 	}
 
-	public void setVersion(final int version) {
-		this.version = version;
+	public void setRoot(final String root) {
+		this.root = root;
 	}
 
 	@Override
@@ -401,10 +401,10 @@ public class SubversionInfo {
 		builder.append(md5);
 		builder.append(", repositoryUuid=");
 		builder.append(repositoryUuid);
+		builder.append(", revision=");
+		builder.append(revision);
 		builder.append(", root=");
 		builder.append(root);
-		builder.append(", version=");
-		builder.append(version);
 		builder.append(", relativePath=");
 		builder.append(relativePath);
 		builder.append("]");

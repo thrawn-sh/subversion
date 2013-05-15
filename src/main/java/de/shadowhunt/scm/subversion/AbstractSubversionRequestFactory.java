@@ -125,15 +125,15 @@ public abstract class AbstractSubversionRequestFactory {
 		return request;
 	}
 
-	public HttpUriRequest createLogRequest(final URI uri, final int startVersion, final int endVersion) {
+	public HttpUriRequest createLogRequest(final URI uri, final int startRevision, final int endRevision) {
 		final DavTemplateRequest request = new DavTemplateRequest("REPORT");
 		request.setURI(uri);
 
 		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
 		body.append("<log-report xmlns=\"svn:\"><start-revision>");
-		body.append(startVersion);
+		body.append(startRevision);
 		body.append("</start-revision><end-revision>");
-		body.append(endVersion);
+		body.append(endRevision);
 		body.append("</end-revision><encode-binary-props/><all-revprops/><path/></log-report>");
 
 		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));

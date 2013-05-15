@@ -122,7 +122,7 @@ public abstract class AbstractSubversionRepositoryTest {
 
 		final SubversionInfo info = REPO.info(resource, false);
 		REPO.delete(resource, "del");
-		final String actual = download(resource, info.getVersion());
+		final String actual = download(resource, info.getRevision());
 		Assert.assertEquals("content differes", expected, actual);
 	}
 
@@ -156,7 +156,7 @@ public abstract class AbstractSubversionRepositoryTest {
 		final SubversionInfo headInfo = REPO.info(resource, false);
 		upload(resource, "info2");
 
-		final SubversionInfo versionInfo = REPO.info(resource, headInfo.getVersion(), false);
+		final SubversionInfo versionInfo = REPO.info(resource, headInfo.getRevision(), false);
 		Assert.assertEquals("infos differ", headInfo, versionInfo);
 	}
 
@@ -183,7 +183,7 @@ public abstract class AbstractSubversionRepositoryTest {
 		final SubversionInfo afterLock = REPO.info(resource, false);
 		Assert.assertNotNull("resource is not locked", afterLock.getLockToken());
 
-		REPO.unlock(resource, afterLock);
+		REPO.unlock(resource);
 		final SubversionInfo afterUnlock = REPO.info(resource, false);
 		Assert.assertNull("resource is locked", afterUnlock.getLockToken());
 	}
@@ -259,7 +259,7 @@ public abstract class AbstractSubversionRepositoryTest {
 		final SubversionInfo beforeUnlock = REPO.info(resource, false);
 		Assert.assertNull("resource is locked", beforeUnlock.getLockToken());
 
-		REPO.unlock(resource, beforeUnlock);
+		REPO.unlock(resource);
 		final SubversionInfo afterUnlock = REPO.info(resource, false);
 		Assert.assertNull("resource is locked", afterUnlock.getLockToken());
 	}

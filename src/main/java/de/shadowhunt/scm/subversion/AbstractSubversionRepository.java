@@ -226,14 +226,14 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	}
 
 	@Override
-	public InputStream download(final String resource, final int version) {
-		if (version <= HEAD_VERSION) {
-			throw new IllegalArgumentException("version must be greater than 0, was:" + version);
+	public InputStream download(final String resource, final int revision) {
+		if (revision <= HEAD_VERSION) {
+			throw new IllegalArgumentException("revision must be greater than 0, was:" + revision);
 		}
-		return download0(normalizeResource(resource), version);
+		return download0(normalizeResource(resource), revision);
 	}
 
-	protected abstract InputStream download0(final String normalizeResource, final int version);
+	protected abstract InputStream download0(final String normalizeResource, final int revision);
 
 	@Override
 	public URI downloadURI(final String resource) {
@@ -241,14 +241,14 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	}
 
 	@Override
-	public URI downloadURI(final String resource, final int version) {
-		if (version <= HEAD_VERSION) {
-			throw new IllegalArgumentException("version must be greater than 0, was:" + version);
+	public URI downloadURI(final String resource, final int revision) {
+		if (revision <= HEAD_VERSION) {
+			throw new IllegalArgumentException("revision must be greater than 0, was:" + revision);
 		}
-		return downloadURI0(normalizeResource(resource), version);
+		return downloadURI0(normalizeResource(resource), revision);
 	}
 
-	protected abstract URI downloadURI0(String normalizedResource, int version);
+	protected abstract URI downloadURI0(String normalizedResource, int revision);
 
 	protected HttpResponse execute(final HttpUriRequest request, final boolean consume, @Nullable final int... expectedStatusCodes) {
 		try {
@@ -283,14 +283,14 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	}
 
 	@Override
-	public SubversionInfo info(final String resource, final int version, final boolean withCustomProperties) {
-		if (version <= HEAD_VERSION) {
-			throw new IllegalArgumentException("version must be greater than 0, was:" + version);
+	public SubversionInfo info(final String resource, final int revision, final boolean withCustomProperties) {
+		if (revision <= HEAD_VERSION) {
+			throw new IllegalArgumentException("revision must be greater than 0, was:" + revision);
 		}
-		return info0(normalizeResource(resource), version, withCustomProperties);
+		return info0(normalizeResource(resource), revision, withCustomProperties);
 	}
 
-	protected abstract SubversionInfo info0(String normalizeResource, int version, boolean withCustomProperties);
+	protected abstract SubversionInfo info0(String normalizeResource, int revision, boolean withCustomProperties);
 
 	protected boolean isAuthenticated() {
 		final AuthState authState = (AuthState) context.getAttribute(ClientContext.TARGET_AUTH_STATE);
@@ -306,8 +306,8 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		final URI uri = URI.create(repository + normalizedResource);
 
 		final SubversionInfo info = info0(normalizedResource, HEAD_VERSION, false);
-		final int version = info.getVersion();
-		final List<SubversionLog> logs = log(uri, version, version);
+		final int revision = info.getRevision();
+		final List<SubversionLog> logs = log0(uri, revision, revision);
 		if (logs.isEmpty()) {
 			throw new SubversionException("no logs available");
 		}
@@ -368,12 +368,19 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		final URI uri = URI.create(repository + normalizedResource);
 
 		final SubversionInfo info = info0(normalizedResource, HEAD_VERSION, false);
-		return log(uri, info.getVersion(), INITIAL_VERSION);
+		return log0(uri, info.getRevision(), INITIAL_VERSION);
 	}
 
 	@Override
-	public List<SubversionLog> log(final URI uri, final int startVersion, final int endVersion) {
-		final HttpUriRequest request = requestFactory.createLogRequest(uri, startVersion, endVersion);
+	public List<SubversionLog> log(final String resource, final int startRevision, final int endRevision) {
+		final String normalizedResource = normalizeResource(resource);
+		final URI uri = URI.create(repository + normalizedResource);
+
+		return log0(uri, startRevision, endRevision);
+	}
+
+	protected List<SubversionLog> log0(final URI uri, final int startRevision, final int endRevision) {
+		final HttpUriRequest request = requestFactory.createLogRequest(uri, startRevision, endRevision);
 		final HttpResponse response = execute(request, false, HttpStatus.SC_OK);
 
 		final InputStream in = getContent(response);
@@ -408,11 +415,13 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	}
 
 	@Override
-	public void unlock(final String resource, final SubversionInfo info) {
+	public void unlock(final String resource) {
+		final String normalizedResource = normalizeResource(resource);
+		final SubversionInfo info = info0(normalizedResource, HEAD_VERSION, false);
 		if (info.getLockToken() == null) {
 			return;
 		}
-		final URI uri = URI.create(repository + normalizeResource(resource));
+		final URI uri = URI.create(repository + normalizedResource);
 
 		final HttpUriRequest request = requestFactory.createUnlockRequest(uri, info);
 		execute(request, HttpStatus.SC_NO_CONTENT);

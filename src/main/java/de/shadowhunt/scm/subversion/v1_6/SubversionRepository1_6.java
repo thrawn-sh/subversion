@@ -63,13 +63,13 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 	public void delete(final String resource, final String message) {
 		final String normalizedResource = normalizeResource(resource);
 		final SubversionInfo info = info0(normalizedResource, HEAD_VERSION, false);
-		final int version = info.getVersion();
+		final int revision = info.getRevision();
 
 		final UUID uuid = prepareTransaction();
 		try {
 			checkout(uuid);
-			setCommitMessage(uuid, version, message);
-			prepareContentUpload(normalizedResource, uuid, version);
+			setCommitMessage(uuid, revision, message);
+			prepareContentUpload(normalizedResource, uuid, revision);
 			delete(normalizedResource, uuid);
 			merge(info, uuid);
 		} finally {
@@ -87,13 +87,13 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 	public void deleteProperties(final String resource, final String message, final SubversionProperty... properties) {
 		final String normalizedResource = normalizeResource(resource);
 		final SubversionInfo info = info0(normalizedResource, HEAD_VERSION, false);
-		final int version = info.getVersion();
+		final int revision = info.getRevision();
 
 		final UUID uuid = prepareTransaction();
 		try {
 			checkout(uuid);
-			setCommitMessage(uuid, version, message);
-			prepareContentUpload(normalizedResource, uuid, version);
+			setCommitMessage(uuid, revision, message);
+			prepareContentUpload(normalizedResource, uuid, revision);
 			propertiesRemove(normalizedResource, info, uuid, properties);
 			merge(info, uuid);
 		} finally {
@@ -102,12 +102,12 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 	}
 
 	@Override
-	protected InputStream download0(final String normalizedResource, final int version) {
+	protected InputStream download0(final String normalizedResource, final int revision) {
 		final URI uri;
-		if (version == HEAD_VERSION) {
+		if (revision == HEAD_VERSION) {
 			uri = URI.create(repository + normalizedResource);
 		} else {
-			uri = URI.create(repository + PREFIX_BC + version + normalizedResource);
+			uri = URI.create(repository + PREFIX_BC + revision + normalizedResource);
 		}
 
 		final HttpUriRequest request = requestFactory.createDownloadRequest(uri);
@@ -116,11 +116,11 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 	}
 
 	@Override
-	protected URI downloadURI0(final String normalizedResource, final int version) {
-		if (version == HEAD_VERSION) {
+	protected URI downloadURI0(final String normalizedResource, final int revision) {
+		if (revision == HEAD_VERSION) {
 			return URI.create(repository + normalizedResource);
 		}
-		return URI.create(repository + PREFIX_BC + version + normalizedResource);
+		return URI.create(repository + PREFIX_BC + revision + normalizedResource);
 	}
 
 	protected void endTransaction(final UUID uuid) {
@@ -130,8 +130,8 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 	}
 
 	@Override
-	protected SubversionInfo info0(final String normalizedResource, final int version, final boolean withCustomProperties) {
-		final URI uri = downloadURI0(normalizedResource, version);
+	protected SubversionInfo info0(final String normalizedResource, final int revision, final boolean withCustomProperties) {
+		final URI uri = downloadURI0(normalizedResource, revision);
 
 		final HttpUriRequest request = requestFactory.createInfoRequest(uri, Depth.EMPTY);
 		final HttpResponse response = execute(request, false, HttpStatus.SC_MULTI_STATUS);
@@ -153,7 +153,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 	public List<SubversionInfo> list(final String resource, final Depth depth, final boolean withCustomProperties) {
 		final String normalizedResource = normalizeResource(resource);
 		final SubversionInfo info = info0(normalizedResource, HEAD_VERSION, false);
-		final String uriPrefix = repository + PREFIX_BC + info.getVersion();
+		final String uriPrefix = repository + PREFIX_BC + info.getRevision();
 		return list(uriPrefix, normalizedResource, depth, withCustomProperties);
 	}
 
@@ -163,8 +163,8 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 		execute(request, HttpStatus.SC_OK);
 	}
 
-	protected void prepareContentUpload(final String normalizedResource, final UUID uuid, final int version) {
-		final URI uri = URI.create(repository + PREFIX_VER + version + normalizedResource);
+	protected void prepareContentUpload(final String normalizedResource, final UUID uuid, final int revision) {
+		final URI uri = URI.create(repository + PREFIX_VER + revision + normalizedResource);
 
 		final HttpUriRequest request = requestFactory.createCheckoutRequest(uri, repository + PREFIX_ACT + uuid);
 		execute(request, HttpStatus.SC_CREATED);
@@ -205,8 +205,8 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 		execute(request, HttpStatus.SC_MULTI_STATUS);
 	}
 
-	protected void setCommitMessage(final UUID uuid, final int version, final String message) {
-		final URI uri = URI.create(repository + PREFIX_WBL + uuid + "/" + version);
+	protected void setCommitMessage(final UUID uuid, final int revision, final String message) {
+		final URI uri = URI.create(repository + PREFIX_WBL + uuid + "/" + revision);
 
 		final String trimmedMessage = StringUtils.trimToEmpty(message);
 		final HttpUriRequest request = requestFactory.createCommitMessageRequest(uri, trimmedMessage);
@@ -226,11 +226,11 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 			}
 
 			final SubversionInfo info = info0(infoResource, HEAD_VERSION, false);
-			final int version = info.getVersion();
+			final int revision = info.getRevision();
 			checkout(uuid);
-			setCommitMessage(uuid, version, message);
+			setCommitMessage(uuid, revision, message);
 			if (exists) {
-				prepareContentUpload(normalizedResource, uuid, version);
+				prepareContentUpload(normalizedResource, uuid, revision);
 			}
 			contentUpload(normalizedResource, info, uuid, content);
 			propertiesSet(normalizedResource, info, uuid, properties);

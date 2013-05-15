@@ -59,8 +59,8 @@ public class SubversionLog {
 			}
 
 			if ("version-name".equals(name)) {
-				final int version = Integer.parseInt(getText());
-				current.setVersion(version);
+				final int revision = Integer.parseInt(getText());
+				current.setRevision(revision);
 				return;
 			}
 		}
@@ -98,9 +98,9 @@ public class SubversionLog {
 
 	private Date date;
 
-	private String user;
+	private int revision;
 
-	private int version;
+	private String user;
 
 	SubversionLog() {
 		// prevent direct instantiation
@@ -132,14 +132,14 @@ public class SubversionLog {
 		} else if (!date.equals(other.date)) {
 			return false;
 		}
+		if (revision != other.revision) {
+			return false;
+		}
 		if (user == null) {
 			if (other.user != null) {
 				return false;
 			}
 		} else if (!user.equals(other.user)) {
-			return false;
-		}
-		if (version != other.version) {
 			return false;
 		}
 		return true;
@@ -155,13 +155,13 @@ public class SubversionLog {
 		return (date == null) ? null : new Date(date.getTime());
 	}
 
+	public int getRevision() {
+		return revision;
+	}
+
 	@CheckForNull
 	public String getUser() {
 		return user;
-	}
-
-	public int getVersion() {
-		return version;
 	}
 
 	@Override
@@ -170,8 +170,8 @@ public class SubversionLog {
 		int result = 1;
 		result = (prime * result) + ((comment == null) ? 0 : comment.hashCode());
 		result = (prime * result) + ((date == null) ? 0 : date.hashCode());
+		result = (prime * result) + revision;
 		result = (prime * result) + ((user == null) ? 0 : user.hashCode());
-		result = (prime * result) + version;
 		return result;
 	}
 
@@ -183,12 +183,12 @@ public class SubversionLog {
 		this.date = (date == null) ? null : new Date(date.getTime());
 	}
 
-	public void setUser(final String user) {
-		this.user = user;
+	public void setRevision(final int revision) {
+		this.revision = revision;
 	}
 
-	public void setVersion(final int version) {
-		this.version = version;
+	public void setUser(final String user) {
+		this.user = user;
 	}
 
 	@Override
@@ -198,10 +198,10 @@ public class SubversionLog {
 		builder.append(comment);
 		builder.append(", date=");
 		builder.append(date);
+		builder.append(", revision=");
+		builder.append(revision);
 		builder.append(", user=");
 		builder.append(user);
-		builder.append(", version=");
-		builder.append(version);
 		builder.append("]");
 		return builder.toString();
 	}

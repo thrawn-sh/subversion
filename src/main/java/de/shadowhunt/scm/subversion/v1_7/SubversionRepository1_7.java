@@ -72,12 +72,12 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 	}
 
 	@Override
-	protected InputStream download0(final String normalizedResource, final int version) {
+	protected InputStream download0(final String normalizedResource, final int revision) {
 		final URI uri;
-		if (version == HEAD_VERSION) {
+		if (revision == HEAD_VERSION) {
 			uri = URI.create(repository + normalizedResource);
 		} else {
-			uri = URI.create(repository + PREFIX_RVR + version + normalizedResource);
+			uri = URI.create(repository + PREFIX_RVR + revision + normalizedResource);
 		}
 
 		final HttpUriRequest request = requestFactory.createDownloadRequest(uri);
@@ -86,16 +86,16 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 	}
 
 	@Override
-	protected URI downloadURI0(final String normalizedResource, final int version) {
-		if (version == HEAD_VERSION) {
+	protected URI downloadURI0(final String normalizedResource, final int revision) {
+		if (revision == HEAD_VERSION) {
 			return URI.create(repository + normalizedResource);
 		}
-		return URI.create(repository + PREFIX_RVR + version + normalizedResource);
+		return URI.create(repository + PREFIX_RVR + revision + normalizedResource);
 	}
 
 	@Override
-	protected SubversionInfo info0(final String normalizedResource, final int version, final boolean withCustomProperties) {
-		final URI uri = downloadURI0(normalizedResource, version);
+	protected SubversionInfo info0(final String normalizedResource, final int revision, final boolean withCustomProperties) {
+		final URI uri = downloadURI0(normalizedResource, revision);
 
 		final HttpUriRequest request = requestFactory.createInfoRequest(uri, Depth.EMPTY);
 		final HttpResponse response = execute(request, false, HttpStatus.SC_MULTI_STATUS);
@@ -117,7 +117,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 	public List<SubversionInfo> list(final String resource, final Depth depth, final boolean withCustomProperties) {
 		final String normalizedResource = normalizeResource(resource);
 		final SubversionInfo info = info0(normalizedResource, HEAD_VERSION, false);
-		final String uriPrefix = repository + PREFIX_RVR + info.getVersion();
+		final String uriPrefix = repository + PREFIX_RVR + info.getRevision();
 		return list(uriPrefix, normalizedResource, depth, withCustomProperties);
 	}
 
