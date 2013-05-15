@@ -1,12 +1,21 @@
 package de.shadowhunt.cmdl;
 
+import java.util.Locale;
+import java.util.ServiceLoader;
+
 import de.shadowhunt.cmdl.command.Command;
-import de.shadowhunt.cmdl.command.subversion.HelpCommand;
 
 public class Main {
 
 	static Command getCommandForName(final String name) {
-		return new HelpCommand();
+		final String lowerCase = name.toLowerCase(Locale.US);
+		for (final Command provider : ServiceLoader.load(Command.class)) {
+			if (lowerCase.equals(provider.getName())) {
+				return provider;
+			}
+		}
+
+		throw new IllegalArgumentException("no provider for found.");
 	}
 
 	static String getCommandName(final String[] args) {

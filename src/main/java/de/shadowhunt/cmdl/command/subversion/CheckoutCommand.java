@@ -11,7 +11,7 @@ import org.apache.commons.io.IOUtils;
 
 public class CheckoutCommand extends AbstractContentCommand {
 
-	private static final String OUTPUT_OPTION = "output";
+	private static final String OUTPUT_OPTION = "o";
 
 	public CheckoutCommand() {
 		super("checkout");
@@ -29,7 +29,7 @@ public class CheckoutCommand extends AbstractContentCommand {
 	@Override
 	protected Options getOptions() {
 		final Options options = super.getOptions();
-		options.addOption(new Option("o", OUTPUT_OPTION, true, "output file"));
+		options.addOption(new Option(OUTPUT_OPTION, "output", true, "output file"));
 		return options;
 	}
 

@@ -14,25 +14,44 @@ import org.apache.commons.cli.Options;
 
 import de.shadowhunt.cmdl.command.Command;
 import de.shadowhunt.scm.subversion.ServerVersion;
+import de.shadowhunt.scm.subversion.SubversionFactory;
+import de.shadowhunt.scm.subversion.SubversionRepository;
 
 abstract class AbstractCommand implements Command {
 
-	private static final String HELP_OPTION = "help";
+	private static final String HELP_OPTION = "h";
 
-	private static final String PASSWORD_OPTION = "password";
+	private static final String PASSWORD_OPTION = "p";
 
-	private static final String REPOSITORY_OPTION = "repository";
+	private static final String REPOSITORY_OPTION = "r";
 
-	private static final String SERVER_OPTION = "server";
+	private static final String SERVER_OPTION = "s";
 
-	private static final String USERNAME_OPTION = "username";
+	private static final String TRUST_SERVER_OPTION = "T";
 
-	private static final String WORKSTATION_OPTION = "workstation";
+	private static final String USERNAME_OPTION = "u";
+
+	private static final String WORKSPACE_OPTION = "w";
 
 	private final String name;
 
 	protected AbstractCommand(final String name) {
 		this.name = name;
+	}
+
+	protected final SubversionRepository createRepository(final CommandLine cmdl) {
+		final URI root = getRepositoryRoot(cmdl);
+		final String user = getUser(cmdl);
+		final String password = getPassword(cmdl);
+		final String workstation = getWorkstation(cmdl);
+		final ServerVersion version = getServerVersion(cmdl);
+		final boolean trustServer = getTrustServer(cmdl);
+
+		return SubversionFactory.getInstance(root, trustServer, user, password, workstation, version);
+	}
+
+	private boolean getTrustServer(final CommandLine cmdl) {
+		return cmdl.hasOption(TRUST_SERVER_OPTION);
 	}
 
 	@Override
@@ -62,7 +81,7 @@ abstract class AbstractCommand implements Command {
 		final CommandLineParser parser = new BasicParser();
 		final Options options = getOptions();
 		final CommandLine cmdl = parser.parse(options, arguments);
-		if (!cmdl.hasOption(HELP_OPTION)) {
+		if (cmdl.hasOption(HELP_OPTION)) {
 			final HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp(getName(), options);
 			return;
@@ -72,25 +91,28 @@ abstract class AbstractCommand implements Command {
 
 	protected abstract void execute0(final CommandLine cmdl) throws Exception;
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
 	protected Options getOptions() {
 		final Options options = new Options();
-		options.addOption(new Option("h", HELP_OPTION, false, "print this help message"));
+		options.addOption(new Option(HELP_OPTION, "help", false, "print this help message"));
 
-		options.addOption(new Option("u", USERNAME_OPTION, true, "specify the username (for NTLM: DOMAIN\\USER)"));
-		options.addOption(new Option("p", PASSWORD_OPTION, true, "specify the password"));
+		options.addOption(new Option(USERNAME_OPTION, "username", true, "specify the username (for NTLM: DOMAIN\\USER)"));
+		options.addOption(new Option(PASSWORD_OPTION, "password", true, "specify the password"));
 
-		final Option repository = new Option("r", REPOSITORY_OPTION, true, "specify the url to a repository root");
+		final Option repository = new Option(REPOSITORY_OPTION, "repository", true, "specify the url to a repository root");
 		repository.setRequired(true);
 		options.addOption(repository);
 
-		options.addOption(new Option("w", WORKSTATION_OPTION, true, "specify the name of the host"));
+		options.addOption(new Option(WORKSPACE_OPTION, "workstation", true, "specify the name of the host"));
 
-		options.addOption(new Option("s", SERVER_OPTION, true, "specify the version of the server "
+		options.addOption(new Option(SERVER_OPTION, "server", true, "specify the version of the server "
 				+ Arrays.toString(ServerVersion.values())));
+
+		options.addOption(new Option(TRUST_SERVER_OPTION, "trust-server-cert", false, "accept SSL server certificates from unknown certificate authorities without prompting"));
 
 		return options;
 	}
@@ -129,7 +151,7 @@ abstract class AbstractCommand implements Command {
 	}
 
 	protected final String getWorkstation(final CommandLine cmdl) {
-		final String value = cmdl.getOptionValue(WORKSTATION_OPTION, "");
+		final String value = cmdl.getOptionValue(WORKSPACE_OPTION, "");
 		if ("".equals(value)) {
 			try {
 				return InetAddress.getLocalHost().getHostName();

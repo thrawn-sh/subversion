@@ -4,25 +4,25 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-import de.shadowhunt.scm.subversion.SubversionInfo;
+import de.shadowhunt.scm.subversion.SubversionProperty;
+import de.shadowhunt.scm.subversion.SubversionRepository;
 
-public class PropertyGetCommand extends AbstractInfoCommand {
+public class PropertyDeleteCommand extends AbstractCommand {
 
 	private static final String PROPERTY_OPTION = "p";
 
-	public PropertyGetCommand() {
-		super("propget");
+	public PropertyDeleteCommand() {
+		super("propdel");
 	}
 
 	@Override
 	protected void execute0(final CommandLine cmdl) throws Exception {
-		final SubversionInfo info = getInfo(cmdl);
-
 		final String property = getProperty(cmdl);
-		final String value = info.getSubversionPropertyValue(property);
-		if (value != null) {
-			System.out.println(value);
-		}
+
+		final SubversionRepository repositry = createRepository(cmdl);
+
+		final String resource = getTargetResource(cmdl);
+		repositry.deleteProperties(resource, "TODO", SubversionProperty.createCustomProperty(property, null));
 	}
 
 	@Override

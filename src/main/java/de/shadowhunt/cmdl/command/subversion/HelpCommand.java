@@ -27,7 +27,7 @@ public class HelpCommand extends AbstractCommand {
 		System.out.println("   lock"); // done
 		System.out.println("   log");
 		//		System.out.println("   move"); TODO
-		System.out.println("   propdel");
+		System.out.println("   propdel"); // done
 		System.out.println("   propget"); // done
 		System.out.println("   proplist"); // done
 		System.out.println("   propset");

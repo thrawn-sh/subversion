@@ -1,12 +1,9 @@
 package de.shadowhunt.cmdl.command.subversion;
 
 import java.io.InputStream;
-import java.net.URI;
 
 import org.apache.commons.cli.CommandLine;
 
-import de.shadowhunt.scm.subversion.ServerVersion;
-import de.shadowhunt.scm.subversion.SubversionFactory;
 import de.shadowhunt.scm.subversion.SubversionRepository;
 
 abstract class AbstractContentCommand extends AbstractRevisionCommand {
@@ -16,13 +13,7 @@ abstract class AbstractContentCommand extends AbstractRevisionCommand {
 	}
 
 	protected InputStream getContent(final CommandLine cmdl) throws Exception {
-		final URI root = getRepositoryRoot(cmdl);
-		final String user = getUser(cmdl);
-		final String password = getPassword(cmdl);
-		final String workstation = getWorkstation(cmdl);
-		final ServerVersion version = getServerVersion(cmdl);
-
-		final SubversionRepository repositry = SubversionFactory.getInstance(root, user, password, workstation, version);
+		final SubversionRepository repositry = createRepository(cmdl);
 		final String resource = getTargetResource(cmdl);
 		final Integer revision = getRevision(cmdl);
 		if (revision == null) {

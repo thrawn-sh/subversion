@@ -5,7 +5,7 @@ import org.apache.commons.cli.Options;
 
 abstract class AbstractRevisionCommand extends AbstractCommand {
 
-	private static final String REVISION_OPTION = "revision";
+	private static final String REVISION_OPTION = "r";
 
 	protected AbstractRevisionCommand(final String name) {
 		super(name);
@@ -14,7 +14,7 @@ abstract class AbstractRevisionCommand extends AbstractCommand {
 	@Override
 	protected Options getOptions() {
 		final Options options = super.getOptions();
-		options.addOption("r", REVISION_OPTION, true, "The revision number");
+		options.addOption(REVISION_OPTION, "revision", true, "The revision number");
 		return options;
 	}
 
