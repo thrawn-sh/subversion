@@ -3,12 +3,18 @@ package de.shadowhunt.http.protocol;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import org.apache.http.protocol.HttpContext;
 
+@ThreadSafe
 public class ThreadLocalHttpContext implements HttpContext {
 
 	private final ThreadLocal<Map<String, Object>> threadLocalMap = new ThreadLocal<Map<String, Object>>();
 
+	/**
+	 * Removes all attributes in the thread-local context
+	 */
 	public void clear() {
 		final Map<String, Object> map = getMap();
 		map.clear();

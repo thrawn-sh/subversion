@@ -24,14 +24,15 @@ public abstract class AbstractSubversionRequestFactory {
 		private final String method;
 
 		public DavTemplateRequest(final String method) {
-			this.method = method;
-			depth = Depth.EMPTY;
+			this(method, Depth.EMPTY);
 		}
 
 		public DavTemplateRequest(final String method, final Depth depth) {
 			this.method = method;
 			this.depth = depth;
-			setHeader("Depth", depth.value);
+			if (depth != Depth.EMPTY) {
+				setHeader("Depth", depth.value);
+			}
 		}
 
 		public Depth getDepth() {

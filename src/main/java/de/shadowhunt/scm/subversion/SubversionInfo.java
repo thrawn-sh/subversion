@@ -272,6 +272,7 @@ public class SubversionInfo {
 		return Arrays.copyOf(customProperties, customProperties.length);
 	}
 
+	@CheckForNull
 	public String getLockOwner() {
 		return lockOwner;
 	}
@@ -286,7 +287,6 @@ public class SubversionInfo {
 		return md5;
 	}
 
-	@CheckForNull
 	public String getRelativePath() {
 		return relativePath;
 	}

@@ -1,5 +1,7 @@
 package de.shadowhunt.cmdl.command.subversion;
 
+import java.io.PrintWriter;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -10,8 +12,8 @@ public class PropertyGetCommand extends AbstractInfoCommand {
 
 	private static final String PROPERTY_OPTION = "p";
 
-	public PropertyGetCommand() {
-		super("propget");
+	public PropertyGetCommand(final PrintWriter out) {
+		super("propget", out);
 	}
 
 	@Override
@@ -21,7 +23,7 @@ public class PropertyGetCommand extends AbstractInfoCommand {
 		final String property = getProperty(cmdl);
 		final String value = info.getSubversionPropertyValue(property);
 		if (value != null) {
-			System.out.println(value);
+			out.println(value);
 		}
 	}
 

@@ -3,6 +3,7 @@ package de.shadowhunt.cmdl.command.subversion;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
@@ -13,8 +14,8 @@ public class CheckoutCommand extends AbstractContentCommand {
 
 	private static final String OUTPUT_OPTION = "o";
 
-	public CheckoutCommand() {
-		super("checkout");
+	public CheckoutCommand(final PrintWriter out) {
+		super("checkout", out);
 	}
 
 	@Override

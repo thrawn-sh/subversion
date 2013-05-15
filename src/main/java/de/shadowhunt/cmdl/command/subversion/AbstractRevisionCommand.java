@@ -1,5 +1,7 @@
 package de.shadowhunt.cmdl.command.subversion;
 
+import java.io.PrintWriter;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 
@@ -7,8 +9,8 @@ abstract class AbstractRevisionCommand extends AbstractCommand {
 
 	private static final String REVISION_OPTION = "r";
 
-	protected AbstractRevisionCommand(final String name) {
-		super(name);
+	protected AbstractRevisionCommand(final String name, final PrintWriter out) {
+		super(name, out);
 	}
 
 	@Override

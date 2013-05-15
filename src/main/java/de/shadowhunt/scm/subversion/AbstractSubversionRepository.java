@@ -99,7 +99,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	}
 
 	@CheckForNull
-	protected static Credentials creteCredentials(final String user, final String password, @Nullable final String workstation) {
+	protected static Credentials creteCredentials(@Nullable final String user, @Nullable final String password, @Nullable final String workstation) {
 		if (user == null) {
 			return null;
 		}

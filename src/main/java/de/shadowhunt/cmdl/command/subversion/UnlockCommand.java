@@ -1,13 +1,15 @@
 package de.shadowhunt.cmdl.command.subversion;
 
+import java.io.PrintWriter;
+
 import org.apache.commons.cli.CommandLine;
 
 import de.shadowhunt.scm.subversion.SubversionRepository;
 
 public class UnlockCommand extends AbstractCommand {
 
-	public UnlockCommand() {
-		super("unlock");
+	public UnlockCommand(final PrintWriter out) {
+		super("unlock", out);
 	}
 
 	@Override
@@ -15,6 +17,6 @@ public class UnlockCommand extends AbstractCommand {
 		final SubversionRepository repositry = createRepository(cmdl);
 		final String resource = getTargetResource(cmdl);
 		repositry.unlock(resource);
-		System.out.println("'" + resource + "' unlocked.");
+		out.println("'" + resource + "' unlocked.");
 	}
 }

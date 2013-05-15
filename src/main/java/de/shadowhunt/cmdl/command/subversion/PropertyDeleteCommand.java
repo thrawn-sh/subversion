@@ -1,5 +1,7 @@
 package de.shadowhunt.cmdl.command.subversion;
 
+import java.io.PrintWriter;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -11,8 +13,8 @@ public class PropertyDeleteCommand extends AbstractCommand {
 
 	private static final String PROPERTY_OPTION = "p";
 
-	public PropertyDeleteCommand() {
-		super("propdel");
+	public PropertyDeleteCommand(final PrintWriter out) {
+		super("propdel", out);
 	}
 
 	@Override

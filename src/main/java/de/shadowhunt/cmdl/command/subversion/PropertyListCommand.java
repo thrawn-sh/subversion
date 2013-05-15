@@ -1,5 +1,7 @@
 package de.shadowhunt.cmdl.command.subversion;
 
+import java.io.PrintWriter;
+
 import org.apache.commons.cli.CommandLine;
 
 import de.shadowhunt.scm.subversion.SubversionInfo;
@@ -7,8 +9,8 @@ import de.shadowhunt.scm.subversion.SubversionProperty;
 
 public class PropertyListCommand extends AbstractInfoCommand {
 
-	public PropertyListCommand() {
-		super("proplist");
+	public PropertyListCommand(final PrintWriter out) {
+		super("proplist", out);
 	}
 
 	@Override
@@ -17,9 +19,9 @@ public class PropertyListCommand extends AbstractInfoCommand {
 
 		final SubversionProperty[] customProperties = info.getCustomProperties();
 		if (customProperties.length > 0) {
-			System.out.println("Properties on '" + info.getRelativePath() + "':");
+			out.println("Properties on '" + info.getRelativePath() + "':");
 			for (final SubversionProperty property : customProperties) {
-				System.out.println("  " + property.getName());
+				out.println("  " + property.getName());
 			}
 		}
 	}

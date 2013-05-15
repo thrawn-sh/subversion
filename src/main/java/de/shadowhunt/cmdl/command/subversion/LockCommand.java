@@ -1,13 +1,15 @@
 package de.shadowhunt.cmdl.command.subversion;
 
+import java.io.PrintWriter;
+
 import org.apache.commons.cli.CommandLine;
 
 import de.shadowhunt.scm.subversion.SubversionRepository;
 
 public class LockCommand extends AbstractCommand {
 
-	public LockCommand() {
-		super("lock");
+	public LockCommand(final PrintWriter out) {
+		super("lock", out);
 	}
 
 	@Override
@@ -16,6 +18,6 @@ public class LockCommand extends AbstractCommand {
 		final String resource = getTargetResource(cmdl);
 		repositry.lock(resource);
 		final String user = getUser(cmdl);
-		System.out.println("'" + resource + "' locked by user '" + user + "'.");
+		out.println("'" + resource + "' locked by user '" + user + "'.");
 	}
 }

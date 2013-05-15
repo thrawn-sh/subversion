@@ -1,5 +1,6 @@
 package de.shadowhunt.cmdl.command.subversion;
 
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
@@ -35,8 +36,11 @@ abstract class AbstractCommand implements Command {
 
 	private final String name;
 
-	protected AbstractCommand(final String name) {
+	protected final PrintWriter out;
+
+	protected AbstractCommand(final String name, final PrintWriter out) {
 		this.name = name;
+		this.out = out;
 	}
 
 	protected final SubversionRepository createRepository(final CommandLine cmdl) {
@@ -48,10 +52,6 @@ abstract class AbstractCommand implements Command {
 		final boolean trustServer = getTrustServer(cmdl);
 
 		return SubversionFactory.getInstance(root, trustServer, user, password, workstation, version);
-	}
-
-	private boolean getTrustServer(final CommandLine cmdl) {
-		return cmdl.hasOption(TRUST_SERVER_OPTION);
 	}
 
 	@Override
@@ -144,6 +144,10 @@ abstract class AbstractCommand implements Command {
 			return args[args.length - 1];
 		}
 		return null;
+	}
+
+	private boolean getTrustServer(final CommandLine cmdl) {
+		return cmdl.hasOption(TRUST_SERVER_OPTION);
 	}
 
 	protected final String getUser(final CommandLine cmdl) {
