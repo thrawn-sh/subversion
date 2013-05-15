@@ -5,9 +5,9 @@ import java.net.URI;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpUriRequest;
 
 import de.shadowhunt.scm.subversion.AbstractSubversionRepository;
@@ -15,7 +15,7 @@ import de.shadowhunt.scm.subversion.Depth;
 import de.shadowhunt.scm.subversion.SubversionInfo;
 import de.shadowhunt.scm.subversion.SubversionProperty;
 
-public class SubversionRepository1_7 extends AbstractSubversionRepository<SubversionRequestFactory> {
+public class SubversionRepository1_7 extends AbstractSubversionRepository<SubversionRequestFactory1_7> {
 
 	protected static final String PREFIX_ME = "/!svn/me";
 
@@ -26,7 +26,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 	protected static final String PREFIX_TXR = "/!svn/txr/";
 
 	public SubversionRepository1_7(final URI repositoryRoot) {
-		super(repositoryRoot, new SubversionRequestFactory());
+		super(repositoryRoot, new SubversionRequestFactory1_7());
 	}
 
 	protected void contentUpload(final String normalizedResource, final SubversionInfo info, final String uuid, final InputStream content) {
@@ -48,7 +48,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 	@Override
 	public void delete(final String resource, final String message) {
 		final String normalizedResource = normalizeResource(resource);
-		final String uuid = prepareCheckin();
+		final String uuid = prepareTransaction();
 		setCommitMessage(uuid, message);
 		delete0(normalizedResource, uuid);
 		final SubversionInfo info = info0(normalizedResource, HEAD_VERSION, false);
@@ -57,14 +57,14 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 
 	protected void delete0(final String normalizedResource, final String uuid) {
 		final URI uri = URI.create(repository + PREFIX_TXR + uuid + normalizedResource);
-		final HttpUriRequest request = new HttpDelete(uri);
+		final HttpUriRequest request = requestFactory.createDeleteRequest(uri);
 		execute(request, HttpStatus.SC_NO_CONTENT);
 	}
 
 	@Override
 	public void deleteProperties(final String resource, final String message, final SubversionProperty... properties) {
 		final String normalizedResource = normalizeResource(resource);
-		final String uuid = prepareCheckin();
+		final String uuid = prepareTransaction();
 		setCommitMessage(uuid, message);
 		final SubversionInfo info = info0(normalizedResource, HEAD_VERSION, false);
 		propertiesRemove(normalizedResource, info, uuid, properties);
@@ -86,20 +86,28 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 	}
 
 	@Override
-	protected SubversionInfo info0(final String normalizedResource, final int version, final boolean withCustomProperties) {
-		final URI uri;
+	protected URI downloadURI0(final String normalizedResource, final int version) {
 		if (version == HEAD_VERSION) {
-			uri = URI.create(repository + normalizedResource);
-		} else {
-			uri = URI.create(repository + PREFIX_RVR + version + normalizedResource);
+			return URI.create(repository + normalizedResource);
 		}
+		return URI.create(repository + PREFIX_RVR + version + normalizedResource);
+	}
+
+	@Override
+	protected SubversionInfo info0(final String normalizedResource, final int version, final boolean withCustomProperties) {
+		final URI uri = downloadURI0(normalizedResource, version);
 
 		final HttpUriRequest request = requestFactory.createInfoRequest(uri, Depth.EMPTY);
 		final HttpResponse response = execute(request, false, HttpStatus.SC_MULTI_STATUS);
 
 		final InputStream in = getContent(response);
 		try {
-			return SubversionInfo.read(in, withCustomProperties);
+			final SubversionInfo info = SubversionInfo.read(in, withCustomProperties);
+			if (info.isLocked()) {
+				final Header header = response.getFirstHeader(LOCK_OWNER_HEADER);
+				info.setLockOwner(header.getValue());
+			}
+			return info;
 		} finally {
 			closeQuiet(in);
 		}
@@ -119,8 +127,8 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		execute(request, HttpStatus.SC_OK);
 	}
 
-	protected String prepareCheckin() {
-		final URI uri = URI.create(repository + "/!svn/me");
+	protected String prepareTransaction() {
+		final URI uri = URI.create(repository + PREFIX_ME);
 
 		final HttpUriRequest request = requestFactory.createPrepareRequest(uri, "( create-txn )");
 		final HttpResponse response = execute(request, HttpStatus.SC_CREATED);
@@ -164,11 +172,11 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 
 	@Override
 	protected void uploadWithProperties0(final String normalizedResource, final String message, final InputStream content, final SubversionProperty... properties) {
-		final String uuid = prepareCheckin();
-		final boolean exisits = exisits0(normalizedResource);
+		final String uuid = prepareTransaction();
+		final boolean exists = exists0(normalizedResource);
 
 		final String infoResource;
-		if (exisits) {
+		if (exists) {
 			infoResource = normalizedResource;
 		} else {
 			infoResource = createMissingFolders(PREFIX_TXR, uuid, normalizedResource);

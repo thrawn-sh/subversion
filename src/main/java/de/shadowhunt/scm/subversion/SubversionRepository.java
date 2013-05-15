@@ -16,7 +16,11 @@ public interface SubversionRepository {
 
 	public InputStream download(String resource, int version);
 
-	public boolean exisits(String resource);
+	public URI downloadURI(String resource);
+
+	public URI downloadURI(String resource, int version);
+
+	public boolean exists(String resource);
 
 	public SubversionInfo info(String resource, boolean withCustomProperties);
 

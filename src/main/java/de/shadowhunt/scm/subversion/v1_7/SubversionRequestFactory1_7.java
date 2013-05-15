@@ -9,7 +9,7 @@ import org.apache.http.entity.StringEntity;
 
 import de.shadowhunt.scm.subversion.AbstractSubversionRequestFactory;
 
-class SubversionRequestFactory extends AbstractSubversionRequestFactory {
+class SubversionRequestFactory1_7 extends AbstractSubversionRequestFactory {
 
 	private static final ContentType CONTENT_TYPE_SVNSKEL = ContentType.create("application/vnd.svn-skel");
 

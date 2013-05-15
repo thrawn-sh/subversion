@@ -18,7 +18,6 @@ import javax.net.ssl.TrustManager;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthProtocolState;
@@ -30,15 +29,14 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.AuthPolicy;
-import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeSocketFactory;
 import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.client.DecompressingHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
-import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 
 import de.shadowhunt.http.auth.NtlmSchemeFactory;
@@ -49,6 +47,10 @@ import de.shadowhunt.http.protocol.ThreadLocalHttpContext;
 public abstract class AbstractSubversionRepository<T extends AbstractSubversionRequestFactory> implements SubversionRepository {
 
 	protected static final int HEAD_VERSION = -1;
+
+	protected static final int INITIAL_VERSION = 0;
+
+	protected static final String LOCK_OWNER_HEADER = "X-SVN-Lock-Owner";
 
 	protected static boolean contains(final int statusCode, @Nullable final int... expectedStatusCodes) {
 		if (expectedStatusCodes == null) {
@@ -73,9 +75,6 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 		final DefaultHttpClient defaultClient = new DefaultHttpClient(connectionManager);
 		defaultClient.setCredentialsProvider(new ThreadLocalCredentialsProvider());
-		if (addSvnHeader) {
-			defaultClient.getParams().setParameter(ClientPNames.DEFAULT_HEADERS, createDefaultHeaders());
-		}
 
 		if (hasJcifsSupport()) {
 			defaultClient.getAuthSchemes().register(AuthPolicy.NTLM, NtlmSchemeFactory.INSTANCE);
@@ -84,22 +83,13 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		return defaultClient;
 	}
 
-	private static Collection<Header> createDefaultHeaders() {
-		final Collection<Header> parameters = new ArrayList<Header>();
-		parameters.add(new BasicHeader("Connection", "TE"));
-		parameters.add(new BasicHeader("TE", "trailers"));
-		parameters.add(new BasicHeader("DAV", "http://subversion.tigris.org/xmlns/dav/svn/depth"));
-		parameters.add(new BasicHeader("DAV", "http://subversion.tigris.org/xmlns/dav/svn/mergeinfo"));
-		parameters.add(new BasicHeader("DAV", "http://subversion.tigris.org/xmlns/dav/svn/log-revprops"));
-		return parameters;
-	}
-
 	protected static Scheme createTrustingAnySslCertScheme() {
 		try {
 			final SSLContext sc = SSLContext.getInstance("SSL");
 			sc.init(null, new TrustManager[] { NonValidatingX509TrustManager.INSTANCE }, new SecureRandom());
 
-			final SchemeSocketFactory socketFactory = new SSLSocketFactory(sc, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+			final X509HostnameVerifier verifier = SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
+			final SchemeSocketFactory socketFactory = new SSLSocketFactory(sc, verifier);
 			return new Scheme("https", 443, socketFactory);
 		} catch (final Exception e) {
 			throw new SubversionException("could not create ssl scheme", e);
@@ -234,12 +224,27 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	}
 
 	@Override
+	public URI downloadURI(final String resource) {
+		return downloadURI0(normalizeResource(resource), HEAD_VERSION);
+	}
+
+	@Override
+	public URI downloadURI(final String resource, final int version) {
+		if (version <= HEAD_VERSION) {
+			throw new IllegalArgumentException("version must be greater than 0, was:" + version);
+		}
+		return downloadURI0(normalizeResource(resource), version);
+	}
+
+	@Override
 	public InputStream download(final String resource, final int version) {
 		if (version <= HEAD_VERSION) {
 			throw new IllegalArgumentException("version must be greater than 0, was:" + version);
 		}
 		return download0(normalizeResource(resource), version);
 	}
+
+	protected abstract URI downloadURI0(String normalizedResource, int version);
 
 	protected abstract InputStream download0(final String normalizeResource, final int version);
 
@@ -258,11 +263,11 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	}
 
 	@Override
-	public boolean exisits(final String resource) {
-		return exisits0(normalizeResource(resource));
+	public boolean exists(final String resource) {
+		return exists0(normalizeResource(resource));
 	}
 
-	protected boolean exisits0(final String normalizedResource) {
+	protected boolean exists0(final String normalizedResource) {
 		final URI uri = URI.create(repository + normalizedResource);
 
 		final HttpUriRequest request = requestFactory.createExistsRequest(uri);
@@ -299,7 +304,8 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		final URI uri = URI.create(repository + normalizedResource);
 
 		final SubversionInfo info = info0(normalizedResource, HEAD_VERSION, false);
-		final List<SubversionLog> logs = log(uri, info.getVersion(), info.getVersion());
+		final int version = info.getVersion();
+		final List<SubversionLog> logs = log(uri, version, version);
 		if (logs.isEmpty()) {
 			throw new SubversionException("no logs available");
 		}
@@ -360,7 +366,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		final URI uri = URI.create(repository + normalizedResource);
 
 		final SubversionInfo info = info0(normalizedResource, HEAD_VERSION, false);
-		return log(uri, info.getVersion(), 0);
+		return log(uri, info.getVersion(), INITIAL_VERSION);
 	}
 
 	@Override
@@ -383,8 +389,8 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 		final Credentials oldCredentials = credentialsProvider.getCredentials(authscope);
 		if (!ObjectUtils.equals(credentials, oldCredentials)) {
-			credentialsProvider.setCredentials(authscope, credentials);
 			context.clear();
+			credentialsProvider.setCredentials(authscope, credentials);
 			triggerAuthentication();
 		}
 	}

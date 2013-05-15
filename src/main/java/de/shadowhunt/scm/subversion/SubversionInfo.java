@@ -151,7 +151,7 @@ public class SubversionInfo {
 
 	private static final SubversionProperty[] EMPTY = new SubversionProperty[0];
 
-	public static Comparator<SubversionInfo> PATH_COMPARATOR = new Comparator<SubversionInfo>() {
+	public static final Comparator<SubversionInfo> PATH_COMPARATOR = new Comparator<SubversionInfo>() {
 
 		@Override
 		public int compare(final SubversionInfo si1, final SubversionInfo si2) {
@@ -182,6 +182,9 @@ public class SubversionInfo {
 	private SubversionProperty[] customProperties = EMPTY;
 
 	private boolean directory;
+
+	// not part of xml respone but determined by response header
+	private String lockOwner;
 
 	private String lockToken;
 
@@ -215,6 +218,13 @@ public class SubversionInfo {
 			return false;
 		}
 		if (directory != other.directory) {
+			return false;
+		}
+		if (lockOwner == null) {
+			if (other.lockOwner != null) {
+				return false;
+			}
+		} else if (!lockOwner.equals(other.lockOwner)) {
 			return false;
 		}
 		if (lockToken == null) {
@@ -262,6 +272,10 @@ public class SubversionInfo {
 		return Arrays.copyOf(customProperties, customProperties.length);
 	}
 
+	public String getLockOwner() {
+		return lockOwner;
+	}
+
 	@CheckForNull
 	public String getLockToken() {
 		return lockToken;
@@ -277,7 +291,6 @@ public class SubversionInfo {
 		return relativePath;
 	}
 
-	@CheckForNull
 	public String getRepositoryUuid() {
 		return repositoryUuid;
 	}
@@ -307,6 +320,7 @@ public class SubversionInfo {
 		int result = 1;
 		result = (prime * result) + Arrays.hashCode(customProperties);
 		result = (prime * result) + (directory ? 1231 : 1237);
+		result = (prime * result) + ((lockOwner == null) ? 0 : lockOwner.hashCode());
 		result = (prime * result) + ((lockToken == null) ? 0 : lockToken.hashCode());
 		result = (prime * result) + ((md5 == null) ? 0 : md5.hashCode());
 		result = (prime * result) + ((relativePath == null) ? 0 : relativePath.hashCode());
@@ -344,6 +358,10 @@ public class SubversionInfo {
 		directory = !file;
 	}
 
+	public void setLockOwner(final String lockOwner) {
+		this.lockOwner = lockOwner;
+	}
+
 	public void setLockToken(final String lockToken) {
 		this.lockToken = lockToken;
 	}
@@ -375,6 +393,8 @@ public class SubversionInfo {
 		builder.append(Arrays.toString(customProperties));
 		builder.append(", directory=");
 		builder.append(directory);
+		builder.append(", lockOwner=");
+		builder.append(lockOwner);
 		builder.append(", lockToken=");
 		builder.append(lockToken);
 		builder.append(", md5=");
