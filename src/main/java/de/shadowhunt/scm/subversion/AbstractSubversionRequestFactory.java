@@ -17,16 +17,28 @@ import org.apache.http.entity.StringEntity;
 
 public abstract class AbstractSubversionRequestFactory {
 
+	/**
+	 * Basic implementation of an entity enclosing HTTP request for WebDav
+	 */
 	public static final class DavTemplateRequest extends HttpEntityEnclosingRequestBase {
 
 		private final Depth depth;
 
 		private final String method;
 
+		/**
+		 * Create a new {@code DavTemplateRequest} with default {@link Depth}-level
+		 * @param method http method name
+		 */
 		public DavTemplateRequest(final String method) {
 			this(method, Depth.EMPTY);
 		}
 
+		/**
+		 * Create a new {@code DavTemplateRequest}
+		 * @param method http method name
+		 * @param depth {@link Depth}-level of the request
+		 */
 		public DavTemplateRequest(final String method, final Depth depth) {
 			this.method = method;
 			this.depth = depth;
@@ -35,6 +47,10 @@ public abstract class AbstractSubversionRequestFactory {
 			}
 		}
 
+		/**
+		 * Returns the {@link Depth}-level of the request
+		 * @return {@link Depth}-level of the request
+		 */
 		public Depth getDepth() {
 			return depth;
 		}

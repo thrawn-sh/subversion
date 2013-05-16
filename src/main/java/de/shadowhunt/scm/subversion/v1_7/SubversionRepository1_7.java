@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -28,7 +30,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		super(repositoryRoot, trustServerCertificat, new SubversionRequestFactory1_7());
 	}
 
-	protected void contentUpload(final String normalizedResource, final SubversionInfo info, final String uuid, final InputStream content) {
+	protected void contentUpload(final String normalizedResource, final SubversionInfo info, final String uuid, @Nullable final InputStream content) {
 		if (content == null) {
 			return;
 		}
@@ -128,7 +130,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		execute(request, HttpStatus.SC_MULTI_STATUS);
 	}
 
-	protected void propertiesSet(final String normalizedResource, final SubversionInfo info, final String uuid, final SubversionProperty... properties) {
+	protected void propertiesSet(final String normalizedResource, final SubversionInfo info, final String uuid, @Nullable final SubversionProperty... properties) {
 		final SubversionProperty[] filtered = SubversionProperty.filteroutSystemProperties(properties);
 		if (filtered.length == 0) {
 			return;
@@ -150,7 +152,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 	}
 
 	@Override
-	protected void uploadWithProperties0(final String normalizedResource, final String message, final InputStream content, final SubversionProperty... properties) {
+	protected void uploadWithProperties0(final String normalizedResource, final String message, @Nullable final InputStream content, @Nullable final SubversionProperty... properties) {
 		final String uuid = prepareTransaction();
 		final boolean exists = exists0(normalizedResource);
 

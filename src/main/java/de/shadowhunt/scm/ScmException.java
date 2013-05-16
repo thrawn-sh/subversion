@@ -1,5 +1,8 @@
 package de.shadowhunt.scm;
 
+/**
+ * {@code SubversionException} is the superclass of those exceptions that can be thrown in the source configuration management modules
+ */
 public abstract class ScmException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;

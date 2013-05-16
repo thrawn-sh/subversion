@@ -2,7 +2,10 @@ package de.shadowhunt.scm.subversion;
 
 import de.shadowhunt.scm.ScmException;
 
-class SubversionException extends ScmException {
+/**
+ * {@code SubversionException} is the superclass of those exceptions that can be thrown in the subversion module
+ */
+public class SubversionException extends ScmException {
 
 	private static final long serialVersionUID = 1L;
 
@@ -14,7 +17,7 @@ class SubversionException extends ScmException {
 	 * @param   message   the detail message. The detail message is saved for
 	 *          later retrieval by the {@link #getMessage()} method.
 	 */
-	SubversionException(final String message) {
+	public SubversionException(final String message) {
 		super(message);
 	}
 
@@ -31,7 +34,7 @@ class SubversionException extends ScmException {
 	 *         permitted, and indicates that the cause is nonexistent or
 	 *         unknown.)
 	 */
-	SubversionException(final String message, final Throwable cause) {
+	public SubversionException(final String message, final Throwable cause) {
 		super(message, cause);
 	}
 }

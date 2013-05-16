@@ -9,6 +9,9 @@ import org.apache.http.params.HttpParams;
 
 import de.shadowhunt.jcifs.JcifsEngine;
 
+/**
+ * Factory for {@link NTLMScheme} with {@link JcifsEngine} implementations
+ */
 @ThreadSafe
 public class NtlmSchemeFactory implements AuthSchemeFactory {
 

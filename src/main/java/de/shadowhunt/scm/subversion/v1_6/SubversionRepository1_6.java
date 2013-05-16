@@ -42,7 +42,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 		execute(request, HttpStatus.SC_CREATED);
 	}
 
-	protected void contentUpload(final String normalizedResource, final SubversionInfo info, final UUID uuid, final InputStream content) {
+	protected void contentUpload(final String normalizedResource, final SubversionInfo info, final UUID uuid, @Nullable final InputStream content) {
 		if (content == null) {
 			return;
 		}
@@ -171,7 +171,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 		execute(request, HttpStatus.SC_MULTI_STATUS);
 	}
 
-	protected void propertiesSet(final String normalizedResource, final SubversionInfo info, final UUID uuid, final SubversionProperty... properties) {
+	protected void propertiesSet(final String normalizedResource, final SubversionInfo info, final UUID uuid, @Nullable final SubversionProperty... properties) {
 		final SubversionProperty[] filtered = SubversionProperty.filteroutSystemProperties(properties);
 		if (filtered.length == 0) {
 			return;

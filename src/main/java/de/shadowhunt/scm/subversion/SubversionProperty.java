@@ -2,6 +2,8 @@ package de.shadowhunt.scm.subversion;
 
 import java.util.Arrays;
 
+import javax.annotation.Nullable;
+
 public class SubversionProperty {
 
 	public enum Type {
@@ -25,7 +27,7 @@ public class SubversionProperty {
 		return new SubversionProperty(Type.CUSTOM, name, value);
 	}
 
-	public static SubversionProperty[] filteroutSystemProperties(final SubversionProperty... properties) {
+	public static SubversionProperty[] filteroutSystemProperties(@Nullable final SubversionProperty... properties) {
 		if (properties == null) {
 			return new SubversionProperty[0];
 		}

@@ -7,6 +7,9 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import org.apache.http.protocol.HttpContext;
 
+/**
+ * {@code ThreadLocalHttpContext} represents execution state of an HTTP process. It uses {@link ThreadLocal} to ensure thread-safety.
+ */
 @ThreadSafe
 public class ThreadLocalHttpContext implements HttpContext {
 

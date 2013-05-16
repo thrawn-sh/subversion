@@ -11,6 +11,9 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.client.CredentialsProvider;
 
+/**
+ * {@code ThreadLocalCredentialsProvider} maintains a collection of user credentials. It uses {@link ThreadLocal} to ensure thread-safety.
+ */
 @ThreadSafe
 public class ThreadLocalCredentialsProvider implements CredentialsProvider {
 

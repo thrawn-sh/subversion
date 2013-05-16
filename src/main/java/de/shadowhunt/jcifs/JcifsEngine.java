@@ -13,6 +13,9 @@ import jcifs.util.Base64;
 import org.apache.http.impl.auth.NTLMEngine;
 import org.apache.http.impl.auth.NTLMEngineException;
 
+/**
+ * NTLM authentication engine. The engine can be used to generate Type1 messages and Type3 messages in response to a Type2 challenge.
+ */
 @ThreadSafe
 public final class JcifsEngine implements NTLMEngine {
 
