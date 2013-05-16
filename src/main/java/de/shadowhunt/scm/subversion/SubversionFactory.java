@@ -1,31 +1,39 @@
 package de.shadowhunt.scm.subversion;
 
 import java.net.URI;
+import java.util.ServiceLoader;
 
-import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
 
-import de.shadowhunt.scm.subversion.v1_6.SubversionRepository1_6;
-import de.shadowhunt.scm.subversion.v1_7.SubversionRepository1_7;
-
+/**
+ * {@code SubversionFactory} creates a new {@link SubversionRepository}
+ */
+@ThreadSafe
 public final class SubversionFactory {
 
-	public static final SubversionRepository getInstance(final URI root, final boolean trustServerCertificat, @Nullable final String user, final String password, @Nullable final String workstation, final ServerVersion version) {
-		final SubversionRepository reposiotry;
-		switch (version) {
-			case V1_6:
-				reposiotry = new SubversionRepository1_6(root, trustServerCertificat);
-				break;
-			case V1_7:
-				reposiotry = new SubversionRepository1_7(root, trustServerCertificat);
-				break;
-			default:
-				throw new SubversionException("unsupported subversion version: " + version);
+	private static void assertSupportedScheme(final URI uri) {
+		final String scheme = uri.getScheme();
+		if (!"http".equals(scheme) && !"https".equals(scheme)) {
+			throw new SubversionException("unsupported scheme " + scheme + " only http and https are supported");
 		}
+	}
 
-		if (user != null) {
-			reposiotry.setCredentials(user, password, workstation);
+	/**
+	 * Create a new {@link SubversionRepository} for given {@link URI} and {@link ServerVersion}
+	 * @param repository {@link URI} to the root of the repository (e.g: http://repository.example.net/svn/test_repo), only http and https scheme are supported
+	 * @param trustServerCertificat whether to trust all SSL certificates (see {@code NonValidatingX509TrustManager})
+	 * @param version the {@ServerVersion} of the server
+	 * @return a new {@link SubversionRepository} for given {@link URI} and {@link ServerVersion}
+	 */
+	public static final SubversionRepository getInstance(final URI repository, final boolean trustServerCertificat, final ServerVersion version) {
+		assertSupportedScheme(repository);
+
+		for (final SubversionRepositoryFactory factory : ServiceLoader.load(SubversionRepositoryFactory.class)) {
+			if (factory.isServerVersionSupported(version)) {
+				return factory.createRepository(repository, trustServerCertificat);
+			}
 		}
-		return reposiotry;
+		throw new SubversionException("no repository found for version " + version);
 	}
 
 	private SubversionFactory() {

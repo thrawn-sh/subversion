@@ -51,7 +51,10 @@ abstract class AbstractCommand implements Command {
 		final ServerVersion version = getServerVersion(cmdl);
 		final boolean trustServer = getTrustServer(cmdl);
 
-		return SubversionFactory.getInstance(root, trustServer, user, password, workstation, version);
+		final SubversionRepository repository = SubversionFactory.getInstance(root, trustServer, version);
+		repository.setCredentials(user, password, workstation);
+		return repository;
+
 	}
 
 	@Override

@@ -16,7 +16,7 @@ import de.shadowhunt.scm.subversion.Depth;
 import de.shadowhunt.scm.subversion.SubversionInfo;
 import de.shadowhunt.scm.subversion.SubversionProperty;
 
-public class SubversionRepository1_7 extends AbstractSubversionRepository<SubversionRequestFactory1_7> {
+class SubversionRepository1_7 extends AbstractSubversionRepository<SubversionRequestFactory1_7> {
 
 	protected static final String PREFIX_ME = "/!svn/me";
 
@@ -26,7 +26,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 
 	protected static final String PREFIX_TXR = "/!svn/txr/";
 
-	public SubversionRepository1_7(final URI repositoryRoot, final boolean trustServerCertificat) {
+	SubversionRepository1_7(final URI repositoryRoot, final boolean trustServerCertificat) {
 		super(repositoryRoot, trustServerCertificat, new SubversionRequestFactory1_7());
 	}
 
