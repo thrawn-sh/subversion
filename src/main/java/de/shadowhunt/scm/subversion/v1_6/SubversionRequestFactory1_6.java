@@ -8,9 +8,20 @@ import org.apache.http.entity.StringEntity;
 
 import de.shadowhunt.scm.subversion.AbstractSubversionRequestFactory;
 
-class SubversionRequestFactory1_6 extends AbstractSubversionRequestFactory {
+/**
+ * {@code SubversionRequestFactory1_6} creates http requests suitable for subversion 1.6.X server
+ */
+public class SubversionRequestFactory1_6 extends AbstractSubversionRequestFactory {
 
-	HttpUriRequest createMergeRequest(final URI uri, final String path) {
+	protected SubversionRequestFactory1_6() {
+		// prevent global instantiation
+	}
+
+	/**
+	 * @param uri absolute {@link URI} to perform the request against
+	 * @return {@link HttpUriRequest} representing the request
+	 */
+	public HttpUriRequest createMergeRequest(final URI uri, final String path) {
 		final DavTemplateRequest request = new DavTemplateRequest("MERGE");
 		request.setURI(uri);
 

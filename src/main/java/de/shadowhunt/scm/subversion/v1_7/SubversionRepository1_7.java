@@ -16,7 +16,7 @@ import de.shadowhunt.scm.subversion.Depth;
 import de.shadowhunt.scm.subversion.SubversionInfo;
 import de.shadowhunt.scm.subversion.SubversionProperty;
 
-class SubversionRepository1_7 extends AbstractSubversionRepository<SubversionRequestFactory1_7> {
+public class SubversionRepository1_7 extends AbstractSubversionRepository<SubversionRequestFactory1_7> {
 
 	protected static final String PREFIX_ME = "/!svn/me";
 
@@ -26,7 +26,7 @@ class SubversionRepository1_7 extends AbstractSubversionRepository<SubversionReq
 
 	protected static final String PREFIX_TXR = "/!svn/txr/";
 
-	SubversionRepository1_7(final URI repositoryRoot, final boolean trustServerCertificat) {
+	protected SubversionRepository1_7(final URI repositoryRoot, final boolean trustServerCertificat) {
 		super(repositoryRoot, trustServerCertificat, new SubversionRequestFactory1_7());
 	}
 
@@ -42,7 +42,7 @@ class SubversionRepository1_7 extends AbstractSubversionRepository<SubversionReq
 		final URI uri = URI.create(repository + PREFIX_TXR + uuid + normalizedResource);
 		final URI resourceUri = URI.create(repository + normalizedResource);
 
-		final HttpUriRequest request = requestFactory.createUploadRequest(uri, resourceUri, info, content);
+		final HttpUriRequest request = requestFactory.createUploadRequest(uri, info.getLockToken(), resourceUri, content);
 		execute(request, HttpStatus.SC_CREATED, HttpStatus.SC_NO_CONTENT);
 	}
 
@@ -126,7 +126,7 @@ class SubversionRepository1_7 extends AbstractSubversionRepository<SubversionReq
 		final URI uri = URI.create(repository + PREFIX_TXR + uuid + normalizedResource);
 		final URI resourceUri = URI.create(repository + normalizedResource);
 
-		final HttpUriRequest request = requestFactory.createRemovePropertiesRequest(uri, resourceUri, info, filtered);
+		final HttpUriRequest request = requestFactory.createRemovePropertiesRequest(uri, info.getLockToken(), resourceUri, filtered);
 		execute(request, HttpStatus.SC_MULTI_STATUS);
 	}
 
@@ -139,7 +139,7 @@ class SubversionRepository1_7 extends AbstractSubversionRepository<SubversionReq
 		final URI uri = URI.create(repository + PREFIX_TXR + uuid + normalizedResource);
 		final URI resourceUri = URI.create(repository + normalizedResource);
 
-		final HttpUriRequest request = requestFactory.createSetPropertiesRequest(uri, resourceUri, info, filtered);
+		final HttpUriRequest request = requestFactory.createSetPropertiesRequest(uri, info.getLockToken(), resourceUri, filtered);
 		execute(request, HttpStatus.SC_MULTI_STATUS);
 	}
 

@@ -440,12 +440,13 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	public void unlock(final String resource) {
 		final String normalizedResource = normalizeResource(resource);
 		final SubversionInfo info = info0(normalizedResource, HEAD_VERSION, false);
-		if (info.getLockToken() == null) {
+		final String lockToken = info.getLockToken();
+		if (lockToken == null) {
 			return;
 		}
 		final URI uri = URI.create(repository + normalizedResource);
 
-		final HttpUriRequest request = requestFactory.createUnlockRequest(uri, info);
+		final HttpUriRequest request = requestFactory.createUnlockRequest(uri, lockToken);
 		execute(request, HttpStatus.SC_NO_CONTENT);
 	}
 

@@ -15,13 +15,13 @@ import de.shadowhunt.scm.subversion.SubversionRepositoryFactory;
 public class SubversionRepositoryFactory1_6 implements SubversionRepositoryFactory {
 
 	@Override
-	public boolean isServerVersionSupported(final ServerVersion version) {
-		return ServerVersion.V1_6 == version;
+	public SubversionRepository createRepository(final URI repository, final boolean trustServerCertificat) {
+		return new SubversionRepository1_6(repository, trustServerCertificat);
 	}
 
 	@Override
-	public SubversionRepository createRepository(final URI repository, final boolean trustServerCertificat) {
-		return new SubversionRepository1_6(repository, trustServerCertificat);
+	public boolean isServerVersionSupported(final ServerVersion version) {
+		return ServerVersion.V1_6 == version;
 	}
 
 }
