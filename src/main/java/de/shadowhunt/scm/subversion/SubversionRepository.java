@@ -63,35 +63,35 @@ public interface SubversionRepository {
 	public boolean exists(String resource);
 
 	/**
-	 * Retrieve information about the resource (latest revision)
+	 * Retrieve information for the resource (latest revision)
 	 * @param resource the absolute path of the resource (relative to the repository root)
 	 * @param withCustomProperties whether to retrieve user defined properties
-	 * @return {@link SubversionInfo} about the resource
+	 * @return {@link SubversionInfo} for the resource
 	 */
 	public SubversionInfo info(String resource, boolean withCustomProperties);
 
 	/**
-	 * Retrieve information about the resource
+	 * Retrieve information for the resource
 	 * @param resource the absolute path of the resource (relative to the repository root)
 	 * @param revision the revision of the resource to retrieve
 	 * @param withCustomProperties whether to retrieve user defined properties
-	 * @return {@link SubversionInfo} about the resource
+	 * @return {@link SubversionInfo} for the resource
 	 */
 	public SubversionInfo info(String resource, int revision, boolean withCustomProperties);
 
 	/**
-	 * Retrieve log information about latest revision of the resource
+	 * Retrieve log information for the latest revision of the resource
 	 * @param resource the absolute path of the resource (relative to the repository root)
-	 * @return {@link SubversionLog} about latest revision of the resource
+	 * @return {@link SubversionLog} for latest revision of the resource
 	 */
 	public SubversionLog lastLog(String resource);
 
 	/**
-	 * Retrieve information about the resource and its child resources (depending on depth parameter)
+	 * Retrieve information for the resource and its child resources (depending on depth parameter)
 	 * @param resource the absolute path of the resource (relative to the repository root)
 	 * @param depth whether to retrieve only for the given resource, its children or only part of its children depending on the value of {@link Depth}
 	 * @param withCustomProperties whether to retrieve user defined properties
-	 * @return {@link List} of {@link SubversionInfo} about the resource and its child resources (depending on depth parameter)
+	 * @return {@link List} of {@link SubversionInfo} for the resource and its child resources (depending on depth parameter)
 	 */
 	public List<SubversionInfo> list(String resource, Depth depth, boolean withCustomProperties);
 
@@ -102,18 +102,18 @@ public interface SubversionRepository {
 	public void lock(String resource);
 
 	/**
-	 * Retrieve the complete log information about all revision of the resource
+	 * Retrieve the complete log information for all revision of the resource
 	 * @param resource the absolute path of the resource (relative to the repository root)
-	 * @return ordered (early to latest) {@link List} of {@link SubversionLog} about all revision of the resource
+	 * @return ordered (early to latest) {@link List} of {@link SubversionLog} for all revision of the resource
 	 */
 	public List<SubversionLog> log(String resource);
 
 	/**
-	 * Retrieve the log information about the revisions between startRevision and endRevision of the resource
+	 * Retrieve the log information for the revisions between startRevision and endRevision of the resource
 	 * @param resource the absolute path of the resource (relative to the repository root)
 	 * @param startRevision the first revision of the resource to retrieve (including)
 	 * @param endRevision the last revision of the resource to retrieve (including)
-	 * @return ordered (early to latest) {@link List} of {@link SubversionLog} about the revisions between startRevision and endRevision of the resource
+	 * @return ordered (early to latest) {@link List} of {@link SubversionLog} for the revisions between startRevision and endRevision of the resource
 	 */
 	public List<SubversionLog> log(String resource, int startRevision, int endRevision);
 

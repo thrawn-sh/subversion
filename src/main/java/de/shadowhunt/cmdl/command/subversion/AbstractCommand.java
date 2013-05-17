@@ -90,6 +90,7 @@ abstract class AbstractCommand implements Command {
 			return;
 		}
 		execute0(cmdl);
+		out.flush();
 	}
 
 	protected abstract void execute0(final CommandLine cmdl) throws Exception;
