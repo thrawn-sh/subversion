@@ -3,7 +3,9 @@ package de.shadowhunt.scm.subversion;
 import java.util.Arrays;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
+@Immutable
 public class SubversionProperty {
 
 	public enum Type {
@@ -18,11 +20,21 @@ public class SubversionProperty {
 			this.prefix = prefix;
 		}
 
+		/**
+		 * Returns the prefix of the {@code Type}
+		 * @return the prefix of the {@code Type}
+		 */
 		public String getPrefix() {
 			return prefix;
 		}
 	}
 
+	/**
+	 * Factory method to create custom properties
+	 * @param name name of the property
+	 * @param value value of the property 
+	 * @return {@link SubversionProperty} with the given name and value, type is always {@code Type.CUSTOM}
+	 */
 	public static SubversionProperty createCustomProperty(final String name, final String value) {
 		return new SubversionProperty(Type.CUSTOM, name, value);
 	}

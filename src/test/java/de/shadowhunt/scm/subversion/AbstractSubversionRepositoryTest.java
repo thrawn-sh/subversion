@@ -268,12 +268,14 @@ public abstract class AbstractSubversionRepositoryTest {
 	public void testUpload() throws IOException {
 		final String resource = BASE + "/upload.txt";
 		upload(resource, "upload");
+		Assert.assertTrue("upload did not throw any exception", true);
 	}
 
 	@Test
 	public void testUploadWithFolders() throws IOException {
 		final String resource = BASE + "/a/b/c/upload.txt";
 		upload(resource, "upload");
+		Assert.assertTrue("upload did not throw any exception", true);
 	}
 
 	@Test

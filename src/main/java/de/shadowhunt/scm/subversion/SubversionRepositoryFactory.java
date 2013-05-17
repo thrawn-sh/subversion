@@ -5,7 +5,7 @@ import java.net.URI;
 import de.shadowhunt.http.conn.ssl.NonValidatingX509TrustManager;
 
 /**
- * {@code SubversionRepositoryFactory}
+ * {@code SubversionRepositoryFactory} creates {@link SubversionRepository}
  */
 public interface SubversionRepositoryFactory {
 

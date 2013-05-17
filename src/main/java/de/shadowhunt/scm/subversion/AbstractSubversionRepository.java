@@ -45,6 +45,10 @@ import de.shadowhunt.http.client.ThreadLocalCredentialsProvider;
 import de.shadowhunt.http.conn.ssl.NonValidatingX509TrustManager;
 import de.shadowhunt.http.protocol.ThreadLocalHttpContext;
 
+/**
+ * Base for all {@link SubversionRepository}
+ * @param <T> {@link AbstractSubversionRequestFactory} that will be used to create request to the subversion server
+ */
 public abstract class AbstractSubversionRepository<T extends AbstractSubversionRequestFactory> implements SubversionRepository {
 
 	protected static final int HEAD_VERSION = -1;

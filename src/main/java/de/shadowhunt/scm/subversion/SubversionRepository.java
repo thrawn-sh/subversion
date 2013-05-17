@@ -7,6 +7,9 @@ import java.util.List;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
+/**
+ * Interface listing all available operations on a subversion repository
+ */
 @ThreadSafe
 public interface SubversionRepository {
 
