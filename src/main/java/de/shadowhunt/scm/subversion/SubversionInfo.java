@@ -409,7 +409,7 @@ public class SubversionInfo {
 		return lockToken != null;
 	}
 
-	public void setCustomProperties(@Nullable final SubversionProperty[] customProperties) {
+	void setCustomProperties(@Nullable final SubversionProperty[] customProperties) {
 		if ((customProperties == null) || (customProperties.length == 0)) {
 			this.customProperties = EMPTY;
 		} else {
