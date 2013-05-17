@@ -15,7 +15,7 @@ import org.xml.sax.Attributes;
 import de.shadowhunt.scm.subversion.SubversionProperty.Type;
 
 /**
- * Container that holds all status information for a single revision of a resource 
+ * Container that holds all status information for a single revision of a resource
  */
 public class SubversionInfo {
 
@@ -166,7 +166,7 @@ public class SubversionInfo {
 	};
 
 	/**
-	 * Reads status information for a single revision of a resource from the given {@link InputStream} 
+	 * Reads status information for a single revision of a resource from the given {@link InputStream}
 	 * @param in {@link InputStream} from which the status information is read (Note: will not be closed)
 	 * @param withCustomProperties whether to read user defined properties
 	 * @return {@link SubversionInfo} for the resource
@@ -180,7 +180,7 @@ public class SubversionInfo {
 	}
 
 	/**
-	 * Reads a {@link List} of status information for a single revision of various resources from the given {@link InputStream} 
+	 * Reads a {@link List} of status information for a single revision of various resources from the given {@link InputStream}
 	 * @param in {@link InputStream} from which the status information is read (Note: will not be closed)
 	 * @param withCustomProperties whether to read user defined properties
 	 * @param includeDirectories whether directory resources shall be included in the result
@@ -297,7 +297,7 @@ public class SubversionInfo {
 
 	/**
 	 * Returns the name of the lock owner
-	 * @return the name of the lock owner or {@code null} if the resource is not locked 
+	 * @return the name of the lock owner or {@code null} if the resource is not locked
 	 */
 	@CheckForNull
 	public String getLockOwner() {
@@ -306,7 +306,7 @@ public class SubversionInfo {
 
 	/**
 	 * Returns the lock-token
-	 * @return the lock-token or {@code null} if the resource is not locked 
+	 * @return the lock-token or {@code null} if the resource is not locked
 	 */
 	@CheckForNull
 	public String getLockToken() {

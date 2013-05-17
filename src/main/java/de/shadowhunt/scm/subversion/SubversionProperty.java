@@ -32,7 +32,7 @@ public class SubversionProperty {
 	/**
 	 * Factory method to create custom properties
 	 * @param name name of the property
-	 * @param value value of the property 
+	 * @param value value of the property
 	 * @return {@link SubversionProperty} with the given name and value, type is always {@code Type.CUSTOM}
 	 */
 	public static SubversionProperty createCustomProperty(final String name, final String value) {

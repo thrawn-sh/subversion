@@ -243,9 +243,9 @@ public abstract class AbstractSubversionRequestFactory {
 	/**
 	 * Merge all modifications from previous request
 	 * @param uri absolute {@link URI} to perform the request against
-	 * @param path absolute resource-path relative to the repository root 
+	 * @param path absolute resource-path relative to the repository root
 	 * @param info current {@link SubversionInfo} for the resource
-	 * @return {@link HttpUriRequest} merging all modifications from previous request 
+	 * @return {@link HttpUriRequest} merging all modifications from previous request
 	 */
 	public HttpUriRequest createMergeRequest(final URI uri, final String path, final SubversionInfo info) {
 		final DavTemplateRequest request = new DavTemplateRequest("MERGE");

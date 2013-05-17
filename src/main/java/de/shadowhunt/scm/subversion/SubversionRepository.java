@@ -125,7 +125,7 @@ public interface SubversionRepository {
 	 * <p>to reset authentication call setCredentials(null, null, null)</p>
 	 * @param user username to authenticate with against the repository (relevant for BAISC, DIGEST and NTLM)
 	 * @param password password to authenticate with against the repository (relevant for BAISC, DIGEST and NTLM)
-	 * @param workstation FQDN of the computer to authenticate from against the repository (relevant for NTLM) 
+	 * @param workstation FQDN of the computer to authenticate from against the repository (relevant for NTLM)
 	 */
 	public void setCredentials(@Nullable String user, @Nullable String password, @Nullable String workstation);
 

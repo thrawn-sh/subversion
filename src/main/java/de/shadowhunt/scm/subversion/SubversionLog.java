@@ -15,7 +15,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 /**
- * Container that holds all log information for a single revision of a resource 
+ * Container that holds all log information for a single revision of a resource
  */
 public class SubversionLog {
 
@@ -85,7 +85,7 @@ public class SubversionLog {
 	}
 
 	/**
-	 * Reads log information for a resource from the given {@link InputStream} 
+	 * Reads log information for a resource from the given {@link InputStream}
 	 * @param in {@link InputStream} from which the status information is read (Note: will not be closed)
 	 * @return {@link SubversionLog} for the resource
 	 */
