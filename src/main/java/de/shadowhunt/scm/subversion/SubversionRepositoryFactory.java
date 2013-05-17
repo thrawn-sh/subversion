@@ -2,8 +2,6 @@ package de.shadowhunt.scm.subversion;
 
 import java.net.URI;
 
-import de.shadowhunt.http.conn.ssl.NonValidatingX509TrustManager;
-
 public interface SubversionRepositoryFactory {
 
 	/**
@@ -15,7 +13,7 @@ public interface SubversionRepositoryFactory {
 
 	/**
 	 * @param repository {@link URI} to the root of the repository
-	 * @param trustServerCertificat whether to trust all SSL certificates (see {@link NonValidatingX509TrustManager})
+	 * @param trustServerCertificat whether to trust all SSL certificates (see {@code NonValidatingX509TrustManager})
 	 * @return a new {@link SubversionRepository} for given {@link URI}
 	 */
 	public SubversionRepository createRepository(URI repository, boolean trustServerCertificat);
