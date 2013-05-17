@@ -6,8 +6,15 @@ import org.apache.commons.cli.CommandLine;
 
 import de.shadowhunt.scm.subversion.SubversionRepository;
 
+/**
+ * Subversion lock command
+ */
 public class LockCommand extends AbstractCommand {
 
+	/**
+	 * Create a new Subversion lock command
+	 * @param out {@link PrintWriter} to write the complete command output to (will not be closed)
+	 */
 	public LockCommand(final PrintWriter out) {
 		super("lock", out);
 	}

@@ -9,10 +9,17 @@ import org.apache.commons.cli.Options;
 import de.shadowhunt.scm.subversion.SubversionProperty;
 import de.shadowhunt.scm.subversion.SubversionRepository;
 
+/**
+ * Subversion propdel command
+ */
 public class PropertyDeleteCommand extends AbstractCommand {
 
 	private static final String PROPERTY_OPTION = "p";
 
+	/**
+	 * Create a new Subversion propdel command
+	 * @param out {@link PrintWriter} to write the complete command output to (will not be closed)
+	 */
 	public PropertyDeleteCommand(final PrintWriter out) {
 		super("propdel", out);
 	}

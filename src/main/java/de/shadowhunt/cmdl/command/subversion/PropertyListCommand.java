@@ -7,8 +7,15 @@ import org.apache.commons.cli.CommandLine;
 import de.shadowhunt.scm.subversion.SubversionInfo;
 import de.shadowhunt.scm.subversion.SubversionProperty;
 
+/**
+ * Subversion proplist command
+ */
 public class PropertyListCommand extends AbstractInfoCommand {
 
+	/**
+	 * Create a new Subversion proplist command
+	 * @param out {@link PrintWriter} to write the complete command output to (will not be closed)
+	 */
 	public PropertyListCommand(final PrintWriter out) {
 		super("proplist", out);
 	}

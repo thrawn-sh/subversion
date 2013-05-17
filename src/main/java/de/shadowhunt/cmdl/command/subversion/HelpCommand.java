@@ -5,8 +5,15 @@ import java.io.PrintWriter;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 
+/**
+ * Subversion help command
+ */
 public class HelpCommand extends AbstractCommand {
 
+	/**
+	 * Create a new Subversion help command
+	 * @param out {@link PrintWriter} to write the complete command output to (will not be closed)
+	 */
 	public HelpCommand(final PrintWriter out) {
 		super("help", out);
 	}

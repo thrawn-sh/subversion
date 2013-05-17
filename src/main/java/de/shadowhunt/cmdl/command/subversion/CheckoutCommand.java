@@ -10,10 +10,17 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.io.IOUtils;
 
+/**
+ * Subversion checkout command
+ */
 public class CheckoutCommand extends AbstractContentCommand {
 
 	private static final String OUTPUT_OPTION = "o";
 
+	/**
+	 * Create a new Subversion checkout command
+	 * @param out {@link PrintWriter} to write the complete command output to (will not be closed)
+	 */
 	public CheckoutCommand(final PrintWriter out) {
 		super("checkout", out);
 	}

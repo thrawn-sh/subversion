@@ -5,9 +5,15 @@ import java.util.Arrays;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
+/**
+ * {@code SubversionProperty} represents a resource property
+ */
 @Immutable
 public class SubversionProperty {
 
+	/**
+	 * {@link SubversionProperty} can have various types, depending of the context they are used
+	 */
 	public enum Type {
 		BASE(""),
 		CUSTOM("C:"),
@@ -39,6 +45,11 @@ public class SubversionProperty {
 		return new SubversionProperty(Type.CUSTOM, name, value);
 	}
 
+	/**
+	 * Filter out {@code Type.Base} and {@code Type.DAV} {@link SubversionProperty}
+	 * @param properties {@link SubversionProperty} that shall be filtered
+	 * @return filtered {@link SubversionProperty}
+	 */
 	public static SubversionProperty[] filteroutSystemProperties(@Nullable final SubversionProperty... properties) {
 		if (properties == null) {
 			return new SubversionProperty[0];

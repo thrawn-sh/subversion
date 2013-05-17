@@ -7,6 +7,9 @@ import javax.annotation.CheckForNull;
 
 import de.shadowhunt.cmdl.command.Command;
 
+/**
+ * Main class for command-line clients
+ */
 public final class Main {
 
 	private static final String HELP = "help";
@@ -39,17 +42,28 @@ public final class Main {
 		return options;
 	}
 
+	static Command getHelpCommand() {
+		final Command help = getCommandForName(HELP);
+		if (help == null) {
+			throw new UnsupportedOperationException("can't create " + HELP + " command");
+		}
+		return help;
+	}
+
+	/**
+	 * Start command-line client
+	 * @param args command-line arguments
+	 * @throws Exception in case of arbitrary errors
+	 */
 	public static void main(final String[] args) throws Exception {
 		final String commandName = getCommandName(args);
 		final Command command = getCommandForName(commandName);
 		if (command != null) {
 			final String[] options = getCommandOptions(args);
 			command.execute(options);
-		} else {
-			// help lists all supported commands
-			final Command help = getCommandForName(HELP);
-			help.execute();
+			return;
 		}
+		getHelpCommand().execute();
 	}
 
 	private Main() {

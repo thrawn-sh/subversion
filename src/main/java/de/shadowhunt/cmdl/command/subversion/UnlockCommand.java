@@ -6,8 +6,15 @@ import org.apache.commons.cli.CommandLine;
 
 import de.shadowhunt.scm.subversion.SubversionRepository;
 
+/**
+ * Subversion unlock command
+ */
 public class UnlockCommand extends AbstractCommand {
 
+	/**
+	 * Create a new Subversion unlock command
+	 * @param out {@link PrintWriter} to write the complete command output to (will not be closed)
+	 */
 	public UnlockCommand(final PrintWriter out) {
 		super("unlock", out);
 	}

@@ -8,10 +8,17 @@ import org.apache.commons.cli.Options;
 
 import de.shadowhunt.scm.subversion.SubversionInfo;
 
+/**
+ * Subversion propget command
+ */
 public class PropertyGetCommand extends AbstractInfoCommand {
 
 	private static final String PROPERTY_OPTION = "p";
 
+	/**
+	 * Create a new Subversion propget command
+	 * @param out {@link PrintWriter} to write the complete command output to (will not be closed)
+	 */
 	public PropertyGetCommand(final PrintWriter out) {
 		super("propget", out);
 	}
