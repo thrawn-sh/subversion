@@ -34,6 +34,55 @@ abstract class AbstractCommand implements Command {
 
 	private static final String WORKSPACE_OPTION = "w";
 
+	protected static final String getPassword(final CommandLine cmdl) {
+		return cmdl.getOptionValue(PASSWORD_OPTION);
+	}
+
+	protected static final URI getRepositoryRoot(final CommandLine cmdl) {
+		final String value = cmdl.getOptionValue(REPOSITORY_OPTION);
+		return URI.create(value);
+	}
+
+	protected static final ServerVersion getServerVersion(final CommandLine cmdl) {
+		final String value = cmdl.getOptionValue(SERVER_OPTION, "1.6");
+		if ("1.6".equals(value)) {
+			return ServerVersion.V1_6;
+		}
+		if ("1.7".equals(value)) {
+			return ServerVersion.V1_7;
+		}
+		throw new IllegalArgumentException(value + " is not a valid server version: "
+				+ Arrays.toString(ServerVersion.values()));
+	}
+
+	protected static final String getTargetResource(final CommandLine cmdl) {
+		final String[] args = cmdl.getArgs();
+		if (args.length > 0) {
+			return args[args.length - 1];
+		}
+		return null;
+	}
+
+	private static final boolean getTrustServer(final CommandLine cmdl) {
+		return cmdl.hasOption(TRUST_SERVER_OPTION);
+	}
+
+	protected static final String getUser(final CommandLine cmdl) {
+		return cmdl.getOptionValue(USERNAME_OPTION);
+	}
+
+	protected static final String getWorkstation(final CommandLine cmdl) {
+		final String value = cmdl.getOptionValue(WORKSPACE_OPTION, "");
+		if ("".equals(value)) {
+			try {
+				return InetAddress.getLocalHost().getHostName();
+			} catch (final UnknownHostException e) {
+				return "";
+			}
+		}
+		return value;
+	}
+
 	private final String name;
 
 	protected final PrintWriter out;
@@ -119,55 +168,6 @@ abstract class AbstractCommand implements Command {
 		options.addOption(new Option(TRUST_SERVER_OPTION, "trust-server-cert", false, "accept SSL server certificates from unknown certificate authorities without prompting"));
 
 		return options;
-	}
-
-	protected final String getPassword(final CommandLine cmdl) {
-		return cmdl.getOptionValue(PASSWORD_OPTION);
-	}
-
-	protected final URI getRepositoryRoot(final CommandLine cmdl) {
-		final String value = cmdl.getOptionValue(REPOSITORY_OPTION);
-		return URI.create(value);
-	}
-
-	protected final ServerVersion getServerVersion(final CommandLine cmdl) {
-		final String value = cmdl.getOptionValue(SERVER_OPTION, "1.6");
-		if ("1.6".equals(value)) {
-			return ServerVersion.V1_6;
-		}
-		if ("1.7".equals(value)) {
-			return ServerVersion.V1_7;
-		}
-		throw new IllegalArgumentException(value + " is not a valid server version: "
-				+ Arrays.toString(ServerVersion.values()));
-	}
-
-	protected final String getTargetResource(final CommandLine cmdl) {
-		final String[] args = cmdl.getArgs();
-		if (args.length > 0) {
-			return args[args.length - 1];
-		}
-		return null;
-	}
-
-	private boolean getTrustServer(final CommandLine cmdl) {
-		return cmdl.hasOption(TRUST_SERVER_OPTION);
-	}
-
-	protected final String getUser(final CommandLine cmdl) {
-		return cmdl.getOptionValue(USERNAME_OPTION);
-	}
-
-	protected final String getWorkstation(final CommandLine cmdl) {
-		final String value = cmdl.getOptionValue(WORKSPACE_OPTION, "");
-		if ("".equals(value)) {
-			try {
-				return InetAddress.getLocalHost().getHostName();
-			} catch (final UnknownHostException e) {
-				return "";
-			}
-		}
-		return value;
 	}
 
 	@Override
