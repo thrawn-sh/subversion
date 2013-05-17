@@ -7,7 +7,7 @@ import javax.annotation.CheckForNull;
 
 import de.shadowhunt.cmdl.command.Command;
 
-public class Main {
+public final class Main {
 
 	private static final String HELP = "help";
 

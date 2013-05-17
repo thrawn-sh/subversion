@@ -21,12 +21,13 @@ public class SubversionRequestFactory1_7 extends AbstractSubversionRequestFactor
 	}
 
 	/**
+	 * Prepare the server to accept a following content upload
 	 * @param uri absolute {@link URI} to perform the request against
-	 * @return {@link HttpUriRequest} representing the request
+	 * @return {@link HttpUriRequest} preparing the server to accept the following content upload
 	 */
-	public HttpUriRequest createPrepareRequest(final URI uri, final String content) {
+	public HttpUriRequest createPrepareRequest(final URI uri) {
 		final HttpPost request = new HttpPost(uri);
-		request.setEntity(new StringEntity(content, CONTENT_TYPE_SVNSKEL));
+		request.setEntity(new StringEntity("( create-txn )", CONTENT_TYPE_SVNSKEL));
 		return request;
 	}
 }

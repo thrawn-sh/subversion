@@ -9,12 +9,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import javax.annotation.CheckForNull;
 import javax.xml.parsers.SAXParser;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+/**
+ * Container that holds all log information for a single revision of a resource 
+ */
 public class SubversionLog {
 
 	static class SubversionLogHandler extends BasicHandler {
@@ -82,6 +84,11 @@ public class SubversionLog {
 		}
 	}
 
+	/**
+	 * Reads log information for a resource from the given {@link InputStream} 
+	 * @param in {@link InputStream} from which the status information is read (Note: will not be closed)
+	 * @return {@link SubversionLog} for the resource
+	 */
 	public static List<SubversionLog> read(final InputStream in) {
 		try {
 			final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
@@ -94,7 +101,7 @@ public class SubversionLog {
 		}
 	}
 
-	private String comment;
+	private String comment = "";
 
 	private Date date;
 
@@ -145,21 +152,34 @@ public class SubversionLog {
 		return true;
 	}
 
-	@CheckForNull
+	/**
+	 * Returns the commit message
+	 * @return the commit message or an empty {@link String} if no commit message was specified
+	 */
 	public String getComment() {
 		return comment;
 	}
 
-	@CheckForNull
+	/**
+	 * Returns the time of the commit
+	 * @return the time of the commit
+	 */
 	public Date getDate() {
-		return (date == null) ? null : new Date(date.getTime());
+		return new Date(date.getTime());
 	}
 
+	/**
+	 * Returns the revision that was created by the commit
+	 * @return the revision that was created by the commit
+	 */
 	public int getRevision() {
 		return revision;
 	}
 
-	@CheckForNull
+	/**
+	 * Returns the name of the user that committed changes to the repository
+	 * @return the name of the user that committed changes to the repository
+	 */
 	public String getUser() {
 		return user;
 	}
@@ -180,7 +200,7 @@ public class SubversionLog {
 	}
 
 	void setDate(final Date date) {
-		this.date = (date == null) ? null : new Date(date.getTime());
+		this.date = new Date(date.getTime());
 	}
 
 	void setRevision(final int revision) {

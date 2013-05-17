@@ -16,6 +16,9 @@ import de.shadowhunt.scm.subversion.Depth;
 import de.shadowhunt.scm.subversion.SubversionInfo;
 import de.shadowhunt.scm.subversion.SubversionProperty;
 
+/**
+ * {@code SubversionRepository1_7} supports subversion servers of version 1.7.X
+ */
 public class SubversionRepository1_7 extends AbstractSubversionRepository<SubversionRequestFactory1_7> {
 
 	protected static final String PREFIX_ME = "/!svn/me";
@@ -111,7 +114,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 	protected String prepareTransaction() {
 		final URI uri = URI.create(repository + PREFIX_ME);
 
-		final HttpUriRequest request = requestFactory.createPrepareRequest(uri, "( create-txn )");
+		final HttpUriRequest request = requestFactory.createPrepareRequest(uri);
 		final HttpResponse response = execute(request, HttpStatus.SC_CREATED);
 
 		return response.getFirstHeader("SVN-Txn-Name").getValue();

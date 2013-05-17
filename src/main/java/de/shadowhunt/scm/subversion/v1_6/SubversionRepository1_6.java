@@ -17,6 +17,9 @@ import de.shadowhunt.scm.subversion.Depth;
 import de.shadowhunt.scm.subversion.SubversionInfo;
 import de.shadowhunt.scm.subversion.SubversionProperty;
 
+/**
+ * {@code SubversionRepository1_6} supports subversion servers of version 1.6.X
+ */
 public class SubversionRepository1_6 extends AbstractSubversionRepository<SubversionRequestFactory1_6> {
 
 	protected static final String PREFIX_ACT = "/!svn/act/";
