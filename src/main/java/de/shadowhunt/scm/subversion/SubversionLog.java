@@ -65,7 +65,7 @@ public class SubversionLog {
 			}
 		}
 
-		public List<SubversionLog> getLogs() {
+		List<SubversionLog> getLogs() {
 			return logs;
 		}
 
@@ -175,19 +175,19 @@ public class SubversionLog {
 		return result;
 	}
 
-	public void setComment(final String comment) {
+	void setComment(final String comment) {
 		this.comment = comment;
 	}
 
-	public void setDate(final Date date) {
+	void setDate(final Date date) {
 		this.date = (date == null) ? null : new Date(date.getTime());
 	}
 
-	public void setRevision(final int revision) {
+	void setRevision(final int revision) {
 		this.revision = revision;
 	}
 
-	public void setUser(final String user) {
+	void setUser(final String user) {
 		this.user = user;
 	}
 

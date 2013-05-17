@@ -2,6 +2,14 @@ package de.shadowhunt.scm.subversion;
 
 import java.net.URI;
 
+<<<<<<< HEAD
+=======
+import de.shadowhunt.http.conn.ssl.NonValidatingX509TrustManager;
+
+/**
+ * {@code SubversionRepositoryFactory} creates {@link SubversionRepository}
+ */
+>>>>>>> d300e93f712bdea984a6c85f658dd0cbb2b243b9
 public interface SubversionRepositoryFactory {
 
 	/**

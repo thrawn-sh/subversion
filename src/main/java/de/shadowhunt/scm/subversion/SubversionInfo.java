@@ -14,6 +14,9 @@ import org.xml.sax.Attributes;
 
 import de.shadowhunt.scm.subversion.SubversionProperty.Type;
 
+/**
+ * Container that holds all status information for a single revision of a resource 
+ */
 public class SubversionInfo {
 
 	static class SubversionInfoHandler extends BasicHandler {
@@ -116,7 +119,7 @@ public class SubversionInfo {
 			}
 		}
 
-		public List<SubversionInfo> getInfos() {
+		List<SubversionInfo> getInfos() {
 			return infos;
 		}
 
@@ -151,6 +154,9 @@ public class SubversionInfo {
 
 	private static final SubversionProperty[] EMPTY = new SubversionProperty[0];
 
+	/**
+	 * {@link Comparator} orders {@link SubversionInfo}s by their relative path
+	 */
 	public static final Comparator<SubversionInfo> PATH_COMPARATOR = new Comparator<SubversionInfo>() {
 
 		@Override
@@ -159,6 +165,12 @@ public class SubversionInfo {
 		}
 	};
 
+	/**
+	 * Reads status information for a single revision of a resource from the given {@link InputStream} 
+	 * @param in {@link InputStream} from which the status information is read (Note: will not be closed)
+	 * @param withCustomProperties whether to read user defined properties
+	 * @return {@link SubversionInfo} for the resource
+	 */
 	public static SubversionInfo read(final InputStream in, final boolean withCustomProperties) {
 		final List<SubversionInfo> infos = readList(in, withCustomProperties, true);
 		if (infos.isEmpty()) {
@@ -167,6 +179,13 @@ public class SubversionInfo {
 		return infos.get(0);
 	}
 
+	/**
+	 * Reads a {@link List} of status information for a single revision of various resources from the given {@link InputStream} 
+	 * @param in {@link InputStream} from which the status information is read (Note: will not be closed)
+	 * @param withCustomProperties whether to read user defined properties
+	 * @param includeDirectories whether directory resources shall be included in the result
+	 * @return {@link SubversionInfo} for the resources
+	 */
 	public static List<SubversionInfo> readList(final InputStream in, final boolean withCustomProperties, final boolean includeDirectories) {
 		try {
 			final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
@@ -183,7 +202,7 @@ public class SubversionInfo {
 
 	private boolean directory;
 
-	// not part of xml respone but determined by response header
+	// NOTE: not part of xml response but determined by a response header
 	private String lockOwner;
 
 	private String lockToken;
@@ -268,33 +287,61 @@ public class SubversionInfo {
 		return true;
 	}
 
+	/**
+	 * Returns an array of the custom {@link SubversionProperty}
+	 * @return an array of the custom {@link SubversionProperty} or an empty array if there a non
+	 */
 	public SubversionProperty[] getCustomProperties() {
 		return Arrays.copyOf(customProperties, customProperties.length);
 	}
 
+	/**
+	 * Returns the name of the lock owner
+	 * @return the name of the lock owner or {@code null} if the resource is not locked 
+	 */
 	@CheckForNull
 	public String getLockOwner() {
 		return lockOwner;
 	}
 
+	/**
+	 * Returns the lock-token
+	 * @return the lock-token or {@code null} if the resource is not locked 
+	 */
 	@CheckForNull
 	public String getLockToken() {
 		return lockToken;
 	}
 
+	/**
+	 * Returns the MD5 checksum of the resource
+	 * @return the MD5 checksum of the resource or {@code null} if the resource is a directory
+	 */
 	@CheckForNull
 	public String getMd5() {
 		return md5;
 	}
 
+	/**
+	 * Returns the relative path of the resource (relative to the root of the repository)
+	 * @return the relative path of the resource (relative to the root of the repository)
+	 */
 	public String getRelativePath() {
 		return relativePath;
 	}
 
+	/**
+	 * Returns the globally unique identifier of the repository
+	 * @return the globally unique identifier of the repository
+	 */
 	public String getRepositoryUuid() {
 		return repositoryUuid;
 	}
 
+	/**
+	 * Returns the globally unique identifier of the repository
+	 * @return the globally unique identifier of the repository
+	 */
 	public int getRevision() {
 		return revision;
 	}
@@ -304,6 +351,11 @@ public class SubversionInfo {
 		return root;
 	}
 
+	/**
+	 * Returns the value of the custom property with the given name
+	 * @param name name of the custom property
+	 * @return the value of the custom property or {@code null} if no custom property with the given name was found
+	 */
 	@CheckForNull
 	public String getSubversionPropertyValue(final String name) {
 		for (final SubversionProperty property : customProperties) {
@@ -330,14 +382,26 @@ public class SubversionInfo {
 		return result;
 	}
 
+	/**
+	 * Determines if the resource is a directory
+	 * @return {@code true} if the resource is a directory otherwise {@code false}
+	 */
 	public boolean isDirectory() {
 		return directory;
 	}
 
+	/**
+	 * Determines if the resource is a file
+	 * @return {@code true} if the resource is a file otherwise {@code false}
+	 */
 	public boolean isFile() {
 		return !directory;
 	}
 
+	/**
+	 * Determines if the resource is locked
+	 * @return {@code true} if the resource is locked otherwise {@code false}
+	 */
 	public boolean isLocked() {
 		return lockToken != null;
 	}
@@ -350,39 +414,39 @@ public class SubversionInfo {
 		}
 	}
 
-	public void setDirectory(final boolean directory) {
+	void setDirectory(final boolean directory) {
 		this.directory = directory;
 	}
 
-	public void setFile(final boolean file) {
+	void setFile(final boolean file) {
 		directory = !file;
 	}
 
-	public void setLockOwner(final String lockOwner) {
+	void setLockOwner(final String lockOwner) {
 		this.lockOwner = lockOwner;
 	}
 
-	public void setLockToken(final String lockToken) {
+	void setLockToken(final String lockToken) {
 		this.lockToken = lockToken;
 	}
 
-	public void setMd5(final String md5) {
+	void setMd5(final String md5) {
 		this.md5 = md5;
 	}
 
-	public void setRelativePath(final String relativePath) {
+	void setRelativePath(final String relativePath) {
 		this.relativePath = relativePath;
 	}
 
-	public void setRepositoryUuid(final String repositoryUuid) {
+	void setRepositoryUuid(final String repositoryUuid) {
 		this.repositoryUuid = repositoryUuid;
 	}
 
-	public void setRevision(final int revision) {
+	void setRevision(final int revision) {
 		this.revision = revision;
 	}
 
-	public void setRoot(final String root) {
+	void setRoot(final String root) {
 		this.root = root;
 	}
 
