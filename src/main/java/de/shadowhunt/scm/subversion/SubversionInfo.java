@@ -346,7 +346,10 @@ public class SubversionInfo {
 		return revision;
 	}
 
-	@CheckForNull
+	/**
+	 * Returns the root-path of the repository (relative to the root of the subversion server)
+	 * @return the root-path of the repository (relative to the root of the subversion server)
+	 */
 	public String getRoot() {
 		return root;
 	}
