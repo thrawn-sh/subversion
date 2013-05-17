@@ -22,7 +22,7 @@ public final class SubversionFactory {
 	 * Create a new {@link SubversionRepository} for given {@link URI} and {@link ServerVersion}
 	 * @param repository {@link URI} to the root of the repository (e.g: http://repository.example.net/svn/test_repo), only http and https scheme are supported
 	 * @param trustServerCertificat whether to trust all SSL certificates (see {@code NonValidatingX509TrustManager})
-	 * @param version the {@ServerVersion} of the server
+	 * @param version the {@link ServerVersion} of the server
 	 * @return a new {@link SubversionRepository} for given {@link URI} and {@link ServerVersion}
 	 */
 	public static final SubversionRepository getInstance(final URI repository, final boolean trustServerCertificat, final ServerVersion version) {
