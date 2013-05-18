@@ -11,7 +11,7 @@ import javax.annotation.concurrent.ThreadSafe;
 @ThreadSafe
 public final class SubversionFactory {
 
-	private static void assertSupportedScheme(final URI uri) {
+	static void assertSupportedScheme(final URI uri) {
 		final String scheme = uri.getScheme();
 		if (!"http".equals(scheme) && !"https".equals(scheme)) {
 			throw new SubversionException("unsupported scheme " + scheme + " only http and https are supported");
