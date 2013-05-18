@@ -14,10 +14,12 @@ public enum Depth {
 	 * only list all direct file sub-resources
 	 */
 	FILES("1"),
+
 	/**
 	 * only list all direct sub-resources (files and directories)
 	 */
 	IMMEDIATES("1"),
+
 	/**
 	 * recursively list all sub-resources (files and directories)
 	 */
