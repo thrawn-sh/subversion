@@ -2,7 +2,6 @@ package de.shadowhunt.scm.subversion;
 
 import java.util.Arrays;
 
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -50,11 +49,7 @@ public class SubversionProperty {
 	 * @param properties {@link SubversionProperty} that shall be filtered
 	 * @return filtered {@link SubversionProperty}
 	 */
-	public static SubversionProperty[] filteroutSystemProperties(@Nullable final SubversionProperty... properties) {
-		if (properties == null) {
-			return new SubversionProperty[0];
-		}
-
+	public static SubversionProperty[] filteroutSystemProperties(final SubversionProperty... properties) {
 		final SubversionProperty[] filtered = new SubversionProperty[properties.length];
 		int index = 0;
 		for (final SubversionProperty property : properties) {
