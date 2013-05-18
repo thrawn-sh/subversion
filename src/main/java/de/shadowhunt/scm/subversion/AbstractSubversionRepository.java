@@ -58,7 +58,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	protected static final String LOCK_OWNER_HEADER = "X-SVN-Lock-Owner";
 
 	protected static boolean contains(final int statusCode, @Nullable final int... expectedStatusCodes) {
-		if (expectedStatusCodes == null) {
+		if ((expectedStatusCodes == null) || (expectedStatusCodes.length == 0)) {
 			return true;
 		}
 
@@ -153,15 +153,18 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	}
 
 	protected static String normalizeResource(final String resource) {
-		final String trimmed = StringUtils.trimToNull(resource);
-		if (trimmed == null) {
+		if (StringUtils.isEmpty(resource) || "/".equals(resource)) {
 			return "/";
 		}
 
-		if (trimmed.charAt(0) == '/') {
-			return StringUtils.removeEnd(trimmed, "/");
+		final StringBuilder normalizedResource = new StringBuilder();
+		for (final String part : resource.split("/")) {
+			if (!StringUtils.isEmpty(part)) {
+				normalizedResource.append('/');
+				normalizedResource.append(part);
+			}
 		}
-		return "/" + StringUtils.removeEnd(trimmed, "/");
+		return normalizedResource.toString();
 	}
 
 	protected final AuthScope authscope;
