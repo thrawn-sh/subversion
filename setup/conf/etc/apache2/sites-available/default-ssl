@@ -57,7 +57,7 @@
 		AuthType                Basic
 		AuthName                "SVN Repository Basic"
 		AuthBasicProvider       file
-		AuthUserFile            /var/www/passwd.basic
+		AuthUserFile            /etc/apache2/passwd.basic
 
 		## restrict read access
 		<Limit GET PROPFIND OPTIONS REPORT>
@@ -86,7 +86,7 @@
 		AuthDigestDomain        /svn-digest/
 		AuthName                "SVN Repository Digest"
 		AuthDigestProvider      file
-		AuthUserFile            /var/www/passwd.digest
+		AuthUserFile            /etc/apache2/passwd.digest
 
 		## restrict read access
 		<Limit GET PROPFIND OPTIONS REPORT>
