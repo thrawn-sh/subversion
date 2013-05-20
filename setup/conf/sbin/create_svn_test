@@ -17,7 +17,7 @@ mkdir   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_with_files
 touch   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_with_files/a.txt"
 touch   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_with_files/b.txt"
 touch   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_with_files/c.txt"
-mkdir   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_with_files/d.txt"
+touch   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_with_files/d.txt"
 mkdir   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_with_dirs"
 mkdir   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_with_dirs/a"
 mkdir   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_with_dirs/b"
