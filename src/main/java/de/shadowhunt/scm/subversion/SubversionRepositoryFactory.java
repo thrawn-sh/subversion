@@ -16,7 +16,7 @@ public interface SubversionRepositoryFactory {
 
 	/**
 	 * Determine whether the {@link ServerVersion} is supported by the {@link SubversionRepository} created by this factory
-	 * @param version the {@ServerVersion} of the server
+	 * @param version the {@link ServerVersion} of the server
 	 * @return {@code true} if the {@link ServerVersion} is supported, otherwise {@code false}
 	 */
 	public boolean isServerVersionSupported(ServerVersion version);
