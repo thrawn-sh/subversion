@@ -367,14 +367,6 @@
 					<printSummary>false</printSummary>
 					<argLine>${jacoco.agent.argLine}</argLine>
 				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>org.apache.maven.surefire</groupId>
-						<!-- Use the older JUnit 4 provider -->
-						<artifactId>surefire-junit4</artifactId>
-						<version>2.12</version>
-					</dependency>
-				</dependencies>
 			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
