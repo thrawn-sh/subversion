@@ -16,6 +16,7 @@ smbpasswd -a svnuser <<EOF
 svnpass
 svnpass
 EOF
+adduser www-data winbindd_priv
 
 a2enmod auth_basic auth_digest auth_ntlm_winbind dav dav_fs dav_lock dav_svn ssl
 a2ensite default default-ssl
