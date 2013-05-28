@@ -13,6 +13,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 
 import de.shadowhunt.scm.subversion.AbstractSubversionRepository;
 import de.shadowhunt.scm.subversion.Depth;
+import de.shadowhunt.scm.subversion.Revision;
 import de.shadowhunt.scm.subversion.SubversionInfo;
 import de.shadowhunt.scm.subversion.SubversionProperty;
 
@@ -55,7 +56,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		final String uuid = prepareTransaction();
 		setCommitMessage(uuid, message);
 		delete0(normalizedResource, uuid);
-		final SubversionInfo info = info0(normalizedResource, HEAD_VERSION, false);
+		final SubversionInfo info = info0(normalizedResource, Revision.HEAD, false);
 		merge(info, uuid);
 	}
 
@@ -70,15 +71,15 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		final String normalizedResource = normalizeResource(resource);
 		final String uuid = prepareTransaction();
 		setCommitMessage(uuid, message);
-		final SubversionInfo info = info0(normalizedResource, HEAD_VERSION, false);
+		final SubversionInfo info = info0(normalizedResource, Revision.HEAD, false);
 		propertiesRemove(normalizedResource, info, uuid, properties);
 		merge(info, uuid);
 	}
 
 	@Override
-	protected InputStream download0(final String normalizedResource, final int revision) {
+	protected InputStream download0(final String normalizedResource, final Revision revision) {
 		final URI uri;
-		if (revision == HEAD_VERSION) {
+		if (Revision.HEAD.equals(revision)) {
 			uri = URI.create(repository + normalizedResource);
 		} else {
 			uri = URI.create(repository + PREFIX_RVR + revision + normalizedResource);
@@ -90,8 +91,8 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 	}
 
 	@Override
-	protected URI downloadURI0(final String normalizedResource, final int revision) {
-		if (revision == HEAD_VERSION) {
+	protected URI downloadURI0(final String normalizedResource, final Revision revision) {
+		if (Revision.HEAD.equals(revision)) {
 			return URI.create(repository + normalizedResource);
 		}
 		return URI.create(repository + PREFIX_RVR + revision + normalizedResource);
@@ -100,7 +101,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 	@Override
 	public List<SubversionInfo> list(final String resource, final Depth depth, final boolean withCustomProperties) {
 		final String normalizedResource = normalizeResource(resource);
-		final SubversionInfo info = info0(normalizedResource, HEAD_VERSION, false);
+		final SubversionInfo info = info0(normalizedResource, Revision.HEAD, false);
 		final String uriPrefix = repository + PREFIX_RVR + info.getRevision();
 		return list(uriPrefix, normalizedResource, depth, withCustomProperties);
 	}
@@ -165,7 +166,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		} else {
 			infoResource = createMissingFolders(PREFIX_TXR, uuid, normalizedResource);
 		}
-		final SubversionInfo info = info0(infoResource, HEAD_VERSION, false);
+		final SubversionInfo info = info0(infoResource, Revision.HEAD, false);
 		setCommitMessage(uuid, message);
 		contentUpload(normalizedResource, info, uuid, content);
 		propertiesSet(normalizedResource, info, uuid, properties);
