@@ -3,6 +3,7 @@ package de.shadowhunt.scm.subversion;
 import java.io.InputStream;
 import java.net.URI;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -37,7 +38,7 @@ public abstract class AbstractSubversionRequestFactory {
 		 * @param method http method name
 		 */
 		public DavTemplateRequest(final String method) {
-			this(method, Depth.EMPTY);
+			this(method, null);
 		}
 
 		/**
@@ -45,10 +46,10 @@ public abstract class AbstractSubversionRequestFactory {
 		 * @param method http method name
 		 * @param depth {@link Depth}-level of the request
 		 */
-		public DavTemplateRequest(final String method, final Depth depth) {
+		public DavTemplateRequest(final String method, @Nullable final Depth depth) {
 			this.method = method;
 			this.depth = depth;
-			if (depth != Depth.EMPTY) {
+			if (depth != null) {
 				setHeader("Depth", depth.value);
 			}
 		}
@@ -57,6 +58,7 @@ public abstract class AbstractSubversionRequestFactory {
 		 * Returns the {@link Depth}-level of the request
 		 * @return {@link Depth}-level of the request
 		 */
+		@CheckForNull
 		public Depth getDepth() {
 			return depth;
 		}
