@@ -26,8 +26,8 @@ public abstract class AbstractSubversionRepositoryIT {
 		}
 	}
 
-	protected String download(final String resource, final int version) throws IOException {
-		final InputStream download = REPO.download(resource, version);
+	protected String download(final String resource, final Revision revision) throws IOException {
+		final InputStream download = REPO.download(resource, revision);
 		try {
 			return IOUtils.toString(download, "UTF-8");
 		} finally {
@@ -108,12 +108,6 @@ public abstract class AbstractSubversionRepositoryIT {
 		Assert.assertEquals("content differes", expected, actual);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testDownloadIllegalVersion() throws IOException {
-		final String resource = BASE + "/download_illegal.txt";
-		download(resource, -1);
-	}
-
 	@Test
 	public void testDownloadVersion() throws IOException {
 		final String resource = BASE + "/download_version.txt";
@@ -140,12 +134,6 @@ public abstract class AbstractSubversionRepositoryIT {
 
 		final SubversionInfo info = REPO.info(resource, false);
 		Assert.assertTrue("resource is not a file", info.isFile());
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testInfoIllegalVersion() {
-		final String resource = BASE + "/info_illegal.txt";
-		REPO.info(resource, -1, false);
 	}
 
 	@Test

@@ -212,11 +212,11 @@ public abstract class AbstractSubversionRequestFactory {
 	/**
 	 * Request report containing all properties between startRevision and endRevision
 	 * @param uri absolute {@link URI} to perform the request against
-	 * @param startRevision the first revision of the resource to retrieve (including)
-	 * @param endRevision the last revision of the resource to retrieve (including)
+	 * @param startRevision the first {@link Revision} of the resource to retrieve (including)
+	 * @param endRevision the last {@link Revision} of the resource to retrieve (including)
 	 * @return {@link HttpUriRequest} containing all properties
 	 */
-	public HttpUriRequest createLogRequest(final URI uri, final int startRevision, final int endRevision) {
+	public HttpUriRequest createLogRequest(final URI uri, final Revision startRevision, final Revision endRevision) {
 		final DavTemplateRequest request = new DavTemplateRequest("REPORT");
 		request.setURI(uri);
 

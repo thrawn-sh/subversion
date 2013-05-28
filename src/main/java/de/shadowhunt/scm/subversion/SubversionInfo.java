@@ -104,7 +104,7 @@ public class SubversionInfo {
 
 			if ("version-name".equals(name)) {
 				final int revision = Integer.parseInt(getText());
-				current.setRevision(revision);
+				current.setRevision(Revision.create(revision));
 				return;
 			}
 
@@ -213,7 +213,7 @@ public class SubversionInfo {
 
 	private String repositoryUuid;
 
-	private int revision;
+	private Revision revision;
 
 	private String root;
 
@@ -274,7 +274,11 @@ public class SubversionInfo {
 		} else if (!repositoryUuid.equals(other.repositoryUuid)) {
 			return false;
 		}
-		if (revision != other.revision) {
+		if (revision == null) {
+			if (other.revision != null) {
+				return false;
+			}
+		} else if (!revision.equals(other.revision)) {
 			return false;
 		}
 		if (root == null) {
@@ -289,14 +293,14 @@ public class SubversionInfo {
 
 	/**
 	 * Returns an array of the custom {@link SubversionProperty}
-	 * @return an array of the custom {@link SubversionProperty} or an empty array if there a non
+	 * @return the array of the custom {@link SubversionProperty} or an empty array if there a non
 	 */
 	public SubversionProperty[] getCustomProperties() {
 		return Arrays.copyOf(customProperties, customProperties.length);
 	}
 
 	/**
-	 * Returns the name of the lock owner
+	 * Returns a name of the lock owner
 	 * @return the name of the lock owner or {@code null} if the resource is not locked
 	 */
 	@CheckForNull
@@ -305,7 +309,7 @@ public class SubversionInfo {
 	}
 
 	/**
-	 * Returns the lock-token
+	 * Returns a lock-token
 	 * @return the lock-token or {@code null} if the resource is not locked
 	 */
 	@CheckForNull
@@ -314,7 +318,7 @@ public class SubversionInfo {
 	}
 
 	/**
-	 * Returns the MD5 checksum of the resource
+	 * Returns a MD5 checksum of the resource
 	 * @return the MD5 checksum of the resource or {@code null} if the resource is a directory
 	 */
 	@CheckForNull
@@ -323,7 +327,7 @@ public class SubversionInfo {
 	}
 
 	/**
-	 * Returns the relative path of the resource (relative to the root of the repository)
+	 * Returns a relative path of the resource (relative to the root of the repository)
 	 * @return the relative path of the resource (relative to the root of the repository)
 	 */
 	public String getRelativePath() {
@@ -331,7 +335,7 @@ public class SubversionInfo {
 	}
 
 	/**
-	 * Returns the globally unique identifier of the repository
+	 * Returns a globally unique identifier of the repository
 	 * @return the globally unique identifier of the repository
 	 */
 	public String getRepositoryUuid() {
@@ -339,15 +343,15 @@ public class SubversionInfo {
 	}
 
 	/**
-	 * Returns the globally unique identifier of the repository
-	 * @return the globally unique identifier of the repository
+	 * Returns a {@link Revision} of the resource
+	 * @return the {@link Revision} of the resource
 	 */
-	public int getRevision() {
+	public Revision getRevision() {
 		return revision;
 	}
 
 	/**
-	 * Returns the root-path of the repository (relative to the root of the subversion server)
+	 * Returns a root-path of the repository (relative to the root of the subversion server)
 	 * @return the root-path of the repository (relative to the root of the subversion server)
 	 */
 	public String getRoot() {
@@ -380,7 +384,7 @@ public class SubversionInfo {
 		result = (prime * result) + ((md5 == null) ? 0 : md5.hashCode());
 		result = (prime * result) + ((relativePath == null) ? 0 : relativePath.hashCode());
 		result = (prime * result) + ((repositoryUuid == null) ? 0 : repositoryUuid.hashCode());
-		result = (prime * result) + revision;
+		result = (prime * result) + ((revision == null) ? 0 : revision.hashCode());
 		result = (prime * result) + ((root == null) ? 0 : root.hashCode());
 		return result;
 	}
@@ -445,7 +449,7 @@ public class SubversionInfo {
 		this.repositoryUuid = repositoryUuid;
 	}
 
-	void setRevision(final int revision) {
+	void setRevision(final Revision revision) {
 		this.revision = revision;
 	}
 

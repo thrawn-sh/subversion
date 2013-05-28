@@ -5,6 +5,8 @@ import java.io.PrintWriter;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 
+import de.shadowhunt.scm.subversion.Revision;
+
 abstract class AbstractRevisionCommand extends AbstractCommand {
 
 	private static final String REVISION_OPTION = "r";
@@ -20,8 +22,11 @@ abstract class AbstractRevisionCommand extends AbstractCommand {
 		return options;
 	}
 
-	protected Integer getRevision(final CommandLine cmdl) {
+	protected Revision getRevision(final CommandLine cmdl) {
 		final String revision = cmdl.getOptionValue(REVISION_OPTION);
-		return Integer.valueOf(revision);
+		if (revision == null) {
+			return null;
+		}
+		return Revision.create(Integer.parseInt(revision));
 	}
 }

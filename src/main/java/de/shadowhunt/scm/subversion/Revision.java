@@ -1,0 +1,61 @@
+package de.shadowhunt.scm.subversion;
+
+import java.io.Serializable;
+
+public final class Revision implements Comparable<Revision>, Serializable {
+
+	public static final Revision HEAD = new Revision(-1);
+
+	public static final Revision INITIAL = new Revision(0);
+
+	private static final long serialVersionUID = 1L;
+
+	public static Revision create(final int revision) {
+		if (revision <= 0) {
+			throw new IllegalArgumentException("revision must be greater than 0, was " + revision);
+		}
+		return new Revision(revision);
+	}
+
+	private final int revision;
+
+	private Revision(final int revision) {
+		this.revision = revision;
+	}
+
+	@Override
+	public int compareTo(final Revision o) {
+		return revision - o.revision;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final Revision other = (Revision) obj;
+		if (revision != other.revision) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = (prime * result) + revision;
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		return Integer.toString(revision);
+	}
+}

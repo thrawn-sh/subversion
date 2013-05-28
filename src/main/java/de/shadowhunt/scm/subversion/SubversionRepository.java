@@ -38,10 +38,10 @@ public interface SubversionRepository {
 	/**
 	 * Download the resource
 	 * @param resource the absolute path of the resource (relative to the repository root)
-	 * @param revision the revision of the resource to retrieve
+	 * @param revision the {@link Revision} of the resource to retrieve
 	 * @return {@link InputStream} from which the content can be read (caller has to close the stream properly)
 	 */
-	public InputStream download(String resource, int revision);
+	public InputStream download(String resource, Revision revision);
 
 	/**
 	 * Determine the HTTP download URI for the resource (latest version)
@@ -53,10 +53,10 @@ public interface SubversionRepository {
 	/**
 	 * Determine the HTTP download URI for the resource
 	 * @param resource the absolute path of the resource (relative to the repository root)
-	 * @param revision the revision of the resource to retrieve
+	 * @param revision the {@link Revision} of the resource to retrieve
 	 * @return the HTTP download {@link URI} for the resource
 	 */
-	public URI downloadURI(String resource, int revision);
+	public URI downloadURI(String resource, Revision revision);
 
 	/**
 	 * Check if the resource already exists in the latest revision of the repository
@@ -76,11 +76,11 @@ public interface SubversionRepository {
 	/**
 	 * Retrieve information for the resource
 	 * @param resource the absolute path of the resource (relative to the repository root)
-	 * @param revision the revision of the resource to retrieve
+	 * @param revision the {@link Revision} of the resource to retrieve
 	 * @param withCustomProperties whether to retrieve user defined properties
 	 * @return {@link SubversionInfo} for the resource
 	 */
-	public SubversionInfo info(String resource, int revision, boolean withCustomProperties);
+	public SubversionInfo info(String resource, Revision revision, boolean withCustomProperties);
 
 	/**
 	 * Retrieve log information for the latest revision of the resource
@@ -114,11 +114,11 @@ public interface SubversionRepository {
 	/**
 	 * Retrieve the log information for the revisions between startRevision and endRevision of the resource
 	 * @param resource the absolute path of the resource (relative to the repository root)
-	 * @param startRevision the first revision of the resource to retrieve (including)
-	 * @param endRevision the last revision of the resource to retrieve (including)
+	 * @param startRevision the first {@link Revision} of the resource to retrieve (including)
+	 * @param endRevision the last {@link Revision} of the resource to retrieve (including)
 	 * @return ordered (early to latest) {@link List} of {@link SubversionLog} for the revisions between startRevision and endRevision of the resource
 	 */
-	public List<SubversionLog> log(String resource, int startRevision, int endRevision);
+	public List<SubversionLog> log(String resource, Revision startRevision, Revision endRevision);
 
 	/**
 	 * Authenticate with the given username, password and workstation against the server (NOTE: only the current thread will be authenticated)

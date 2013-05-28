@@ -62,7 +62,7 @@ public class SubversionLog {
 
 			if ("version-name".equals(name)) {
 				final int revision = Integer.parseInt(getText());
-				current.setRevision(revision);
+				current.setRevision(Revision.create(revision));
 				return;
 			}
 		}
@@ -105,7 +105,7 @@ public class SubversionLog {
 
 	private Date date;
 
-	private int revision;
+	private Revision revision;
 
 	private String user;
 
@@ -139,7 +139,11 @@ public class SubversionLog {
 		} else if (!date.equals(other.date)) {
 			return false;
 		}
-		if (revision != other.revision) {
+		if (revision == null) {
+			if (other.revision != null) {
+				return false;
+			}
+		} else if (!revision.equals(other.revision)) {
 			return false;
 		}
 		if (user == null) {
@@ -169,10 +173,10 @@ public class SubversionLog {
 	}
 
 	/**
-	 * Returns the revision that was created by the commit
-	 * @return the revision that was created by the commit
+	 * Returns the {@link Revision} that was created by the commit
+	 * @return the {@link Revision} that was created by the commit
 	 */
-	public int getRevision() {
+	public Revision getRevision() {
 		return revision;
 	}
 
@@ -190,7 +194,7 @@ public class SubversionLog {
 		int result = 1;
 		result = (prime * result) + ((comment == null) ? 0 : comment.hashCode());
 		result = (prime * result) + ((date == null) ? 0 : date.hashCode());
-		result = (prime * result) + revision;
+		result = (prime * result) + ((revision == null) ? 0 : revision.hashCode());
 		result = (prime * result) + ((user == null) ? 0 : user.hashCode());
 		return result;
 	}
@@ -203,7 +207,7 @@ public class SubversionLog {
 		this.date = new Date(date.getTime());
 	}
 
-	void setRevision(final int revision) {
+	void setRevision(final Revision revision) {
 		this.revision = revision;
 	}
 
