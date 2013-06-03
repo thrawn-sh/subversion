@@ -32,15 +32,15 @@ public final class Revision implements Comparable<Revision>, Serializable {
 		return new Revision(revision);
 	}
 
-	private final int revision;
+	private final int version;
 
 	private Revision(final int revision) {
-		this.revision = revision;
+		this.version = revision;
 	}
 
 	@Override
 	public int compareTo(final Revision o) {
-		return revision - o.revision;
+		return version - o.version;
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public final class Revision implements Comparable<Revision>, Serializable {
 			return false;
 		}
 		final Revision other = (Revision) obj;
-		if (revision != other.revision) {
+		if (version != other.version) {
 			return false;
 		}
 		return true;
@@ -65,12 +65,12 @@ public final class Revision implements Comparable<Revision>, Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = (prime * result) + revision;
+		result = (prime * result) + version;
 		return result;
 	}
 
 	@Override
 	public String toString() {
-		return Integer.toString(revision);
+		return Integer.toString(version);
 	}
 }
