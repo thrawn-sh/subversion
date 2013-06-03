@@ -14,6 +14,23 @@ import javax.annotation.concurrent.ThreadSafe;
 public interface SubversionRepository {
 
 	/**
+	 * Recursively copy a resource in the given revision
+	 * @param srcResource the absolute path of the source resource (relative to the repository root)
+	 * @param srcRevision {@link Revision} of the resource to copy
+	 * @param targetResource the absolute path of the target resource (relative to the repository root)
+	 * @param message the commit message for the current operation
+	 */
+	public void copy(String srcResource, Revision srcRevision, String targetResource, String message);
+
+	/**
+	 * Recursively copy a resource (latest revision)
+	 * @param srcResource the absolute path of the source resource (relative to the repository root)
+	 * @param targetResource the absolute path of the target resource (relative to the repository root)
+	 * @param message the commit message for the current operation
+	 */
+	public void copy(String srcResource, String targetResource, String message);
+
+	/**
 	 * Delete the resource from the repository
 	 * @param resource the absolute path of the resource (relative to the repository root)
 	 * @param message the commit message for the current operation
@@ -121,6 +138,14 @@ public interface SubversionRepository {
 	public List<SubversionLog> log(String resource, Revision startRevision, Revision endRevision);
 
 	/**
+	 * Recursively move a resource (latest revision)
+	 * @param srcResource the absolute path of the source resource (relative to the repository root)
+	 * @param targetResource the absolute path of the target resource (relative to the repository root)
+	 * @param message the commit message for the current operation
+	 */
+	public void move(String srcResource, String targetResource, String message);
+
+	/**
 	 * Authenticate with the given username, password and workstation against the server (NOTE: only the current thread will be authenticated)
 	 * <p>to reset authentication call setCredentials(null, null, null)</p>
 	 * @param user username to authenticate with against the repository (relevant for BAISC, DIGEST and NTLM)
@@ -159,5 +184,4 @@ public interface SubversionRepository {
 	 * @param properties {@link SubversionProperty} to add or override
 	 */
 	public void uploadWithProperties(String resource, String message, InputStream content, SubversionProperty... properties);
-
 }

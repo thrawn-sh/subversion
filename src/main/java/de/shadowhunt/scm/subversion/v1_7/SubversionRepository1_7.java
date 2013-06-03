@@ -51,6 +51,25 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 	}
 
 	@Override
+	public void copy(final String srcResource, final Revision srcRevision, final String targetResource, final String message) {
+		final String normalizeSourceResource = normalizeResource(srcResource);
+		final String normalizeTargetResource = normalizeResource(targetResource);
+
+		final SubversionInfo info = info0(normalizeSourceResource, srcRevision, false);
+		final String uuid = prepareTransaction();
+		setCommitMessage(uuid, message);
+		copy0(normalizeSourceResource, info.getRevision(), normalizeTargetResource, uuid);
+		merge(info, uuid);
+	}
+
+	protected void copy0(final String normalizeSourceResource, final Revision srcRevision, final String normalizeTargetResource, final String uuid) {
+		final URI src = URI.create(repository + PREFIX_RVR + srcRevision + normalizeSourceResource);
+		final URI target = URI.create(repository + PREFIX_TXR + uuid + normalizeTargetResource);
+		final HttpUriRequest request = requestFactory.createCopyRequest(src, target);
+		execute(request, HttpStatus.SC_CREATED);
+	}
+
+	@Override
 	public void delete(final String resource, final String message) {
 		final String normalizedResource = normalizeResource(resource);
 		final String uuid = prepareTransaction();
@@ -110,6 +129,19 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		final String path = repository.getPath() + PREFIX_TXN + uuid;
 		final HttpUriRequest request = requestFactory.createMergeRequest(repository, path, info);
 		execute(request, HttpStatus.SC_OK);
+	}
+
+	@Override
+	public void move(final String srcResource, final String targetResource, final String message) {
+		final String normalizeSourceResource = normalizeResource(srcResource);
+		final String normalizeTargetResource = normalizeResource(targetResource);
+
+		final SubversionInfo info = info0(normalizeSourceResource, Revision.HEAD, false);
+		final String uuid = prepareTransaction();
+		setCommitMessage(uuid, message);
+		copy0(normalizeSourceResource, info.getRevision(), normalizeTargetResource, uuid);
+		delete0(normalizeSourceResource, uuid);
+		merge(info, uuid);
 	}
 
 	protected String prepareTransaction() {

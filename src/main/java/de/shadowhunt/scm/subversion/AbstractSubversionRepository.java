@@ -195,6 +195,11 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		}
 	}
 
+	@Override
+	public void copy(final String srcResource, final String targetResource, final String message) {
+		copy(srcResource, Revision.HEAD, targetResource, message);
+	}
+
 	protected String createMissingFolders(final String prefix, final String uuid, final String normalizedResource) {
 		final String[] resourceParts = normalizedResource.split("/");
 

@@ -23,7 +23,7 @@ public enum Depth {
 	/**
 	 * recursively list all sub-resources (files and directories)
 	 */
-	INFINITY("-1");
+	INFINITY("infinity");
 
 	/**
 	 * recursion level

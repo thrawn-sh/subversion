@@ -18,6 +18,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.message.BasicHeader;
 
 /**
  * Basic class for all SubversionRequestFactories
@@ -212,6 +213,15 @@ public abstract class AbstractSubversionRequestFactory {
 		body.append("</end-revision><discover-changed-paths/><no-revprops/></log-report>");
 
 		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
+		return request;
+	}
+
+	public HttpUriRequest createCopyRequest(final URI src, final URI target) {
+		final DavTemplateRequest request = new DavTemplateRequest("COPY", Depth.INFINITY);
+		request.addHeader(new BasicHeader("Destination", target.toASCIIString()));
+		request.addHeader(new BasicHeader("Override", "T"));
+		request.setURI(src);
+
 		return request;
 	}
 
