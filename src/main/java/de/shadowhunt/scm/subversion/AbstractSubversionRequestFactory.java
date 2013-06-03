@@ -151,6 +151,21 @@ public abstract class AbstractSubversionRequestFactory {
 	}
 
 	/**
+	 * Copying a resource to a new destination
+	 * @param src {@link URI} to copy from
+	 * @param target {@link URI} to copy to
+	 * @return {@link HttpUriRequest} copying the resource to a new destination
+	 */
+	public HttpUriRequest createCopyRequest(final URI src, final URI target) {
+		final DavTemplateRequest request = new DavTemplateRequest("COPY", Depth.INFINITY);
+		request.addHeader(new BasicHeader("Destination", target.toASCIIString()));
+		request.addHeader(new BasicHeader("Override", "T"));
+		request.setURI(src);
+
+		return request;
+	}
+
+	/**
 	 * Deleting a resource
 	 * @param uri absolute {@link URI} to perform the request against
 	 * @return {@link HttpUriRequest} deleting the resource
@@ -213,15 +228,6 @@ public abstract class AbstractSubversionRequestFactory {
 		body.append("</end-revision><discover-changed-paths/><no-revprops/></log-report>");
 
 		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
-		return request;
-	}
-
-	public HttpUriRequest createCopyRequest(final URI src, final URI target) {
-		final DavTemplateRequest request = new DavTemplateRequest("COPY", Depth.INFINITY);
-		request.addHeader(new BasicHeader("Destination", target.toASCIIString()));
-		request.addHeader(new BasicHeader("Override", "T"));
-		request.setURI(src);
-
 		return request;
 	}
 
