@@ -225,7 +225,7 @@ public abstract class AbstractSubversionRequestFactory {
 		body.append(startRevision);
 		body.append("</start-revision><end-revision>");
 		body.append(endRevision);
-		body.append("</end-revision><discover-changed-paths/><no-revprops/></log-report>");
+		body.append("</end-revision><discover-changed-paths/><no-revprops/><include-merged-revisions/><path/></log-report>");
 
 		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
 		return request;
