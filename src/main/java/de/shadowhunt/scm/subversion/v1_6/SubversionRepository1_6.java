@@ -63,6 +63,31 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 	}
 
 	@Override
+	public void copy(final String srcResource, final Revision srcRevision, final String targetResource, final String message) {
+		final UUID uuid = prepareTransaction();
+		try {
+			final String normalizeSourceResource = normalizeResource(srcResource);
+			final String normalizeTargetResource = normalizeResource(targetResource);
+
+			final SubversionInfo info = info0(normalizeSourceResource, srcRevision, false);
+			final Revision revision = info.getRevision();
+			checkout(uuid);
+			setCommitMessage(uuid, revision, message);
+			copy0(normalizeSourceResource, info.getRevision(), normalizeTargetResource, uuid);
+			merge(info, uuid);
+		} finally {
+			endTransaction(uuid);
+		}
+	}
+
+	protected void copy0(final String normalizeSourceResource, final Revision srcRevision, final String normalizeTargetResource, final UUID uuid) {
+		final URI src = URI.create(repository + PREFIX_BC + srcRevision + normalizeSourceResource);
+		final URI target = URI.create(repository + PREFIX_WRK + uuid + normalizeTargetResource);
+		final HttpUriRequest request = requestFactory.createCopyRequest(src, target);
+		execute(request, HttpStatus.SC_CREATED);
+	}
+
+	@Override
 	public void delete(final String resource, final String message) {
 		final String normalizedResource = normalizeResource(resource);
 		final SubversionInfo info = info0(normalizedResource, Revision.HEAD, false);
@@ -144,6 +169,25 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 		execute(request, HttpStatus.SC_OK);
 	}
 
+	@Override
+	public void move(final String srcResource, final String targetResource, final String message) {
+		final UUID uuid = prepareTransaction();
+		try {
+			final String normalizeSourceResource = normalizeResource(srcResource);
+			final String normalizeTargetResource = normalizeResource(targetResource);
+
+			final SubversionInfo info = info0(normalizeSourceResource, Revision.HEAD, false);
+			final Revision revision = info.getRevision();
+			checkout(uuid);
+			setCommitMessage(uuid, revision, message);
+			copy0(normalizeSourceResource, info.getRevision(), normalizeTargetResource, uuid);
+			delete(normalizeSourceResource, uuid);
+			merge(info, uuid);
+		} finally {
+			endTransaction(uuid);
+		}
+	}
+
 	protected void prepareContentUpload(final String normalizedResource, final UUID uuid, final Revision revision) {
 		final URI uri = URI.create(repository + PREFIX_VER + revision + normalizedResource);
 
@@ -215,50 +259,6 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 			}
 			contentUpload(normalizedResource, info, uuid, content);
 			propertiesSet(normalizedResource, info, uuid, properties);
-			merge(info, uuid);
-		} finally {
-			endTransaction(uuid);
-		}
-	}
-
-	@Override
-	public void copy(final String srcResource, final Revision srcRevision, final String targetResource, final String message) {
-		final UUID uuid = prepareTransaction();
-		try {
-			final String normalizeSourceResource = normalizeResource(srcResource);
-			final String normalizeTargetResource = normalizeResource(targetResource);
-
-			final SubversionInfo info = info0(normalizeSourceResource, srcRevision, false);
-			final Revision revision = info.getRevision();
-			checkout(uuid);
-			setCommitMessage(uuid, revision, message);
-			copy0(normalizeSourceResource, info.getRevision(), normalizeTargetResource, uuid);
-			merge(info, uuid);
-		} finally {
-			endTransaction(uuid);
-		}
-	}
-
-	protected void copy0(final String normalizeSourceResource, final Revision srcRevision, final String normalizeTargetResource, final UUID uuid) {
-		final URI src = URI.create(repository + PREFIX_BC + srcRevision + normalizeSourceResource);
-		final URI target = URI.create(repository + PREFIX_WRK + uuid + normalizeTargetResource);
-		final HttpUriRequest request = requestFactory.createCopyRequest(src, target);
-		execute(request, HttpStatus.SC_CREATED);
-	}
-
-	@Override
-	public void move(final String srcResource, final String targetResource, final String message) {
-		final UUID uuid = prepareTransaction();
-		try {
-			final String normalizeSourceResource = normalizeResource(srcResource);
-			final String normalizeTargetResource = normalizeResource(targetResource);
-
-			final SubversionInfo info = info0(normalizeSourceResource, Revision.HEAD, false);
-			final Revision revision = info.getRevision();
-			checkout(uuid);
-			setCommitMessage(uuid, revision, message);
-			copy0(normalizeSourceResource, info.getRevision(), normalizeTargetResource, uuid);
-			delete(normalizeSourceResource, uuid);
 			merge(info, uuid);
 		} finally {
 			endTransaction(uuid);
