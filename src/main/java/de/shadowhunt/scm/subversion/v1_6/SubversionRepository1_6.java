@@ -133,10 +133,8 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 	}
 
 	@Override
-	public List<SubversionInfo> list(final String resource, final Depth depth, final boolean withCustomProperties) {
-		final String normalizedResource = normalizeResource(resource);
-		final SubversionInfo info = info0(normalizedResource, Revision.HEAD, false);
-		final String uriPrefix = repository + PREFIX_BC + info.getRevision();
+	protected List<SubversionInfo> list0(final String normalizedResource, final Revision revision, final Depth depth, final boolean withCustomProperties) {
+		final String uriPrefix = repository + PREFIX_BC + revision;
 		return list(uriPrefix, normalizedResource, depth, withCustomProperties);
 	}
 

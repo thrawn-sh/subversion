@@ -331,6 +331,19 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		return logs.get(0);
 	}
 
+	@Override
+	public List<SubversionInfo> list(final String resource, final Depth depth, final boolean withCustomProperties) {
+		final String normalizedResource = normalizeResource(resource);
+		final SubversionInfo info = info0(normalizedResource, Revision.HEAD, false);
+		return list0(normalizedResource, info.getRevision(), depth, withCustomProperties);
+	}
+
+	@Override
+	public List<SubversionInfo> list(final String resource, final Revision revision, final Depth depth, final boolean withCustomProperties) {
+		final String normalizedResource = normalizeResource(resource);
+		return list0(normalizedResource, revision, depth, withCustomProperties);
+	}
+
 	protected List<SubversionInfo> list(final String uriPrefix, final String normalizedResource, final Depth depth, final boolean withCustomProperties) {
 		final URI uri = URI.create(uriPrefix + normalizedResource);
 
@@ -354,6 +367,8 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 			closeQuiet(in);
 		}
 	}
+
+	protected abstract List<SubversionInfo> list0(String normalizedResource, Revision revision, Depth depth, boolean withCustomProperties);
 
 	protected void listRecursive(final String uriPrefix, final boolean withCustomProperties, final Collection<SubversionInfo> todo, final Set<SubversionInfo> done) {
 		for (final SubversionInfo info : todo) {

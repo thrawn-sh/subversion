@@ -107,6 +107,16 @@ public interface SubversionRepository {
 	public SubversionLog lastLog(String resource);
 
 	/**
+	 * Retrieve information for the resource in the given revision and its child resources (depending on depth parameter)
+	 * @param resource the absolute path of the resource (relative to the repository root)
+	 * @param revision the {@link Revision} of the resource to retrieve
+	 * @param depth whether to retrieve only for the given resource, its children or only part of its children depending on the value of {@link Depth}
+	 * @param withCustomProperties whether to retrieve user defined properties
+	 * @return {@link List} of {@link SubversionInfo} for the resource and its child resources (depending on depth parameter)
+	 */
+	public List<SubversionInfo> list(String resource, Revision revision, Depth depth, boolean withCustomProperties);
+
+	/**
 	 * Retrieve information for the resource and its child resources (depending on depth parameter)
 	 * @param resource the absolute path of the resource (relative to the repository root)
 	 * @param depth whether to retrieve only for the given resource, its children or only part of its children depending on the value of {@link Depth}
