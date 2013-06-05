@@ -63,6 +63,10 @@ public final class Path implements Comparable<Path> {
 		return true;
 	}
 
+	/**
+	 * Returns the parent {@link Path} of the {@link Path}, the parent of the ROOT element is the ROOT itself
+	 * @return the parent {@link Path} of the {@link Path}
+	 */
 	public Path getParent() {
 		final int indexOf = value.lastIndexOf('/');
 		if (indexOf == 0) {
@@ -71,10 +75,18 @@ public final class Path implements Comparable<Path> {
 		return new Path(value.substring(0, indexOf));
 	}
 
+	/**
+	 * Returns a {@link String} representation of the {@link Path}
+	 * @return the {@link String} representation of the {@link Path}
+	 */
 	public String getValue() {
 		return value;
 	}
 
+	/**
+	 * Returns a {@link String} representation of the {@link Path} without the leading slash
+	 * @return the {@link String} representation of the {@link Path} without the leading slash
+	 */
 	public String getValueWithoutLeadingSeparator() {
 		return value.substring(1);
 	}
