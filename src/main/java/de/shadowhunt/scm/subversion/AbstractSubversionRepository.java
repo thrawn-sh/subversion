@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -52,8 +53,8 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	protected static final String LOCK_OWNER_HEADER = "X-SVN-Lock-Owner";
 
-	protected static boolean contains(final int statusCode, @Nullable final int... expectedStatusCodes) {
-		if ((expectedStatusCodes == null) || (expectedStatusCodes.length == 0)) {
+	protected static boolean contains(final int statusCode, final int... expectedStatusCodes) {
+		if (expectedStatusCodes.length == 0) {
 			return true;
 		}
 
@@ -117,7 +118,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		return new NTCredentials(username, password, workstation, domain);
 	}
 
-	static void ensureResponse(final HttpResponse response, final boolean consume, @Nullable final int... expectedStatusCodes) throws IOException {
+	static void ensureResponse(final HttpResponse response, final boolean consume, final int... expectedStatusCodes) throws IOException {
 		final int statusCode = response.getStatusLine().getStatusCode();
 		if (consume) {
 			EntityUtils.consume(response.getEntity());
@@ -171,14 +172,6 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		this(createClient(100, trustServerCertificat), repository, requestFactory);
 	}
 
-	protected void closeQuiet(final InputStream in) {
-		try {
-			in.close();
-		} catch (final IOException e) {
-			// ignore
-		}
-	}
-
 	@Override
 	public void copy(final Path srcResource, final Path targetResource, final String message) {
 		copy(srcResource, Revision.HEAD, targetResource, message);
@@ -223,8 +216,9 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		return downloadURI(resource, Revision.HEAD);
 	}
 
-	protected HttpResponse execute(final HttpUriRequest request, final boolean consume, @Nullable final int... expectedStatusCodes) {
+	protected HttpResponse execute(final HttpUriRequest request, final boolean consume, final int... expectedStatusCodes) {
 		try {
+			client.execute(request);
 			final HttpResponse response = client.execute(request, context);
 			ensureResponse(response, consume, expectedStatusCodes);
 			return response;
@@ -233,7 +227,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		}
 	}
 
-	protected HttpResponse execute(final HttpUriRequest request, @Nullable final int... expectedStatusCodes) {
+	protected HttpResponse execute(final HttpUriRequest request, final int... expectedStatusCodes) {
 		return execute(request, true, expectedStatusCodes);
 	}
 
@@ -271,7 +265,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 			}
 			return info;
 		} finally {
-			closeQuiet(in);
+			IOUtils.closeQuietly(in);
 		}
 	}
 
@@ -285,11 +279,9 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	@Override
 	public SubversionLog lastLog(final Path resource) {
-		final URI uri = URI.create(repository + resource.getValue());
-
 		final SubversionInfo info = info(resource, Revision.HEAD, false);
 		final Revision revision = info.getRevision();
-		final List<SubversionLog> logs = log0(uri, revision, revision);
+		final List<SubversionLog> logs = log(resource, revision, revision);
 		if (logs.isEmpty()) {
 			throw new SubversionException("no logs available");
 		}
@@ -322,7 +314,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		try {
 			return SubversionInfo.readList(in, withCustomProperties, (Depth.FILES != depth));
 		} finally {
-			closeQuiet(in);
+			IOUtils.closeQuietly(in);
 		}
 	}
 
@@ -352,20 +344,14 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	@Override
 	public List<SubversionLog> log(final Path resource) {
-		final URI uri = URI.create(repository + resource.getValue());
-
 		final SubversionInfo info = info(resource, Revision.HEAD, false);
-		return log0(uri, info.getRevision(), Revision.INITIAL);
+		return log(resource, info.getRevision(), Revision.INITIAL);
 	}
 
 	@Override
 	public List<SubversionLog> log(final Path resource, final Revision startRevision, final Revision endRevision) {
 		final URI uri = URI.create(repository + resource.getValue());
 
-		return log0(uri, startRevision, endRevision);
-	}
-
-	protected List<SubversionLog> log0(final URI uri, final Revision startRevision, final Revision endRevision) {
 		final HttpUriRequest request = requestFactory.createLogRequest(uri, startRevision, endRevision);
 		final HttpResponse response = execute(request, false, HttpStatus.SC_OK);
 
@@ -373,7 +359,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		try {
 			return SubversionLog.read(in);
 		} finally {
-			closeQuiet(in);
+			IOUtils.closeQuietly(in);
 		}
 	}
 
@@ -418,7 +404,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		if (content == null) {
 			throw new IllegalArgumentException("content can not be null");
 		}
-		uploadWithProperties0(resource, message, content, (SubversionProperty) null);
+		uploadWithProperties0(resource, message, content);
 	}
 
 	@Override
@@ -429,5 +415,5 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		uploadWithProperties0(resource, message, content, properties);
 	}
 
-	protected abstract void uploadWithProperties0(final Path resource, final String message, @Nullable final InputStream content, @Nullable final SubversionProperty... properties);
+	protected abstract void uploadWithProperties0(final Path resource, final String message, @Nullable final InputStream content, final SubversionProperty... properties);
 }
