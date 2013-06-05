@@ -42,8 +42,9 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 
 	protected void checkout(final UUID uuid) {
 		final URI uri = URI.create(repository + PREFIX_VCC + "default");
+		final URI href = URI.create(repository + PREFIX_ACT + uuid);
 
-		final HttpUriRequest request = requestFactory.createCheckoutRequest(uri, repository + PREFIX_ACT + uuid);
+		final HttpUriRequest request = requestFactory.createCheckoutRequest(uri, href);
 		execute(request, HttpStatus.SC_CREATED);
 	}
 
@@ -57,7 +58,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 		}
 
 		final URI uri = URI.create(repository + PREFIX_WRK + uuid + resource);
-		final URI resourceUri = URI.create(repository + resource.toString());
+		final URI resourceUri = URI.create(repository + resource.getValue());
 
 		final HttpUriRequest request = requestFactory.createUploadRequest(uri, info.getLockToken(), resourceUri, content);
 		execute(request, HttpStatus.SC_CREATED, HttpStatus.SC_NO_CONTENT);
@@ -71,6 +72,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 			final Revision revision = info.getRevision();
 			checkout(uuid);
 			setCommitMessage(uuid, revision, message);
+			createMissingFolders(PREFIX_WRK, uuid.toString(), targetResource.getParent());
 			copy0(srcResource, info.getRevision(), targetResource, uuid);
 			merge(info, uuid);
 		} finally {
@@ -129,7 +131,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 	public InputStream download(final Path resource, final Revision revision) {
 		final URI uri;
 		if (Revision.HEAD.equals(revision)) {
-			uri = URI.create(repository + resource.toString());
+			uri = URI.create(repository + resource.getValue());
 		} else {
 			uri = URI.create(repository + PREFIX_BC + revision + resource);
 		}
@@ -142,7 +144,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 	@Override
 	public URI downloadURI(final Path resource, final Revision revision) {
 		if (Revision.HEAD.equals(revision)) {
-			return URI.create(repository + resource.toString());
+			return URI.create(repository + resource.getValue());
 		}
 		return URI.create(repository + PREFIX_BC + revision + resource);
 	}
@@ -160,7 +162,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 	}
 
 	protected void merge(final SubversionInfo info, final UUID uuid) {
-		final String path = repository.getPath() + PREFIX_ACT + uuid;
+		final Path path = Path.create(repository.getPath() + PREFIX_ACT + uuid);
 		final HttpUriRequest request = requestFactory.createMergeRequest(repository, path, info);
 		execute(request, HttpStatus.SC_OK);
 	}
@@ -183,8 +185,9 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 
 	protected void prepareContentUpload(final Path resource, final UUID uuid, final Revision revision) {
 		final URI uri = URI.create(repository + PREFIX_VER + revision + resource);
+		final URI href = URI.create(repository + PREFIX_ACT + uuid);
 
-		final HttpUriRequest request = requestFactory.createCheckoutRequest(uri, repository + PREFIX_ACT + uuid);
+		final HttpUriRequest request = requestFactory.createCheckoutRequest(uri, href);
 		execute(request, HttpStatus.SC_CREATED);
 	}
 
@@ -204,7 +207,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 		}
 
 		final URI uri = URI.create(repository + PREFIX_WRK + uuid + resource);
-		final URI resourceUri = URI.create(repository + resource.toString());
+		final URI resourceUri = URI.create(repository + resource.getValue());
 
 		final HttpUriRequest request = requestFactory.createRemovePropertiesRequest(uri, info.getLockToken(), resourceUri, filtered);
 		execute(request, HttpStatus.SC_MULTI_STATUS);
@@ -217,7 +220,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 		}
 
 		final URI uri = URI.create(repository + PREFIX_WRK + uuid + resource);
-		final URI resourceUri = URI.create(repository + resource.toString());
+		final URI resourceUri = URI.create(repository + resource.getValue());
 
 		final HttpUriRequest request = requestFactory.createSetPropertiesRequest(uri, info.getLockToken(), resourceUri, filtered);
 		execute(request, HttpStatus.SC_MULTI_STATUS);

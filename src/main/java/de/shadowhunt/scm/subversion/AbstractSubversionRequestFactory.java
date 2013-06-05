@@ -92,7 +92,7 @@ public abstract class AbstractSubversionRequestFactory {
 
 	/**
 	 * Create a new temporary directory for a transaction
-	 * @param uri absolute {@link URI} to perform the request against
+	 * @param uri {@link URI} to perform the request against
 	 * @return {@link HttpUriRequest} creating the new temporary directory for the transaction
 	 */
 	public HttpUriRequest createActivityRequest(final URI uri) {
@@ -103,7 +103,7 @@ public abstract class AbstractSubversionRequestFactory {
 
 	/**
 	 * Perform authentication, with a cheap http request without any payload, the http connection will be authenticated afterwards
-	 * @param uri absolute {@link URI} to perform the request against
+	 * @param uri {@link URI} to perform the request against
 	 * @return {@link HttpUriRequest} performing the authentication
 	 */
 	public HttpUriRequest createAuthRequest(final URI uri) {
@@ -113,27 +113,8 @@ public abstract class AbstractSubversionRequestFactory {
 	}
 
 	/**
-	 * Perform a server side checkout of a resource
-	 * @param uri absolute {@link URI} to perform the request against
-	 * @param path absolute resource-path relative to the repository root
-	 * @return {@link HttpUriRequest} performing a server side checkout of the resource
-	 */
-	public HttpUriRequest createCheckoutRequest(final URI uri, final String path) {
-		final DavTemplateRequest request = new DavTemplateRequest("CHECKOUT");
-		request.setURI(uri);
-
-		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
-		body.append("<checkout xmlns=\"DAV:\"><activity-set><href>");
-		body.append(StringEscapeUtils.escapeXml(path));
-		body.append("</href></activity-set><apply-to-version/></checkout>");
-
-		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
-		return request;
-	}
-
-	/**
 	 * Setting a commit message for the current transaction on a resource
-	 * @param uri absolute {@link URI} to perform the request against
+	 * @param uri {@link URI} to perform the request against
 	 * @param message commit message for the current transaction
 	 * @return {@link HttpUriRequest} setting the commit message for the current transaction on the resource
 	 */
@@ -161,13 +142,12 @@ public abstract class AbstractSubversionRequestFactory {
 		request.addHeader(new BasicHeader("Destination", target.toASCIIString()));
 		request.addHeader(new BasicHeader("Override", "T"));
 		request.setURI(src);
-
 		return request;
 	}
 
 	/**
 	 * Deleting a resource
-	 * @param uri absolute {@link URI} to perform the request against
+	 * @param uri {@link URI} to perform the request against
 	 * @return {@link HttpUriRequest} deleting the resource
 	 */
 	public HttpUriRequest createDeleteRequest(final URI uri) {
@@ -176,7 +156,7 @@ public abstract class AbstractSubversionRequestFactory {
 
 	/**
 	 * Retrieving the content of a resource
-	 * @param uri absolute {@link URI} to perform the request against
+	 * @param uri {@link URI} to perform the request against
 	 * @return {@link HttpUriRequest} retrieving the content of a resource
 	 */
 	public HttpUriRequest createDownloadRequest(final URI uri) {
@@ -185,7 +165,7 @@ public abstract class AbstractSubversionRequestFactory {
 
 	/**
 	 * Check whether a resource exists
-	 * @param uri absolute {@link URI} to perform the request against
+	 * @param uri {@link URI} to perform the request against
 	 * @return {@link HttpUriRequest} checking the existence of the resource
 	 */
 	public HttpUriRequest createExistsRequest(final URI uri) {
@@ -194,7 +174,7 @@ public abstract class AbstractSubversionRequestFactory {
 
 	/**
 	 * Request info on a resource an its child resources (depending on depth parameter)
-	 * @param uri absolute {@link URI} to perform the request against
+	 * @param uri {@link URI} to perform the request against
 	 * @param depth whether to retrieve only for the given resource, its children or only part of its children depending on the value of {@link Depth}
 	 * @return {@link HttpUriRequest} requesting info on the resource
 	 */
@@ -211,7 +191,7 @@ public abstract class AbstractSubversionRequestFactory {
 
 	/**
 	 * Locking a resource
-	 * @param uri absolute {@link URI} to perform the request against
+	 * @param uri {@link URI} to perform the request against
 	 * @return {@link HttpUriRequest} locking the resource
 	 */
 	public HttpUriRequest createLockRequest(final URI uri) {
@@ -227,7 +207,7 @@ public abstract class AbstractSubversionRequestFactory {
 
 	/**
 	 * Request a report containing all properties between startRevision and endRevision
-	 * @param uri absolute {@link URI} to perform the request against
+	 * @param uri {@link URI} to perform the request against
 	 * @param startRevision the first {@link Revision} of the resource to retrieve (including)
 	 * @param endRevision the last {@link Revision} of the resource to retrieve (including)
 	 * @return {@link HttpUriRequest} containing all properties
@@ -249,7 +229,7 @@ public abstract class AbstractSubversionRequestFactory {
 
 	/**
 	 * Creating a new folder
-	 * @param uri absolute {@link URI} to perform the request against
+	 * @param uri {@link URI} to perform the request against
 	 * @return {@link HttpUriRequest} creating the new folder
 	 */
 	public HttpUriRequest createMakeFolderRequest(final URI uri) {
@@ -260,24 +240,24 @@ public abstract class AbstractSubversionRequestFactory {
 
 	/**
 	 * Merge all modifications from previous request
-	 * @param uri absolute {@link URI} to perform the request against
+	 * @param uri {@link URI} to perform the request against
 	 * @param path absolute resource-path relative to the repository root
 	 * @param info current {@link SubversionInfo} for the resource
 	 * @return {@link HttpUriRequest} merging all modifications from previous request
 	 */
-	public HttpUriRequest createMergeRequest(final URI uri, final String path, final SubversionInfo info) {
+	public HttpUriRequest createMergeRequest(final URI uri, final Path path, final SubversionInfo info) {
 		final DavTemplateRequest request = new DavTemplateRequest("MERGE");
 		request.setURI(uri);
 		request.setHeader("X-SVN-Options", "release-locks");
 
 		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
 		body.append("<merge xmlns=\"DAV:\"><source><href>");
-		body.append(StringEscapeUtils.escapeXml(path));
+		body.append(StringEscapeUtils.escapeXml(path.getValue()));
 		body.append("</href></source><no-auto-merge/><no-checkout/><prop><checked-in/><version-name/><resourcetype/><creationdate/><creator-displayname/></prop>");
 		final String token = info.getLockToken();
 		if (token != null) {
 			body.append("<S:lock-token-list xmlns:S=\"svn:\"><S:lock><S:lock-path>");
-			body.append(StringEscapeUtils.escapeXml(info.getPath().toString()));
+			body.append(StringEscapeUtils.escapeXml(info.getPath().getValueWithoutLeadingSeparator()));
 			body.append("</S:lock-path>");
 			body.append("<S:lock-token>");
 			body.append(token);
@@ -290,7 +270,7 @@ public abstract class AbstractSubversionRequestFactory {
 
 	/**
 	 * Remove the given properties form the resource
-	 * @param uri absolute {@link URI} to perform the request against
+	 * @param uri {@link URI} to perform the request against
 	 * @param lockToken if the resource is locked, the lock-token is used to approve the request, can be {@code null} if the resource is not locked, or if no implicit approval is desired
 	 * @param lockTokenTarget the {@link URI} to the resource that has been locked, can be {@code null} if no lockToken is specified
 	 * @param properties properties {@link SubversionProperty} to remove
@@ -319,7 +299,7 @@ public abstract class AbstractSubversionRequestFactory {
 
 	/**
 	 * Set the given properties for the resource (new properties will be added, existing properties will be overridden)
-	 * @param uri absolute {@link URI} to perform the request against
+	 * @param uri {@link URI} to perform the request against
 	 * @param lockToken if the resource is locked, the lock-token is used to approve the request, can be {@code null} if the resource is not locked, or if no implicit approval is desired
 	 * @param lockTokenTarget the {@link URI} to the resource that has been locked, can be {@code null} if no lockToken is specified
 	 * @param properties {@link SubversionProperty} to add or override
@@ -355,7 +335,7 @@ public abstract class AbstractSubversionRequestFactory {
 
 	/**
 	 * Unlocking a resource
-	 * @param uri absolute {@link URI} to perform the request against
+	 * @param uri {@link URI} to perform the request against
 	 * @param lockToken to unlock the resource the lock-token that was generated during the lock request must be provided
 	 * @return {@link HttpUriRequest} unlocking the resource
 	 */
@@ -368,7 +348,7 @@ public abstract class AbstractSubversionRequestFactory {
 
 	/**
 	 * Upload content to a resource
-	 * @param uri absolute {@link URI} to perform the request against
+	 * @param uri {@link URI} to perform the request against
 	 * @param lockToken if the resource is locked, the lock-token is used to approve the request, can be {@code null} if the resource is not locked, or if no implicit approval is desired
 	 * @param lockTokenTarget the {@link URI} to the resource that has been locked, can be {@code null} if no lockToken is specified
 	 * @param content {@link InputStream} from which the content will be read (will be closed after transfer)

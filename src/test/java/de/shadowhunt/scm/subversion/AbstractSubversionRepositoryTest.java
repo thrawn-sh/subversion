@@ -32,21 +32,4 @@ public class AbstractSubversionRepositoryTest {
 		Assert.assertEquals("NTLM default domain", new NTCredentials(user, password, workstation, ""), AbstractSubversionRepository.creteCredentials(user, password, workstation));
 		Assert.assertEquals("NTLM domain", new NTCredentials(user, password, workstation, domain), AbstractSubversionRepository.creteCredentials(domainUser, password, workstation));
 	}
-
-	@Test
-	public void normalizeResourceTest() {
-		Assert.assertEquals("empty resource", "/", "");
-
-		Assert.assertEquals("root resource", "/", "/");
-
-		Assert.assertEquals("relative resource", "/foo/bar", "foo/bar");
-		Assert.assertEquals("relative resource with tailing", "/foo/bar", "foo/bar/");
-
-		Assert.assertEquals("absolute resource", "/foo/bar", "/foo/bar");
-		Assert.assertEquals("absolute resource with tailing", "/foo/bar", "/foo/bar/");
-
-		Assert.assertEquals("multiple separatpor within", "/foo/bar", "foo//bar");
-		Assert.assertEquals("multiple separatpor beginning", "/foo/bar", "//foo/bar");
-		Assert.assertEquals("multiple separatpor ending", "/foo/bar", "/foo/bar//");
-	}
 }

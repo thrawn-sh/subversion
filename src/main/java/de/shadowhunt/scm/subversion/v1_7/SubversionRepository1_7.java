@@ -45,7 +45,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		}
 
 		final URI uri = URI.create(repository + PREFIX_TXR + uuid + resource);
-		final URI resourceUri = URI.create(repository + resource.toString());
+		final URI resourceUri = URI.create(repository + resource.getValue());
 
 		final HttpUriRequest request = requestFactory.createUploadRequest(uri, info.getLockToken(), resourceUri, content);
 		execute(request, HttpStatus.SC_CREATED, HttpStatus.SC_NO_CONTENT);
@@ -56,7 +56,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		final SubversionInfo info = info(srcResource, srcRevision, false);
 		final String uuid = prepareTransaction();
 		setCommitMessage(uuid, message);
-		// TODO create folders
+		createMissingFolders(PREFIX_TXR, uuid, targetResource.getParent());
 		copy0(srcResource, info.getRevision(), targetResource, uuid);
 		merge(info, uuid);
 	}
@@ -96,7 +96,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 	public InputStream download(final Path resource, final Revision revision) {
 		final URI uri;
 		if (Revision.HEAD.equals(revision)) {
-			uri = URI.create(repository + resource.toString());
+			uri = URI.create(repository + resource.getValue());
 		} else {
 			uri = URI.create(repository + PREFIX_RVR + revision + resource);
 		}
@@ -109,7 +109,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 	@Override
 	public URI downloadURI(final Path resource, final Revision revision) {
 		if (Revision.HEAD.equals(revision)) {
-			return URI.create(repository + resource.toString());
+			return URI.create(repository + resource.getValue());
 		}
 		return URI.create(repository + PREFIX_RVR + revision + resource);
 	}
@@ -121,7 +121,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 	}
 
 	protected void merge(final SubversionInfo info, final String uuid) {
-		final String path = repository.getPath() + PREFIX_TXN + uuid;
+		final Path path = Path.create(repository.getPath() + PREFIX_TXN + uuid);
 		final HttpUriRequest request = requestFactory.createMergeRequest(repository, path, info);
 		execute(request, HttpStatus.SC_OK);
 	}
@@ -152,7 +152,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		}
 
 		final URI uri = URI.create(repository + PREFIX_TXR + uuid + resource);
-		final URI resourceUri = URI.create(repository + resource.toString());
+		final URI resourceUri = URI.create(repository + resource.getValue());
 
 		final HttpUriRequest request = requestFactory.createRemovePropertiesRequest(uri, info.getLockToken(), resourceUri, filtered);
 		execute(request, HttpStatus.SC_MULTI_STATUS);
@@ -165,7 +165,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		}
 
 		final URI uri = URI.create(repository + PREFIX_TXR + uuid + resource);
-		final URI resourceUri = URI.create(repository + resource.toString());
+		final URI resourceUri = URI.create(repository + resource.getValue());
 
 		final HttpUriRequest request = requestFactory.createSetPropertiesRequest(uri, info.getLockToken(), resourceUri, filtered);
 		execute(request, HttpStatus.SC_MULTI_STATUS);

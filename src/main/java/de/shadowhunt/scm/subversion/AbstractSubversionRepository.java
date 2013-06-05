@@ -185,7 +185,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	}
 
 	protected Path createMissingFolders(final String prefix, final String uuid, final Path resource) {
-		final String[] resourceParts = resource.toString().split("/");
+		final String[] resourceParts = resource.getValue().split("/");
 
 		String infoResource = "/";
 		final StringBuilder partial = new StringBuilder();
@@ -243,7 +243,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	}
 
 	protected boolean exists0(final Path resource) {
-		final URI uri = URI.create(repository + resource.toString());
+		final URI uri = URI.create(repository + resource.getValue());
 
 		final HttpUriRequest request = requestFactory.createExistsRequest(uri);
 		final HttpResponse response = execute(request, /* found */HttpStatus.SC_OK, /* not found */HttpStatus.SC_NOT_FOUND);
@@ -285,7 +285,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	@Override
 	public SubversionLog lastLog(final Path resource) {
-		final URI uri = URI.create(repository + resource.toString());
+		final URI uri = URI.create(repository + resource.getValue());
 
 		final SubversionInfo info = info(resource, Revision.HEAD, false);
 		final Revision revision = info.getRevision();
@@ -344,7 +344,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	@Override
 	public void lock(final Path resource) {
-		final URI uri = URI.create(repository + resource.toString());
+		final URI uri = URI.create(repository + resource.getValue());
 
 		final HttpUriRequest request = requestFactory.createLockRequest(uri);
 		execute(request, HttpStatus.SC_OK);
@@ -352,7 +352,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	@Override
 	public List<SubversionLog> log(final Path resource) {
-		final URI uri = URI.create(repository + resource.toString());
+		final URI uri = URI.create(repository + resource.getValue());
 
 		final SubversionInfo info = info(resource, Revision.HEAD, false);
 		return log0(uri, info.getRevision(), Revision.INITIAL);
@@ -360,7 +360,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	@Override
 	public List<SubversionLog> log(final Path resource, final Revision startRevision, final Revision endRevision) {
-		final URI uri = URI.create(repository + resource.toString());
+		final URI uri = URI.create(repository + resource.getValue());
 
 		return log0(uri, startRevision, endRevision);
 	}
@@ -407,7 +407,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		if (lockToken == null) {
 			return;
 		}
-		final URI uri = URI.create(repository + resource.toString());
+		final URI uri = URI.create(repository + resource.getValue());
 
 		final HttpUriRequest request = requestFactory.createUnlockRequest(uri, lockToken);
 		execute(request, HttpStatus.SC_NO_CONTENT);

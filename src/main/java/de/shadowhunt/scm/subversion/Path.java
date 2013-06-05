@@ -4,8 +4,16 @@ import org.apache.commons.lang3.StringUtils;
 
 public final class Path implements Comparable<Path> {
 
+	/**
+	 * Represents the base {@link Path} in the repository
+	 */
 	public static final Path ROOT = new Path("/");
 
+	/**
+	 * Create a new {@link Path} instance for the given value
+	 * @param path value of the {@link Path}
+	 * @return the new {@link Path} instance with the given value
+	 */
 	public static Path create(final String path) {
 		if (StringUtils.isEmpty(path) || "/".equals(path)) {
 			return ROOT;
@@ -56,11 +64,19 @@ public final class Path implements Comparable<Path> {
 	}
 
 	public Path getParent() {
-		final int indexOf = value.indexOf('/');
+		final int indexOf = value.lastIndexOf('/');
 		if (indexOf == 0) {
 			return ROOT; // parent of root is root
 		}
 		return new Path(value.substring(0, indexOf));
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public String getValueWithoutLeadingSeparator() {
+		return value.substring(1);
 	}
 
 	@Override
