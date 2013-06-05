@@ -201,12 +201,6 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	}
 
 	@Override
-	public abstract void delete(final Path resource, final String message);
-
-	@Override
-	public abstract void deleteProperties(final Path resource, final String message, final SubversionProperty... properties);
-
-	@Override
 	public InputStream download(final Path resource) {
 		return download(resource, Revision.HEAD);
 	}
