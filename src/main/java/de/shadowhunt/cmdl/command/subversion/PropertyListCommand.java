@@ -26,7 +26,7 @@ public class PropertyListCommand extends AbstractInfoCommand {
 
 		final SubversionProperty[] customProperties = info.getCustomProperties();
 		if (customProperties.length > 0) {
-			out.println("Properties on '" + info.getRelativePath() + "':");
+			out.println("Properties on '" + info.getPath() + "':");
 			for (final SubversionProperty property : customProperties) {
 				out.println("  " + property.getName());
 			}

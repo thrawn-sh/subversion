@@ -14,6 +14,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 
 import de.shadowhunt.scm.subversion.AbstractSubversionRepository;
 import de.shadowhunt.scm.subversion.Depth;
+import de.shadowhunt.scm.subversion.Path;
 import de.shadowhunt.scm.subversion.Revision;
 import de.shadowhunt.scm.subversion.SubversionInfo;
 import de.shadowhunt.scm.subversion.SubversionProperty;
@@ -46,7 +47,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 		execute(request, HttpStatus.SC_CREATED);
 	}
 
-	protected void contentUpload(final String normalizedResource, final SubversionInfo info, final UUID uuid, @Nullable final InputStream content) {
+	protected void contentUpload(final Path resource, final SubversionInfo info, final UUID uuid, @Nullable final InputStream content) {
 		if (content == null) {
 			return;
 		}
@@ -55,74 +56,69 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 			triggerAuthentication();
 		}
 
-		final URI uri = URI.create(repository + PREFIX_WRK + uuid + normalizedResource);
-		final URI resourceUri = URI.create(repository + normalizedResource);
+		final URI uri = URI.create(repository + PREFIX_WRK + uuid + resource);
+		final URI resourceUri = URI.create(repository + resource.toString());
 
 		final HttpUriRequest request = requestFactory.createUploadRequest(uri, info.getLockToken(), resourceUri, content);
 		execute(request, HttpStatus.SC_CREATED, HttpStatus.SC_NO_CONTENT);
 	}
 
 	@Override
-	public void copy(final String srcResource, final Revision srcRevision, final String targetResource, final String message) {
+	public void copy(final Path srcResource, final Revision srcRevision, final Path targetResource, final String message) {
 		final UUID uuid = prepareTransaction();
 		try {
-			final String normalizeSourceResource = normalizeResource(srcResource);
-			final String normalizeTargetResource = normalizeResource(targetResource);
-
-			final SubversionInfo info = info0(normalizeSourceResource, srcRevision, false);
+			final SubversionInfo info = info(srcResource, srcRevision, false);
 			final Revision revision = info.getRevision();
 			checkout(uuid);
 			setCommitMessage(uuid, revision, message);
-			copy0(normalizeSourceResource, info.getRevision(), normalizeTargetResource, uuid);
+			copy0(srcResource, info.getRevision(), targetResource, uuid);
 			merge(info, uuid);
 		} finally {
 			endTransaction(uuid);
 		}
 	}
 
-	protected void copy0(final String normalizeSourceResource, final Revision srcRevision, final String normalizeTargetResource, final UUID uuid) {
-		final URI src = URI.create(repository + PREFIX_BC + srcRevision + normalizeSourceResource);
-		final URI target = URI.create(repository + PREFIX_WRK + uuid + normalizeTargetResource);
+	protected void copy0(final Path srcResource, final Revision srcRevision, final Path targetResource, final UUID uuid) {
+		final URI src = URI.create(repository + PREFIX_BC + srcRevision + srcResource);
+		final URI target = URI.create(repository + PREFIX_WRK + uuid + targetResource);
 		final HttpUriRequest request = requestFactory.createCopyRequest(src, target);
 		execute(request, HttpStatus.SC_CREATED);
 	}
 
 	@Override
-	public void delete(final String resource, final String message) {
-		final String normalizedResource = normalizeResource(resource);
-		final SubversionInfo info = info0(normalizedResource, Revision.HEAD, false);
+	public void delete(final Path resource, final String message) {
+		final SubversionInfo info = info(resource, Revision.HEAD, false);
 		final Revision revision = info.getRevision();
 
 		final UUID uuid = prepareTransaction();
 		try {
 			checkout(uuid);
 			setCommitMessage(uuid, revision, message);
-			prepareContentUpload(normalizedResource, uuid, revision);
-			delete(normalizedResource, uuid);
+			prepareContentUpload(resource, uuid, revision);
+			delete(resource, uuid);
 			merge(info, uuid);
 		} finally {
 			endTransaction(uuid);
 		}
 	}
 
-	protected void delete(final String normalizedResource, final UUID uuid) {
-		final URI uri = URI.create(repository + PREFIX_WRK + uuid + normalizedResource);
+	protected void delete(final Path resource, final UUID uuid) {
+		final URI uri = URI.create(repository + PREFIX_WRK + uuid + resource);
 		final HttpUriRequest request = requestFactory.createDeleteRequest(uri);
 		execute(request, HttpStatus.SC_NO_CONTENT);
 	}
 
 	@Override
-	public void deleteProperties(final String resource, final String message, final SubversionProperty... properties) {
-		final String normalizedResource = normalizeResource(resource);
-		final SubversionInfo info = info0(normalizedResource, Revision.HEAD, false);
+	public void deleteProperties(final Path resource, final String message, final SubversionProperty... properties) {
+		final SubversionInfo info = info(resource, Revision.HEAD, false);
 		final Revision revision = info.getRevision();
 
 		final UUID uuid = prepareTransaction();
 		try {
 			checkout(uuid);
 			setCommitMessage(uuid, revision, message);
-			prepareContentUpload(normalizedResource, uuid, revision);
-			propertiesRemove(normalizedResource, info, uuid, properties);
+			prepareContentUpload(resource, uuid, revision);
+			propertiesRemove(resource, info, uuid, properties);
 			merge(info, uuid);
 		} finally {
 			endTransaction(uuid);
@@ -130,12 +126,12 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 	}
 
 	@Override
-	protected InputStream download0(final String normalizedResource, final Revision revision) {
+	public InputStream download(final Path resource, final Revision revision) {
 		final URI uri;
 		if (Revision.HEAD.equals(revision)) {
-			uri = URI.create(repository + normalizedResource);
+			uri = URI.create(repository + resource.toString());
 		} else {
-			uri = URI.create(repository + PREFIX_BC + revision + normalizedResource);
+			uri = URI.create(repository + PREFIX_BC + revision + resource);
 		}
 
 		final HttpUriRequest request = requestFactory.createDownloadRequest(uri);
@@ -144,11 +140,11 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 	}
 
 	@Override
-	protected URI downloadURI0(final String normalizedResource, final Revision revision) {
+	public URI downloadURI(final Path resource, final Revision revision) {
 		if (Revision.HEAD.equals(revision)) {
-			return URI.create(repository + normalizedResource);
+			return URI.create(repository + resource.toString());
 		}
-		return URI.create(repository + PREFIX_BC + revision + normalizedResource);
+		return URI.create(repository + PREFIX_BC + revision + resource);
 	}
 
 	protected void endTransaction(final UUID uuid) {
@@ -158,9 +154,9 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 	}
 
 	@Override
-	protected List<SubversionInfo> list0(final String normalizedResource, final Revision revision, final Depth depth, final boolean withCustomProperties) {
+	public List<SubversionInfo> list(final Path resource, final Revision revision, final Depth depth, final boolean withCustomProperties) {
 		final String uriPrefix = repository + PREFIX_BC + revision;
-		return list(uriPrefix, normalizedResource, depth, withCustomProperties);
+		return list(uriPrefix, resource, depth, withCustomProperties);
 	}
 
 	protected void merge(final SubversionInfo info, final UUID uuid) {
@@ -170,26 +166,23 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 	}
 
 	@Override
-	public void move(final String srcResource, final String targetResource, final String message) {
+	public void move(final Path srcResource, final Path targetResource, final String message) {
 		final UUID uuid = prepareTransaction();
 		try {
-			final String normalizeSourceResource = normalizeResource(srcResource);
-			final String normalizeTargetResource = normalizeResource(targetResource);
-
-			final SubversionInfo info = info0(normalizeSourceResource, Revision.HEAD, false);
+			final SubversionInfo info = info(srcResource, Revision.HEAD, false);
 			final Revision revision = info.getRevision();
 			checkout(uuid);
 			setCommitMessage(uuid, revision, message);
-			copy0(normalizeSourceResource, info.getRevision(), normalizeTargetResource, uuid);
-			delete(normalizeSourceResource, uuid);
+			copy0(srcResource, info.getRevision(), targetResource, uuid);
+			delete(srcResource, uuid);
 			merge(info, uuid);
 		} finally {
 			endTransaction(uuid);
 		}
 	}
 
-	protected void prepareContentUpload(final String normalizedResource, final UUID uuid, final Revision revision) {
-		final URI uri = URI.create(repository + PREFIX_VER + revision + normalizedResource);
+	protected void prepareContentUpload(final Path resource, final UUID uuid, final Revision revision) {
+		final URI uri = URI.create(repository + PREFIX_VER + revision + resource);
 
 		final HttpUriRequest request = requestFactory.createCheckoutRequest(uri, repository + PREFIX_ACT + uuid);
 		execute(request, HttpStatus.SC_CREATED);
@@ -204,27 +197,27 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 		return uuid;
 	}
 
-	protected void propertiesRemove(final String normalizedResource, final SubversionInfo info, final UUID uuid, final SubversionProperty... properties) {
+	protected void propertiesRemove(final Path resource, final SubversionInfo info, final UUID uuid, final SubversionProperty... properties) {
 		final SubversionProperty[] filtered = SubversionProperty.filteroutSystemProperties(properties);
 		if (filtered.length == 0) {
 			return;
 		}
 
-		final URI uri = URI.create(repository + PREFIX_WRK + uuid + normalizedResource);
-		final URI resourceUri = URI.create(repository + normalizedResource);
+		final URI uri = URI.create(repository + PREFIX_WRK + uuid + resource);
+		final URI resourceUri = URI.create(repository + resource.toString());
 
 		final HttpUriRequest request = requestFactory.createRemovePropertiesRequest(uri, info.getLockToken(), resourceUri, filtered);
 		execute(request, HttpStatus.SC_MULTI_STATUS);
 	}
 
-	protected void propertiesSet(final String normalizedResource, final SubversionInfo info, final UUID uuid, @Nullable final SubversionProperty... properties) {
+	protected void propertiesSet(final Path resource, final SubversionInfo info, final UUID uuid, @Nullable final SubversionProperty... properties) {
 		final SubversionProperty[] filtered = SubversionProperty.filteroutSystemProperties(properties);
 		if (filtered.length == 0) {
 			return;
 		}
 
-		final URI uri = URI.create(repository + PREFIX_WRK + uuid + normalizedResource);
-		final URI resourceUri = URI.create(repository + normalizedResource);
+		final URI uri = URI.create(repository + PREFIX_WRK + uuid + resource);
+		final URI resourceUri = URI.create(repository + resource.toString());
 
 		final HttpUriRequest request = requestFactory.createSetPropertiesRequest(uri, info.getLockToken(), resourceUri, filtered);
 		execute(request, HttpStatus.SC_MULTI_STATUS);
@@ -239,26 +232,26 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 	}
 
 	@Override
-	protected void uploadWithProperties0(final String normalizedResource, final String message, @Nullable final InputStream content, @Nullable final SubversionProperty... properties) {
+	protected void uploadWithProperties0(final Path resource, final String message, @Nullable final InputStream content, @Nullable final SubversionProperty... properties) {
 		final UUID uuid = prepareTransaction();
 		try {
-			final boolean exists = exists0(normalizedResource);
-			final String infoResource;
+			final boolean exists = exists0(resource);
+			final Path infoResource;
 			if (exists) {
-				infoResource = normalizedResource;
+				infoResource = resource;
 			} else {
-				infoResource = createMissingFolders(PREFIX_WRK, uuid.toString(), normalizedResource);
+				infoResource = createMissingFolders(PREFIX_WRK, uuid.toString(), resource);
 			}
 
-			final SubversionInfo info = info0(infoResource, Revision.HEAD, false);
+			final SubversionInfo info = info(infoResource, Revision.HEAD, false);
 			final Revision revision = info.getRevision();
 			checkout(uuid);
 			setCommitMessage(uuid, revision, message);
 			if (exists) {
-				prepareContentUpload(normalizedResource, uuid, revision);
+				prepareContentUpload(resource, uuid, revision);
 			}
-			contentUpload(normalizedResource, info, uuid, content);
-			propertiesSet(normalizedResource, info, uuid, properties);
+			contentUpload(resource, info, uuid, content);
+			propertiesSet(resource, info, uuid, properties);
 			merge(info, uuid);
 		} finally {
 			endTransaction(uuid);

@@ -14,6 +14,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 import de.shadowhunt.cmdl.command.Command;
+import de.shadowhunt.scm.subversion.Path;
 import de.shadowhunt.scm.subversion.ServerVersion;
 import de.shadowhunt.scm.subversion.SubversionFactory;
 import de.shadowhunt.scm.subversion.SubversionRepository;
@@ -55,10 +56,10 @@ abstract class AbstractCommand implements Command {
 				+ Arrays.toString(ServerVersion.values()));
 	}
 
-	protected static final String getTargetResource(final CommandLine cmdl) {
+	protected static final Path getTargetResource(final CommandLine cmdl) {
 		final String[] args = cmdl.getArgs();
 		if (args.length > 0) {
-			return args[args.length - 1];
+			return Path.create(args[args.length - 1]);
 		}
 		return null;
 	}

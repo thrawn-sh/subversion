@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 
 import org.apache.commons.cli.CommandLine;
 
+import de.shadowhunt.scm.subversion.Path;
 import de.shadowhunt.scm.subversion.SubversionRepository;
 
 /**
@@ -22,7 +23,7 @@ public class LockCommand extends AbstractCommand {
 	@Override
 	protected void execute0(final CommandLine cmdl) throws Exception {
 		final SubversionRepository repositry = createRepository(cmdl);
-		final String resource = getTargetResource(cmdl);
+		final Path resource = getTargetResource(cmdl);
 		repositry.lock(resource);
 		final String user = getUser(cmdl);
 		out.println("'" + resource + "' locked by user '" + user + "'.");

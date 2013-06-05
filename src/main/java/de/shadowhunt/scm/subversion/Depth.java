@@ -1,7 +1,7 @@
 package de.shadowhunt.scm.subversion;
 
 /**
- * {code Depth} defines the recursion level for the listing call {@link SubversionRepository #list(String, Depth, boolean)}
+ * {code Depth} defines the recursion level for the listing call {@link SubversionRepository #list(Path, Depth, boolean)}
  */
 public enum Depth {
 

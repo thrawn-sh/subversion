@@ -61,7 +61,8 @@ public class SubversionInfo {
 			}
 
 			if ("baseline-relative-path".equals(name)) {
-				current.setRelativePath(getText());
+				final Path path = Path.create(getText());
+				current.setPath(path);
 				return;
 			}
 
@@ -155,13 +156,13 @@ public class SubversionInfo {
 	private static final SubversionProperty[] EMPTY = new SubversionProperty[0];
 
 	/**
-	 * {@link Comparator} orders {@link SubversionInfo}s by their relative path
+	 * {@link Comparator} orders {@link SubversionInfo}s by their relative {@link Path}
 	 */
 	public static final Comparator<SubversionInfo> PATH_COMPARATOR = new Comparator<SubversionInfo>() {
 
 		@Override
 		public int compare(final SubversionInfo si1, final SubversionInfo si2) {
-			return si1.getRelativePath().compareTo(si2.getRelativePath());
+			return si1.getPath().compareTo(si2.getPath());
 		}
 	};
 
@@ -209,7 +210,7 @@ public class SubversionInfo {
 
 	private String md5;
 
-	private String relativePath;
+	private Path path;
 
 	private String repositoryUuid;
 
@@ -233,38 +234,11 @@ public class SubversionInfo {
 			return false;
 		}
 		final SubversionInfo other = (SubversionInfo) obj;
-		if (!Arrays.equals(customProperties, other.customProperties)) {
-			return false;
-		}
-		if (directory != other.directory) {
-			return false;
-		}
-		if (lockOwner == null) {
-			if (other.lockOwner != null) {
+		if (path == null) {
+			if (other.path != null) {
 				return false;
 			}
-		} else if (!lockOwner.equals(other.lockOwner)) {
-			return false;
-		}
-		if (lockToken == null) {
-			if (other.lockToken != null) {
-				return false;
-			}
-		} else if (!lockToken.equals(other.lockToken)) {
-			return false;
-		}
-		if (md5 == null) {
-			if (other.md5 != null) {
-				return false;
-			}
-		} else if (!md5.equals(other.md5)) {
-			return false;
-		}
-		if (relativePath == null) {
-			if (other.relativePath != null) {
-				return false;
-			}
-		} else if (!relativePath.equals(other.relativePath)) {
+		} else if (!path.equals(other.path)) {
 			return false;
 		}
 		if (repositoryUuid == null) {
@@ -279,13 +253,6 @@ public class SubversionInfo {
 				return false;
 			}
 		} else if (!revision.equals(other.revision)) {
-			return false;
-		}
-		if (root == null) {
-			if (other.root != null) {
-				return false;
-			}
-		} else if (!root.equals(other.root)) {
 			return false;
 		}
 		return true;
@@ -327,11 +294,11 @@ public class SubversionInfo {
 	}
 
 	/**
-	 * Returns a relative path of the resource (relative to the root of the repository)
-	 * @return the relative path of the resource (relative to the root of the repository)
+	 * Returns a {@link Path} of the resource (relative to the root of the repository)
+	 * @return the {@link Path} of the resource (relative to the root of the repository)
 	 */
-	public String getRelativePath() {
-		return relativePath;
+	public Path getPath() {
+		return path;
 	}
 
 	/**
@@ -377,15 +344,9 @@ public class SubversionInfo {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = (prime * result) + Arrays.hashCode(customProperties);
-		result = (prime * result) + (directory ? 1231 : 1237);
-		result = (prime * result) + ((lockOwner == null) ? 0 : lockOwner.hashCode());
-		result = (prime * result) + ((lockToken == null) ? 0 : lockToken.hashCode());
-		result = (prime * result) + ((md5 == null) ? 0 : md5.hashCode());
-		result = (prime * result) + ((relativePath == null) ? 0 : relativePath.hashCode());
+		result = (prime * result) + ((path == null) ? 0 : path.hashCode());
 		result = (prime * result) + ((repositoryUuid == null) ? 0 : repositoryUuid.hashCode());
 		result = (prime * result) + ((revision == null) ? 0 : revision.hashCode());
-		result = (prime * result) + ((root == null) ? 0 : root.hashCode());
 		return result;
 	}
 
@@ -441,8 +402,8 @@ public class SubversionInfo {
 		this.md5 = md5;
 	}
 
-	void setRelativePath(final String relativePath) {
-		this.relativePath = relativePath;
+	void setPath(final Path path) {
+		this.path = path;
 	}
 
 	void setRepositoryUuid(final String repositoryUuid) {
@@ -470,14 +431,14 @@ public class SubversionInfo {
 		builder.append(lockToken);
 		builder.append(", md5=");
 		builder.append(md5);
+		builder.append(", path=");
+		builder.append(path);
 		builder.append(", repositoryUuid=");
 		builder.append(repositoryUuid);
 		builder.append(", revision=");
 		builder.append(revision);
 		builder.append(", root=");
 		builder.append(root);
-		builder.append(", relativePath=");
-		builder.append(relativePath);
 		builder.append("]");
 		return builder.toString();
 	}

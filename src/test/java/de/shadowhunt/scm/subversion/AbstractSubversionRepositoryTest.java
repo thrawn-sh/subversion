@@ -35,18 +35,18 @@ public class AbstractSubversionRepositoryTest {
 
 	@Test
 	public void normalizeResourceTest() {
-		Assert.assertEquals("empty resource", "/", AbstractSubversionRepository.normalizeResource(""));
+		Assert.assertEquals("empty resource", "/", "");
 
-		Assert.assertEquals("root resource", "/", AbstractSubversionRepository.normalizeResource("/"));
+		Assert.assertEquals("root resource", "/", "/");
 
-		Assert.assertEquals("relative resource", "/foo/bar", AbstractSubversionRepository.normalizeResource("foo/bar"));
-		Assert.assertEquals("relative resource with tailing", "/foo/bar", AbstractSubversionRepository.normalizeResource("foo/bar/"));
+		Assert.assertEquals("relative resource", "/foo/bar", "foo/bar");
+		Assert.assertEquals("relative resource with tailing", "/foo/bar", "foo/bar/");
 
-		Assert.assertEquals("absolute resource", "/foo/bar", AbstractSubversionRepository.normalizeResource("/foo/bar"));
-		Assert.assertEquals("absolute resource with tailing", "/foo/bar", AbstractSubversionRepository.normalizeResource("/foo/bar/"));
+		Assert.assertEquals("absolute resource", "/foo/bar", "/foo/bar");
+		Assert.assertEquals("absolute resource with tailing", "/foo/bar", "/foo/bar/");
 
-		Assert.assertEquals("multiple separatpor within", "/foo/bar", AbstractSubversionRepository.normalizeResource("foo//bar"));
-		Assert.assertEquals("multiple separatpor beginning", "/foo/bar", AbstractSubversionRepository.normalizeResource("//foo/bar"));
-		Assert.assertEquals("multiple separatpor ending", "/foo/bar", AbstractSubversionRepository.normalizeResource("/foo/bar//"));
+		Assert.assertEquals("multiple separatpor within", "/foo/bar", "foo//bar");
+		Assert.assertEquals("multiple separatpor beginning", "/foo/bar", "//foo/bar");
+		Assert.assertEquals("multiple separatpor ending", "/foo/bar", "/foo/bar//");
 	}
 }

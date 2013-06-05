@@ -210,28 +210,6 @@ public abstract class AbstractSubversionRequestFactory {
 	}
 
 	/**
-	 * Request a report containing all changed resources between startRevision and endRevision
-	 * @param uri absolute {@link URI} to perform the request against
-	 * @param startRevision the first {@link Revision} of the resource to retrieve (including)
-	 * @param endRevision the last {@link Revision} of the resource to retrieve (including)
-	 * @return {@link HttpUriRequest} containing all changed resources
-	 */
-	public HttpUriRequest createLabelsRequest(final URI uri, final Revision startRevision, final Revision endRevision) {
-		final DavTemplateRequest request = new DavTemplateRequest("REPORT");
-		request.setURI(uri);
-
-		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
-		body.append("<log-report xmlns=\"svn:\"><start-revision>");
-		body.append(startRevision);
-		body.append("</start-revision><end-revision>");
-		body.append(endRevision);
-		body.append("</end-revision><discover-changed-paths/><no-revprops/><include-merged-revisions/><path/></log-report>");
-
-		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
-		return request;
-	}
-
-	/**
 	 * Locking a resource
 	 * @param uri absolute {@link URI} to perform the request against
 	 * @return {@link HttpUriRequest} locking the resource
@@ -263,7 +241,7 @@ public abstract class AbstractSubversionRequestFactory {
 		body.append(startRevision);
 		body.append("</start-revision><end-revision>");
 		body.append(endRevision);
-		body.append("</end-revision><encode-binary-props/><all-revprops/><path/></log-report>");
+		body.append("</end-revision><discover-changed-paths/><encode-binary-props/><all-revprops/><path/></log-report>");
 
 		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
 		return request;
@@ -299,7 +277,7 @@ public abstract class AbstractSubversionRequestFactory {
 		final String token = info.getLockToken();
 		if (token != null) {
 			body.append("<S:lock-token-list xmlns:S=\"svn:\"><S:lock><S:lock-path>");
-			body.append(StringEscapeUtils.escapeXml(info.getRelativePath()));
+			body.append(StringEscapeUtils.escapeXml(info.getPath().toString()));
 			body.append("</S:lock-path>");
 			body.append("<S:lock-token>");
 			body.append(token);

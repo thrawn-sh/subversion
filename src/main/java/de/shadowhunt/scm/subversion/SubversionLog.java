@@ -41,6 +41,11 @@ public class SubversionLog {
 				return;
 			}
 
+			if ("added-path".equals(name) || "modified-path".equals(name)) {
+				final Path path = Path.create(getText());
+				current.setPath(path);
+			}
+
 			if ("comment".equals(name)) {
 				current.setComment(getText());
 				return;
@@ -105,6 +110,8 @@ public class SubversionLog {
 
 	private Date date;
 
+	private Path path;
+
 	private Revision revision;
 
 	private String user;
@@ -125,18 +132,11 @@ public class SubversionLog {
 			return false;
 		}
 		final SubversionLog other = (SubversionLog) obj;
-		if (comment == null) {
-			if (other.comment != null) {
+		if (path == null) {
+			if (other.path != null) {
 				return false;
 			}
-		} else if (!comment.equals(other.comment)) {
-			return false;
-		}
-		if (date == null) {
-			if (other.date != null) {
-				return false;
-			}
-		} else if (!date.equals(other.date)) {
+		} else if (!path.equals(other.path)) {
 			return false;
 		}
 		if (revision == null) {
@@ -144,13 +144,6 @@ public class SubversionLog {
 				return false;
 			}
 		} else if (!revision.equals(other.revision)) {
-			return false;
-		}
-		if (user == null) {
-			if (other.user != null) {
-				return false;
-			}
-		} else if (!user.equals(other.user)) {
 			return false;
 		}
 		return true;
@@ -170,6 +163,10 @@ public class SubversionLog {
 	 */
 	public Date getDate() {
 		return new Date(date.getTime());
+	}
+
+	public Path getPath() {
+		return path;
 	}
 
 	/**
@@ -192,10 +189,8 @@ public class SubversionLog {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = (prime * result) + ((comment == null) ? 0 : comment.hashCode());
-		result = (prime * result) + ((date == null) ? 0 : date.hashCode());
+		result = (prime * result) + ((path == null) ? 0 : path.hashCode());
 		result = (prime * result) + ((revision == null) ? 0 : revision.hashCode());
-		result = (prime * result) + ((user == null) ? 0 : user.hashCode());
 		return result;
 	}
 
@@ -205,6 +200,10 @@ public class SubversionLog {
 
 	void setDate(final Date date) {
 		this.date = new Date(date.getTime());
+	}
+
+	void setPath(final Path path) {
+		this.path = path;
 	}
 
 	void setRevision(final Revision revision) {
@@ -222,6 +221,8 @@ public class SubversionLog {
 		builder.append(comment);
 		builder.append(", date=");
 		builder.append(date);
+		builder.append(", path=");
+		builder.append(path);
 		builder.append(", revision=");
 		builder.append(revision);
 		builder.append(", user=");

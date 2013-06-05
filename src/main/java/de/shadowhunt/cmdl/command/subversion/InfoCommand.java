@@ -23,7 +23,7 @@ public class InfoCommand extends AbstractInfoCommand {
 	protected void execute0(final CommandLine cmdl) throws Exception {
 		final SubversionInfo info = getInfo(cmdl);
 
-		out.println("Path: " + info.getRelativePath());
+		out.println("Path: " + info.getPath());
 		out.println("Repository Root: " + info.getRoot());
 		out.println("Repository UUID:" + info.getRepositoryUuid());
 		out.println("Revision: " + info.getRevision());
