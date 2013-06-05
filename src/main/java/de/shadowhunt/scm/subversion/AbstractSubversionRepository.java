@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -25,7 +24,6 @@ import org.apache.http.auth.AuthProtocolState;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.AuthState;
 import org.apache.http.auth.Credentials;
-import org.apache.http.auth.NTCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -40,6 +38,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 
+import de.shadowhunt.http.auth.CredentialsUtils;
 import de.shadowhunt.http.auth.NtlmSchemeFactory;
 import de.shadowhunt.http.client.ThreadLocalCredentialsProvider;
 import de.shadowhunt.http.conn.ssl.NonValidatingX509TrustManager;
@@ -97,25 +96,6 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		} catch (final Exception e) {
 			throw new SubversionException("could not create ssl scheme", e);
 		}
-	}
-
-	@CheckForNull
-	protected static Credentials creteCredentials(@Nullable final String user, @Nullable final String password, @Nullable final String workstation) {
-		if (user == null) {
-			return null;
-		}
-
-		final String username;
-		final String domain;
-		final int index = user.indexOf('\\');
-		if (index >= 0) {
-			username = user.substring(index + 1);
-			domain = user.substring(0, index);
-		} else {
-			username = user;
-			domain = "";
-		}
-		return new NTCredentials(username, password, workstation, domain);
 	}
 
 	static void ensureResponse(final HttpResponse response, final boolean consume, final int... expectedStatusCodes) throws IOException {
@@ -227,10 +207,6 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	@Override
 	public boolean exists(final Path resource) {
-		return exists0(resource);
-	}
-
-	protected boolean exists0(final Path resource) {
 		final URI uri = URI.create(repository + resource.getValue());
 
 		final HttpUriRequest request = requestFactory.createExistsRequest(uri);
@@ -359,7 +335,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	@Override
 	public final void setCredentials(@Nullable final String username, @Nullable final String password, @Nullable final String workstation) {
-		final Credentials credentials = creteCredentials(username, password, workstation);
+		final Credentials credentials = CredentialsUtils.creteCredentials(username, password, workstation);
 		final CredentialsProvider credentialsProvider = backend.getCredentialsProvider();
 
 		final Credentials oldCredentials = credentialsProvider.getCredentials(authscope);

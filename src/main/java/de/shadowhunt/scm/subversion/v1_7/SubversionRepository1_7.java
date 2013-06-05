@@ -44,7 +44,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 			triggerAuthentication();
 		}
 
-		final URI uri = URI.create(repository + PREFIX_TXR + uuid + resource);
+		final URI uri = URI.create(repository + PREFIX_TXR + uuid + resource.getValue());
 		final URI resourceUri = URI.create(repository + resource.getValue());
 
 		final HttpUriRequest request = requestFactory.createUploadRequest(uri, info.getLockToken(), resourceUri, content);
@@ -62,8 +62,8 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 	}
 
 	protected void copy0(final Path srcResource, final Revision srcRevision, final Path targetResource, final String uuid) {
-		final URI src = URI.create(repository + PREFIX_RVR + srcRevision + srcResource);
-		final URI target = URI.create(repository + PREFIX_TXR + uuid + targetResource);
+		final URI src = URI.create(repository + PREFIX_RVR + srcRevision + srcResource.getValue());
+		final URI target = URI.create(repository + PREFIX_TXR + uuid + targetResource.getValue());
 		final HttpUriRequest request = requestFactory.createCopyRequest(src, target);
 		execute(request, HttpStatus.SC_CREATED);
 	}
@@ -78,7 +78,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 	}
 
 	protected void delete0(final Path resource, final String uuid) {
-		final URI uri = URI.create(repository + PREFIX_TXR + uuid + resource);
+		final URI uri = URI.create(repository + PREFIX_TXR + uuid + resource.getValue());
 		final HttpUriRequest request = requestFactory.createDeleteRequest(uri);
 		execute(request, HttpStatus.SC_NO_CONTENT);
 	}
@@ -94,12 +94,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 
 	@Override
 	public InputStream download(final Path resource, final Revision revision) {
-		final URI uri;
-		if (Revision.HEAD.equals(revision)) {
-			uri = URI.create(repository + resource.getValue());
-		} else {
-			uri = URI.create(repository + PREFIX_RVR + revision + resource);
-		}
+		final URI uri = downloadURI(resource, revision);
 
 		final HttpUriRequest request = requestFactory.createDownloadRequest(uri);
 		final HttpResponse response = execute(request, false, HttpStatus.SC_OK);
@@ -111,7 +106,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		if (Revision.HEAD.equals(revision)) {
 			return URI.create(repository + resource.getValue());
 		}
-		return URI.create(repository + PREFIX_RVR + revision + resource);
+		return URI.create(repository + PREFIX_RVR + revision + resource.getValue());
 	}
 
 	@Override
@@ -151,7 +146,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 			return;
 		}
 
-		final URI uri = URI.create(repository + PREFIX_TXR + uuid + resource);
+		final URI uri = URI.create(repository + PREFIX_TXR + uuid + resource.getValue());
 		final URI resourceUri = URI.create(repository + resource.getValue());
 
 		final HttpUriRequest request = requestFactory.createRemovePropertiesRequest(uri, info.getLockToken(), resourceUri, filtered);
@@ -164,7 +159,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 			return;
 		}
 
-		final URI uri = URI.create(repository + PREFIX_TXR + uuid + resource);
+		final URI uri = URI.create(repository + PREFIX_TXR + uuid + resource.getValue());
 		final URI resourceUri = URI.create(repository + resource.getValue());
 
 		final HttpUriRequest request = requestFactory.createSetPropertiesRequest(uri, info.getLockToken(), resourceUri, filtered);
@@ -182,10 +177,9 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 	@Override
 	protected void uploadWithProperties0(final Path resource, final String message, @Nullable final InputStream content, @Nullable final SubversionProperty... properties) {
 		final String uuid = prepareTransaction();
-		final boolean exists = exists0(resource);
 
 		final Path infoResource;
-		if (exists) {
+		if (exists(resource)) {
 			infoResource = resource;
 		} else {
 			infoResource = createMissingFolders(PREFIX_TXR, uuid, resource);
