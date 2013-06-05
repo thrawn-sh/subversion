@@ -8,7 +8,7 @@ import org.apache.commons.cli.Options;
 /**
  * Subversion help command
  */
-public class HelpCommand extends AbstractCommand {
+public class HelpCommand extends AbstractSubversionCommand {
 
 	/**
 	 * Create a new Subversion help command

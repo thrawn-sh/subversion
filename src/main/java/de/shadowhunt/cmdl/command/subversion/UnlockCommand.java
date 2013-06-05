@@ -10,7 +10,7 @@ import de.shadowhunt.scm.subversion.SubversionRepository;
 /**
  * Subversion unlock command
  */
-public class UnlockCommand extends AbstractCommand {
+public class UnlockCommand extends AbstractSubversionCommand {
 
 	/**
 	 * Create a new Subversion unlock command

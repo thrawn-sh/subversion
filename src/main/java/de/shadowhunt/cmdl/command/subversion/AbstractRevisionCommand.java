@@ -7,7 +7,7 @@ import org.apache.commons.cli.Options;
 
 import de.shadowhunt.scm.subversion.Revision;
 
-abstract class AbstractRevisionCommand extends AbstractCommand {
+abstract class AbstractRevisionCommand extends AbstractSubversionCommand {
 
 	private static final String REVISION_OPTION = "r";
 

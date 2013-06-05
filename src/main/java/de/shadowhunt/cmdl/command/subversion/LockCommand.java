@@ -10,7 +10,7 @@ import de.shadowhunt.scm.subversion.SubversionRepository;
 /**
  * Subversion lock command
  */
-public class LockCommand extends AbstractCommand {
+public class LockCommand extends AbstractSubversionCommand {
 
 	/**
 	 * Create a new Subversion lock command

@@ -13,7 +13,7 @@ import de.shadowhunt.scm.subversion.SubversionRepository;
 /**
  * Subversion propdel command
  */
-public class PropertyDeleteCommand extends AbstractCommand {
+public class PropertyDeleteCommand extends AbstractSubversionCommand {
 
 	private static final String PROPERTY_OPTION = "p";
 

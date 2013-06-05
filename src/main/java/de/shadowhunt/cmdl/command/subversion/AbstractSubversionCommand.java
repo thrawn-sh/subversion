@@ -13,13 +13,13 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-import de.shadowhunt.cmdl.command.Command;
+import de.shadowhunt.cmdl.command.AbstractCommand;
 import de.shadowhunt.scm.subversion.Path;
 import de.shadowhunt.scm.subversion.ServerVersion;
 import de.shadowhunt.scm.subversion.SubversionFactory;
 import de.shadowhunt.scm.subversion.SubversionRepository;
 
-abstract class AbstractCommand implements Command {
+abstract class AbstractSubversionCommand extends AbstractCommand {
 
 	private static final String HELP_OPTION = "h";
 
@@ -84,13 +84,8 @@ abstract class AbstractCommand implements Command {
 		return value;
 	}
 
-	private final String name;
-
-	protected final PrintWriter out;
-
-	protected AbstractCommand(final String name, final PrintWriter out) {
-		this.name = name;
-		this.out = out;
+	protected AbstractSubversionCommand(final String name, final PrintWriter out) {
+		super(name, out);
 	}
 
 	protected final SubversionRepository createRepository(final CommandLine cmdl) {
@@ -108,28 +103,6 @@ abstract class AbstractCommand implements Command {
 	}
 
 	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final AbstractCommand other = (AbstractCommand) obj;
-		if (name == null) {
-			if (other.name != null) {
-				return false;
-			}
-		} else if (!name.equals(other.name)) {
-			return false;
-		}
-		return true;
-	}
-
-	@Override
 	public final void execute(final String... arguments) throws Exception {
 		final CommandLineParser parser = new BasicParser();
 		final Options options = getOptions();
@@ -144,11 +117,6 @@ abstract class AbstractCommand implements Command {
 	}
 
 	protected abstract void execute0(final CommandLine cmdl) throws Exception;
-
-	@Override
-	public String getName() {
-		return name;
-	}
 
 	protected Options getOptions() {
 		final Options options = new Options();
@@ -169,18 +137,5 @@ abstract class AbstractCommand implements Command {
 		options.addOption(new Option(TRUST_SERVER_OPTION, "trust-server-cert", false, "accept SSL server certificates from unknown certificate authorities without prompting"));
 
 		return options;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = (prime * result) + ((name == null) ? 0 : name.hashCode());
-		return result;
-	}
-
-	@Override
-	public final String toString() {
-		return name;
 	}
 }
