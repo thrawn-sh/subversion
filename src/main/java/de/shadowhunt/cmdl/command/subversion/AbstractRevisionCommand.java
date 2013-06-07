@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 
-import de.shadowhunt.scm.subversion.Revision;
+import de.shadowhunt.subversion.Revision;
 
 abstract class AbstractRevisionCommand extends AbstractSubversionCommand {
 

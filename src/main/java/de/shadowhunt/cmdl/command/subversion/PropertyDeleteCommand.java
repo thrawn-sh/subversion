@@ -6,9 +6,9 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-import de.shadowhunt.scm.subversion.Path;
-import de.shadowhunt.scm.subversion.ResourceProperty;
-import de.shadowhunt.scm.subversion.Repository;
+import de.shadowhunt.subversion.Path;
+import de.shadowhunt.subversion.Repository;
+import de.shadowhunt.subversion.ResourceProperty;
 
 /**
  * Subversion propdel command

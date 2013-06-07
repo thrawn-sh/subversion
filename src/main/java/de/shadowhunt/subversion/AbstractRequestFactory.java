@@ -1,4 +1,4 @@
-package de.shadowhunt.scm.subversion;
+package de.shadowhunt.subversion;
 
 import java.io.InputStream;
 import java.net.URI;

@@ -1,4 +1,4 @@
-package de.shadowhunt.scm.subversion;
+package de.shadowhunt.subversion;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -108,6 +108,13 @@ public interface Repository {
 	 * @param message the commit message for the current operation
 	 */
 	public void move(Path srcResource, Path targetResource, String message);
+
+	/**
+	 * Create a folder with all necessary parent folders
+	 * @param resource the {@link Path} of the resource (relative to the repository root)
+	 * @param message the commit message for the current operation
+	 */
+	public void createFolder(Path resource, String message);
 
 	/**
 	 * Authenticate with the given username, password and workstation against the server (NOTE: only the current thread will be authenticated)

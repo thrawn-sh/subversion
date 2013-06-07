@@ -1,4 +1,4 @@
-package de.shadowhunt.scm.subversion.v1_7;
+package de.shadowhunt.subversion.v1_7;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -11,12 +11,12 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 
-import de.shadowhunt.scm.subversion.AbstractRepository;
-import de.shadowhunt.scm.subversion.Depth;
-import de.shadowhunt.scm.subversion.InfoEntry;
-import de.shadowhunt.scm.subversion.Path;
-import de.shadowhunt.scm.subversion.ResourceProperty;
-import de.shadowhunt.scm.subversion.Revision;
+import de.shadowhunt.subversion.AbstractRepository;
+import de.shadowhunt.subversion.Depth;
+import de.shadowhunt.subversion.InfoEntry;
+import de.shadowhunt.subversion.Path;
+import de.shadowhunt.subversion.ResourceProperty;
+import de.shadowhunt.subversion.Revision;
 
 /**
  * {@link Repository1_7} supports subversion servers of version 1.7.X
@@ -66,6 +66,19 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 		final URI target = URI.create(repository + PREFIX_TXR + uuid + targetResource.getValue());
 		final HttpUriRequest request = requestFactory.createCopyRequest(src, target);
 		execute(request, HttpStatus.SC_CREATED);
+	}
+
+	@Override
+	public void createFolder(final Path resource, final String message) {
+		if (exists(resource)) {
+			return;
+		}
+
+		final String uuid = prepareTransaction();
+		final Path infoResource = createMissingFolders(PREFIX_TXR, uuid, resource);
+		final InfoEntry info = info(infoResource, Revision.HEAD, false);
+		setCommitMessage(uuid, message);
+		merge(info, uuid);
 	}
 
 	@Override

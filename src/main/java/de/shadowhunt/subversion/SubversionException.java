@@ -1,11 +1,9 @@
-package de.shadowhunt.scm.subversion;
-
-import de.shadowhunt.scm.ScmException;
+package de.shadowhunt.subversion;
 
 /**
  * {@link SubversionException} is the superclass of those exceptions that can be thrown in the subversion module
  */
-public class SubversionException extends ScmException {
+public class SubversionException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 

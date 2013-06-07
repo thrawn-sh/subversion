@@ -16,10 +16,10 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 import de.shadowhunt.cmdl.command.AbstractCommand;
-import de.shadowhunt.scm.subversion.Path;
-import de.shadowhunt.scm.subversion.ServerVersion;
-import de.shadowhunt.scm.subversion.SubversionFactory;
-import de.shadowhunt.scm.subversion.Repository;
+import de.shadowhunt.subversion.Path;
+import de.shadowhunt.subversion.Repository;
+import de.shadowhunt.subversion.ServerVersion;
+import de.shadowhunt.subversion.SubversionFactory;
 
 abstract class AbstractSubversionCommand extends AbstractCommand {
 

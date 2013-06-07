@@ -1,4 +1,4 @@
-package de.shadowhunt.scm.subversion.v1_7;
+package de.shadowhunt.subversion.v1_7;
 
 import java.net.URI;
 
@@ -7,7 +7,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 
-import de.shadowhunt.scm.subversion.AbstractRequestFactory;
+import de.shadowhunt.subversion.AbstractRequestFactory;
 
 /**
  * {@link RequestFactory1_7} creates http requests suitable for subversion 1.7.X server

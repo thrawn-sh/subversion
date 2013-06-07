@@ -1,4 +1,4 @@
-package de.shadowhunt.scm.subversion;
+package de.shadowhunt.subversion;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import javax.xml.parsers.SAXParser;
 
 import org.xml.sax.Attributes;
 
-import de.shadowhunt.scm.subversion.ResourceProperty.Type;
+import de.shadowhunt.subversion.ResourceProperty.Type;
 
 /**
  * Container that holds all status information for a single revision of a resource

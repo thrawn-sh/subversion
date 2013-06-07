@@ -4,7 +4,7 @@ import java.io.PrintWriter;
 
 import org.apache.commons.cli.CommandLine;
 
-import de.shadowhunt.scm.subversion.InfoEntry;
+import de.shadowhunt.subversion.InfoEntry;
 
 /**
  * Subversion info command

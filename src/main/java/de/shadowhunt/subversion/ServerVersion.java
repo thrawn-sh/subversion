@@ -1,4 +1,4 @@
-package de.shadowhunt.scm.subversion;
+package de.shadowhunt.subversion;
 
 /**
  * Enum that represents the version of the subversion server

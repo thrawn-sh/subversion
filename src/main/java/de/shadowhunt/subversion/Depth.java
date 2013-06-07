@@ -1,4 +1,4 @@
-package de.shadowhunt.scm.subversion;
+package de.shadowhunt.subversion;
 
 /**
  * {code Depth} defines the recursion level for the listing call {@link Repository #list(Path, Revision, Depth, boolean)}

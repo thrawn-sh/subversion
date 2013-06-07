@@ -4,8 +4,8 @@ import java.io.PrintWriter;
 
 import org.apache.commons.cli.CommandLine;
 
-import de.shadowhunt.scm.subversion.Path;
-import de.shadowhunt.scm.subversion.Repository;
+import de.shadowhunt.subversion.Path;
+import de.shadowhunt.subversion.Repository;
 
 /**
  * Subversion unlock command

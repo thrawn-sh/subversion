@@ -6,7 +6,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-import de.shadowhunt.scm.subversion.InfoEntry;
+import de.shadowhunt.subversion.InfoEntry;
 
 /**
  * Subversion propget command
