@@ -93,15 +93,6 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 	}
 
 	@Override
-	public InputStream download(final Path resource, final Revision revision) {
-		final URI uri = downloadURI(resource, revision);
-
-		final HttpUriRequest request = requestFactory.createDownloadRequest(uri);
-		final HttpResponse response = execute(request, false, HttpStatus.SC_OK);
-		return getContent(response);
-	}
-
-	@Override
 	public URI downloadURI(final Path resource, final Revision revision) {
 		if (Revision.HEAD.equals(revision)) {
 			return URI.create(repository + resource.getValue());

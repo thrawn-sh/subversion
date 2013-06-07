@@ -8,7 +8,6 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 
@@ -124,15 +123,6 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 		} finally {
 			endTransaction(uuid);
 		}
-	}
-
-	@Override
-	public InputStream download(final Path resource, final Revision revision) {
-		final URI uri = downloadURI(resource, revision);
-
-		final HttpUriRequest request = requestFactory.createDownloadRequest(uri);
-		final HttpResponse response = execute(request, false, HttpStatus.SC_OK);
-		return getContent(response);
 	}
 
 	@Override

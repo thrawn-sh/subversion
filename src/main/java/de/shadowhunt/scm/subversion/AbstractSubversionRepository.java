@@ -175,6 +175,15 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		return Path.create(infoResource);
 	}
 
+	@Override
+	public InputStream download(final Path resource, final Revision revision) {
+		final URI uri = downloadURI(resource, revision);
+
+		final HttpUriRequest request = requestFactory.createDownloadRequest(uri);
+		final HttpResponse response = execute(request, false, HttpStatus.SC_OK);
+		return getContent(response);
+	}
+
 	protected HttpResponse execute(final HttpUriRequest request, final boolean consume, final int... expectedStatusCodes) {
 		try {
 			client.execute(request);
@@ -197,6 +206,14 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		final HttpUriRequest request = requestFactory.createExistsRequest(uri);
 		final HttpResponse response = execute(request, /* found */HttpStatus.SC_OK, /* not found */HttpStatus.SC_NOT_FOUND);
 		return (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK);
+	}
+
+	protected Revision getConcreateRevision(final Path resource, final Revision revision) {
+		if (Revision.HEAD.equals(revision)) {
+			final SubversionInfo info = info(resource, revision, false);
+			return info.getRevision();
+		}
+		return revision;
 	}
 
 	@Override
@@ -284,14 +301,6 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 		final HttpUriRequest request = requestFactory.createLockRequest(uri);
 		execute(request, HttpStatus.SC_OK);
-	}
-
-	protected Revision getConcreateRevision(final Path resource, final Revision revision) {
-		if (Revision.HEAD.equals(revision)) {
-			final SubversionInfo info = info(resource, revision, false);
-			return info.getRevision();
-		}
-		return revision;
 	}
 
 	@Override
