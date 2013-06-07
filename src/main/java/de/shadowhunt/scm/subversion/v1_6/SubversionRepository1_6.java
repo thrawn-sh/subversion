@@ -69,11 +69,10 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 		final UUID uuid = prepareTransaction();
 		try {
 			final SubversionInfo info = info(srcResource, srcRevision, false);
-			final Revision revision = info.getRevision();
-			checkout(uuid);
-			setCommitMessage(uuid, revision, message);
+			final Revision realSourceRevision = info.getRevision();
+			setCommitMessage(uuid, realSourceRevision, message);
 			createMissingFolders(PREFIX_WRK, uuid.toString(), targetResource.getParent());
-			copy0(srcResource, info.getRevision(), targetResource, uuid);
+			copy0(srcResource, realSourceRevision, targetResource, uuid);
 			merge(info, uuid);
 		} finally {
 			endTransaction(uuid);
@@ -129,12 +128,7 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 
 	@Override
 	public InputStream download(final Path resource, final Revision revision) {
-		final URI uri;
-		if (Revision.HEAD.equals(revision)) {
-			uri = URI.create(repository + resource.getValue());
-		} else {
-			uri = URI.create(repository + PREFIX_BC + revision + resource.getValue());
-		}
+		final URI uri = downloadURI(resource, revision);
 
 		final HttpUriRequest request = requestFactory.createDownloadRequest(uri);
 		final HttpResponse response = execute(request, false, HttpStatus.SC_OK);
@@ -157,7 +151,8 @@ public class SubversionRepository1_6 extends AbstractSubversionRepository<Subver
 
 	@Override
 	public List<SubversionInfo> list(final Path resource, final Revision revision, final Depth depth, final boolean withCustomProperties) {
-		final String uriPrefix = repository + PREFIX_BC + revision;
+		final Revision concreateRevision = getConcreateRevision(resource, revision);
+		final String uriPrefix = repository + PREFIX_BC + concreateRevision;
 		return list(uriPrefix, resource, depth, withCustomProperties);
 	}
 

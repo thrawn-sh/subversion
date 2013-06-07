@@ -19,9 +19,6 @@ abstract class AbstractInfoCommand extends AbstractRevisionCommand {
 		final SubversionRepository repositry = createRepository(cmdl);
 		final Path resource = getTargetResource(cmdl);
 		final Revision revision = getRevision(cmdl);
-		if (revision == null) {
-			return repositry.info(resource, false);
-		}
 		return repositry.info(resource, revision, false);
 	}
 }

@@ -152,11 +152,6 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		this(createClient(100, trustServerCertificat), repository, requestFactory);
 	}
 
-	@Override
-	public void copy(final Path srcResource, final Path targetResource, final String message) {
-		copy(srcResource, Revision.HEAD, targetResource, message);
-	}
-
 	protected Path createMissingFolders(final String prefix, final String uuid, final Path resource) {
 		final String[] resourceParts = resource.getValue().split("/");
 
@@ -178,16 +173,6 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		}
 
 		return Path.create(infoResource);
-	}
-
-	@Override
-	public InputStream download(final Path resource) {
-		return download(resource, Revision.HEAD);
-	}
-
-	@Override
-	public URI downloadURI(final Path resource) {
-		return downloadURI(resource, Revision.HEAD);
 	}
 
 	protected HttpResponse execute(final HttpUriRequest request, final boolean consume, final int... expectedStatusCodes) {
@@ -212,11 +197,6 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		final HttpUriRequest request = requestFactory.createExistsRequest(uri);
 		final HttpResponse response = execute(request, /* found */HttpStatus.SC_OK, /* not found */HttpStatus.SC_NOT_FOUND);
 		return (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK);
-	}
-
-	@Override
-	public SubversionInfo info(final Path resource, final boolean withCustomProperties) {
-		return info(resource, Revision.HEAD, withCustomProperties);
 	}
 
 	@Override
@@ -256,12 +236,6 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 			throw new SubversionException("no logs available");
 		}
 		return logs.get(0);
-	}
-
-	@Override
-	public List<SubversionInfo> list(final Path resource, final Depth depth, final boolean withCustomProperties) {
-		final SubversionInfo info = info(resource, Revision.HEAD, false);
-		return list(resource, info.getRevision(), depth, withCustomProperties);
 	}
 
 	protected List<SubversionInfo> list(final String uriPrefix, final Path resource, final Depth depth, final boolean withCustomProperties) {
@@ -312,17 +286,21 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		execute(request, HttpStatus.SC_OK);
 	}
 
-	@Override
-	public List<SubversionLog> log(final Path resource) {
-		final SubversionInfo info = info(resource, Revision.HEAD, false);
-		return log(resource, info.getRevision(), Revision.INITIAL);
+	protected Revision getConcreateRevision(final Path resource, final Revision revision) {
+		if (Revision.HEAD.equals(revision)) {
+			final SubversionInfo info = info(resource, revision, false);
+			return info.getRevision();
+		}
+		return revision;
 	}
 
 	@Override
 	public List<SubversionLog> log(final Path resource, final Revision startRevision, final Revision endRevision) {
 		final URI uri = URI.create(repository + resource.getValue());
 
-		final HttpUriRequest request = requestFactory.createLogRequest(uri, startRevision, endRevision);
+		final Revision concreateStartRevision = getConcreateRevision(resource, startRevision);
+		final Revision concreateEndRevision = getConcreateRevision(resource, endRevision);
+		final HttpUriRequest request = requestFactory.createLogRequest(uri, concreateStartRevision, concreateEndRevision);
 		final HttpResponse response = execute(request, false, HttpStatus.SC_OK);
 
 		final InputStream in = getContent(response);

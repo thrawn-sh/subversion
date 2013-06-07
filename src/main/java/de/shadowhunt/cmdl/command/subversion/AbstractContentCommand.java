@@ -19,9 +19,6 @@ abstract class AbstractContentCommand extends AbstractRevisionCommand {
 		final SubversionRepository repositry = createRepository(cmdl);
 		final Path resource = getTargetResource(cmdl);
 		final Revision revision = getRevision(cmdl);
-		if (revision == null) {
-			return repositry.download(resource);
-		}
 		return repositry.download(resource, revision);
 	}
 

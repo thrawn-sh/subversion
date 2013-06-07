@@ -25,7 +25,7 @@ abstract class AbstractRevisionCommand extends AbstractSubversionCommand {
 	protected Revision getRevision(final CommandLine cmdl) {
 		final String revision = cmdl.getOptionValue(REVISION_OPTION);
 		if (revision == null) {
-			return null;
+			return Revision.HEAD;
 		}
 		return Revision.create(Integer.parseInt(revision));
 	}

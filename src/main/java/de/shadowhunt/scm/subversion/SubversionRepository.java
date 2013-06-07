@@ -23,14 +23,6 @@ public interface SubversionRepository {
 	public void copy(Path srcResource, Revision srcRevision, Path targetResource, String message);
 
 	/**
-	 * Recursively copy a resource (latest revision)
-	 * @param srcResource the {@link Path} of the source resource (relative to the repository root)
-	 * @param targetResource the {@link Path} of the target resource (relative to the repository root)
-	 * @param message the commit message for the current operation
-	 */
-	public void copy(Path srcResource, Path targetResource, String message);
-
-	/**
 	 * Delete the resource from the repository
 	 * @param resource the {@link Path} of the resource (relative to the repository root)
 	 * @param message the commit message for the current operation
@@ -46,26 +38,12 @@ public interface SubversionRepository {
 	public void deleteProperties(Path resource, String message, SubversionProperty... properties);
 
 	/**
-	 * Download the resource (latest version)
-	 * @param resource the {@link Path} of the resource (relative to the repository root)
-	 * @return {@link InputStream} from which the content can be read (caller has to close the stream properly)
-	 */
-	public InputStream download(Path resource);
-
-	/**
 	 * Download the resource
 	 * @param resource the {@link Path} of the resource (relative to the repository root)
 	 * @param revision the {@link Revision} of the resource to retrieve
 	 * @return {@link InputStream} from which the content can be read (caller has to close the stream properly)
 	 */
 	public InputStream download(Path resource, Revision revision);
-
-	/**
-	 * Determine the HTTP download URI for the resource (latest version)
-	 * @param resource the {@link Path} of the resource (relative to the repository root)
-	 * @return the HTTP download {@link URI} for the resource
-	 */
-	public URI downloadURI(Path resource);
 
 	/**
 	 * Determine the HTTP download URI for the resource
@@ -81,14 +59,6 @@ public interface SubversionRepository {
 	 * @return {@code true} if the resource already exists in the latest revision of the repository otherwise {@code false}
 	 */
 	public boolean exists(Path resource);
-
-	/**
-	 * Retrieve information for the resource (latest revision)
-	 * @param resource the {@link Path} of the resource (relative to the repository root)
-	 * @param withCustomProperties whether to retrieve user defined properties
-	 * @return {@link SubversionInfo} for the resource
-	 */
-	public SubversionInfo info(Path resource, boolean withCustomProperties);
 
 	/**
 	 * Retrieve information for the resource
@@ -117,26 +87,10 @@ public interface SubversionRepository {
 	public List<SubversionInfo> list(Path resource, Revision revision, Depth depth, boolean withCustomProperties);
 
 	/**
-	 * Retrieve information for the resource and its child resources (depending on depth parameter)
-	 * @param resource the {@link Path} of the resource (relative to the repository root)
-	 * @param depth whether to retrieve only for the given resource, its children or only part of its children depending on the value of {@link Depth}
-	 * @param withCustomProperties whether to retrieve user defined properties
-	 * @return {@link List} of {@link SubversionInfo} for the resource and its child resources (depending on depth parameter)
-	 */
-	public List<SubversionInfo> list(Path resource, Depth depth, boolean withCustomProperties);
-
-	/**
 	 * Mark the current revision of the resource as locked
 	 * @param resource the {@link Path} of the resource (relative to the repository root)
 	 */
 	public void lock(Path resource);
-
-	/**
-	 * Retrieve the complete log information for all revision of the resource
-	 * @param resource the {@link Path} of the resource (relative to the repository root)
-	 * @return ordered (early to latest) {@link List} of {@link SubversionLog} for all revision of the resource
-	 */
-	public List<SubversionLog> log(Path resource);
 
 	/**
 	 * Retrieve the log information for the revisions between startRevision and endRevision of the resource

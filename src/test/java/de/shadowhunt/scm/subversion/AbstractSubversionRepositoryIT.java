@@ -18,7 +18,7 @@ public abstract class AbstractSubversionRepositoryIT {
 	protected static SubversionRepository REPO;
 
 	protected String download(final Path resource) throws IOException {
-		final InputStream download = REPO.download(resource);
+		final InputStream download = REPO.download(resource, Revision.HEAD);
 		try {
 			return IOUtils.toString(download, "UTF-8");
 		} finally {
@@ -51,12 +51,12 @@ public abstract class AbstractSubversionRepositoryIT {
 		upload(resource, "properties");
 
 		REPO.setProperties(resource, "set", PROPERTY);
-		final SubversionInfo afterCreate = REPO.info(resource, true);
+		final SubversionInfo afterCreate = REPO.info(resource, Revision.HEAD, true);
 		Assert.assertEquals("property is missing", 1, afterCreate.getCustomProperties().length);
 		Assert.assertEquals("property has wrong value", "testvalue", afterCreate.getSubversionPropertyValue("testname"));
 
 		REPO.deleteProperties(resource, "delete", (SubversionProperty) null);
-		final SubversionInfo afterDelete = REPO.info(resource, true);
+		final SubversionInfo afterDelete = REPO.info(resource, Revision.HEAD, true);
 		Assert.assertEquals("property is missing", 1, afterDelete.getCustomProperties().length);
 		Assert.assertEquals("property has wrong value", "testvalue", afterDelete.getSubversionPropertyValue("testname"));
 	}
@@ -67,12 +67,12 @@ public abstract class AbstractSubversionRepositoryIT {
 		upload(resource, "properties");
 
 		REPO.setProperties(resource, "set", PROPERTY);
-		final SubversionInfo afterCreate = REPO.info(resource, true);
+		final SubversionInfo afterCreate = REPO.info(resource, Revision.HEAD, true);
 		Assert.assertEquals("property is missing", 1, afterCreate.getCustomProperties().length);
 		Assert.assertEquals("property has wrong value", "testvalue", afterCreate.getSubversionPropertyValue("testname"));
 
 		REPO.deleteProperties(resource, "delete", PROPERTY);
-		final SubversionInfo afterDelete = REPO.info(resource, true);
+		final SubversionInfo afterDelete = REPO.info(resource, Revision.HEAD, true);
 		Assert.assertEquals("property still present", 0, afterDelete.getCustomProperties().length);
 		Assert.assertNull("property has wrong value", afterDelete.getSubversionPropertyValue("testname"));
 	}
@@ -83,16 +83,16 @@ public abstract class AbstractSubversionRepositoryIT {
 		upload(resource, "properties");
 
 		REPO.setProperties(resource, "set", PROPERTY);
-		final SubversionInfo afterCreate = REPO.info(resource, true);
+		final SubversionInfo afterCreate = REPO.info(resource, Revision.HEAD, true);
 		Assert.assertEquals("property is missing", 1, afterCreate.getCustomProperties().length);
 		Assert.assertEquals("property has wrong value", "testvalue", afterCreate.getSubversionPropertyValue("testname"));
 
 		REPO.lock(resource);
-		final SubversionInfo afterLock = REPO.info(resource, false);
+		final SubversionInfo afterLock = REPO.info(resource, Revision.HEAD, false);
 		Assert.assertNotNull("resource is not locked", afterLock.getLockToken());
 
 		REPO.deleteProperties(resource, "delete", PROPERTY);
-		final SubversionInfo afterDelete = REPO.info(resource, true);
+		final SubversionInfo afterDelete = REPO.info(resource, Revision.HEAD, true);
 		Assert.assertNull("resource is locked", afterDelete.getLockToken());
 		Assert.assertEquals("property still present", 0, afterDelete.getCustomProperties().length);
 		Assert.assertNull("property has wrong value", afterDelete.getSubversionPropertyValue("testname"));
@@ -114,7 +114,7 @@ public abstract class AbstractSubversionRepositoryIT {
 		final String expected = "download";
 		upload(resource, expected);
 
-		final SubversionInfo info = REPO.info(resource, false);
+		final SubversionInfo info = REPO.info(resource, Revision.HEAD, false);
 		REPO.delete(resource, "del");
 		final String actual = download(resource, info.getRevision());
 		Assert.assertEquals("content differes", expected, actual);
@@ -132,7 +132,7 @@ public abstract class AbstractSubversionRepositoryIT {
 		final Path resource = Path.create(BASE + "/info.txt");
 		upload(resource, "info");
 
-		final SubversionInfo info = REPO.info(resource, false);
+		final SubversionInfo info = REPO.info(resource, Revision.HEAD, false);
 		Assert.assertTrue("resource is not a file", info.isFile());
 	}
 
@@ -141,7 +141,7 @@ public abstract class AbstractSubversionRepositoryIT {
 		final Path resource = Path.create(BASE + "/info_version.txt");
 		upload(resource, "info");
 
-		final SubversionInfo headInfo = REPO.info(resource, false);
+		final SubversionInfo headInfo = REPO.info(resource, Revision.HEAD, false);
 		upload(resource, "info2");
 
 		final SubversionInfo versionInfo = REPO.info(resource, headInfo.getRevision(), false);
@@ -155,7 +155,7 @@ public abstract class AbstractSubversionRepositoryIT {
 		upload(Path.create(base + "/l2.txt"), "list");
 		upload(Path.create(base + "/l3.txt"), "list");
 
-		final List<SubversionInfo> list = REPO.list(base, Depth.IMMEDIATES, false);
+		final List<SubversionInfo> list = REPO.list(base, Revision.HEAD, Depth.IMMEDIATES, false);
 		Assert.assertEquals("missing entries in list", 4, list.size());
 	}
 
@@ -164,15 +164,15 @@ public abstract class AbstractSubversionRepositoryIT {
 		final Path resource = Path.create(BASE + "/lock.txt");
 		upload(resource, "locking");
 
-		final SubversionInfo beforeLock = REPO.info(resource, false);
+		final SubversionInfo beforeLock = REPO.info(resource, Revision.HEAD, false);
 		Assert.assertNull("resource is locked", beforeLock.getLockToken());
 
 		REPO.lock(resource);
-		final SubversionInfo afterLock = REPO.info(resource, false);
+		final SubversionInfo afterLock = REPO.info(resource, Revision.HEAD, false);
 		Assert.assertNotNull("resource is not locked", afterLock.getLockToken());
 
 		REPO.unlock(resource);
-		final SubversionInfo afterUnlock = REPO.info(resource, false);
+		final SubversionInfo afterUnlock = REPO.info(resource, Revision.HEAD, false);
 		Assert.assertNull("resource is locked", afterUnlock.getLockToken());
 	}
 
@@ -183,7 +183,7 @@ public abstract class AbstractSubversionRepositoryIT {
 		upload(resource, "log2");
 		upload(resource, "log3");
 
-		final List<SubversionLog> log = REPO.log(resource);
+		final List<SubversionLog> log = REPO.log(resource, Revision.HEAD, Revision.INITIAL);
 		Assert.assertEquals("must have 3 log entries", 3, log.size());
 	}
 
@@ -209,7 +209,7 @@ public abstract class AbstractSubversionRepositoryIT {
 		upload(resource, "properties");
 
 		REPO.setProperties(resource, "set", (SubversionProperty) null);
-		final SubversionInfo info = REPO.info(resource, true);
+		final SubversionInfo info = REPO.info(resource, Revision.HEAD, true);
 		Assert.assertEquals("property was created", 0, info.getCustomProperties().length);
 	}
 
@@ -219,7 +219,7 @@ public abstract class AbstractSubversionRepositoryIT {
 		upload(resource, "properties");
 
 		REPO.setProperties(resource, "set", PROPERTY);
-		final SubversionInfo info = REPO.info(resource, true);
+		final SubversionInfo info = REPO.info(resource, Revision.HEAD, true);
 		Assert.assertEquals("property is missing", 1, info.getCustomProperties().length);
 		Assert.assertEquals("property has wrong value", "testvalue", info.getSubversionPropertyValue("testname"));
 	}
@@ -229,11 +229,11 @@ public abstract class AbstractSubversionRepositoryIT {
 		final Path resource = Path.create(BASE + "/set_properties_locked.txt");
 		upload(resource, "properties");
 		REPO.lock(resource);
-		final SubversionInfo afterLock = REPO.info(resource, false);
+		final SubversionInfo afterLock = REPO.info(resource, Revision.HEAD, false);
 		Assert.assertNotNull("resource is not locked", afterLock.getLockToken());
 
 		REPO.setProperties(resource, "set", PROPERTY);
-		final SubversionInfo afterSet = REPO.info(resource, true);
+		final SubversionInfo afterSet = REPO.info(resource, Revision.HEAD, true);
 		Assert.assertNull("resource is locked", afterSet.getLockToken());
 		Assert.assertEquals("property is missing", 1, afterSet.getCustomProperties().length);
 		Assert.assertEquals("property has wrong value", "testvalue", afterSet.getSubversionPropertyValue("testname"));
@@ -244,11 +244,11 @@ public abstract class AbstractSubversionRepositoryIT {
 		final Path resource = Path.create(BASE + "/unlock.txt");
 		upload(resource, "locking");
 
-		final SubversionInfo beforeUnlock = REPO.info(resource, false);
+		final SubversionInfo beforeUnlock = REPO.info(resource, Revision.HEAD, false);
 		Assert.assertNull("resource is locked", beforeUnlock.getLockToken());
 
 		REPO.unlock(resource);
-		final SubversionInfo afterUnlock = REPO.info(resource, false);
+		final SubversionInfo afterUnlock = REPO.info(resource, Revision.HEAD, false);
 		Assert.assertNull("resource is locked", afterUnlock.getLockToken());
 	}
 
@@ -271,11 +271,11 @@ public abstract class AbstractSubversionRepositoryIT {
 		final Path resource = Path.create(BASE + "/upload_locked.txt");
 		upload(resource, "upload");
 		REPO.lock(resource);
-		final SubversionInfo afterLock = REPO.info(resource, false);
+		final SubversionInfo afterLock = REPO.info(resource, Revision.HEAD, false);
 		Assert.assertNotNull("resource is not locked", afterLock.getLockToken());
 
 		upload(resource, "upload2");
-		final SubversionInfo afterUpload = REPO.info(resource, false);
+		final SubversionInfo afterUpload = REPO.info(resource, Revision.HEAD, false);
 		Assert.assertNull("resource is locked", afterUpload.getLockToken());
 	}
 
@@ -290,7 +290,7 @@ public abstract class AbstractSubversionRepositoryIT {
 		final Path resource = Path.create(BASE + "/upload.txt");
 		uploadWithProperties(resource, "upload", PROPERTY);
 
-		final SubversionInfo info = REPO.info(resource, true);
+		final SubversionInfo info = REPO.info(resource, Revision.HEAD, true);
 		Assert.assertEquals("property is missing", 1, info.getCustomProperties().length);
 		Assert.assertEquals("property has wrong value", "testvalue", info.getSubversionPropertyValue("testname"));
 	}

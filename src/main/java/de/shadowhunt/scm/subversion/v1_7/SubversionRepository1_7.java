@@ -111,7 +111,8 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 
 	@Override
 	public List<SubversionInfo> list(final Path resource, final Revision revision, final Depth depth, final boolean withCustomProperties) {
-		final String uriPrefix = repository + PREFIX_RVR + revision;
+		final Revision concreateRevision = getConcreateRevision(resource, revision);
+		final String uriPrefix = repository + PREFIX_RVR + concreateRevision;
 		return list(uriPrefix, resource, depth, withCustomProperties);
 	}
 
