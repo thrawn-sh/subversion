@@ -4,8 +4,8 @@ import java.io.PrintWriter;
 
 import org.apache.commons.cli.CommandLine;
 
-import de.shadowhunt.scm.subversion.SubversionInfo;
-import de.shadowhunt.scm.subversion.SubversionProperty;
+import de.shadowhunt.scm.subversion.InfoEntry;
+import de.shadowhunt.scm.subversion.ResourceProperty;
 
 /**
  * Subversion proplist command
@@ -22,12 +22,12 @@ public class PropertyListCommand extends AbstractInfoCommand {
 
 	@Override
 	protected void execute0(final CommandLine cmdl) throws Exception {
-		final SubversionInfo info = getInfo(cmdl);
+		final InfoEntry info = getInfo(cmdl);
 
-		final SubversionProperty[] customProperties = info.getCustomProperties();
+		final ResourceProperty[] customProperties = info.getCustomProperties();
 		if (customProperties.length > 0) {
 			out.println("Properties on '" + info.getPath() + "':");
-			for (final SubversionProperty property : customProperties) {
+			for (final ResourceProperty property : customProperties) {
 				out.println("  " + property.getName());
 			}
 		}

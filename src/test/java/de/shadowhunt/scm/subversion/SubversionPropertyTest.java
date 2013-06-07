@@ -3,7 +3,7 @@ package de.shadowhunt.scm.subversion;
 import org.junit.Assert;
 import org.junit.Test;
 
-import de.shadowhunt.scm.subversion.SubversionProperty.Type;
+import de.shadowhunt.scm.subversion.ResourceProperty.Type;
 
 public class SubversionPropertyTest {
 
@@ -11,7 +11,7 @@ public class SubversionPropertyTest {
 	public void createCustomPropertyTest() {
 		final String name = "testName";
 		final String value = "testValue";
-		final SubversionProperty property = SubversionProperty.createCustomProperty(name, value);
+		final ResourceProperty property = ResourceProperty.createCustomProperty(name, value);
 
 		Assert.assertNotNull("property must not be null", property);
 		Assert.assertEquals("type is not CUSTOM", Type.CUSTOM, property.getType());
@@ -21,7 +21,7 @@ public class SubversionPropertyTest {
 
 	@Test
 	public void filteroutSystemPropertiesEmptyTest() {
-		final SubversionProperty[] properties = SubversionProperty.filteroutSystemProperties();
+		final ResourceProperty[] properties = ResourceProperty.filteroutSystemProperties();
 
 		Assert.assertNotNull("properties must not be null", properties);
 		Assert.assertEquals("properties is not empty", 0, properties.length);
@@ -29,7 +29,7 @@ public class SubversionPropertyTest {
 
 	@Test
 	public void filteroutSystemPropertiesNullTest() {
-		final SubversionProperty[] properties = SubversionProperty.filteroutSystemProperties((SubversionProperty) null);
+		final ResourceProperty[] properties = ResourceProperty.filteroutSystemProperties((ResourceProperty) null);
 
 		Assert.assertNotNull("properties must not be null", properties);
 		Assert.assertEquals("properties is not empty", 0, properties.length);
@@ -37,15 +37,15 @@ public class SubversionPropertyTest {
 
 	@Test
 	public void filteroutSystemPropertiesTest() {
-		final SubversionProperty[] input = new SubversionProperty[5];
+		final ResourceProperty[] input = new ResourceProperty[5];
 		{
 			input[0] = null;
-			input[1] = new SubversionProperty(Type.BASE, "base", "base-value");
-			input[2] = new SubversionProperty(Type.CUSTOM, "custom", "custom-value");
-			input[3] = new SubversionProperty(Type.DAV, "dav", "dav-value");
-			input[4] = new SubversionProperty(Type.SVN, "svn", "svn-value");
+			input[1] = new ResourceProperty(Type.BASE, "base", "base-value");
+			input[2] = new ResourceProperty(Type.CUSTOM, "custom", "custom-value");
+			input[3] = new ResourceProperty(Type.DAV, "dav", "dav-value");
+			input[4] = new ResourceProperty(Type.SVN, "svn", "svn-value");
 		}
-		final SubversionProperty[] properties = SubversionProperty.filteroutSystemProperties(input);
+		final ResourceProperty[] properties = ResourceProperty.filteroutSystemProperties(input);
 
 		Assert.assertNotNull("properties must not be null", properties);
 		Assert.assertEquals("properties is not empty", 2, properties.length);

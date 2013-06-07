@@ -7,8 +7,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 import de.shadowhunt.scm.subversion.Path;
-import de.shadowhunt.scm.subversion.SubversionProperty;
-import de.shadowhunt.scm.subversion.SubversionRepository;
+import de.shadowhunt.scm.subversion.ResourceProperty;
+import de.shadowhunt.scm.subversion.Repository;
 
 /**
  * Subversion propdel command
@@ -29,10 +29,10 @@ public class PropertyDeleteCommand extends AbstractSubversionCommand {
 	protected void execute0(final CommandLine cmdl) throws Exception {
 		final String property = getProperty(cmdl);
 
-		final SubversionRepository repositry = createRepository(cmdl);
+		final Repository repositry = createRepository(cmdl);
 
 		final Path resource = getTargetResource(cmdl);
-		repositry.deleteProperties(resource, "TODO", SubversionProperty.createCustomProperty(property, null));
+		repositry.deleteProperties(resource, "TODO", ResourceProperty.createCustomProperty(property, null));
 	}
 
 	@Override

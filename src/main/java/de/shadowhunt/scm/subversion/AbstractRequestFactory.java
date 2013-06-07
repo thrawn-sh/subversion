@@ -23,7 +23,7 @@ import org.apache.http.message.BasicHeader;
 /**
  * Basic class for all SubversionRequestFactories
  */
-public abstract class AbstractSubversionRequestFactory {
+public abstract class AbstractRequestFactory {
 
 	/**
 	 * Basic implementation of an entity enclosing HTTP request for WebDav
@@ -242,10 +242,10 @@ public abstract class AbstractSubversionRequestFactory {
 	 * Merge all modifications from previous request
 	 * @param uri {@link URI} to perform the request against
 	 * @param path absolute resource-path relative to the repository root
-	 * @param info current {@link SubversionInfo} for the resource
+	 * @param info current {@link InfoEntry} for the resource
 	 * @return {@link HttpUriRequest} merging all modifications from previous request
 	 */
-	public HttpUriRequest createMergeRequest(final URI uri, final Path path, final SubversionInfo info) {
+	public HttpUriRequest createMergeRequest(final URI uri, final Path path, final InfoEntry info) {
 		final DavTemplateRequest request = new DavTemplateRequest("MERGE");
 		request.setURI(uri);
 		request.setHeader("X-SVN-Options", "release-locks");
@@ -273,10 +273,10 @@ public abstract class AbstractSubversionRequestFactory {
 	 * @param uri {@link URI} to perform the request against
 	 * @param lockToken if the resource is locked, the lock-token is used to approve the request, can be {@code null} if the resource is not locked, or if no implicit approval is desired
 	 * @param lockTokenTarget the {@link URI} to the resource that has been locked, can be {@code null} if no lockToken is specified
-	 * @param properties properties {@link SubversionProperty} to remove
+	 * @param properties properties {@link ResourceProperty} to remove
 	 * @return {@link HttpUriRequest} removing the given properties form the resource
 	 */
-	public HttpUriRequest createRemovePropertiesRequest(final URI uri, @Nullable final String lockToken, @Nullable final URI lockTokenTarget, final SubversionProperty... properties) {
+	public HttpUriRequest createRemovePropertiesRequest(final URI uri, @Nullable final String lockToken, @Nullable final URI lockTokenTarget, final ResourceProperty... properties) {
 		final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH");
 		request.setURI(uri);
 
@@ -284,7 +284,7 @@ public abstract class AbstractSubversionRequestFactory {
 
 		final StringBuilder sb = new StringBuilder(XML_PREAMBLE);
 		sb.append("<propertyupdate xmlns=\"DAV:\" xmlns:C=\"http://subversion.tigris.org/xmlns/custom/\" xmlns:S=\"http://subversion.tigris.org/xmlns/svn/\" xmlns:V=\"http://subversion.tigris.org/xmlns/dav/\"><remove>");
-		for (final SubversionProperty property : properties) {
+		for (final ResourceProperty property : properties) {
 			sb.append("<prop>");
 			sb.append('<');
 			sb.append(property.getType().getPrefix());
@@ -302,10 +302,10 @@ public abstract class AbstractSubversionRequestFactory {
 	 * @param uri {@link URI} to perform the request against
 	 * @param lockToken if the resource is locked, the lock-token is used to approve the request, can be {@code null} if the resource is not locked, or if no implicit approval is desired
 	 * @param lockTokenTarget the {@link URI} to the resource that has been locked, can be {@code null} if no lockToken is specified
-	 * @param properties {@link SubversionProperty} to add or override
+	 * @param properties {@link ResourceProperty} to add or override
 	 * @return {@link HttpUriRequest} setting the given properties for the resource
 	 */
-	public HttpUriRequest createSetPropertiesRequest(final URI uri, @Nullable final String lockToken, @Nullable final URI lockTokenTarget, final SubversionProperty... properties) {
+	public HttpUriRequest createSetPropertiesRequest(final URI uri, @Nullable final String lockToken, @Nullable final URI lockTokenTarget, final ResourceProperty... properties) {
 		final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH");
 		request.setURI(uri);
 
@@ -313,7 +313,7 @@ public abstract class AbstractSubversionRequestFactory {
 
 		final StringBuilder sb = new StringBuilder(XML_PREAMBLE);
 		sb.append("<propertyupdate xmlns=\"DAV:\" xmlns:C=\"http://subversion.tigris.org/xmlns/custom/\" xmlns:S=\"http://subversion.tigris.org/xmlns/svn/\" xmlns:V=\"http://subversion.tigris.org/xmlns/dav/\"><set>");
-		for (final SubversionProperty property : properties) {
+		for (final ResourceProperty property : properties) {
 			final String prefix = property.getType().getPrefix();
 			final String name = property.getName();
 			sb.append("<prop>");

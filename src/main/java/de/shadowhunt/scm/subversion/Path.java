@@ -53,14 +53,7 @@ public final class Path implements Comparable<Path> {
 			return false;
 		}
 		final Path other = (Path) obj;
-		if (value == null) {
-			if (other.value != null) {
-				return false;
-			}
-		} else if (!value.equals(other.value)) {
-			return false;
-		}
-		return true;
+		return value.equals(other.value);
 	}
 
 	/**
@@ -68,10 +61,10 @@ public final class Path implements Comparable<Path> {
 	 * @return the parent {@link Path} of the {@link Path}
 	 */
 	public Path getParent() {
-		final int indexOf = value.lastIndexOf('/');
-		if (indexOf == 0) {
+		if (ROOT == this) {
 			return ROOT; // parent of root is root
 		}
+		final int indexOf = value.lastIndexOf('/');
 		return new Path(value.substring(0, indexOf));
 	}
 
@@ -93,10 +86,7 @@ public final class Path implements Comparable<Path> {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = (prime * result) + ((value == null) ? 0 : value.hashCode());
-		return result;
+		return value.hashCode();
 	}
 
 	@Override

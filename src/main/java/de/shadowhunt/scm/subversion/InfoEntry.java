@@ -12,22 +12,22 @@ import javax.xml.parsers.SAXParser;
 
 import org.xml.sax.Attributes;
 
-import de.shadowhunt.scm.subversion.SubversionProperty.Type;
+import de.shadowhunt.scm.subversion.ResourceProperty.Type;
 
 /**
  * Container that holds all status information for a single revision of a resource
  */
-public class SubversionInfo {
+public final class InfoEntry {
 
 	static class SubversionInfoHandler extends BasicHandler {
 
-		private SubversionInfo current = null;
+		private InfoEntry current = null;
 
-		private List<SubversionProperty> customProperties;
+		private List<ResourceProperty> customProperties;
 
 		private final boolean includeDirectories;
 
-		private final List<SubversionInfo> infos = new ArrayList<SubversionInfo>();
+		private final List<InfoEntry> infos = new ArrayList<InfoEntry>();
 
 		private boolean locktoken = false;
 
@@ -51,7 +51,7 @@ public class SubversionInfo {
 
 			if ("response".equals(name)) {
 				if (withCustomProperties) {
-					current.setCustomProperties(customProperties.toArray(new SubversionProperty[customProperties.size()]));
+					current.setCustomProperties(customProperties.toArray(new ResourceProperty[customProperties.size()]));
 					customProperties = null;
 				}
 
@@ -115,12 +115,12 @@ public class SubversionInfo {
 
 			final String namespace = getNamespaceFromQName(qName);
 			if ("C".equals(namespace)) {
-				final SubversionProperty property = new SubversionProperty(Type.CUSTOM, name, getText());
+				final ResourceProperty property = new ResourceProperty(Type.CUSTOM, name, getText());
 				customProperties.add(property);
 			}
 		}
 
-		List<SubversionInfo> getInfos() {
+		List<InfoEntry> getInfos() {
 			return infos;
 		}
 
@@ -131,12 +131,12 @@ public class SubversionInfo {
 			final String name = getNameFromQName(qName);
 
 			if ("response".equals(name)) {
-				current = new SubversionInfo();
+				current = new InfoEntry();
 				locktoken = false;
 				resourceType = false;
 
 				if (withCustomProperties) {
-					customProperties = new ArrayList<SubversionProperty>();
+					customProperties = new ArrayList<ResourceProperty>();
 				}
 				return;
 			}
@@ -153,15 +153,15 @@ public class SubversionInfo {
 		}
 	}
 
-	private static final SubversionProperty[] EMPTY = new SubversionProperty[0];
+	private static final ResourceProperty[] EMPTY = new ResourceProperty[0];
 
 	/**
-	 * {@link Comparator} orders {@link SubversionInfo}s by their relative {@link Path}
+	 * {@link Comparator} orders {@link InfoEntry}s by their relative {@link Path}
 	 */
-	public static final Comparator<SubversionInfo> PATH_COMPARATOR = new Comparator<SubversionInfo>() {
+	public static final Comparator<InfoEntry> PATH_COMPARATOR = new Comparator<InfoEntry>() {
 
 		@Override
-		public int compare(final SubversionInfo si1, final SubversionInfo si2) {
+		public int compare(final InfoEntry si1, final InfoEntry si2) {
 			return si1.getPath().compareTo(si2.getPath());
 		}
 	};
@@ -170,10 +170,10 @@ public class SubversionInfo {
 	 * Reads status information for a single revision of a resource from the given {@link InputStream}
 	 * @param in {@link InputStream} from which the status information is read (Note: will not be closed)
 	 * @param withCustomProperties whether to read user defined properties
-	 * @return {@link SubversionInfo} for the resource
+	 * @return {@link InfoEntry} for the resource
 	 */
-	public static SubversionInfo read(final InputStream in, final boolean withCustomProperties) {
-		final List<SubversionInfo> infos = readList(in, withCustomProperties, true);
+	public static InfoEntry read(final InputStream in, final boolean withCustomProperties) {
+		final List<InfoEntry> infos = readList(in, withCustomProperties, true);
 		if (infos.isEmpty()) {
 			throw new SubversionException("could not find any SubversionInfo in input");
 		}
@@ -185,9 +185,9 @@ public class SubversionInfo {
 	 * @param in {@link InputStream} from which the status information is read (Note: will not be closed)
 	 * @param withCustomProperties whether to read user defined properties
 	 * @param includeDirectories whether directory resources shall be included in the result
-	 * @return {@link SubversionInfo} for the resources
+	 * @return {@link InfoEntry} for the resources
 	 */
-	public static List<SubversionInfo> readList(final InputStream in, final boolean withCustomProperties, final boolean includeDirectories) {
+	public static List<InfoEntry> readList(final InputStream in, final boolean withCustomProperties, final boolean includeDirectories) {
 		try {
 			final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
 			final SubversionInfoHandler handler = new SubversionInfoHandler(withCustomProperties, includeDirectories);
@@ -199,7 +199,7 @@ public class SubversionInfo {
 		}
 	}
 
-	private SubversionProperty[] customProperties = EMPTY;
+	private ResourceProperty[] customProperties = EMPTY;
 
 	private boolean directory;
 
@@ -218,7 +218,7 @@ public class SubversionInfo {
 
 	private String root;
 
-	SubversionInfo() {
+	InfoEntry() {
 		// prevent direct instantiation
 	}
 
@@ -233,7 +233,7 @@ public class SubversionInfo {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final SubversionInfo other = (SubversionInfo) obj;
+		final InfoEntry other = (InfoEntry) obj;
 		if (path == null) {
 			if (other.path != null) {
 				return false;
@@ -259,10 +259,10 @@ public class SubversionInfo {
 	}
 
 	/**
-	 * Returns an array of the custom {@link SubversionProperty}
-	 * @return the array of the custom {@link SubversionProperty} or an empty array if there a non
+	 * Returns an array of the custom {@link ResourceProperty}
+	 * @return the array of the custom {@link ResourceProperty} or an empty array if there a non
 	 */
-	public SubversionProperty[] getCustomProperties() {
+	public ResourceProperty[] getCustomProperties() {
 		return Arrays.copyOf(customProperties, customProperties.length);
 	}
 
@@ -332,7 +332,7 @@ public class SubversionInfo {
 	 */
 	@CheckForNull
 	public String getSubversionPropertyValue(final String name) {
-		for (final SubversionProperty property : customProperties) {
+		for (final ResourceProperty property : customProperties) {
 			if (name.equals(property.getName())) {
 				return property.getValue();
 			}
@@ -374,7 +374,7 @@ public class SubversionInfo {
 		return lockToken != null;
 	}
 
-	void setCustomProperties(@Nullable final SubversionProperty[] customProperties) {
+	void setCustomProperties(@Nullable final ResourceProperty[] customProperties) {
 		if ((customProperties == null) || (customProperties.length == 0)) {
 			this.customProperties = EMPTY;
 		} else {

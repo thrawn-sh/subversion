@@ -18,12 +18,9 @@ public class PathTest {
 	}
 
 	@Test
-	public void createEmptyPath() {
+	public void createRootPath() {
+		Assert.assertEquals("/ is ROOT", Path.ROOT, Path.create("/"));
 		Assert.assertEquals("empty is ROOT", Path.ROOT, Path.create(""));
-	}
-
-	@Test
-	public void createNullPath() {
 		Assert.assertEquals("null is ROOT", Path.ROOT, Path.create(null));
 	}
 
@@ -57,7 +54,7 @@ public class PathTest {
 	public void getParent() {
 		final Path child = Path.create("/a/b/c/d.txt");
 		Assert.assertEquals(Path.create("/a/b/c"), child.getParent());
-		Assert.assertEquals(Path.ROOT, Path.ROOT);
+		Assert.assertEquals(Path.ROOT, Path.ROOT.getParent());
 	}
 
 	@Test

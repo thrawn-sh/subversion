@@ -6,7 +6,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-import de.shadowhunt.scm.subversion.SubversionInfo;
+import de.shadowhunt.scm.subversion.InfoEntry;
 
 /**
  * Subversion propget command
@@ -25,7 +25,7 @@ public class PropertyGetCommand extends AbstractInfoCommand {
 
 	@Override
 	protected void execute0(final CommandLine cmdl) throws Exception {
-		final SubversionInfo info = getInfo(cmdl);
+		final InfoEntry info = getInfo(cmdl);
 
 		final String property = getProperty(cmdl);
 		final String value = info.getSubversionPropertyValue(property);

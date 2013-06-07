@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 import org.apache.commons.cli.CommandLine;
 
 import de.shadowhunt.scm.subversion.Path;
-import de.shadowhunt.scm.subversion.SubversionRepository;
+import de.shadowhunt.scm.subversion.Repository;
 
 /**
  * Subversion unlock command
@@ -22,7 +22,7 @@ public class UnlockCommand extends AbstractSubversionCommand {
 
 	@Override
 	protected void execute0(final CommandLine cmdl) throws Exception {
-		final SubversionRepository repositry = createRepository(cmdl);
+		final Repository repositry = createRepository(cmdl);
 		final Path resource = getTargetResource(cmdl);
 		repositry.unlock(resource);
 		out.println("'" + resource + "' unlocked.");

@@ -45,10 +45,10 @@ import de.shadowhunt.http.conn.ssl.NonValidatingX509TrustManager;
 import de.shadowhunt.http.protocol.ThreadLocalHttpContext;
 
 /**
- * Base for all {@link SubversionRepository}
- * @param <T> {@link AbstractSubversionRequestFactory} that will be used to create request to the subversion server
+ * Base for all {@link Repository}
+ * @param <T> {@link AbstractRequestFactory} that will be used to create request to the subversion server
  */
-public abstract class AbstractSubversionRepository<T extends AbstractSubversionRequestFactory> implements SubversionRepository {
+public abstract class AbstractRepository<T extends AbstractRequestFactory> implements Repository {
 
 	protected static final String LOCK_OWNER_HEADER = "X-SVN-Lock-Owner";
 
@@ -140,7 +140,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	protected final T requestFactory;
 
-	protected AbstractSubversionRepository(final DefaultHttpClient backend, final URI repository, final T requestFactory) {
+	protected AbstractRepository(final DefaultHttpClient backend, final URI repository, final T requestFactory) {
 		this.client = new DecompressingHttpClient(backend);
 		this.backend = backend;
 		this.repository = repository;
@@ -148,7 +148,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 		this.authscope = new AuthScope(repository.getHost(), AuthScope.ANY_PORT);
 	}
 
-	protected AbstractSubversionRepository(final URI repository, final boolean trustServerCertificat, final T requestFactory) {
+	protected AbstractRepository(final URI repository, final boolean trustServerCertificat, final T requestFactory) {
 		this(createClient(100, trustServerCertificat), repository, requestFactory);
 	}
 
@@ -210,14 +210,14 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	protected Revision getConcreateRevision(final Path resource, final Revision revision) {
 		if (Revision.HEAD.equals(revision)) {
-			final SubversionInfo info = info(resource, revision, false);
+			final InfoEntry info = info(resource, revision, false);
 			return info.getRevision();
 		}
 		return revision;
 	}
 
 	@Override
-	public SubversionInfo info(final Path resource, final Revision revision, final boolean withCustomProperties) {
+	public InfoEntry info(final Path resource, final Revision revision, final boolean withCustomProperties) {
 		final URI uri = downloadURI(resource, revision);
 
 		final HttpUriRequest request = requestFactory.createInfoRequest(uri, Depth.EMPTY);
@@ -225,7 +225,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 		final InputStream in = getContent(response);
 		try {
-			final SubversionInfo info = SubversionInfo.read(in, withCustomProperties);
+			final InfoEntry info = InfoEntry.read(in, withCustomProperties);
 			if (info.isLocked()) {
 				final Header header = response.getFirstHeader(LOCK_OWNER_HEADER);
 				info.setLockOwner(header.getValue());
@@ -245,42 +245,42 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	}
 
 	@Override
-	public SubversionLog lastLog(final Path resource) {
-		final SubversionInfo info = info(resource, Revision.HEAD, false);
+	public LogEntry lastLog(final Path resource) {
+		final InfoEntry info = info(resource, Revision.HEAD, false);
 		final Revision revision = info.getRevision();
-		final List<SubversionLog> logs = log(resource, revision, revision);
+		final List<LogEntry> logs = log(resource, revision, revision);
 		if (logs.isEmpty()) {
 			throw new SubversionException("no logs available");
 		}
 		return logs.get(0);
 	}
 
-	protected List<SubversionInfo> list(final String uriPrefix, final Path resource, final Depth depth, final boolean withCustomProperties) {
+	protected List<InfoEntry> list(final String uriPrefix, final Path resource, final Depth depth, final boolean withCustomProperties) {
 		final URI uri = URI.create(uriPrefix + resource);
 
 		if (depth == Depth.INFINITY) {
-			final List<SubversionInfo> root = list(uri, Depth.IMMEDIATES, withCustomProperties);
-			final Set<SubversionInfo> result = new TreeSet<SubversionInfo>(SubversionInfo.PATH_COMPARATOR);
+			final List<InfoEntry> root = list(uri, Depth.IMMEDIATES, withCustomProperties);
+			final Set<InfoEntry> result = new TreeSet<InfoEntry>(InfoEntry.PATH_COMPARATOR);
 			listRecursive(uriPrefix, withCustomProperties, root, result);
-			return new ArrayList<SubversionInfo>(result);
+			return new ArrayList<InfoEntry>(result);
 		}
 		return list(uri, depth, withCustomProperties);
 	}
 
-	protected List<SubversionInfo> list(final URI uri, final Depth depth, final boolean withCustomProperties) {
+	protected List<InfoEntry> list(final URI uri, final Depth depth, final boolean withCustomProperties) {
 		final HttpUriRequest request = requestFactory.createInfoRequest(uri, depth);
 		final HttpResponse response = execute(request, false, HttpStatus.SC_MULTI_STATUS);
 
 		final InputStream in = getContent(response);
 		try {
-			return SubversionInfo.readList(in, withCustomProperties, (Depth.FILES != depth));
+			return InfoEntry.readList(in, withCustomProperties, (Depth.FILES != depth));
 		} finally {
 			IOUtils.closeQuietly(in);
 		}
 	}
 
-	protected void listRecursive(final String uriPrefix, final boolean withCustomProperties, final Collection<SubversionInfo> todo, final Set<SubversionInfo> done) {
-		for (final SubversionInfo info : todo) {
+	protected void listRecursive(final String uriPrefix, final boolean withCustomProperties, final Collection<InfoEntry> todo, final Set<InfoEntry> done) {
+		for (final InfoEntry info : todo) {
 			if (done.contains(info)) {
 				continue;
 			}
@@ -289,7 +289,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 			if (info.isDirectory()) {
 				final Path path = info.getPath();
 				final URI uri = URI.create(uriPrefix + path);
-				final List<SubversionInfo> children = list(uri, Depth.IMMEDIATES, withCustomProperties);
+				final List<InfoEntry> children = list(uri, Depth.IMMEDIATES, withCustomProperties);
 				listRecursive(uriPrefix, withCustomProperties, children, done);
 			}
 		}
@@ -304,7 +304,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	}
 
 	@Override
-	public List<SubversionLog> log(final Path resource, final Revision startRevision, final Revision endRevision) {
+	public List<LogEntry> log(final Path resource, final Revision startRevision, final Revision endRevision) {
 		final URI uri = URI.create(repository + resource.getValue());
 
 		final Revision concreateStartRevision = getConcreateRevision(resource, startRevision);
@@ -314,7 +314,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 		final InputStream in = getContent(response);
 		try {
-			return SubversionLog.read(in);
+			return LogEntry.read(in);
 		} finally {
 			IOUtils.closeQuietly(in);
 		}
@@ -334,7 +334,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	}
 
 	@Override
-	public void setProperties(final Path resource, final String message, final SubversionProperty... properties) {
+	public void setProperties(final Path resource, final String message, final ResourceProperty... properties) {
 		uploadWithProperties0(resource, message, null, properties);
 	}
 
@@ -345,7 +345,7 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 
 	@Override
 	public void unlock(final Path resource) {
-		final SubversionInfo info = info(resource, Revision.HEAD, false);
+		final InfoEntry info = info(resource, Revision.HEAD, false);
 		final String lockToken = info.getLockToken();
 		if (lockToken == null) {
 			return;
@@ -365,12 +365,12 @@ public abstract class AbstractSubversionRepository<T extends AbstractSubversionR
 	}
 
 	@Override
-	public void uploadWithProperties(final Path resource, final String message, final InputStream content, final SubversionProperty... properties) {
+	public void uploadWithProperties(final Path resource, final String message, final InputStream content, final ResourceProperty... properties) {
 		if (content == null) {
 			throw new IllegalArgumentException("content can not be null");
 		}
 		uploadWithProperties0(resource, message, content, properties);
 	}
 
-	protected abstract void uploadWithProperties0(final Path resource, final String message, @Nullable final InputStream content, final SubversionProperty... properties);
+	protected abstract void uploadWithProperties0(final Path resource, final String message, @Nullable final InputStream content, final ResourceProperty... properties);
 }

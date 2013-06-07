@@ -11,7 +11,7 @@ import javax.annotation.concurrent.ThreadSafe;
  * Interface listing all available operations on a subversion repository
  */
 @ThreadSafe
-public interface SubversionRepository {
+public interface Repository {
 
 	/**
 	 * Recursively copy a resource in the given revision
@@ -33,9 +33,9 @@ public interface SubversionRepository {
 	 * Remove the given properties form the resource
 	 * @param resource the {@link Path} of the resource (relative to the repository root)
 	 * @param message the commit message for the current operation
-	 * @param properties {@link SubversionProperty} to remove
+	 * @param properties {@link ResourceProperty} to remove
 	 */
-	public void deleteProperties(Path resource, String message, SubversionProperty... properties);
+	public void deleteProperties(Path resource, String message, ResourceProperty... properties);
 
 	/**
 	 * Download the resource
@@ -65,16 +65,16 @@ public interface SubversionRepository {
 	 * @param resource the {@link Path} of the resource (relative to the repository root)
 	 * @param revision the {@link Revision} of the resource to retrieve
 	 * @param withCustomProperties whether to retrieve user defined properties
-	 * @return {@link SubversionInfo} for the resource
+	 * @return {@link InfoEntry} for the resource
 	 */
-	public SubversionInfo info(Path resource, Revision revision, boolean withCustomProperties);
+	public InfoEntry info(Path resource, Revision revision, boolean withCustomProperties);
 
 	/**
 	 * Retrieve log information for the latest revision of the resource
 	 * @param resource the {@link Path} of the resource (relative to the repository root)
-	 * @return {@link SubversionLog} for latest revision of the resource
+	 * @return {@link LogEntry} for latest revision of the resource
 	 */
-	public SubversionLog lastLog(Path resource);
+	public LogEntry lastLog(Path resource);
 
 	/**
 	 * Retrieve information for the resource in the given revision and its child resources (depending on depth parameter)
@@ -82,9 +82,9 @@ public interface SubversionRepository {
 	 * @param revision the {@link Revision} of the resource to retrieve
 	 * @param depth whether to retrieve only for the given resource, its children or only part of its children depending on the value of {@link Depth}
 	 * @param withCustomProperties whether to retrieve user defined properties
-	 * @return {@link List} of {@link SubversionInfo} for the resource and its child resources (depending on depth parameter)
+	 * @return {@link List} of {@link InfoEntry} for the resource and its child resources (depending on depth parameter)
 	 */
-	public List<SubversionInfo> list(Path resource, Revision revision, Depth depth, boolean withCustomProperties);
+	public List<InfoEntry> list(Path resource, Revision revision, Depth depth, boolean withCustomProperties);
 
 	/**
 	 * Mark the current revision of the resource as locked
@@ -97,9 +97,9 @@ public interface SubversionRepository {
 	 * @param resource the {@link Path} of the resource (relative to the repository root)
 	 * @param startRevision the first {@link Revision} of the resource to retrieve (including)
 	 * @param endRevision the last {@link Revision} of the resource to retrieve (including)
-	 * @return ordered (early to latest) {@link List} of {@link SubversionLog} for the revisions between startRevision and endRevision of the resource
+	 * @return ordered (early to latest) {@link List} of {@link LogEntry} for the revisions between startRevision and endRevision of the resource
 	 */
-	public List<SubversionLog> log(Path resource, Revision startRevision, Revision endRevision);
+	public List<LogEntry> log(Path resource, Revision startRevision, Revision endRevision);
 
 	/**
 	 * Recursively move a resource (latest revision)
@@ -122,9 +122,9 @@ public interface SubversionRepository {
 	 * Set the given properties for the resource (new properties will be added, existing properties will be overridden)
 	 * @param resource the {@link Path} of the resource (relative to the repository root)
 	 * @param message the commit message for the current operation
-	 * @param properties {@link SubversionProperty} to add or override
+	 * @param properties {@link ResourceProperty} to add or override
 	 */
-	public void setProperties(Path resource, String message, SubversionProperty... properties);
+	public void setProperties(Path resource, String message, ResourceProperty... properties);
 
 	/**
 	 * Remove the lock on the current revision of the resource
@@ -145,7 +145,7 @@ public interface SubversionRepository {
 	 * @param resource the {@link Path} of the resource (relative to the repository root)
 	 * @param message the commit message for the current operation
 	 * @param content {@link InputStream} from which the content will be read (will be closed after transfer)
-	 * @param properties {@link SubversionProperty} to add or override
+	 * @param properties {@link ResourceProperty} to add or override
 	 */
-	public void uploadWithProperties(Path resource, String message, InputStream content, SubversionProperty... properties);
+	public void uploadWithProperties(Path resource, String message, InputStream content, ResourceProperty... properties);
 }

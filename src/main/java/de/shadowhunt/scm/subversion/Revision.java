@@ -55,18 +55,12 @@ public final class Revision implements Comparable<Revision>, Serializable {
 			return false;
 		}
 		final Revision other = (Revision) obj;
-		if (version != other.version) {
-			return false;
-		}
-		return true;
+		return version == other.version;
 	}
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = (prime * result) + version;
-		return result;
+		return version;
 	}
 
 	@Override

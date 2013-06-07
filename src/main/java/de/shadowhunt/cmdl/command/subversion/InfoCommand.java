@@ -4,7 +4,7 @@ import java.io.PrintWriter;
 
 import org.apache.commons.cli.CommandLine;
 
-import de.shadowhunt.scm.subversion.SubversionInfo;
+import de.shadowhunt.scm.subversion.InfoEntry;
 
 /**
  * Subversion info command
@@ -21,7 +21,7 @@ public class InfoCommand extends AbstractInfoCommand {
 
 	@Override
 	protected void execute0(final CommandLine cmdl) throws Exception {
-		final SubversionInfo info = getInfo(cmdl);
+		final InfoEntry info = getInfo(cmdl);
 
 		out.println("Path: " + info.getPath());
 		out.println("Repository Root: " + info.getRoot());

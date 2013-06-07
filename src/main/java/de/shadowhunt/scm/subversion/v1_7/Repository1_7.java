@@ -11,17 +11,17 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 
-import de.shadowhunt.scm.subversion.AbstractSubversionRepository;
+import de.shadowhunt.scm.subversion.AbstractRepository;
 import de.shadowhunt.scm.subversion.Depth;
+import de.shadowhunt.scm.subversion.InfoEntry;
 import de.shadowhunt.scm.subversion.Path;
+import de.shadowhunt.scm.subversion.ResourceProperty;
 import de.shadowhunt.scm.subversion.Revision;
-import de.shadowhunt.scm.subversion.SubversionInfo;
-import de.shadowhunt.scm.subversion.SubversionProperty;
 
 /**
- * {@code SubversionRepository1_7} supports subversion servers of version 1.7.X
+ * {@link Repository1_7} supports subversion servers of version 1.7.X
  */
-public class SubversionRepository1_7 extends AbstractSubversionRepository<SubversionRequestFactory1_7> {
+public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 
 	protected static final String PREFIX_ME = "/!svn/me";
 
@@ -31,11 +31,11 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 
 	protected static final String PREFIX_TXR = "/!svn/txr/";
 
-	protected SubversionRepository1_7(final URI repositoryRoot, final boolean trustServerCertificat) {
-		super(repositoryRoot, trustServerCertificat, new SubversionRequestFactory1_7());
+	protected Repository1_7(final URI repositoryRoot, final boolean trustServerCertificat) {
+		super(repositoryRoot, trustServerCertificat, new RequestFactory1_7());
 	}
 
-	protected void contentUpload(final Path resource, final SubversionInfo info, final String uuid, @Nullable final InputStream content) {
+	protected void contentUpload(final Path resource, final InfoEntry info, final String uuid, @Nullable final InputStream content) {
 		if (content == null) {
 			return;
 		}
@@ -53,7 +53,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 
 	@Override
 	public void copy(final Path srcResource, final Revision srcRevision, final Path targetResource, final String message) {
-		final SubversionInfo info = info(srcResource, srcRevision, false);
+		final InfoEntry info = info(srcResource, srcRevision, false);
 		final String uuid = prepareTransaction();
 		setCommitMessage(uuid, message);
 		createMissingFolders(PREFIX_TXR, uuid, targetResource.getParent());
@@ -73,7 +73,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		final String uuid = prepareTransaction();
 		setCommitMessage(uuid, message);
 		delete0(resource, uuid);
-		final SubversionInfo info = info(resource, Revision.HEAD, false);
+		final InfoEntry info = info(resource, Revision.HEAD, false);
 		merge(info, uuid);
 	}
 
@@ -84,10 +84,10 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 	}
 
 	@Override
-	public void deleteProperties(final Path resource, final String message, final SubversionProperty... properties) {
+	public void deleteProperties(final Path resource, final String message, final ResourceProperty... properties) {
 		final String uuid = prepareTransaction();
 		setCommitMessage(uuid, message);
-		final SubversionInfo info = info(resource, Revision.HEAD, false);
+		final InfoEntry info = info(resource, Revision.HEAD, false);
 		propertiesRemove(resource, info, uuid, properties);
 		merge(info, uuid);
 	}
@@ -101,13 +101,13 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 	}
 
 	@Override
-	public List<SubversionInfo> list(final Path resource, final Revision revision, final Depth depth, final boolean withCustomProperties) {
+	public List<InfoEntry> list(final Path resource, final Revision revision, final Depth depth, final boolean withCustomProperties) {
 		final Revision concreateRevision = getConcreateRevision(resource, revision);
 		final String uriPrefix = repository + PREFIX_RVR + concreateRevision;
 		return list(uriPrefix, resource, depth, withCustomProperties);
 	}
 
-	protected void merge(final SubversionInfo info, final String uuid) {
+	protected void merge(final InfoEntry info, final String uuid) {
 		final Path path = Path.create(repository.getPath() + PREFIX_TXN + uuid);
 		final HttpUriRequest request = requestFactory.createMergeRequest(repository, path, info);
 		execute(request, HttpStatus.SC_OK);
@@ -115,7 +115,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 
 	@Override
 	public void move(final Path srcResource, final Path targetResource, final String message) {
-		final SubversionInfo info = info(srcResource, Revision.HEAD, false);
+		final InfoEntry info = info(srcResource, Revision.HEAD, false);
 		final String uuid = prepareTransaction();
 		setCommitMessage(uuid, message);
 		copy0(srcResource, info.getRevision(), targetResource, uuid);
@@ -132,8 +132,8 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		return response.getFirstHeader("SVN-Txn-Name").getValue();
 	}
 
-	protected void propertiesRemove(final Path resource, final SubversionInfo info, final String uuid, final SubversionProperty... properties) {
-		final SubversionProperty[] filtered = SubversionProperty.filteroutSystemProperties(properties);
+	protected void propertiesRemove(final Path resource, final InfoEntry info, final String uuid, final ResourceProperty... properties) {
+		final ResourceProperty[] filtered = ResourceProperty.filteroutSystemProperties(properties);
 		if (filtered.length == 0) {
 			return;
 		}
@@ -145,8 +145,8 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		execute(request, HttpStatus.SC_MULTI_STATUS);
 	}
 
-	protected void propertiesSet(final Path resource, final SubversionInfo info, final String uuid, @Nullable final SubversionProperty... properties) {
-		final SubversionProperty[] filtered = SubversionProperty.filteroutSystemProperties(properties);
+	protected void propertiesSet(final Path resource, final InfoEntry info, final String uuid, @Nullable final ResourceProperty... properties) {
+		final ResourceProperty[] filtered = ResourceProperty.filteroutSystemProperties(properties);
 		if (filtered.length == 0) {
 			return;
 		}
@@ -167,7 +167,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 	}
 
 	@Override
-	protected void uploadWithProperties0(final Path resource, final String message, @Nullable final InputStream content, @Nullable final SubversionProperty... properties) {
+	protected void uploadWithProperties0(final Path resource, final String message, @Nullable final InputStream content, @Nullable final ResourceProperty... properties) {
 		final String uuid = prepareTransaction();
 
 		final Path infoResource;
@@ -176,7 +176,7 @@ public class SubversionRepository1_7 extends AbstractSubversionRepository<Subver
 		} else {
 			infoResource = createMissingFolders(PREFIX_TXR, uuid, resource);
 		}
-		final SubversionInfo info = info(infoResource, Revision.HEAD, false);
+		final InfoEntry info = info(infoResource, Revision.HEAD, false);
 		setCommitMessage(uuid, message);
 		contentUpload(resource, info, uuid, content);
 		propertiesSet(resource, info, uuid, properties);

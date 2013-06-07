@@ -7,16 +7,16 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 
-import de.shadowhunt.scm.subversion.AbstractSubversionRequestFactory;
+import de.shadowhunt.scm.subversion.AbstractRequestFactory;
 
 /**
- * {@code SubversionRequestFactory1_7} creates http requests suitable for subversion 1.7.X server
+ * {@link RequestFactory1_7} creates http requests suitable for subversion 1.7.X server
  */
-public class SubversionRequestFactory1_7 extends AbstractSubversionRequestFactory {
+public class RequestFactory1_7 extends AbstractRequestFactory {
 
 	protected static final ContentType CONTENT_TYPE_SVNSKEL = ContentType.create("application/vnd.svn-skel");
 
-	protected SubversionRequestFactory1_7() {
+	protected RequestFactory1_7() {
 		// prevent global instantiation
 	}
 

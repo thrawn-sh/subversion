@@ -19,7 +19,7 @@ import de.shadowhunt.cmdl.command.AbstractCommand;
 import de.shadowhunt.scm.subversion.Path;
 import de.shadowhunt.scm.subversion.ServerVersion;
 import de.shadowhunt.scm.subversion.SubversionFactory;
-import de.shadowhunt.scm.subversion.SubversionRepository;
+import de.shadowhunt.scm.subversion.Repository;
 
 abstract class AbstractSubversionCommand extends AbstractCommand {
 
@@ -91,7 +91,7 @@ abstract class AbstractSubversionCommand extends AbstractCommand {
 		super(name, out);
 	}
 
-	protected final SubversionRepository createRepository(final CommandLine cmdl) {
+	protected final Repository createRepository(final CommandLine cmdl) {
 		final URI root = getRepositoryRoot(cmdl);
 		final String user = getUser(cmdl);
 		final String password = getPassword(cmdl);
@@ -99,7 +99,7 @@ abstract class AbstractSubversionCommand extends AbstractCommand {
 		final ServerVersion version = getServerVersion(cmdl);
 		final boolean trustServer = getTrustServer(cmdl);
 
-		final SubversionRepository repository = SubversionFactory.getInstance(root, trustServer, version);
+		final Repository repository = SubversionFactory.getInstance(root, trustServer, version);
 		repository.setCredentials(user, password, workstation);
 		return repository;
 

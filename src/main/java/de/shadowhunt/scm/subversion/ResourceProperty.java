@@ -8,10 +8,10 @@ import javax.annotation.concurrent.Immutable;
  * {@code SubversionProperty} represents a resource property
  */
 @Immutable
-public class SubversionProperty {
+public class ResourceProperty {
 
 	/**
-	 * {@link SubversionProperty} can have various types, depending of the context they are used
+	 * {@link ResourceProperty} can have various types, depending of the context they are used
 	 */
 	public enum Type {
 		BASE(""),
@@ -38,21 +38,21 @@ public class SubversionProperty {
 	 * Factory method to create custom properties
 	 * @param name name of the property
 	 * @param value value of the property
-	 * @return {@link SubversionProperty} with the given name and value, type is always {@code Type.CUSTOM}
+	 * @return {@link ResourceProperty} with the given name and value, type is always {@code Type.CUSTOM}
 	 */
-	public static SubversionProperty createCustomProperty(final String name, final String value) {
-		return new SubversionProperty(Type.CUSTOM, name, value);
+	public static ResourceProperty createCustomProperty(final String name, final String value) {
+		return new ResourceProperty(Type.CUSTOM, name, value);
 	}
 
 	/**
-	 * Filter out {@code Type.Base} and {@code Type.DAV} {@link SubversionProperty}
-	 * @param properties {@link SubversionProperty} that shall be filtered
-	 * @return filtered {@link SubversionProperty}
+	 * Filter out {@code Type.Base} and {@code Type.DAV} {@link ResourceProperty}
+	 * @param properties {@link ResourceProperty} that shall be filtered
+	 * @return filtered {@link ResourceProperty}
 	 */
-	public static SubversionProperty[] filteroutSystemProperties(final SubversionProperty... properties) {
-		final SubversionProperty[] filtered = new SubversionProperty[properties.length];
+	public static ResourceProperty[] filteroutSystemProperties(final ResourceProperty... properties) {
+		final ResourceProperty[] filtered = new ResourceProperty[properties.length];
 		int index = 0;
-		for (final SubversionProperty property : properties) {
+		for (final ResourceProperty property : properties) {
 			if ((property != null) && ((Type.CUSTOM == property.type) || (Type.SVN == property.type))) {
 				filtered[index++] = property;
 			}
@@ -66,7 +66,7 @@ public class SubversionProperty {
 
 	private final String value;
 
-	SubversionProperty(final Type type, final String name, final String value) {
+	ResourceProperty(final Type type, final String name, final String value) {
 		this.type = type;
 		this.name = name;
 		this.value = value;
@@ -80,10 +80,10 @@ public class SubversionProperty {
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof SubversionProperty)) {
+		if (!(obj instanceof ResourceProperty)) {
 			return false;
 		}
-		final SubversionProperty other = (SubversionProperty) obj;
+		final ResourceProperty other = (ResourceProperty) obj;
 		if (name == null) {
 			if (other.name != null) {
 				return false;

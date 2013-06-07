@@ -6,14 +6,14 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 
-import de.shadowhunt.scm.subversion.AbstractSubversionRequestFactory;
+import de.shadowhunt.scm.subversion.AbstractRequestFactory;
 
 /**
- * {@code SubversionRequestFactory1_6} creates http requests suitable for subversion 1.6.X server
+ * {@link RequestFactory1_6} creates http requests suitable for subversion 1.6.X server
  */
-public class SubversionRequestFactory1_6 extends AbstractSubversionRequestFactory {
+public class RequestFactory1_6 extends AbstractRequestFactory {
 
-	protected SubversionRequestFactory1_6() {
+	protected RequestFactory1_6() {
 		// prevent global instantiation
 	}
 

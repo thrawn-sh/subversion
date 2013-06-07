@@ -17,15 +17,15 @@ import org.xml.sax.SAXException;
 /**
  * Container that holds all log information for a single revision of a resource
  */
-public class SubversionLog {
+public final class LogEntry {
 
 	static class SubversionLogHandler extends BasicHandler {
 
-		private SubversionLog current = null;
+		private LogEntry current = null;
 
 		private final DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", Locale.US);
 
-		private final List<SubversionLog> logs = new ArrayList<SubversionLog>();
+		private final List<LogEntry> logs = new ArrayList<LogEntry>();
 
 		@Override
 		public void endElement(final String uri, final String localName, final String qName) throws SAXException {
@@ -72,7 +72,7 @@ public class SubversionLog {
 			}
 		}
 
-		List<SubversionLog> getLogs() {
+		List<LogEntry> getLogs() {
 			return logs;
 		}
 
@@ -83,7 +83,7 @@ public class SubversionLog {
 			final String name = getNameFromQName(qName);
 
 			if ("log-item".equals(name)) {
-				current = new SubversionLog();
+				current = new LogEntry();
 				return;
 			}
 		}
@@ -92,9 +92,9 @@ public class SubversionLog {
 	/**
 	 * Reads log information for a resource from the given {@link InputStream}
 	 * @param in {@link InputStream} from which the status information is read (Note: will not be closed)
-	 * @return {@link SubversionLog} for the resource
+	 * @return {@link LogEntry} for the resource
 	 */
-	public static List<SubversionLog> read(final InputStream in) {
+	public static List<LogEntry> read(final InputStream in) {
 		try {
 			final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
 			final SubversionLogHandler handler = new SubversionLogHandler();
@@ -116,7 +116,7 @@ public class SubversionLog {
 
 	private String user;
 
-	SubversionLog() {
+	LogEntry() {
 		// prevent direct instantiation
 	}
 
@@ -131,7 +131,7 @@ public class SubversionLog {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final SubversionLog other = (SubversionLog) obj;
+		final LogEntry other = (LogEntry) obj;
 		if (path == null) {
 			if (other.path != null) {
 				return false;
