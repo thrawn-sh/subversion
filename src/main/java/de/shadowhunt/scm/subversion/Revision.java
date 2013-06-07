@@ -35,7 +35,7 @@ public final class Revision implements Comparable<Revision>, Serializable {
 	private final int version;
 
 	private Revision(final int revision) {
-		this.version = revision;
+		version = revision;
 	}
 
 	@Override
