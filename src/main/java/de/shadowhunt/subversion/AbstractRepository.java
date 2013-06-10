@@ -246,12 +246,8 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 
 	@Override
 	public LogEntry lastLog(final Path resource) {
-		final InfoEntry info = info(resource, Revision.HEAD, false);
-		final Revision revision = info.getRevision();
+		final Revision revision = getConcreateRevision(resource, Revision.HEAD);
 		final List<LogEntry> logs = log(resource, revision, revision);
-		if (logs.isEmpty()) {
-			throw new SubversionException("no logs available");
-		}
 		return logs.get(0);
 	}
 
