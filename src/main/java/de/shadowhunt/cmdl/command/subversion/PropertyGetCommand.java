@@ -28,7 +28,7 @@ public class PropertyGetCommand extends AbstractInfoCommand {
 		final InfoEntry info = getInfo(cmdl);
 
 		final String property = getProperty(cmdl);
-		final String value = info.getSubversionPropertyValue(property);
+		final String value = info.getResourcePropertyValue(property);
 		if (value != null) {
 			out.println(value);
 		}

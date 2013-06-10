@@ -331,7 +331,7 @@ public final class InfoEntry {
 	 * @return the value of the custom property or {@code null} if no custom property with the given name was found
 	 */
 	@CheckForNull
-	public String getSubversionPropertyValue(final String name) {
+	public String getResourcePropertyValue(final String name) {
 		for (final ResourceProperty property : customProperties) {
 			if (name.equals(property.getName())) {
 				return property.getValue();
