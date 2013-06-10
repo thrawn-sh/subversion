@@ -41,11 +41,6 @@ public final class LogEntry {
 				return;
 			}
 
-			if ("added-path".equals(name) || "modified-path".equals(name)) {
-				final Path path = Path.create(getText());
-				current.setPath(path);
-			}
-
 			if ("comment".equals(name)) {
 				current.setComment(getText());
 				return;
@@ -110,8 +105,6 @@ public final class LogEntry {
 
 	private Date date;
 
-	private Path path;
-
 	private Revision revision;
 
 	private String user;
@@ -132,11 +125,18 @@ public final class LogEntry {
 			return false;
 		}
 		final LogEntry other = (LogEntry) obj;
-		if (path == null) {
-			if (other.path != null) {
+		if (comment == null) {
+			if (other.comment != null) {
 				return false;
 			}
-		} else if (!path.equals(other.path)) {
+		} else if (!comment.equals(other.comment)) {
+			return false;
+		}
+		if (date == null) {
+			if (other.date != null) {
+				return false;
+			}
+		} else if (!date.equals(other.date)) {
 			return false;
 		}
 		if (revision == null) {
@@ -144,6 +144,13 @@ public final class LogEntry {
 				return false;
 			}
 		} else if (!revision.equals(other.revision)) {
+			return false;
+		}
+		if (user == null) {
+			if (other.user != null) {
+				return false;
+			}
+		} else if (!user.equals(other.user)) {
 			return false;
 		}
 		return true;
@@ -163,10 +170,6 @@ public final class LogEntry {
 	 */
 	public Date getDate() {
 		return new Date(date.getTime());
-	}
-
-	public Path getPath() {
-		return path;
 	}
 
 	/**
@@ -189,8 +192,10 @@ public final class LogEntry {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = (prime * result) + ((path == null) ? 0 : path.hashCode());
+		result = (prime * result) + ((comment == null) ? 0 : comment.hashCode());
+		result = (prime * result) + ((date == null) ? 0 : date.hashCode());
 		result = (prime * result) + ((revision == null) ? 0 : revision.hashCode());
+		result = (prime * result) + ((user == null) ? 0 : user.hashCode());
 		return result;
 	}
 
@@ -200,10 +205,6 @@ public final class LogEntry {
 
 	void setDate(final Date date) {
 		this.date = new Date(date.getTime());
-	}
-
-	void setPath(final Path path) {
-		this.path = path;
 	}
 
 	void setRevision(final Revision revision) {
@@ -221,8 +222,6 @@ public final class LogEntry {
 		builder.append(comment);
 		builder.append(", date=");
 		builder.append(date);
-		builder.append(", path=");
-		builder.append(path);
 		builder.append(", revision=");
 		builder.append(revision);
 		builder.append(", user=");
