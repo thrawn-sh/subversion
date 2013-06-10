@@ -2,6 +2,9 @@ package de.shadowhunt.subversion;
 
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * {@link Path} defines a resource location in the repository
+ */
 public final class Path implements Comparable<Path> {
 
 	/**

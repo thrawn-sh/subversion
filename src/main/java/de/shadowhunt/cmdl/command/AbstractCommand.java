@@ -2,6 +2,9 @@ package de.shadowhunt.cmdl.command;
 
 import java.io.PrintWriter;
 
+/**
+ * {@link AbstractCommand} basic command that provides a {@link PrintWriter} to write output to
+ */
 public abstract class AbstractCommand implements Command {
 
 	private final String name;
