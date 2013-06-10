@@ -23,9 +23,26 @@ mkdir   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_with_dirs/
 mkdir   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_with_dirs/b"
 mkdir   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_with_dirs/c"
 mkdir   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_with_dirs/d"
+mkdir   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_mixed"
+touch   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_mixed/file.txt"
+mkdir   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_mixed/a"
+touch   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_mixed/a/file.txt"
+mkdir   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_mixed/a/b"
+touch   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_mixed/a/b/file.txt"
 svn add "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000"
 svn ci  "${TMP_DIR}" -m "create test structure"
 svn cp  file:///var/www/svn/test/trunk file:///var/www/svn/test/tags/0.0 -m "release 0.0"
+
+# create properties
+for ((i=1; i<=5; i++)); do
+svn propset myProperty "value ${i}" "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_mixed/file.txt"
+svn ci "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_mixed/file.txt" -m "changeing myProperty ${i}"
+done
+
+for ((i=1; i<=5; i++)); do
+svn propset "myProperty${i}" "value ${i}" "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_mixed/a/file.txt"
+svn ci "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_mixed/a/file.txt" -m "adding myProperty${i}"
+done
 
 # create 10 tags with changes in revisions.txt
 cat >   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/revisions.txt" <<EOF
