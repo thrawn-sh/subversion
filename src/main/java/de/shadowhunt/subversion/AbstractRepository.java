@@ -200,8 +200,8 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 	}
 
 	@Override
-	public boolean exists(final Path resource) {
-		final URI uri = URI.create(repository + resource.getValue());
+	public boolean exists(final Path resource, final Revision revision) {
+		final URI uri = downloadURI(resource, revision);
 
 		final HttpUriRequest request = requestFactory.createExistsRequest(uri);
 		final HttpResponse response = execute(request, /* found */HttpStatus.SC_OK, /* not found */HttpStatus.SC_NOT_FOUND);
@@ -335,7 +335,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 
 	@Override
 	public void setProperties(final Path resource, final String message, final ResourceProperty... properties) {
-		uploadWithProperties0(resource, message, null, properties);
+		upload0(resource, message, null, properties);
 	}
 
 	protected final void triggerAuthentication() {
@@ -357,20 +357,12 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 	}
 
 	@Override
-	public void upload(final Path resource, final String message, final InputStream content) {
+	public void upload(final Path resource, final String message, final InputStream content, final ResourceProperty... properties) {
 		if (content == null) {
 			throw new IllegalArgumentException("content can not be null");
 		}
-		uploadWithProperties0(resource, message, content);
+		upload0(resource, message, content, properties);
 	}
 
-	@Override
-	public void uploadWithProperties(final Path resource, final String message, final InputStream content, final ResourceProperty... properties) {
-		if (content == null) {
-			throw new IllegalArgumentException("content can not be null");
-		}
-		uploadWithProperties0(resource, message, content, properties);
-	}
-
-	protected abstract void uploadWithProperties0(final Path resource, final String message, @Nullable final InputStream content, final ResourceProperty... properties);
+	protected abstract void upload0(final Path resource, final String message, @Nullable final InputStream content, final ResourceProperty... properties);
 }

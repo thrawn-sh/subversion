@@ -56,9 +56,10 @@ public interface Repository {
 	/**
 	 * Check if the resource already exists in the latest revision of the repository
 	 * @param resource the {@link Path} of the resource (relative to the repository root)
+	 * @param revision the {@link Revision} of the resource to retrieve
 	 * @return {@code true} if the resource already exists in the latest revision of the repository otherwise {@code false}
 	 */
-	public boolean exists(Path resource);
+	public boolean exists(Path resource, Revision revision);
 
 	/**
 	 * Retrieve information for the resource
@@ -140,19 +141,11 @@ public interface Repository {
 	public void unlock(Path resource);
 
 	/**
-	 * Upload a new revision of the resource
-	 * @param resource the {@link Path} of the resource (relative to the repository root)
-	 * @param message the commit message for the current operation
-	 * @param content {@link InputStream} from which the content will be read (will be closed after transfer)
-	 */
-	public void upload(Path resource, String message, InputStream content);
-
-	/**
 	 * Upload a new revision of the resource and set properties
 	 * @param resource the {@link Path} of the resource (relative to the repository root)
 	 * @param message the commit message for the current operation
 	 * @param content {@link InputStream} from which the content will be read (will be closed after transfer)
 	 * @param properties {@link ResourceProperty} to add or override
 	 */
-	public void uploadWithProperties(Path resource, String message, InputStream content, ResourceProperty... properties);
+	public void upload(Path resource, String message, InputStream content, ResourceProperty... properties);
 }

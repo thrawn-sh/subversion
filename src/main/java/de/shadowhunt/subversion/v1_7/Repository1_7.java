@@ -70,7 +70,7 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 
 	@Override
 	public void createFolder(final Path resource, final String message) {
-		if (exists(resource)) {
+		if (exists(resource, Revision.HEAD)) {
 			return;
 		}
 
@@ -180,11 +180,11 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 	}
 
 	@Override
-	protected void uploadWithProperties0(final Path resource, final String message, @Nullable final InputStream content, @Nullable final ResourceProperty... properties) {
+	protected void upload0(final Path resource, final String message, @Nullable final InputStream content, @Nullable final ResourceProperty... properties) {
 		final String uuid = prepareTransaction();
 
 		final Path infoResource;
-		if (exists(resource)) {
+		if (exists(resource, Revision.HEAD)) {
 			infoResource = resource;
 		} else {
 			infoResource = createMissingFolders(PREFIX_TXR, uuid, resource);
