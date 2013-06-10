@@ -197,6 +197,7 @@ public abstract class AbstractRequestFactory {
 	public HttpUriRequest createLockRequest(final URI uri) {
 		final DavTemplateRequest request = new DavTemplateRequest("LOCK");
 		request.setURI(uri);
+		request.addHeader("X-SVN-Options", "lock-steal");
 
 		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
 		body.append("<lockinfo xmlns=\"DAV:\"><lockscope><exclusive/></lockscope><locktype><write/></locktype></lockinfo>");
