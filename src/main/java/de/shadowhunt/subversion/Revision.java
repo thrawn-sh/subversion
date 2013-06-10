@@ -3,7 +3,7 @@ package de.shadowhunt.subversion;
 import java.io.Serializable;
 
 /**
- * {code Revision} defines the revision of a repository or a resource in that repository
+ * {@link Revision} defines the revision of a repository or a resource in that repository
  */
 public final class Revision implements Comparable<Revision>, Serializable {
 
