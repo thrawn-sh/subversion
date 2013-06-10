@@ -7,7 +7,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 /**
- * {@code NonValidatingX509TrustManager} trusts every X509 certificate, regardless of trusted certificate authorities, certificate revocation lists, online status checking or other means.
+ * {@link NonValidatingX509TrustManager} trusts every X509 certificate, regardless of trusted certificate authorities, certificate revocation lists, online status checking or other means.
  */
 @ThreadSafe
 public final class NonValidatingX509TrustManager implements X509TrustManager {

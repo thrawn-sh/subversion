@@ -1,7 +1,7 @@
 package de.shadowhunt.cmdl.command;
 
 /**
- * {@code Command} can be executed with parameters
+ * {@link Command} can be executed with parameters
  */
 public interface Command {
 

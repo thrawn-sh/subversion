@@ -35,7 +35,7 @@ public abstract class AbstractRequestFactory {
 		private final String method;
 
 		/**
-		 * Create a new {@code DavTemplateRequest} with default {@link Depth}-level
+		 * Create a new {@link DavTemplateRequest} with default {@link Depth}-level
 		 * @param method http method name
 		 */
 		public DavTemplateRequest(final String method) {
@@ -43,7 +43,7 @@ public abstract class AbstractRequestFactory {
 		}
 
 		/**
-		 * Create a new {@code DavTemplateRequest}
+		 * Create a new {@link DavTemplateRequest}
 		 * @param method http method name
 		 * @param depth {@link Depth}-level of the request
 		 */
