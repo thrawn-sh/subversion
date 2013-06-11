@@ -187,7 +187,7 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 		if (exists(resource, Revision.HEAD)) {
 			infoResource = resource;
 		} else {
-			infoResource = createMissingFolders(PREFIX_TXR, uuid, resource);
+			infoResource = createMissingFolders(PREFIX_TXR, uuid, resource.getParent());
 		}
 		final InfoEntry info = info(infoResource, Revision.HEAD, false);
 		setCommitMessage(uuid, message);

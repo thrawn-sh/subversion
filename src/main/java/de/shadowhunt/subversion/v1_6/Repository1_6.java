@@ -246,7 +246,7 @@ public class Repository1_6 extends AbstractRepository<RequestFactory1_6> {
 			if (exists) {
 				infoResource = resource;
 			} else {
-				infoResource = createMissingFolders(PREFIX_WRK, uuid.toString(), resource);
+				infoResource = createMissingFolders(PREFIX_WRK, uuid.toString(), resource.getParent());
 			}
 
 			final InfoEntry info = info(infoResource, Revision.HEAD, false);

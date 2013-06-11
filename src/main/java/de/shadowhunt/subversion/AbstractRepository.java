@@ -161,7 +161,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 
 		String infoResource = "/";
 		final StringBuilder partial = new StringBuilder();
-		for (int i = 1; i < (resourceParts.length - 1); i++) {
+		for (int i = 1; i < resourceParts.length; i++) {
 			partial.append('/');
 			partial.append(resourceParts[i]);
 
