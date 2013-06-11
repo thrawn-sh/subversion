@@ -5,6 +5,22 @@ import org.junit.Test;
 
 public class RepositoryAuthenticatedIT extends RepositoryReadOnlyIT {
 
+	protected static void assertLocked(final Path resource, final String username) {
+		final InfoEntry afterLock = repository.info(resource, Revision.HEAD, false);
+		Assert.assertNotNull("InfoEntry must not be null", afterLock);
+		Assert.assertTrue(afterLock.isLocked());
+		Assert.assertEquals("locked => lock owner", username, afterLock.getLockOwner());
+		Assert.assertNotNull("locked => lock token", afterLock.getLockToken());
+	}
+
+	protected static void assertNotLocked(final Path resource) {
+		final InfoEntry afterLock = repository.info(resource, Revision.HEAD, false);
+		Assert.assertNotNull("InfoEntry must not be null", afterLock);
+		Assert.assertFalse(afterLock.isLocked());
+		Assert.assertNull("not locked => no lock owner", afterLock.getLockOwner());
+		Assert.assertNull("not locked => no lock token", afterLock.getLockToken());
+	}
+
 	protected String getUsername() {
 		return "svnuser"; // FIXME TODO
 	}
@@ -17,30 +33,16 @@ public class RepositoryAuthenticatedIT extends RepositoryReadOnlyIT {
 
 	@Test
 	public void lockingExisitingFile() {
-		final InfoEntry beforeLock = repository.info(EXISTING_FILE, Revision.HEAD, false);
-		Assert.assertNotNull("InfoEntry must not be null", beforeLock);
-		Assert.assertFalse(beforeLock.isLocked());
-		Assert.assertNull("not locked => no lock owner", beforeLock.getLockOwner());
-		Assert.assertNull("not locked => no lock token", beforeLock.getLockToken());
+		assertNotLocked(EXISTING_FILE);
 
 		try {
 			repository.lock(EXISTING_FILE);
-
-			final InfoEntry afterLock = repository.info(EXISTING_FILE, Revision.HEAD, false);
-			Assert.assertNotNull("InfoEntry must not be null", afterLock);
-			Assert.assertTrue(afterLock.isLocked());
-			Assert.assertEquals("locked => lock owner", "svnuser", afterLock.getLockOwner());
-			Assert.assertNotNull("locked => lock token", afterLock.getLockToken());
+			assertLocked(EXISTING_FILE, getUsername());
 		} finally {
 			// ensure we don't leave any locks behind
 			repository.unlock(EXISTING_FILE);
+			assertNotLocked(EXISTING_FILE);
 		}
-
-		final InfoEntry afterUnlock = repository.info(EXISTING_FILE, Revision.HEAD, false);
-		Assert.assertNotNull("InfoEntry must not be null", afterUnlock);
-		Assert.assertFalse(afterUnlock.isLocked());
-		Assert.assertNull("not locked => no lock owner", afterUnlock.getLockOwner());
-		Assert.assertNull("not locked => no lock token", afterUnlock.getLockToken());
 	}
 
 	@Test(expected = SubversionException.class)
@@ -51,18 +53,9 @@ public class RepositoryAuthenticatedIT extends RepositoryReadOnlyIT {
 
 	@Test
 	public void unlockNotLockedExisitingFile() {
-		final InfoEntry beforeUnlock = repository.info(EXISTING_FILE, Revision.HEAD, false);
-		Assert.assertNotNull("InfoEntry must not be null", beforeUnlock);
-		Assert.assertFalse(beforeUnlock.isLocked());
-		Assert.assertNull("not locked => no lock owner", beforeUnlock.getLockOwner());
-		Assert.assertNull("not locked => no lock token", beforeUnlock.getLockToken());
+		assertNotLocked(EXISTING_FILE);
 
 		repository.unlock(EXISTING_FILE);
-
-		final InfoEntry afterunlock = repository.info(EXISTING_FILE, Revision.HEAD, false);
-		Assert.assertNotNull("InfoEntry must not be null", afterunlock);
-		Assert.assertFalse(afterunlock.isLocked());
-		Assert.assertNull("not locked => no lock owner", afterunlock.getLockOwner());
-		Assert.assertNull("not locked => no lock token", afterunlock.getLockToken());
+		assertNotLocked(EXISTING_FILE);
 	}
 }
