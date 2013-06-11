@@ -91,17 +91,6 @@ public abstract class AbstractRequestFactory {
 	}
 
 	/**
-	 * Create a new temporary directory for a transaction
-	 * @param uri {@link URI} to perform the request against
-	 * @return {@link HttpUriRequest} creating the new temporary directory for the transaction
-	 */
-	public HttpUriRequest createActivityRequest(final URI uri) {
-		final DavTemplateRequest request = new DavTemplateRequest("MKACTIVITY");
-		request.setURI(uri);
-		return request;
-	}
-
-	/**
 	 * Perform authentication, with a cheap http request without any payload, the http connection will be authenticated afterwards
 	 * @param uri {@link URI} to perform the request against
 	 * @return {@link HttpUriRequest} performing the authentication

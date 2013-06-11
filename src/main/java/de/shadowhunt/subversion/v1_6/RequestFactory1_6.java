@@ -18,6 +18,17 @@ public class RequestFactory1_6 extends AbstractRequestFactory {
 	}
 
 	/**
+	 * Create a new temporary directory for a transaction
+	 * @param uri {@link URI} to perform the request against
+	 * @return {@link HttpUriRequest} creating the new temporary directory for the transaction
+	 */
+	public HttpUriRequest createActivityRequest(final URI uri) {
+		final DavTemplateRequest request = new DavTemplateRequest("MKACTIVITY");
+		request.setURI(uri);
+		return request;
+	}
+
+	/**
 	 * Perform a server side checkout of a resource
 	 * @param uri {@link URI} to perform the request against
 	 * @param href absolute resource-path relative to the repository root
