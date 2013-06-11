@@ -6,13 +6,11 @@ import java.net.URI;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class RepositoryReadOnlyIT {
+public abstract class AbstractRepositoryReadOnlyIT {
 
 	protected static final Path EXISTING_DIR_WITH_DIRS = Path.create("/trunk/00000000-0000-0000-0000-000000000000/folder_with_dirs");
 
@@ -30,19 +28,13 @@ public class RepositoryReadOnlyIT {
 
 	protected static final Path NON_EXISTING = Path.create("/trunk/00000000-0000-0000-0000-000000000000/no_exisiting.txt");
 
-	protected static final Repository repository = SubversionFactory.getInstance(URI.create("http://subversion-17.vm.shadowhunt.de/svn-basic/test"), false, ServerVersion.V1_7);
+	protected final Repository repository;
 
-	@BeforeClass
-	public static void authenticate() {
-		repository.setCredentials("svnuser", "svnpass", null);
-	}
+	protected final String root;
 
-	protected static final String retrieveContent(final InputStream download) throws IOException {
-		try {
-			return StringUtils.trimToEmpty(IOUtils.toString(download, "UTF-8"));
-		} finally {
-			IOUtils.closeQuietly(download);
-		}
+	protected AbstractRepositoryReadOnlyIT(final URI uri, final ServerVersion version) {
+		repository = SubversionFactory.getInstance(uri, false, version);
+		root = uri.getPath();
 	}
 
 	@Test
@@ -58,7 +50,7 @@ public class RepositoryReadOnlyIT {
 		final InputStream download = repository.download(EXISTING_FILE, Revision.HEAD);
 		Assert.assertNotNull("InputStream must not be null", download);
 
-		final String content = retrieveContent(download);
+		final String content = RepositoryUtils.retrieveContent(download);
 		Assert.assertEquals("content must match", "Test 9", content);
 	}
 
@@ -67,7 +59,7 @@ public class RepositoryReadOnlyIT {
 		final InputStream download = repository.download(EXISTING_FILE, Revision.create(20));
 		Assert.assertNotNull("InputStream must not be null", download);
 
-		final String content = retrieveContent(download);
+		final String content = RepositoryUtils.retrieveContent(download);
 		Assert.assertEquals("content must match", "Test 4", content);
 	}
 
@@ -102,7 +94,7 @@ public class RepositoryReadOnlyIT {
 		Assert.assertEquals("path are equal", EXISTING_EMPTY_DIR, info.getPath());
 		Assert.assertNotNull("repository uuid mut not be null", info.getRepositoryUuid());
 		Assert.assertEquals("last cahnged at", Revision.create(2), info.getRevision());
-		Assert.assertEquals("repository root is", "/svn-basic/test", info.getRoot());
+		Assert.assertEquals("repository root is", root, info.getRoot());
 		Assert.assertFalse("resource is not a file", info.isFile());
 		Assert.assertTrue("resource is a directory", info.isDirectory());
 
@@ -123,7 +115,7 @@ public class RepositoryReadOnlyIT {
 		Assert.assertEquals("path are equal", EXISTING_EMPTY_DIR, info.getPath());
 		Assert.assertNotNull("repository uuid mut not be null", info.getRepositoryUuid());
 		Assert.assertEquals("last cahnged at", revision, info.getRevision());
-		Assert.assertEquals("repository root is", "/svn-basic/test", info.getRoot());
+		Assert.assertEquals("repository root is", root, info.getRoot());
 		Assert.assertFalse("resource is not a file", info.isFile());
 		Assert.assertTrue("resource is a directory", info.isDirectory());
 
@@ -143,7 +135,7 @@ public class RepositoryReadOnlyIT {
 		Assert.assertEquals("path are equal", EXISTING_FILE, info.getPath());
 		Assert.assertNotNull("repository uuid mut not be null", info.getRepositoryUuid());
 		Assert.assertEquals("last cahnged at", Revision.create(30), info.getRevision());
-		Assert.assertEquals("repository root is", "/svn-basic/test", info.getRoot());
+		Assert.assertEquals("repository root is", root, info.getRoot());
 		Assert.assertTrue("resource is a file", info.isFile());
 		Assert.assertFalse("resource is not a directory", info.isDirectory());
 
@@ -164,7 +156,7 @@ public class RepositoryReadOnlyIT {
 		Assert.assertEquals("path are equal", EXISTING_FILE, info.getPath());
 		Assert.assertNotNull("repository uuid mut not be null", info.getRepositoryUuid());
 		Assert.assertEquals("last cahnged at", revision, info.getRevision());
-		Assert.assertEquals("repository root is", "/svn-basic/test", info.getRoot());
+		Assert.assertEquals("repository root is", root, info.getRoot());
 		Assert.assertTrue("resource is a file", info.isFile());
 		Assert.assertFalse("resource is not a directory", info.isDirectory());
 	}
