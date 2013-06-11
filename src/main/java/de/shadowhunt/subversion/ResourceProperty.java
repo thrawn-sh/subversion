@@ -1,11 +1,12 @@
 package de.shadowhunt.subversion;
 
 import java.util.Arrays;
+import java.util.Comparator;
 
 import javax.annotation.concurrent.Immutable;
 
 /**
- * {@code SubversionProperty} represents a resource property
+ * {@link ResourceProperty} represents a resource property
  */
 @Immutable
 public class ResourceProperty {
@@ -33,6 +34,17 @@ public class ResourceProperty {
 			return prefix;
 		}
 	}
+
+	/**
+	 * {@link Comparator} that compares {@link ResourceProperty} by their names
+	 */
+	public static final Comparator<ResourceProperty> NAME_COMPARATOR = new Comparator<ResourceProperty>() {
+
+		@Override
+		public int compare(final ResourceProperty rp1, final ResourceProperty rp2) {
+			return rp1.getName().compareTo(rp2.getName());
+		}
+	};
 
 	/**
 	 * Factory method to create custom properties
