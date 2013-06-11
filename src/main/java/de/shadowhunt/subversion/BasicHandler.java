@@ -28,9 +28,6 @@ class BasicHandler extends DefaultHandler {
 	}
 
 	protected final String getNameFromQName(final String qName) {
-		if (qName == null) {
-			return null;
-		}
 		final int index = qName.indexOf(':');
 		if (index >= 0) {
 			return qName.substring(index + 1);
@@ -39,14 +36,11 @@ class BasicHandler extends DefaultHandler {
 	}
 
 	protected final String getNamespaceFromQName(final String qName) {
-		if (qName == null) {
-			return null;
-		}
 		final int index = qName.indexOf(':');
 		if (index >= 0) {
 			return qName.substring(0, index);
 		}
-		return null;
+		return "";
 	}
 
 	protected String getText() {
