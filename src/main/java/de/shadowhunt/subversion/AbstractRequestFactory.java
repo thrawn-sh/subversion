@@ -284,16 +284,14 @@ public abstract class AbstractRequestFactory {
 		addApproveTokenHeader(request, lockToken, lockTokenTarget);
 
 		final StringBuilder sb = new StringBuilder(XML_PREAMBLE);
-		sb.append("<propertyupdate xmlns=\"DAV:\" xmlns:C=\"http://subversion.tigris.org/xmlns/custom/\" xmlns:S=\"http://subversion.tigris.org/xmlns/svn/\" xmlns:V=\"http://subversion.tigris.org/xmlns/dav/\"><remove>");
+		sb.append("<propertyupdate xmlns=\"DAV:\" xmlns:C=\"http://subversion.tigris.org/xmlns/custom/\" xmlns:S=\"http://subversion.tigris.org/xmlns/svn/\" xmlns:V=\"http://subversion.tigris.org/xmlns/dav/\"><remove><prop>");
 		for (final ResourceProperty property : properties) {
-			sb.append("<prop>");
 			sb.append('<');
 			sb.append(property.getType().getPrefix());
 			sb.append(property.getName());
 			sb.append("/>");
-			sb.append("</prop>");
 		}
-		sb.append("</remove></propertyupdate>");
+		sb.append("</prop></remove></propertyupdate>");
 		request.setEntity(new StringEntity(sb.toString(), CONTENT_TYPE_XML));
 		return request;
 	}
