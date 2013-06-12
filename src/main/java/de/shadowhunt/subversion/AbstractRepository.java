@@ -30,7 +30,6 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.AuthPolicy;
-import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeSocketFactory;
@@ -40,6 +39,7 @@ import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DecompressingHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 
@@ -86,8 +86,6 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 		if (hasJcifsSupport()) {
 			defaultClient.getAuthSchemes().register(AuthPolicy.NTLM, NtlmSchemeFactory.INSTANCE);
 		}
-
-		defaultClient.getParams().setParameter(ClientPNames.ALLOW_CIRCULAR_REDIRECTS, true);
 
 		return defaultClient;
 	}
@@ -198,6 +196,16 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 			return response;
 		} catch (final Exception e) {
 			throw new SubversionException("could not execute request (" + request + ")", e);
+		} finally {
+			// as the path objects can not differ between files and directories
+			// each request for an directory (without ending '/') will result
+			// in a redirect (with ending '/'), if another call to a redirected
+			// URI occurs a CircularRedirectException is thrown, as we can't
+			// determine the real target we can't prevent this from happening.
+			// Allowing circular redirects globally could lead to live locks on
+			// the other hand. Therefore we clear the redirection cache after
+			// each completed request cycle
+			context.removeAttribute(DefaultRedirectStrategy.REDIRECT_LOCATIONS);
 		}
 	}
 
