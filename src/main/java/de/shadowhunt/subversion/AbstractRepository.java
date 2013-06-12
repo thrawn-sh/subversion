@@ -54,10 +54,6 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 	protected static final String LOCK_OWNER_HEADER = "X-SVN-Lock-Owner";
 
 	protected static boolean contains(final int statusCode, final int... expectedStatusCodes) {
-		if (expectedStatusCodes.length == 0) {
-			return true;
-		}
-
 		for (final int expectedStatusCode : expectedStatusCodes) {
 			if (expectedStatusCode == statusCode) {
 				return true;
