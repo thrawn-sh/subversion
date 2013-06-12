@@ -6,8 +6,6 @@ import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -58,13 +56,12 @@ abstract class AbstractSubversionCommand extends AbstractCommand {
 				+ Arrays.toString(ServerVersion.values()));
 	}
 
-	@CheckForNull
 	protected static final Path getTargetResource(final CommandLine cmdl) {
 		final String[] args = cmdl.getArgs();
-		if (args.length > 0) {
-			return Path.create(args[args.length - 1]);
+		if (args.length <= 0) {
+			throw new IllegalArgumentException("no argument left as target");
 		}
-		return null;
+		return Path.create(args[args.length - 1]);
 	}
 
 	private static final boolean getTrustServer(final CommandLine cmdl) {
