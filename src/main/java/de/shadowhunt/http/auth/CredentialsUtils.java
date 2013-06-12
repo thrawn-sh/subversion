@@ -7,6 +7,9 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.auth.NTCredentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 
+/**
+ * {@link CredentialsUtils} provides convenience methods to create and manipulate {@link Credentials}
+ */
 public final class CredentialsUtils {
 
 	/**
