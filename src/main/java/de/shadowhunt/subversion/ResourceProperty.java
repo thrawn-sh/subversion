@@ -27,8 +27,8 @@ public class ResourceProperty {
 		}
 
 		/**
-		 * Returns the prefix of the {@code Type}
-		 * @return the prefix of the {@code Type}
+		 * Returns the prefix of the {@link Type}
+		 * @return the prefix of the {@link Type}
 		 */
 		public String getPrefix() {
 			return prefix;
