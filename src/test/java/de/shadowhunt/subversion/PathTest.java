@@ -3,8 +3,6 @@ package de.shadowhunt.subversion;
 import org.junit.Assert;
 import org.junit.Test;
 
-import de.shadowhunt.subversion.Path;
-
 public class PathTest {
 
 	@Test
@@ -20,13 +18,6 @@ public class PathTest {
 	}
 
 	@Test
-	public void createRootPath() {
-		Assert.assertEquals("/ is ROOT", Path.ROOT, Path.create("/"));
-		Assert.assertEquals("empty is ROOT", Path.ROOT, Path.create(""));
-		Assert.assertEquals("null is ROOT", Path.ROOT, Path.create(null));
-	}
-
-	@Test
 	public void createPath() {
 		final Path expected = Path.create("/a/b/c/d.txt");
 		Assert.assertEquals(expected, Path.create("/a/b/c/d.txt"));
@@ -34,6 +25,13 @@ public class PathTest {
 		Assert.assertEquals(expected, Path.create("//a/b/c/d.txt"));
 		Assert.assertEquals(expected, Path.create("a//b/c//d.txt"));
 		Assert.assertEquals(expected, Path.create("/a/b/c/d.txt/"));
+	}
+
+	@Test
+	public void createRootPath() {
+		Assert.assertEquals("/ is ROOT", Path.ROOT, Path.create("/"));
+		Assert.assertEquals("empty is ROOT", Path.ROOT, Path.create(""));
+		Assert.assertEquals("null is ROOT", Path.ROOT, Path.create(null));
 	}
 
 	@Test
@@ -57,6 +55,21 @@ public class PathTest {
 		final Path child = Path.create("/a/b/c/d.txt");
 		Assert.assertEquals(Path.create("/a/b/c"), child.getParent());
 		Assert.assertEquals(Path.ROOT, Path.ROOT.getParent());
+	}
+
+	@Test
+	public void getValue() {
+		final String expexted = "/a/b/c/d.txt";
+		final Path path = Path.create(expexted);
+		Assert.assertEquals("path value must match", expexted, path.getValue());
+	}
+
+	@Test
+	public void getValueWithoutLeadingSeparator() {
+		final String expexted = "a/b/c/d.txt";
+		final Path path = Path.create(expexted);
+		Assert.assertEquals("path value must match", expexted, path.getValueWithoutLeadingSeparator());
+		Assert.assertEquals("root path value must match", "", Path.ROOT.getValueWithoutLeadingSeparator());
 	}
 
 	@Test
