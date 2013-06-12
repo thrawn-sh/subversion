@@ -9,6 +9,8 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import de.shadowhunt.subversion.ResourceProperty.Type;
+
 public abstract class AbstractRepositoryReadOnlyIT {
 
 	protected static final Path EXISTING_DIR_WITH_DIRS = Path.create("/trunk/00000000-0000-0000-0000-000000000000/folder_with_dirs");
@@ -401,5 +403,42 @@ public abstract class AbstractRepositoryReadOnlyIT {
 	public void logNonExisitingPath() {
 		repository.log(NON_EXISTING, Revision.INITIAL, Revision.HEAD);
 		Assert.fail("no logs for non exisiting path must be created");
+	}
+
+	@Test
+	public void removeEmptyResourceProperties() {
+		final InfoEntry before = repository.info(EXISTING_PROPERTY_VERSION, Revision.HEAD, true);
+		Assert.assertNotNull("result must not be null", before);
+
+		final ResourceProperty[] beforeProperties = before.getCustomProperties();
+		Assert.assertEquals("custom properties", 1, beforeProperties.length);
+
+		repository.deleteProperties(EXISTING_PROPERTY_VERSION, "remove properties", new ResourceProperty[0]);
+
+		final InfoEntry after = repository.info(EXISTING_PROPERTY_VERSION, Revision.HEAD, true);
+		Assert.assertNotNull("result must not be null", after);
+
+		final ResourceProperty[] afterProperties = after.getCustomProperties();
+		Assert.assertEquals("custom properties", 1, afterProperties.length);
+	}
+
+	@Test
+	public void removeSystemResourceProperties() {
+		final InfoEntry before = repository.info(EXISTING_PROPERTY_VERSION, Revision.HEAD, true);
+		Assert.assertNotNull("result must not be null", before);
+
+		final ResourceProperty[] beforeProperties = before.getCustomProperties();
+		Assert.assertEquals("custom properties", 1, beforeProperties.length);
+
+		final ResourceProperty baseProperty = new ResourceProperty(Type.BASE, "base", "base");
+		final ResourceProperty davProperty = new ResourceProperty(Type.DAV, "dav", "dav");
+		final ResourceProperty svnProperty = new ResourceProperty(Type.SVN, "svn", "svn");
+		repository.deleteProperties(EXISTING_PROPERTY_VERSION, "remove properties", baseProperty, davProperty, svnProperty);
+
+		final InfoEntry after = repository.info(EXISTING_PROPERTY_VERSION, Revision.HEAD, true);
+		Assert.assertNotNull("result must not be null", after);
+
+		final ResourceProperty[] afterProperties = after.getCustomProperties();
+		Assert.assertEquals("custom properties", 1, afterProperties.length);
 	}
 }
