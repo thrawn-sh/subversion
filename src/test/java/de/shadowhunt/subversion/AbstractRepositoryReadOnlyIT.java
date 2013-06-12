@@ -34,7 +34,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 	protected final String root;
 
 	protected AbstractRepositoryReadOnlyIT(final URI uri, final ServerVersion version) {
-		repository = SubversionFactory.getInstance(uri, false, version);
+		repository = SubversionFactory.getInstance(uri, true, version);
 		root = uri.getPath();
 	}
 
