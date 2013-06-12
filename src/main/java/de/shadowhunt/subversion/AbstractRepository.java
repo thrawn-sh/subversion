@@ -18,14 +18,12 @@ import javax.net.ssl.TrustManager;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.http.Header;
-import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthProtocolState;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.AuthState;
 import org.apache.http.auth.Credentials;
-import org.apache.http.client.AuthCache;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -35,8 +33,6 @@ import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeSocketFactory;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DecompressingHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
@@ -340,10 +336,6 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 			context.clear();
 			credentialsProvider.setCredentials(authscope, credentials);
 
-			final HttpHost targetHost = new HttpHost(authscope.getHost(), authscope.getPort(), authscope.getScheme());
-			final AuthCache authCache = new BasicAuthCache();
-			authCache.put(targetHost, new BasicScheme());
-			context.setAttribute(ClientContext.AUTH_CACHE, authCache);
 			triggerAuthentication();
 		}
 	}
