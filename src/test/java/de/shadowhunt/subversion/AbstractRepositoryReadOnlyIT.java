@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public abstract class AbstractRepositoryReadOnlyIT {
@@ -64,7 +63,6 @@ public abstract class AbstractRepositoryReadOnlyIT {
 	}
 
 	@Test
-	@Ignore("circual redirect")
 	public void existsExisitingDir() {
 		Assert.assertTrue("folder exisits in head revision", repository.exists(EXISTING_EMPTY_DIR, Revision.HEAD));
 		Assert.assertFalse("folder didn't exisits in revision 1", repository.exists(EXISTING_EMPTY_DIR, Revision.INITIAL));
@@ -74,6 +72,12 @@ public abstract class AbstractRepositoryReadOnlyIT {
 	public void existsExisitingFile() {
 		Assert.assertTrue("file exisits in head revision", repository.exists(EXISTING_FILE, Revision.HEAD));
 		Assert.assertFalse("file didn't exisits in revision 1", repository.exists(EXISTING_FILE, Revision.INITIAL));
+	}
+
+	@Test
+	public void existsNonExisitingFile() {
+		Assert.assertFalse("file exisits in head revision", repository.exists(NON_EXISTING, Revision.HEAD));
+		Assert.assertFalse("file didn't exisits in revision 1", repository.exists(NON_EXISTING, Revision.INITIAL));
 	}
 
 	@Test

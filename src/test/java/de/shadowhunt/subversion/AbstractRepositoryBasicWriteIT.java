@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryAuthenticatedIT {
@@ -111,7 +110,6 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 	}
 
 	@Test
-	@Ignore("see exisitngFolder")
 	public void doublecreateFolder() {
 		final Path folder = Path.create(getBase() + "/doublecreateFolder");
 		Assert.assertFalse("new folder must not exist", repository.exists(folder, Revision.HEAD));
