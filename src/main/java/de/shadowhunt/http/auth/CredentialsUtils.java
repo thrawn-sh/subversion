@@ -35,4 +35,8 @@ public final class CredentialsUtils {
 		}
 		return new UsernamePasswordCredentials(user, password);
 	}
+
+	private CredentialsUtils() {
+		// prevent instantiation
+	}
 }
