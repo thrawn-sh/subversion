@@ -3,13 +3,11 @@ package de.shadowhunt.http.auth;
 import org.apache.http.auth.NTCredentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class CredentialsUtilsTest {
 
 	@Test
-	@Ignore
 	public void creteCredentialsTest() {
 		Assert.assertNull("null credentials", CredentialsUtils.creteCredentials(null, null, null));
 

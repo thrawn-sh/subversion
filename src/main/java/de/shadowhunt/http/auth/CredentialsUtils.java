@@ -28,9 +28,9 @@ public final class CredentialsUtils {
 		final String username;
 		final String domain;
 		final int index = user.indexOf('\\');
-		if (index >= 0) {
+		if ((index >= 0) || (workstation != null)) {
 			username = user.substring(index + 1);
-			domain = user.substring(0, index);
+			domain = user.substring(0, Math.max(index, 0));
 			return new NTCredentials(username, password, workstation, domain);
 		}
 		return new UsernamePasswordCredentials(user, password);
