@@ -91,12 +91,12 @@ public class Repository1_6 extends AbstractRepository<RequestFactory1_6> {
 			return;
 		}
 
-		final InfoEntry info = info(resource, Revision.HEAD, false);
 		final UUID uuid = prepareTransaction();
 		try {
+			final Path infoResource = createMissingFolders(PREFIX_WRK, uuid.toString(), resource);
+			final InfoEntry info = info(infoResource, Revision.HEAD, false);
 			checkout(uuid);
 			setCommitMessage(uuid, info.getRevision(), message);
-			createMissingFolders(PREFIX_WRK, uuid.toString(), resource);
 			merge(info, uuid);
 		} finally {
 			endTransaction(uuid);
