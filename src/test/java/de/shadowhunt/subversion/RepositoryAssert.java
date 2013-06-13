@@ -21,7 +21,7 @@ public final class RepositoryAssert {
 	public static void assertLastLog(final Repository repository, final Path resource, final String expectedMessage, final String expectedUser) {
 		final LogEntry log = repository.lastLog(resource);
 		Assert.assertNotNull("LogEntry must not be null", log);
-		Assert.assertEquals("message must match", expectedMessage, log.getComment());
+		Assert.assertEquals("message must match", expectedMessage, log.getMessage());
 		Assert.assertEquals("user must match", expectedUser, log.getUser());
 	}
 

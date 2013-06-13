@@ -237,7 +237,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 		final LogEntry log = repository.lastLog(EXISTING_EMPTY_DIR);
 		Assert.assertNotNull("LogEntry must not be null", log);
 
-		Assert.assertEquals("comment must match", "create test structure", log.getComment());
+		Assert.assertEquals("comment must match", "create test structure", log.getMessage());
 		Assert.assertNotNull("Date must not be null", log.getDate());
 		Assert.assertEquals("revision must match", Revision.create(2), log.getRevision());
 		Assert.assertEquals("user must match", "root", log.getUser());
@@ -248,7 +248,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 		final LogEntry log = repository.lastLog(EXISTING_FILE);
 		Assert.assertNotNull("LogEntry must not be null", log);
 
-		Assert.assertEquals("comment must match", "adding revisions file 9", log.getComment());
+		Assert.assertEquals("comment must match", "adding revisions file 9", log.getMessage());
 		Assert.assertNotNull("Date must not be null", log.getDate());
 		Assert.assertEquals("revision must match", Revision.create(30), log.getRevision());
 		Assert.assertEquals("user must match", "root", log.getUser());
@@ -371,7 +371,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 		for (int i = 0; i < 9; i++) {
 			final LogEntry entry = logs.get(i);
 
-			Assert.assertEquals("comment must match", "adding revisions file " + (i + 1), entry.getComment());
+			Assert.assertEquals("comment must match", "adding revisions file " + (i + 1), entry.getMessage());
 			Assert.assertNotNull("Date must not be null", entry.getDate());
 			final Revision revision = entry.getRevision();
 			Assert.assertTrue(last + " must be smaller than " + revision, (last.compareTo(revision) < 0));
@@ -390,7 +390,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 		for (int i = 0; i < 9; i++) {
 			final LogEntry entry = logs.get(i);
 
-			Assert.assertEquals("comment must match", "adding revisions file " + (9 - i), entry.getComment());
+			Assert.assertEquals("comment must match", "adding revisions file " + (9 - i), entry.getMessage());
 			Assert.assertNotNull("Date must not be null", entry.getDate());
 			final Revision revision = entry.getRevision();
 			Assert.assertTrue(last + " must be smaller than " + revision, (last.compareTo(revision) > 0));

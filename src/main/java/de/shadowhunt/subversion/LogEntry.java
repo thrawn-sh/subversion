@@ -42,7 +42,7 @@ public final class LogEntry {
 			}
 
 			if ("comment".equals(name)) {
-				current.setComment(getText());
+				current.setMessage(getText());
 				return;
 			}
 
@@ -101,9 +101,9 @@ public final class LogEntry {
 		}
 	}
 
-	private String comment = "";
-
 	private Date date;
+
+	private String message = "";
 
 	private Revision revision;
 
@@ -125,18 +125,18 @@ public final class LogEntry {
 			return false;
 		}
 		final LogEntry other = (LogEntry) obj;
-		if (comment == null) {
-			if (other.comment != null) {
-				return false;
-			}
-		} else if (!comment.equals(other.comment)) {
-			return false;
-		}
 		if (date == null) {
 			if (other.date != null) {
 				return false;
 			}
 		} else if (!date.equals(other.date)) {
+			return false;
+		}
+		if (message == null) {
+			if (other.message != null) {
+				return false;
+			}
+		} else if (!message.equals(other.message)) {
 			return false;
 		}
 		if (revision == null) {
@@ -157,19 +157,19 @@ public final class LogEntry {
 	}
 
 	/**
-	 * Returns the commit message
-	 * @return the commit message or an empty {@link String} if no commit message was specified
-	 */
-	public String getComment() {
-		return comment;
-	}
-
-	/**
 	 * Returns the time of the commit
 	 * @return the time of the commit
 	 */
 	public Date getDate() {
 		return new Date(date.getTime());
+	}
+
+	/**
+	 * Returns the commit message
+	 * @return the commit message or an empty {@link String} if no commit message was specified
+	 */
+	public String getMessage() {
+		return message;
 	}
 
 	/**
@@ -192,19 +192,19 @@ public final class LogEntry {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = (prime * result) + ((comment == null) ? 0 : comment.hashCode());
 		result = (prime * result) + ((date == null) ? 0 : date.hashCode());
+		result = (prime * result) + ((message == null) ? 0 : message.hashCode());
 		result = (prime * result) + ((revision == null) ? 0 : revision.hashCode());
 		result = (prime * result) + ((user == null) ? 0 : user.hashCode());
 		return result;
 	}
 
-	void setComment(final String comment) {
-		this.comment = comment;
-	}
-
 	void setDate(final Date date) {
 		this.date = new Date(date.getTime());
+	}
+
+	void setMessage(final String message) {
+		this.message = message;
 	}
 
 	void setRevision(final Revision revision) {
@@ -218,10 +218,10 @@ public final class LogEntry {
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("SubversionLog [comment=");
-		builder.append(comment);
-		builder.append(", date=");
+		builder.append("LogEntry [date=");
 		builder.append(date);
+		builder.append(", message=");
+		builder.append(message);
 		builder.append(", revision=");
 		builder.append(revision);
 		builder.append(", user=");
