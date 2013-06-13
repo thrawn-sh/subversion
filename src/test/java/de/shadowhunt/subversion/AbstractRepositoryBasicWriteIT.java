@@ -16,10 +16,6 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 		super(uri, version, username, password, workstation);
 	}
 
-	protected String getBase() {
-		return base;
-	}
-
 	@Test
 	public void copyFile() throws IOException {
 		final Path src = Path.create(getBase() + "/copySrcFile.txt");
@@ -119,6 +115,10 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 
 		repository.createFolder(folder, "create folder");
 		Assert.assertTrue("created folder must exist", repository.exists(folder, Revision.HEAD));
+	}
+
+	protected String getBase() {
+		return base;
 	}
 
 	@Test

@@ -13,11 +13,6 @@ public abstract class AbstractRepositoryLockedWriteIT extends AbstractRepository
 		super(uri, version, username, password, workstation);
 	}
 
-	@Override
-	protected String getBase() {
-		return super.getBase() + "/locked";
-	}
-
 	@Test
 	public void copyLockedFile() throws IOException {
 		final Path src = Path.create(getBase() + "/copySrcFile.txt");
@@ -83,6 +78,11 @@ public abstract class AbstractRepositoryLockedWriteIT extends AbstractRepository
 
 		repository.deleteProperties(file, messageDelete, a, b);
 		RepositoryAssert.assertUpload(repository, file, content, messageDelete, getUsername());
+	}
+
+	@Override
+	protected String getBase() {
+		return super.getBase() + "/locked";
 	}
 
 	@Test(expected = SubversionException.class)

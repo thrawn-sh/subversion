@@ -3,7 +3,6 @@ package de.shadowhunt.subversion;
 import org.junit.Assert;
 import org.junit.Test;
 
-import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.ResourceProperty.Type;
 
 public class SubversionPropertyTest {

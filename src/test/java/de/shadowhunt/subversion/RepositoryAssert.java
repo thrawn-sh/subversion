@@ -18,13 +18,6 @@ public final class RepositoryAssert {
 		IOUtils.closeQuietly(download);
 	}
 
-	public static void assertUpload(final Repository repository, final Path resource, final String expectedContent, final String expectedMessage, final String expectedUser, final ResourceProperty... expectedProperties) throws IOException {
-		RepositoryAssert.assertContent(repository, resource, expectedContent);
-		RepositoryAssert.assertResourceProperties(repository, resource, expectedProperties);
-		RepositoryAssert.assertLastLog(repository, resource, expectedMessage, expectedUser);
-		RepositoryAssert.assertNotLocked(repository, resource);
-	}
-
 	public static void assertLastLog(final Repository repository, final Path resource, final String expectedMessage, final String expectedUser) {
 		final LogEntry log = repository.lastLog(resource);
 		Assert.assertNotNull("LogEntry must not be null", log);
@@ -60,6 +53,13 @@ public final class RepositoryAssert {
 		for (int i = 0; i < customProperties.length; i++) {
 			Assert.assertEquals("ResourceProperty must match", expectedProperties[i], customProperties[i]);
 		}
+	}
+
+	public static void assertUpload(final Repository repository, final Path resource, final String expectedContent, final String expectedMessage, final String expectedUser, final ResourceProperty... expectedProperties) throws IOException {
+		RepositoryAssert.assertContent(repository, resource, expectedContent);
+		RepositoryAssert.assertResourceProperties(repository, resource, expectedProperties);
+		RepositoryAssert.assertLastLog(repository, resource, expectedMessage, expectedUser);
+		RepositoryAssert.assertNotLocked(repository, resource);
 	}
 
 	private RepositoryAssert() {
