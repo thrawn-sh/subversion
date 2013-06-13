@@ -310,6 +310,21 @@ public final class InfoEntry {
 	}
 
 	/**
+	 * Returns the value of the custom property with the given name
+	 * @param name name of the custom property
+	 * @return the value of the custom property or {@code null} if no custom property with the given name was found
+	 */
+	@CheckForNull
+	public String getResourcePropertyValue(final String name) {
+		for (final ResourceProperty property : customProperties) {
+			if (name.equals(property.getName())) {
+				return property.getValue();
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Returns a {@link Revision} of the resource
 	 * @return the {@link Revision} of the resource
 	 */
@@ -323,21 +338,6 @@ public final class InfoEntry {
 	 */
 	public String getRoot() {
 		return root;
-	}
-
-	/**
-	 * Returns the value of the custom property with the given name
-	 * @param name name of the custom property
-	 * @return the value of the custom property or {@code null} if no custom property with the given name was found
-	 */
-	@CheckForNull
-	public String getResourcePropertyValue(final String name) {
-		for (final ResourceProperty property : customProperties) {
-			if (name.equals(property.getName())) {
-				return property.getValue();
-			}
-		}
-		return null;
 	}
 
 	@Override
