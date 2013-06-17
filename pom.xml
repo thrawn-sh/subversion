@@ -29,6 +29,7 @@
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 
 		<sonar.switchoffviolations.configFile>${project.basedir}/target/sonar.ignore</sonar.switchoffviolations.configFile>
+		<sonar.ignorecoverage.configFile>${project.basedir}/coverage.ignore</sonar.ignorecoverage.configFile>
 	</properties>
 
 	<!-- scm config {{{1 -->
