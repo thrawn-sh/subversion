@@ -24,8 +24,18 @@ import java.net.URISyntaxException;
 
 import org.apache.http.client.utils.URIBuilder;
 
-public class URIUtils {
+/**
+ * {@link URIUtils} provides convenience methods to create properly escaped {@link URI}s to connect to http servers
+ */
+public final class URIUtils {
 
+	/**
+	 * Creates an {@link URI} from the given repository with the additional pathSuffix, 
+	 * by combining the path from the repository and the pathSuffix and properly escaping both 
+	 * @param repository {@link URI} repository to connect to
+	 * @param pathSuffix additional path part that will be combined to the path from the repository
+	 * @return the {@link URI} from the given repository with the additional pathSuffix
+	 */
 	public static URI createURI(final URI repository, final String pathSuffix) {
 		try {
 			return createURI0(repository, pathSuffix);
@@ -42,5 +52,9 @@ public class URIUtils {
 		final String completePath = repository.getPath() + pathSuffix;
 		builder.setPath(completePath);
 		return builder.build();
+	}
+
+	private URIUtils() {
+		// prevent instantiation
 	}
 }
