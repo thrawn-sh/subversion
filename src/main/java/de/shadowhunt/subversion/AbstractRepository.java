@@ -44,6 +44,7 @@ import de.shadowhunt.http.auth.NtlmSchemeFactory;
 import de.shadowhunt.http.client.ThreadLocalCredentialsProvider;
 import de.shadowhunt.http.conn.ssl.NonValidatingX509TrustManager;
 import de.shadowhunt.http.protocol.ThreadLocalHttpContext;
+import de.shadowhunt.util.URIUtils;
 
 /**
  * Base for all {@link Repository}
@@ -159,7 +160,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 			partial.append(resourceParts[i]);
 
 			final String partialResource = partial.toString();
-			final URI uri = URI.create(repository + prefix + uuid + partialResource);
+			final URI uri = URIUtils.createURI(repository, prefix + uuid + partialResource);
 			final HttpUriRequest request = requestFactory.createMakeFolderRequest(uri);
 			final HttpResponse response = execute(request, /* created */HttpStatus.SC_CREATED, /* existed */
 					HttpStatus.SC_METHOD_NOT_ALLOWED);
@@ -257,13 +258,13 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 		return logs.get(0);
 	}
 
-	protected List<InfoEntry> list(final String uriPrefix, final Path resource, final Depth depth, final boolean withCustomProperties) {
-		final URI uri = URI.create(uriPrefix + resource);
+	protected List<InfoEntry> list(final String pathPrefix, final Path resource, final Depth depth, final boolean withCustomProperties) {
+		final URI uri = URIUtils.createURI(repository, pathPrefix + resource.getValue());
 
 		if (depth == Depth.INFINITY) {
 			final List<InfoEntry> root = list(uri, Depth.IMMEDIATES, withCustomProperties);
 			final Set<InfoEntry> result = new TreeSet<InfoEntry>(InfoEntry.PATH_COMPARATOR);
-			listRecursive(uriPrefix, withCustomProperties, root, result);
+			listRecursive(pathPrefix, withCustomProperties, root, result);
 			return new ArrayList<InfoEntry>(result);
 		}
 		return list(uri, depth, withCustomProperties);
@@ -281,7 +282,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 		}
 	}
 
-	protected void listRecursive(final String uriPrefix, final boolean withCustomProperties, final Collection<InfoEntry> todo, final Set<InfoEntry> done) {
+	protected void listRecursive(final String pathPrefix, final boolean withCustomProperties, final Collection<InfoEntry> todo, final Set<InfoEntry> done) {
 		for (final InfoEntry info : todo) {
 			if (done.contains(info)) {
 				continue;
@@ -290,16 +291,16 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 			done.add(info);
 			if (info.isDirectory()) {
 				final Path path = info.getPath();
-				final URI uri = URI.create(uriPrefix + path);
+				final URI uri = URIUtils.createURI(repository, pathPrefix + path.getValue());
 				final List<InfoEntry> children = list(uri, Depth.IMMEDIATES, withCustomProperties);
-				listRecursive(uriPrefix, withCustomProperties, children, done);
+				listRecursive(pathPrefix, withCustomProperties, children, done);
 			}
 		}
 	}
 
 	@Override
 	public void lock(final Path resource) {
-		final URI uri = URI.create(repository + resource.getValue());
+		final URI uri = downloadURI(resource, Revision.HEAD);
 
 		final HttpUriRequest request = requestFactory.createLockRequest(uri);
 		execute(request, HttpStatus.SC_OK);
@@ -307,7 +308,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 
 	@Override
 	public List<LogEntry> log(final Path resource, final Revision startRevision, final Revision endRevision) {
-		final URI uri = URI.create(repository + resource.getValue());
+		final URI uri = downloadURI(resource, Revision.HEAD);
 
 		final Revision concreateStartRevision = getConcreateRevision(resource, startRevision);
 		final Revision concreateEndRevision = getConcreateRevision(resource, endRevision);
@@ -353,7 +354,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 		if (lockToken == null) {
 			return;
 		}
-		final URI uri = URI.create(repository + resource.getValue());
+		final URI uri = downloadURI(resource, Revision.HEAD);
 
 		final HttpUriRequest request = requestFactory.createUnlockRequest(uri, lockToken);
 		execute(request, HttpStatus.SC_NO_CONTENT);

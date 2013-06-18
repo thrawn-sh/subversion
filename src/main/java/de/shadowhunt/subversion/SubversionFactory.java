@@ -28,12 +28,22 @@ public final class SubversionFactory {
 	public static final Repository getInstance(final URI repository, final boolean trustServerCertificat, final ServerVersion version) {
 		assertSupportedScheme(repository);
 
+		final URI cleaned = removeEndingSlash(repository);
 		for (final RepositoryFactory factory : ServiceLoader.load(RepositoryFactory.class)) {
 			if (factory.isServerVersionSupported(version)) {
-				return factory.createRepository(repository, trustServerCertificat);
+				return factory.createRepository(cleaned, trustServerCertificat);
 			}
 		}
 		throw new SubversionException("no repository found for version " + version);
+	}
+
+	static URI removeEndingSlash(final URI uri) {
+		final String string = uri.toString();
+		final int lastChar = string.length() - 1;
+		if (string.charAt(lastChar) == '/') {
+			return URI.create(string.substring(0, lastChar));
+		}
+		return uri;
 	}
 
 	private SubversionFactory() {

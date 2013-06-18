@@ -17,6 +17,7 @@ import de.shadowhunt.subversion.InfoEntry;
 import de.shadowhunt.subversion.Path;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.util.URIUtils;
 
 /**
  * {@link Repository1_7} supports subversion servers of version 1.7.X
@@ -44,8 +45,8 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 			triggerAuthentication();
 		}
 
-		final URI uri = URI.create(repository + PREFIX_TXR + uuid + resource.getValue());
-		final URI resourceUri = URI.create(repository + resource.getValue());
+		final URI uri = URIUtils.createURI(repository, PREFIX_TXR + uuid + resource.getValue());
+		final URI resourceUri = URIUtils.createURI(repository, resource.getValue());
 
 		final HttpUriRequest request = requestFactory.createUploadRequest(uri, info.getLockToken(), resourceUri, content);
 		execute(request, HttpStatus.SC_CREATED, HttpStatus.SC_NO_CONTENT);
@@ -62,8 +63,8 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 	}
 
 	protected void copy0(final Path srcResource, final Revision srcRevision, final Path targetResource, final String uuid) {
-		final URI src = URI.create(repository + PREFIX_RVR + srcRevision + srcResource.getValue());
-		final URI target = URI.create(repository + PREFIX_TXR + uuid + targetResource.getValue());
+		final URI src = URIUtils.createURI(repository, PREFIX_RVR + srcRevision + srcResource.getValue());
+		final URI target = URIUtils.createURI(repository, PREFIX_TXR + uuid + targetResource.getValue());
 		final HttpUriRequest request = requestFactory.createCopyRequest(src, target);
 		execute(request, HttpStatus.SC_CREATED);
 	}
@@ -91,7 +92,7 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 	}
 
 	protected void delete0(final Path resource, final String uuid) {
-		final URI uri = URI.create(repository + PREFIX_TXR + uuid + resource.getValue());
+		final URI uri = URIUtils.createURI(repository, PREFIX_TXR + uuid + resource.getValue());
 		final HttpUriRequest request = requestFactory.createDeleteRequest(uri);
 		execute(request, HttpStatus.SC_NO_CONTENT);
 	}
@@ -108,16 +109,16 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 	@Override
 	public URI downloadURI(final Path resource, final Revision revision) {
 		if (Revision.HEAD.equals(revision)) {
-			return URI.create(repository + resource.getValue());
+			return URIUtils.createURI(repository, resource.getValue());
 		}
-		return URI.create(repository + PREFIX_RVR + revision + resource.getValue());
+		return URIUtils.createURI(repository, PREFIX_RVR + revision + resource.getValue());
 	}
 
 	@Override
 	public List<InfoEntry> list(final Path resource, final Revision revision, final Depth depth, final boolean withCustomProperties) {
 		final Revision concreateRevision = getConcreateRevision(resource, revision);
-		final String uriPrefix = repository + PREFIX_RVR + concreateRevision;
-		return list(uriPrefix, resource, depth, withCustomProperties);
+		final String pathPrefix = PREFIX_RVR + concreateRevision;
+		return list(pathPrefix, resource, depth, withCustomProperties);
 	}
 
 	protected void merge(final InfoEntry info, final String uuid) {
@@ -137,7 +138,7 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 	}
 
 	protected String prepareTransaction() {
-		final URI uri = URI.create(repository + PREFIX_ME);
+		final URI uri = URIUtils.createURI(repository, PREFIX_ME);
 
 		final HttpUriRequest request = requestFactory.createPrepareRequest(uri);
 		final HttpResponse response = execute(request, HttpStatus.SC_CREATED);
@@ -151,8 +152,8 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 			return;
 		}
 
-		final URI uri = URI.create(repository + PREFIX_TXR + uuid + resource.getValue());
-		final URI resourceUri = URI.create(repository + resource.getValue());
+		final URI uri = URIUtils.createURI(repository, PREFIX_TXR + uuid + resource.getValue());
+		final URI resourceUri = URIUtils.createURI(repository, resource.getValue());
 
 		final HttpUriRequest request = requestFactory.createRemovePropertiesRequest(uri, info.getLockToken(), resourceUri, filtered);
 		execute(request, HttpStatus.SC_MULTI_STATUS);
@@ -164,15 +165,15 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 			return;
 		}
 
-		final URI uri = URI.create(repository + PREFIX_TXR + uuid + resource.getValue());
-		final URI resourceUri = URI.create(repository + resource.getValue());
+		final URI uri = URIUtils.createURI(repository, PREFIX_TXR + uuid + resource.getValue());
+		final URI resourceUri = URIUtils.createURI(repository, resource.getValue());
 
 		final HttpUriRequest request = requestFactory.createSetPropertiesRequest(uri, info.getLockToken(), resourceUri, filtered);
 		execute(request, HttpStatus.SC_MULTI_STATUS);
 	}
 
 	protected void setCommitMessage(final String uuid, final String message) {
-		final URI uri = URI.create(repository + PREFIX_TXN + uuid);
+		final URI uri = URIUtils.createURI(repository, PREFIX_TXN + uuid);
 
 		final String trimmedMessage = StringUtils.trimToEmpty(message);
 		final HttpUriRequest request = requestFactory.createCommitMessageRequest(uri, trimmedMessage);

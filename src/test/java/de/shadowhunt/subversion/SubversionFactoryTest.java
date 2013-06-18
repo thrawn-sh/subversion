@@ -41,4 +41,13 @@ public class SubversionFactoryTest {
 		SubversionFactory.getInstance(uri, true, null);
 		Assert.fail("ServerVersion must not be null");
 	}
+
+	@Test
+	public void removeEndingSlash() {
+		final URI withoutSlash = URI.create("https://subversion.example.net/svn/test-repo");
+		Assert.assertEquals("uri without ending slash are not modified", withoutSlash, SubversionFactory.removeEndingSlash(withoutSlash));
+
+		final URI withSlash = URI.create("https://subversion.example.net/svn/test-repo/");
+		Assert.assertEquals("uri without ending slash are not modified", withoutSlash, SubversionFactory.removeEndingSlash(withSlash));
+	}
 }
