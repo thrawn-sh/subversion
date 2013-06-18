@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>de.shadowhunt</groupId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<artifactId>subversion</artifactId>
 	<packaging>jar</packaging>
 
@@ -34,7 +34,7 @@
 
 	<!-- scm config {{{1 -->
 	<scm>
-		<tag>HEAD</tag>
+		<tag>v1.0.0</tag>
 		<connection>scm:git:ssh://gitolite@git.shadowhunt.de/subversion.git</connection>
 		<developerConnection>scm:git:ssh://gitolite@git.shadowhunt.de/subversion.git</developerConnection>
 		<url>https://git.shadowhunt.de/scm.git</url>
