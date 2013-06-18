@@ -28,8 +28,7 @@
 		<sonar.jacoco.reportPath>${project.basedir}/target/jacoco.exec</sonar.jacoco.reportPath>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 
-		<sonar.switchoffviolations.configFile>${project.basedir}/target/sonar.ignore</sonar.switchoffviolations.configFile>
-		<sonar.ignorecoverage.configFile>${project.basedir}/coverage.ignore</sonar.ignorecoverage.configFile>
+		<sonar.switchoffviolations.configFile>${project.basedir}/target/violations.ignore</sonar.switchoffviolations.configFile>
 	</properties>
 
 	<!-- scm config {{{1 -->
