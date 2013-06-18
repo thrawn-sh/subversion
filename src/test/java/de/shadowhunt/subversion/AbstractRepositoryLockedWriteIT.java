@@ -15,7 +15,7 @@ public abstract class AbstractRepositoryLockedWriteIT extends AbstractRepository
 
 	@Test
 	public void copyLockedFile() throws IOException {
-		final Path src = Path.create(getBase() + "/copySrcFile.txt");
+		final Path src = Path.create(getLockedBase() + "/copySrcFile.txt");
 		Assert.assertFalse("new file must not exist", repository.exists(src, Revision.HEAD));
 
 		final String content = "content";
@@ -27,7 +27,7 @@ public abstract class AbstractRepositoryLockedWriteIT extends AbstractRepository
 		repository.lock(src);
 		RepositoryAssert.assertLocked(repository, src, getUsername());
 
-		final Path target = Path.create(getBase() + "/copyTargetFile.txt");
+		final Path target = Path.create(getLockedBase() + "/copyTargetFile.txt");
 		Assert.assertFalse("new file must not exist", repository.exists(target, Revision.HEAD));
 
 		final String messageCopy = "copy file";
@@ -38,7 +38,7 @@ public abstract class AbstractRepositoryLockedWriteIT extends AbstractRepository
 
 	@Test(expected = SubversionException.class)
 	public void deleteLockedFile() throws IOException {
-		final Path file = Path.create(getBase() + "/deleteFile.txt");
+		final Path file = Path.create(getLockedBase() + "/deleteFile.txt");
 		Assert.assertFalse("new file must not exist", repository.exists(file, Revision.HEAD));
 
 		final String content = "content";
@@ -55,7 +55,7 @@ public abstract class AbstractRepositoryLockedWriteIT extends AbstractRepository
 
 	@Test
 	public void deletePropertiesLockedFile() throws IOException {
-		final Path file = Path.create(getBase() + "/deletePropertiesFile.txt");
+		final Path file = Path.create(getLockedBase() + "/deletePropertiesFile.txt");
 		Assert.assertFalse("new file must not exist", repository.exists(file, Revision.HEAD));
 
 		final String content = "content";
@@ -80,14 +80,13 @@ public abstract class AbstractRepositoryLockedWriteIT extends AbstractRepository
 		RepositoryAssert.assertUpload(repository, file, content, messageDelete, getUsername());
 	}
 
-	@Override
-	protected String getBase() {
+	protected String getLockedBase() {
 		return super.getBase() + "/locked";
 	}
 
 	@Test(expected = SubversionException.class)
 	public void moveLockedFile() throws IOException {
-		final Path src = Path.create(getBase() + "/moveSrcFile.txt");
+		final Path src = Path.create(getLockedBase() + "/moveSrcFile.txt");
 		Assert.assertFalse("new file must not exist", repository.exists(src, Revision.HEAD));
 
 		final String content = "content";
@@ -99,7 +98,7 @@ public abstract class AbstractRepositoryLockedWriteIT extends AbstractRepository
 		repository.lock(src);
 		RepositoryAssert.assertLocked(repository, src, getUsername());
 
-		final Path target = Path.create(getBase() + "/moveTargetFile.txt");
+		final Path target = Path.create(getLockedBase() + "/moveTargetFile.txt");
 		Assert.assertFalse("new file must not exist", repository.exists(target, Revision.HEAD));
 
 		repository.move(src, target, "move file");
@@ -108,7 +107,7 @@ public abstract class AbstractRepositoryLockedWriteIT extends AbstractRepository
 
 	@Test
 	public void setPropertiesLockedFile() throws IOException {
-		final Path file = Path.create(getBase() + "/setPropertiesFile.txt");
+		final Path file = Path.create(getLockedBase() + "/setPropertiesFile.txt");
 		Assert.assertFalse("new file must not exist", repository.exists(file, Revision.HEAD));
 
 		final String content = "content";
@@ -129,7 +128,7 @@ public abstract class AbstractRepositoryLockedWriteIT extends AbstractRepository
 
 	@Test
 	public void updatedLockedFile() throws IOException {
-		final Path file = Path.create(getBase() + "/updateFile.txt");
+		final Path file = Path.create(getLockedBase() + "/updateFile.txt");
 		Assert.assertFalse("new file must not exist", repository.exists(file, Revision.HEAD));
 
 		final String content = "content";
@@ -150,7 +149,7 @@ public abstract class AbstractRepositoryLockedWriteIT extends AbstractRepository
 
 	@Test
 	public void updatedWithPropertiesLockedFile() throws IOException {
-		final Path file = Path.create(getBase() + "/updatePropertiesFile.txt");
+		final Path file = Path.create(getLockedBase() + "/updatePropertiesFile.txt");
 		Assert.assertFalse("new file must not exist", repository.exists(file, Revision.HEAD));
 
 		final String content = "content";
@@ -173,7 +172,7 @@ public abstract class AbstractRepositoryLockedWriteIT extends AbstractRepository
 
 	@Test
 	public void uploadLockedFile() throws IOException {
-		final Path file = Path.create(getBase() + "/uploadFile.txt");
+		final Path file = Path.create(getLockedBase() + "/uploadFile.txt");
 		Assert.assertFalse("new file must not exist", repository.exists(file, Revision.HEAD));
 
 		final String content = "content";

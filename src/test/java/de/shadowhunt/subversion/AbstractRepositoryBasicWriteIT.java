@@ -1,19 +1,31 @@
 package de.shadowhunt.subversion;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryAuthenticatedIT {
 
-	private final String base = "/trunk/" + UUID.randomUUID().toString();
+	private static String uid;
+
+	private final String run;
+
+	@BeforeClass
+	public static void setup() {
+		uid = UUID.randomUUID().toString();
+	}
 
 	protected AbstractRepositoryBasicWriteIT(final URI uri, final ServerVersion version, final String username, final String password, final String workstation) {
 		super(uri, version, username, password, workstation);
+		run = new File(uri.getPath()).getParent();
 	}
 
 	@Test
@@ -118,7 +130,8 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 	}
 
 	protected String getBase() {
-		return base;
+		final String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+		return "/trunk/" + date + "/" + run + "/" + uid;
 	}
 
 	@Test
@@ -223,6 +236,18 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 
 		repository.upload(file, message, IOUtils.toInputStream(content), a, b);
 		RepositoryAssert.assertUpload(repository, file, content, message, getUsername(), a, b);
+	}
+
+	@Test
+	public void uploadFileWithSpecialCharactes() throws IOException {
+		final Path file = Path.create(getBase() + "/specialChars-\u30b8\u30e3\u30ef.txt");
+		Assert.assertFalse("new file must not exist", repository.exists(file, Revision.HEAD));
+
+		final String content = "\u30b8\u30e3\u30ef";
+		final String message = "create file with name \u30b8\u30e3\u30ef.txt";
+
+		repository.upload(file, message, IOUtils.toInputStream(content));
+		RepositoryAssert.assertUpload(repository, file, content, message, getUsername());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
