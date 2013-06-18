@@ -1,9 +1,0 @@
-de.shadowhunt.cmdl.command.subversion.CatCommand
-de.shadowhunt.cmdl.command.subversion.CheckoutCommand
-de.shadowhunt.cmdl.command.subversion.HelpCommand
-de.shadowhunt.cmdl.command.subversion.InfoCommand
-de.shadowhunt.cmdl.command.subversion.LockCommand
-de.shadowhunt.cmdl.command.subversion.PropertyDeleteCommand
-de.shadowhunt.cmdl.command.subversion.PropertyGetCommand
-de.shadowhunt.cmdl.command.subversion.PropertyListCommand
-de.shadowhunt.cmdl.command.subversion.UnlockCommand
