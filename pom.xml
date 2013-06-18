@@ -379,6 +379,9 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>license-maven-plugin</artifactId>
+				<configuration>
+					<verbose>false</verbose>
+				</configuration>
 				<executions>
 					<execution>
 						<id>add-licence</id>
@@ -390,13 +393,6 @@
 							<addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
 							<licenseName>apache_v2</licenseName>
 						</configuration>
-					</execution>
-					<execution>
-						<id>download-licenses</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>download-licenses</goal>
-						</goals>
 					</execution>
 				</executions>
 			</plugin>
