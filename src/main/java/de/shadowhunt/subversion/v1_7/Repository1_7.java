@@ -178,7 +178,7 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 		execute(request, HttpStatus.SC_MULTI_STATUS);
 	}
 
-	protected void propertiesSet(final Path resource, final InfoEntry info, final String uuid, @Nullable final ResourceProperty... properties) {
+	protected void propertiesSet(final Path resource, final InfoEntry info, final String uuid, final ResourceProperty... properties) {
 		final ResourceProperty[] filtered = ResourceProperty.filteroutSystemProperties(properties);
 		if (filtered.length == 0) {
 			return;
