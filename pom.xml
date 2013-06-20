@@ -36,7 +36,7 @@
 		<tag>HEAD</tag>
 		<connection>scm:git:ssh://gitolite@git.shadowhunt.de/subversion.git</connection>
 		<developerConnection>scm:git:ssh://gitolite@git.shadowhunt.de/subversion.git</developerConnection>
-		<url>https://git.shadowhunt.de/scm.git</url>
+		<url>https://git.shadowhunt.de/subversion.git</url>
 	</scm>
 	<!-- }}}1 -->
 
