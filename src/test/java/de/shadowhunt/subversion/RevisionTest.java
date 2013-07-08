@@ -47,11 +47,6 @@ public class RevisionTest {
 		Revision.create(-1);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void createZeroRevision() {
-		Revision.create(0);
-	}
-
 	@Test
 	public void equalsRevision() {
 		final Revision revision = Revision.create(5);

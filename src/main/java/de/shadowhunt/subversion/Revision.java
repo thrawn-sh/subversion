@@ -40,13 +40,13 @@ public final class Revision implements Comparable<Revision>, Serializable {
 
 	/**
 	 * Create a new {@link Revision} instance for the given value
-	 * @param revision value of the {@link Revision} must be greater than 0
-	 * @throws IllegalArgumentException if revision is smaller or equal 0
+	 * @param revision value of the {@link Revision} must be greater or equal than 0
+	 * @throws IllegalArgumentException if revision is smaller than 0
 	 * @return the new {@link Revision} instance with the given value
 	 */
 	public static Revision create(final int revision) {
-		if (revision <= 0) {
-			throw new IllegalArgumentException("revision must be greater than 0, was " + revision);
+		if (revision < 0) {
+			throw new IllegalArgumentException("revision must be greater or equal than 0, was " + revision);
 		}
 		return new Revision(revision);
 	}
