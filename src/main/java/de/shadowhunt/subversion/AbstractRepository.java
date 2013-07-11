@@ -39,15 +39,12 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.auth.AuthProtocolState;
 import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.AuthState;
 import org.apache.http.auth.Credentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.AuthPolicy;
-import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeSocketFactory;
 import org.apache.http.conn.ssl.SSLSocketFactory;
@@ -56,6 +53,8 @@ import org.apache.http.impl.client.DecompressingHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
+import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 
 import de.shadowhunt.http.auth.CredentialsUtils;
@@ -94,6 +93,9 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 
 		final DefaultHttpClient defaultClient = new DefaultHttpClient(connectionManager);
 		defaultClient.setCredentialsProvider(new ThreadLocalCredentialsProvider());
+
+		final HttpParams params = defaultClient.getParams();
+		params.setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, true);
 
 		if (hasJcifsSupport()) {
 			defaultClient.getAuthSchemes().register(AuthPolicy.NTLM, NtlmSchemeFactory.INSTANCE);
@@ -260,14 +262,6 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 		} finally {
 			IOUtils.closeQuietly(in);
 		}
-	}
-
-	protected boolean isAuthenticated() {
-		final AuthState authState = (AuthState) context.getAttribute(ClientContext.TARGET_AUTH_STATE);
-		if (authState != null) {
-			return authState.getState() == AuthProtocolState.SUCCESS;
-		}
-		return false;
 	}
 
 	@Override

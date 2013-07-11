@@ -72,10 +72,6 @@ public class Repository1_6 extends AbstractRepository<RequestFactory1_6> {
 			return;
 		}
 
-		if (!isAuthenticated()) {
-			triggerAuthentication();
-		}
-
 		final URI uri = URIUtils.createURI(repository, PREFIX_WRK + uuid + resource.getValue());
 		final URI resourceUri = URIUtils.createURI(repository, resource.getValue());
 
