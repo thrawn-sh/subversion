@@ -22,7 +22,6 @@ package de.shadowhunt.http.conn.ssl;
 import java.security.cert.X509Certificate;
 
 import javax.annotation.concurrent.ThreadSafe;
-import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 /**
@@ -34,15 +33,27 @@ public final class NonValidatingX509TrustManager implements X509TrustManager {
 	/**
 	 * Singleton instance
 	 */
-	public static final TrustManager INSTANCE = new NonValidatingX509TrustManager();
+	public static final X509TrustManager INSTANCE = new NonValidatingX509TrustManager();
 
 	@Override
-	public void checkClientTrusted(final X509Certificate[] certs, final String authType) {
+	public void checkClientTrusted(final X509Certificate[] chain, final String authType) {
+		if ((chain == null) || (chain.length == 0)) {
+			throw new IllegalArgumentException("chain must not be null or zero-length");
+		}
+		if ((authType == null) || (authType.length() == 0)) {
+			throw new IllegalArgumentException("authType must not be null or zero-length");
+		}
 		// trust every certificate
 	}
 
 	@Override
-	public void checkServerTrusted(final X509Certificate[] certs, final String authType) {
+	public void checkServerTrusted(final X509Certificate[] chain, final String authType) {
+		if ((chain == null) || (chain.length == 0)) {
+			throw new IllegalArgumentException("chain must not be null or zero-length");
+		}
+		if ((authType == null) || (authType.length() == 0)) {
+			throw new IllegalArgumentException("authType must not be null or zero-length");
+		}
 		// trust every certificate
 	}
 
