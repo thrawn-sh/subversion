@@ -19,6 +19,7 @@
  */
 package de.shadowhunt.util;
 
+import java.lang.reflect.Field;
 import java.net.URI;
 
 import org.junit.Assert;
@@ -56,5 +57,16 @@ public class URIUtilsTest {
 		final URI utf8URIencoded = URIUtils.createURI(ESCAPED_BASE, "/\u30b8\u30e3\u30ef.txt"); // java
 		Assert.assertEquals("escaped utf8 uri", "http://www.example.net/subversion%20repository/%E3%82%B8%E3%83%A3%E3%83%AF.txt", utf8URI.toString());
 		Assert.assertEquals("escaped utf8 uri", "http://www.example.net/subversion%20repository/%E3%82%B8%E3%83%A3%E3%83%AF.txt", utf8URIencoded.toString());
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void createURIException() throws Exception {
+		final URI uri = URI.create(BASE.toASCIIString());
+		final Field field = URI.class.getDeclaredField("scheme");
+		field.setAccessible(true);
+		field.set(uri, "0http");
+
+		URIUtils.createURI(uri, "/test");
+		Assert.fail("don't create illegal uris");
 	}
 }
