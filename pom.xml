@@ -28,7 +28,8 @@
 		<sonar.jacoco.reportPath>${project.basedir}/target/jacoco.exec</sonar.jacoco.reportPath>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 
-		<sonar.switchoffviolations.configFile>${project.basedir}/target/violations.ignore</sonar.switchoffviolations.configFile>
+		<sonar.ignorecoverage.configFile>${project.basedir}/target/coverage.ignore</sonar.ignorecoverage.configFile>
+		<sonar.ignoreviolations.configFile>${project.basedir}/target/violations.ignore</sonar.ignoreviolations.configFile>
 	</properties>
 
 	<!-- scm config {{{1 -->
@@ -67,7 +68,7 @@
 				<plugin>
 					<groupId>de.shadowhunt.maven.plugins</groupId>
 					<artifactId>sonarignore-maven-plugin</artifactId>
-					<version>3.2.0</version>
+					<version>3.3.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -200,13 +201,19 @@
 				<groupId>de.shadowhunt.maven.plugins</groupId>
 				<artifactId>sonarignore-maven-plugin</artifactId>
 				<configuration>
-					<ignoreAnnotations />
-					<forceCheckAnnotations />
-
-					<ignoreEquals>true</ignoreEquals>
-					<ignoreGetterAndSetter>true</ignoreGetterAndSetter>
-					<ignoreHashcode>true</ignoreHashcode>
-					<ignoreToString>true</ignoreToString>
+					<globalSettings>
+						<ignoreEquals>true</ignoreEquals>
+						<ignoreGeneratedClasses>true</ignoreGeneratedClasses>
+						<ignoreGettersAndSetters>true</ignoreGettersAndSetters>
+						<ignoreHashcode>true</ignoreHashcode>
+						<ignoreToString>true</ignoreToString>
+					</globalSettings>
+					<coverageSettings>
+						<output>${sonar.ignorecoverage.configFile}</output>
+					</coverageSettings>
+					<violationSettings>
+						<output>${sonar.ignoreviolations.configFile}</output>
+					</violationSettings>
 				</configuration>
 				<executions>
 					<execution>
