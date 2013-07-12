@@ -329,12 +329,16 @@ public abstract class AbstractRequestFactory {
 	 * Unlocking a resource
 	 * @param uri {@link URI} to perform the request against
 	 * @param lockToken to unlock the resource the lock-token that was generated during the lock request must be provided
+	 * @param force the user that created the lock must match the user who wants to delete it, unless force is {@code true}
 	 * @return {@link HttpUriRequest} unlocking the resource
 	 */
-	public HttpUriRequest createUnlockRequest(final URI uri, final String lockToken) {
+	public HttpUriRequest createUnlockRequest(final URI uri, final String lockToken, final boolean force) {
 		final DavTemplateRequest request = new DavTemplateRequest("UNLOCK");
 		request.setURI(uri);
 		request.addHeader("Lock-Token", "<" + lockToken + ">");
+		if (force) {
+			request.addHeader("X-SVN-Options", "lock-break");
+		}
 		return request;
 	}
 

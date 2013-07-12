@@ -361,7 +361,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 	}
 
 	@Override
-	public void unlock(final Path resource) {
+	public void unlock(final Path resource, final boolean force) {
 		final InfoEntry info = info(resource, Revision.HEAD, false);
 		final String lockToken = info.getLockToken();
 		if (lockToken == null) {
@@ -369,7 +369,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 		}
 		final URI uri = downloadURI(resource, Revision.HEAD);
 
-		final HttpUriRequest request = requestFactory.createUnlockRequest(uri, lockToken);
+		final HttpUriRequest request = requestFactory.createUnlockRequest(uri, lockToken, force);
 		execute(request, HttpStatus.SC_NO_CONTENT);
 	}
 

@@ -53,7 +53,7 @@ public abstract class AbstractRepositoryAuthenticatedIT extends AbstractReposito
 			RepositoryAssert.assertLocked(repository, EXISTING_FILE, getUsername());
 		} finally {
 			// ensure we don't leave any locks behind
-			repository.unlock(EXISTING_FILE);
+			repository.unlock(EXISTING_FILE, false);
 			RepositoryAssert.assertNotLocked(repository, EXISTING_FILE);
 		}
 	}
@@ -67,8 +67,7 @@ public abstract class AbstractRepositoryAuthenticatedIT extends AbstractReposito
 	@Test
 	public void unlockNotLockedExisitingFile() {
 		RepositoryAssert.assertNotLocked(repository, EXISTING_FILE);
-
-		repository.unlock(EXISTING_FILE);
+		repository.unlock(EXISTING_FILE, false);
 		RepositoryAssert.assertNotLocked(repository, EXISTING_FILE);
 	}
 }

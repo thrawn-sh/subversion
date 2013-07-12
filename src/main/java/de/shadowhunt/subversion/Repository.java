@@ -156,8 +156,9 @@ public interface Repository {
 	/**
 	 * Remove the lock on the current revision of the resource
 	 * @param resource the {@link Path} of the resource (relative to the repository root)
+	 * @param force the user that created the lock must match the user who wants to delete it, unless force is {@code true}
 	 */
-	public void unlock(Path resource);
+	public void unlock(Path resource, boolean force);
 
 	/**
 	 * Upload a new revision of the resource and set properties
