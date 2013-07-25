@@ -43,7 +43,7 @@ public abstract class AbstractRepositoryLockedWriteIT extends AbstractRepository
 		repository.upload(src, messageUpload, IOUtils.toInputStream(content));
 		RepositoryAssert.assertUpload(repository, src, content, messageUpload, getUsername());
 
-		repository.lock(src);
+		repository.lock(src, false);
 		RepositoryAssert.assertLocked(repository, src, getUsername());
 
 		final Path target = Path.create(getLockedBase() + "/copyTargetFile.txt");
@@ -65,7 +65,7 @@ public abstract class AbstractRepositoryLockedWriteIT extends AbstractRepository
 		repository.upload(file, message, IOUtils.toInputStream(content));
 		RepositoryAssert.assertUpload(repository, file, content, message, getUsername());
 
-		repository.lock(file);
+		repository.lock(file, false);
 		RepositoryAssert.assertLocked(repository, file, getUsername());
 
 		repository.delete(file, "delete folder");
@@ -83,7 +83,7 @@ public abstract class AbstractRepositoryLockedWriteIT extends AbstractRepository
 		repository.upload(file, messageUpload, IOUtils.toInputStream(content));
 		RepositoryAssert.assertUpload(repository, file, content, messageUpload, getUsername());
 
-		repository.lock(file);
+		repository.lock(file, false);
 		RepositoryAssert.assertLocked(repository, file, getUsername());
 
 		final String messageProperties = "set properties";
@@ -114,7 +114,7 @@ public abstract class AbstractRepositoryLockedWriteIT extends AbstractRepository
 		repository.upload(src, messageUpload, IOUtils.toInputStream(content));
 		RepositoryAssert.assertUpload(repository, src, content, messageUpload, getUsername());
 
-		repository.lock(src);
+		repository.lock(src, false);
 		RepositoryAssert.assertLocked(repository, src, getUsername());
 
 		final Path target = Path.create(getLockedBase() + "/moveTargetFile.txt");
@@ -134,7 +134,7 @@ public abstract class AbstractRepositoryLockedWriteIT extends AbstractRepository
 		repository.upload(file, messageUpload, IOUtils.toInputStream(content));
 		RepositoryAssert.assertUpload(repository, file, content, messageUpload, getUsername());
 
-		repository.lock(file);
+		repository.lock(file, false);
 		RepositoryAssert.assertLocked(repository, file, getUsername());
 
 		final String messageProperties = "set properties";
@@ -156,7 +156,7 @@ public abstract class AbstractRepositoryLockedWriteIT extends AbstractRepository
 		repository.upload(file, message, IOUtils.toInputStream(content));
 		RepositoryAssert.assertUpload(repository, file, content, message, getUsername());
 
-		repository.lock(file);
+		repository.lock(file, false);
 		RepositoryAssert.assertLocked(repository, file, getUsername());
 
 		final String contentV2 = "content 2";
@@ -179,7 +179,7 @@ public abstract class AbstractRepositoryLockedWriteIT extends AbstractRepository
 		repository.upload(file, message, IOUtils.toInputStream(content), a, b);
 		RepositoryAssert.assertUpload(repository, file, content, message, getUsername(), a, b);
 
-		repository.lock(file);
+		repository.lock(file, false);
 		RepositoryAssert.assertLocked(repository, file, getUsername());
 
 		final String contentV2 = "content 2";
@@ -200,7 +200,7 @@ public abstract class AbstractRepositoryLockedWriteIT extends AbstractRepository
 		repository.upload(file, message, IOUtils.toInputStream(content));
 		RepositoryAssert.assertUpload(repository, file, content, message, getUsername());
 
-		repository.lock(file);
+		repository.lock(file, false);
 		RepositoryAssert.assertLocked(repository, file, getUsername());
 
 		final String contentV2 = "content 2";

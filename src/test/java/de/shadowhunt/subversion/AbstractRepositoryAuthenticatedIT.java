@@ -40,7 +40,7 @@ public abstract class AbstractRepositoryAuthenticatedIT extends AbstractReposito
 
 	@Test(expected = SubversionException.class)
 	public void lockingExisitingDir() {
-		repository.lock(EXISTING_EMPTY_DIR);
+		repository.lock(EXISTING_EMPTY_DIR, false);
 		Assert.fail("only files can be locked");
 	}
 
@@ -49,7 +49,7 @@ public abstract class AbstractRepositoryAuthenticatedIT extends AbstractReposito
 		RepositoryAssert.assertNotLocked(repository, EXISTING_FILE);
 
 		try {
-			repository.lock(EXISTING_FILE);
+			repository.lock(EXISTING_FILE, false);
 			RepositoryAssert.assertLocked(repository, EXISTING_FILE, getUsername());
 		} finally {
 			// ensure we don't leave any locks behind
@@ -60,7 +60,7 @@ public abstract class AbstractRepositoryAuthenticatedIT extends AbstractReposito
 
 	@Test(expected = SubversionException.class)
 	public void lockingNonExisitingPath() {
-		repository.lock(NON_EXISTING);
+		repository.lock(NON_EXISTING, false);
 		Assert.fail("locking of non exisiting path must not be possible");
 	}
 

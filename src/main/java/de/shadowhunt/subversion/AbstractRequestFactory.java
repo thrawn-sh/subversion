@@ -187,12 +187,15 @@ public abstract class AbstractRequestFactory {
 	/**
 	 * Locking a resource
 	 * @param uri {@link URI} to perform the request against
+	 * @param steal if the resource is locked by another user {@code true} will override the lock, otherwise the operation will fail
 	 * @return {@link HttpUriRequest} locking the resource
 	 */
-	public HttpUriRequest createLockRequest(final URI uri) {
+	public HttpUriRequest createLockRequest(final URI uri, final boolean steal) {
 		final DavTemplateRequest request = new DavTemplateRequest("LOCK");
 		request.setURI(uri);
-		request.addHeader("X-SVN-Options", "lock-steal");
+		if (steal) {
+			request.addHeader("X-SVN-Options", "lock-steal");
+		}
 
 		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
 		body.append("<lockinfo xmlns=\"DAV:\"><lockscope><exclusive/></lockscope><locktype><write/></locktype></lockinfo>");

@@ -116,8 +116,9 @@ public interface Repository {
 	/**
 	 * Mark the current revision of the resource as locked
 	 * @param resource the {@link Path} of the resource (relative to the repository root)
+	 * @param steal if the resource is locked by another user {@code true} will override the lock, otherwise the operation will fail
 	 */
-	public void lock(Path resource);
+	public void lock(Path resource, boolean steal);
 
 	/**
 	 * Retrieve the log information for the revisions between startRevision and endRevision of the resource
