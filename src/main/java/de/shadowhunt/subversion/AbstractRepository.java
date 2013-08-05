@@ -60,6 +60,7 @@ import org.apache.http.util.EntityUtils;
 import de.shadowhunt.http.auth.CredentialsUtils;
 import de.shadowhunt.http.auth.NtlmSchemeFactory;
 import de.shadowhunt.http.client.ThreadLocalCredentialsProvider;
+import de.shadowhunt.http.client.WebDavHttpRequestRetryHandler;
 import de.shadowhunt.http.conn.ssl.NonValidatingX509TrustManager;
 import de.shadowhunt.http.protocol.ThreadLocalHttpContext;
 import de.shadowhunt.util.URIUtils;
@@ -93,6 +94,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 
 		final DefaultHttpClient defaultClient = new DefaultHttpClient(connectionManager);
 		defaultClient.setCredentialsProvider(new ThreadLocalCredentialsProvider());
+		defaultClient.setHttpRequestRetryHandler(new WebDavHttpRequestRetryHandler());
 
 		final HttpParams params = defaultClient.getParams();
 		params.setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, true);
