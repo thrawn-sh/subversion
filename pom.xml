@@ -7,7 +7,10 @@
 	<artifactId>subversion</artifactId>
 	<packaging>jar</packaging>
 
+	<!-- project information {{{1 -->
 	<name>Shadowhunt Subversion</name>
+	<description>Streaming subversion library without the need for a local sandbox</description>
+	<url>http://dev.shadowhunt.de/subversion</url>
 	<inceptionYear>2013</inceptionYear>
 
 	<organization>
@@ -15,9 +18,53 @@
 		<url>http://www.shadowhunt.de</url>
 	</organization>
 
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>thrawn</id>
+			<name>Thrawn</name>
+			<email>thrawn@shadowhunt.de</email>
+			<timezone>Europe/Berlin</timezone>
+		</developer>
+	</developers>
+	<!-- }}}1 -->
+
+	<!-- environment information {{{1 -->
+	<scm>
+		<tag>HEAD</tag>
+		<connection>scm:git:ssh://gitolite@git.shadowhunt.de/subversion.git</connection>
+		<developerConnection>scm:git:ssh://gitolite@git.shadowhunt.de/subversion.git</developerConnection>
+		<url>https://git.shadowhunt.de/subversion.git</url>
+	</scm>
+
 	<prerequisites>
 		<maven>2.2.1</maven>
 	</prerequisites>
+
+	<distributionManagement>
+		<repository>
+			<id>shadowhunt</id>
+			<name>Shadowhunt Local Repository</name>
+			<url>http://maven.shadowhunt.de/local-release</url>
+		</repository>
+		<snapshotRepository>
+			<id>shadowhunt</id>
+			<name>Shadowhunt Local Snapshot Repository</name>
+			<url>http://maven.shadowhunt.de/local-snapshot</url>
+		</snapshotRepository>
+		<site>
+			<id>www.shadowhunt.de</id>
+			<url>scp://www.yourcompany.com/www/docs/project/</url>
+		</site>
+	</distributionManagement>
+	<!-- }}}1 -->
 
 	<properties>
 		<eclipse.config>http://dev.shadowhunt.de/ide/eclipse</eclipse.config>
@@ -33,31 +80,10 @@
 		<sonar.ignoreviolations.configFile>${project.basedir}/target/violations.ignore</sonar.ignoreviolations.configFile>
 	</properties>
 
-	<!-- scm config {{{1 -->
-	<scm>
-		<tag>HEAD</tag>
-		<connection>scm:git:ssh://gitolite@git.shadowhunt.de/subversion.git</connection>
-		<developerConnection>scm:git:ssh://gitolite@git.shadowhunt.de/subversion.git</developerConnection>
-		<url>https://git.shadowhunt.de/subversion.git</url>
-	</scm>
-	<!-- }}}1 -->
-
-	<!-- repository config {{{1 -->
-	<distributionManagement>
-		<repository>
-			<id>shadowhunt</id>
-			<name>Shadowhunt Local Repository</name>
-			<url>http://maven.shadowhunt.de/local-release</url>
-		</repository>
-		<snapshotRepository>
-			<id>shadowhunt</id>
-			<name>Shadowhunt Local Snapshot Repository</name>
-			<url>http://maven.shadowhunt.de/local-snapshot</url>
-		</snapshotRepository>
-	</distributionManagement>
-	<!-- }}}1 -->
 
 	<build>
+		<defaultGoal>install</defaultGoal>
+
 		<pluginManagement><!-- {{{1 -->
 			<!-- keep list ordered by groupId and artifactId -->
 			<plugins>
@@ -456,6 +482,7 @@
 		</plugins><!-- }}}1 -->
 	</build>
 
+	<!-- dependencies {{{1 -->
 	<dependencies>
 		<dependency>
 			<groupId>commons-io</groupId>
@@ -508,4 +535,5 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<!-- }}}1 -->
 </project>
