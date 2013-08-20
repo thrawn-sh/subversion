@@ -25,7 +25,8 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
-		<sonar.jacoco.reportPath>${project.basedir}/target/jacoco.exec</sonar.jacoco.reportPath>
+		<sonar.jacoco.reportPath>${project.basedir}/target/jacoco-ut.exec</sonar.jacoco.reportPath>
+		<sonar.jacoco.itReportPath>${project.basedir}/target/jacoco-it.exec</sonar.jacoco.itReportPath>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 
 		<sonar.ignorecoverage.configFile>${project.basedir}/target/coverage.ignore</sonar.ignorecoverage.configFile>
@@ -302,7 +303,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
 				<configuration>
-					<argLine>${jacoco.agent.argLine}</argLine>
+					<argLine>${jacoco.agent.argLineIT}</argLine>
 					<printSummary>false</printSummary>
 				</configuration>
 				<executions>
@@ -380,7 +381,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<printSummary>false</printSummary>
-					<argLine>${jacoco.agent.argLine}</argLine>
+					<argLine>${jacoco.agent.argLineUT}</argLine>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -406,15 +407,28 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<configuration>
-					<propertyName>jacoco.agent.argLine</propertyName>
-					<destFile>${sonar.jacoco.reportPath}</destFile>
-				</configuration>
 				<executions>
 					<execution>
+						<id>ut</id>
+						<phase>initialize</phase>
 						<goals>
 							<goal>prepare-agent</goal>
 						</goals>
+						<configuration>
+							<propertyName>jacoco.agent.argLineUT</propertyName>
+							<destFile>${sonar.jacoco.reportPath}</destFile>
+						</configuration>
+					</execution>
+					<execution>
+						<id>it</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<propertyName>jacoco.agent.argLineIT</propertyName>
+							<destFile>${sonar.jacoco.itReportPath}</destFile>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
