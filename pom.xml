@@ -481,6 +481,30 @@
 			</plugin>
 		</plugins><!-- }}}1 -->
 	</build>
+	<reporting>
+		<plugins><!-- {{{1 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.7</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>summary</report>
+							<report>dependency-info</report>
+							<report>dependencies</report>
+							<report>plugins</report>
+							<report>license</report>
+
+							<report>dependency-convergence</report>
+							<report>dependency-management</report>
+							<report>modules</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins><!-- }}}1 -->
+	</reporting>
 
 	<!-- dependencies {{{1 -->
 	<dependencies>
