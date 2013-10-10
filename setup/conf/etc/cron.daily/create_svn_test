@@ -1,1 +1,89 @@
-../../sbin/create_svn_test
+#!/bin/bash
+
+TMP_DIR="`mktemp -d`"
+mkdir -p /var/www/svn
+rm -rf   /var/www/svn/test
+svnadmin create /var/www/svn/test
+svn co file:///var/www/svn/test "${TMP_DIR}"
+mkdir   "${TMP_DIR}/tags" "${TMP_DIR}/branches" "${TMP_DIR}/trunk"
+svn add "${TMP_DIR}/tags"
+svn add "${TMP_DIR}/branches"
+svn add "${TMP_DIR}/trunk"
+svn ci  "${TMP_DIR}" -m "create SVN structure"
+
+mkdir   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000"
+mkdir   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_empty"
+mkdir   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_with_files"
+touch   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_with_files/a.txt"
+touch   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_with_files/b.txt"
+touch   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_with_files/c.txt"
+touch   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_with_files/d.txt"
+mkdir   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_with_dirs"
+mkdir   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_with_dirs/a"
+mkdir   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_with_dirs/b"
+mkdir   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_with_dirs/c"
+mkdir   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_with_dirs/d"
+mkdir   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_mixed"
+touch   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_mixed/file.txt"
+mkdir   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_mixed/a"
+touch   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_mixed/a/file.txt"
+mkdir   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_mixed/a/b"
+touch   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_mixed/a/b/file.txt"
+svn add "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000"
+svn ci  "${TMP_DIR}" -m "create test structure"
+svn cp  file:///var/www/svn/test/trunk file:///var/www/svn/test/tags/0.0 -m "release 0.0"
+
+# create properties
+for ((i=1; i<=5; i++)); do
+svn propset myProperty "value ${i}" "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_mixed/file.txt"
+svn ci "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_mixed/file.txt" -m "changeing myProperty ${i}"
+done
+
+for ((i=1; i<=5; i++)); do
+svn propset "myProperty${i}" "value ${i}" "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_mixed/a/file.txt"
+svn ci "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/folder_mixed/a/file.txt" -m "adding myProperty${i}"
+done
+
+# create 10 tags with changes in revisions.txt
+cat >   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/revisions.txt" <<EOF
+Test 1
+EOF
+svn add "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/revisions.txt"
+svn ci  "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/revisions.txt" -m "adding revisions file 1"
+svn cp  file:///var/www/svn/test/trunk file:///var/www/svn/test/tags/1.0 -m "release 1.0"
+
+for ((i=2; i<=9; i++)); do
+cat >   "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/revisions.txt" <<EOF
+Test ${i}
+EOF
+svn ci  "${TMP_DIR}/trunk/00000000-0000-0000-0000-000000000000/revisions.txt" -m "adding revisions file ${i}"
+svn cp  file:///var/www/svn/test/trunk file:///var/www/svn/test/tags/${i}.0 -m "release ${i}.0"
+done
+
+# create branches
+svn cp  file:///var/www/svn/test/tags/2.0 file:///var/www/svn/test/branches/2.x -m "branche 2.x"
+svn cp  file:///var/www/svn/test/tags/5.0 file:///var/www/svn/test/branches/5.x -m "branche 5.x"
+svn cp  file:///var/www/svn/test/tags/8.0 file:///var/www/svn/test/branches/8.x -m "branche 8.x"
+
+svn up  "${TMP_DIR}"
+
+# modify branches
+cat >   "${TMP_DIR}/branches/2.x/00000000-0000-0000-0000-000000000000/revisions.txt" <<EOF
+empty
+EOF
+svn ci  "${TMP_DIR}/branches/2.x/00000000-0000-0000-0000-000000000000/revisions.txt" -m "modify revisions.txt on branch 2.x"
+svn mv  "${TMP_DIR}/branches/5.x/00000000-0000-0000-0000-000000000000/revisions.txt" "${TMP_DIR}/branches/5.x/00000000-0000-0000-0000-000000000000/revisions_new.txt"
+svn ci  "${TMP_DIR}/branches/5.x/00000000-0000-0000-0000-000000000000" -m "rename revisions.txt on branch 5.x"
+svn rm  "${TMP_DIR}/branches/8.x/00000000-0000-0000-0000-000000000000/revisions.txt"
+svn ci  "${TMP_DIR}/branches/8.x/00000000-0000-0000-0000-000000000000" -m "remove revisions.txt on branch 8.x"
+
+svn cp  file:///var/www/svn/test/branches/2.x file:///var/www/svn/test/tags/2.1 -m "branche 2.1"
+svn cp  file:///var/www/svn/test/branches/5.x file:///var/www/svn/test/tags/5.1 -m "branche 5.1"
+svn cp  file:///var/www/svn/test/branches/8.x file:///var/www/svn/test/tags/8.1 -m "branche 8.1"
+
+svn mv  "${TMP_DIR}/branches/5.x/00000000-0000-0000-0000-000000000000/revisions_new.txt" "${TMP_DIR}/branches/5.x/00000000-0000-0000-0000-000000000000/revisions.txt"
+svn ci  "${TMP_DIR}/branches/5.x/00000000-0000-0000-0000-000000000000" -m "rename revisions.txt on branch 5.x"
+svn cp  file:///var/www/svn/test/branches/5.x file:///var/www/svn/test/tags/5.2 -m "branche 5.2"
+
+chown -R www-data:www-data /var/www/svn
+rm -rf "${TMP_DIR}"
