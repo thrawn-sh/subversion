@@ -80,8 +80,8 @@ public final class InfoEntry {
 			}
 
 			if ("baseline-relative-path".equals(name)) {
-				final Path path = Path.create(getText());
-				current.setPath(path);
+				final Resource resource = Resource.create(getText());
+				current.setResource(resource);
 				return;
 			}
 
@@ -175,13 +175,13 @@ public final class InfoEntry {
 	private static final ResourceProperty[] EMPTY = new ResourceProperty[0];
 
 	/**
-	 * {@link Comparator} orders {@link InfoEntry}s by their relative {@link Path}
+	 * {@link Comparator} orders {@link InfoEntry}s by their relative {@link Resource}
 	 */
-	public static final Comparator<InfoEntry> PATH_COMPARATOR = new Comparator<InfoEntry>() {
+	public static final Comparator<InfoEntry> RESOURCE_COMPARATOR = new Comparator<InfoEntry>() {
 
 		@Override
 		public int compare(final InfoEntry si1, final InfoEntry si2) {
-			return si1.getPath().compareTo(si2.getPath());
+			return si1.getResource().compareTo(si2.getResource());
 		}
 	};
 
@@ -229,7 +229,7 @@ public final class InfoEntry {
 
 	private String md5;
 
-	private Path path;
+	private Resource resource;
 
 	private String repositoryUuid;
 
@@ -253,11 +253,11 @@ public final class InfoEntry {
 			return false;
 		}
 		final InfoEntry other = (InfoEntry) obj;
-		if (path == null) {
-			if (other.path != null) {
+		if (resource == null) {
+			if (other.resource != null) {
 				return false;
 			}
-		} else if (!path.equals(other.path)) {
+		} else if (! resource.equals(other.resource)) {
 			return false;
 		}
 		if (repositoryUuid == null) {
@@ -313,11 +313,11 @@ public final class InfoEntry {
 	}
 
 	/**
-	 * Returns a {@link Path} of the resource (relative to the root of the repository)
-	 * @return the {@link Path} of the resource (relative to the root of the repository)
+	 * Returns a {@link Resource} of the resource (relative to the root of the repository)
+	 * @return the {@link Resource} of the resource (relative to the root of the repository)
 	 */
-	public Path getPath() {
-		return path;
+	public Resource getResource() {
+		return resource;
 	}
 
 	/**
@@ -352,8 +352,8 @@ public final class InfoEntry {
 	}
 
 	/**
-	 * Returns a root-path of the repository (relative to the root of the subversion server)
-	 * @return the root-path of the repository (relative to the root of the subversion server)
+	 * Returns a root-resource of the repository (relative to the root of the subversion server)
+	 * @return the root-resource of the repository (relative to the root of the subversion server)
 	 */
 	public String getRoot() {
 		return root;
@@ -363,7 +363,7 @@ public final class InfoEntry {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = (prime * result) + ((path == null) ? 0 : path.hashCode());
+		result = (prime * result) + ((resource == null) ? 0 : resource.hashCode());
 		result = (prime * result) + ((repositoryUuid == null) ? 0 : repositoryUuid.hashCode());
 		result = (prime * result) + ((revision == null) ? 0 : revision.hashCode());
 		return result;
@@ -421,8 +421,8 @@ public final class InfoEntry {
 		this.md5 = md5;
 	}
 
-	void setPath(final Path path) {
-		this.path = path;
+	void setResource(final Resource resource) {
+		this.resource = resource;
 	}
 
 	void setRepositoryUuid(final String repositoryUuid) {
@@ -450,8 +450,8 @@ public final class InfoEntry {
 		builder.append(lockToken);
 		builder.append(", md5=");
 		builder.append(md5);
-		builder.append(", path=");
-		builder.append(path);
+		builder.append(", resource=");
+		builder.append(resource);
 		builder.append(", repositoryUuid=");
 		builder.append(repositoryUuid);
 		builder.append(", revision=");

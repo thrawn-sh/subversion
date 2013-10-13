@@ -49,7 +49,7 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 
 	@Test
 	public void copyFile() throws IOException {
-		final Path src = Path.create(getBase() + "/copySrcFile.txt");
+		final Resource src = Resource.create(getBase() + "/copySrcFile.txt");
 		Assert.assertFalse("new file must not exist", repository.exists(src, Revision.HEAD));
 
 		final String content = "content";
@@ -58,7 +58,7 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 		repository.upload(src, messageUpload, IOUtils.toInputStream(content));
 		RepositoryAssert.assertUpload(repository, src, content, messageUpload, getUsername());
 
-		final Path target = Path.create(getBase() + "/copyTargetFile.txt");
+		final Resource target = Resource.create(getBase() + "/copyTargetFile.txt");
 		Assert.assertFalse("new file must not exist", repository.exists(target, Revision.HEAD));
 
 		final String messageCopy = "copy file";
@@ -69,7 +69,7 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 
 	@Test
 	public void createFolder() {
-		final Path folder = Path.create(getBase() + "/createFolder");
+		final Resource folder = Resource.create(getBase() + "/createFolder");
 		Assert.assertFalse("new folder must not exist", repository.exists(folder, Revision.HEAD));
 		final String message = "create folder";
 
@@ -80,7 +80,7 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 
 	@Test
 	public void deleteFile() throws IOException {
-		final Path file = Path.create(getBase() + "/deleteFile.txt");
+		final Resource file = Resource.create(getBase() + "/deleteFile.txt");
 		Assert.assertFalse("new file must not exist", repository.exists(file, Revision.HEAD));
 
 		final String content = "content";
@@ -94,7 +94,7 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 
 	@Test
 	public void deleteFolder() {
-		final Path folder = Path.create(getBase() + "/deleteFolder");
+		final Resource folder = Resource.create(getBase() + "/deleteFolder");
 
 		repository.createFolder(folder, "create folder");
 		Assert.assertTrue("created folder must exist", repository.exists(folder, Revision.HEAD));
@@ -105,7 +105,7 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 
 	@Test(expected = SubversionException.class)
 	public void deleteNonExistingFolder() {
-		final Path folder = Path.create(getBase() + "/nonExistingFolder");
+		final Resource folder = Resource.create(getBase() + "/nonExistingFolder");
 		Assert.assertFalse("non exisitng folder must not exist", repository.exists(folder, Revision.HEAD));
 
 		repository.delete(folder, "delete folder");
@@ -114,7 +114,7 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 
 	@Test
 	public void deleteProperties() throws IOException {
-		final Path file = Path.create(getBase() + "/deletePropertiesFile.txt");
+		final Resource file = Resource.create(getBase() + "/deletePropertiesFile.txt");
 		Assert.assertFalse("new file must not exist", repository.exists(file, Revision.HEAD));
 
 		final String content = "content";
@@ -138,7 +138,7 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 
 	@Test
 	public void doublecreateFolder() {
-		final Path folder = Path.create(getBase() + "/doublecreateFolder");
+		final Resource folder = Resource.create(getBase() + "/doublecreateFolder");
 		Assert.assertFalse("new folder must not exist", repository.exists(folder, Revision.HEAD));
 
 		repository.createFolder(folder, "create folder");
@@ -155,7 +155,7 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 
 	@Test
 	public void moveFile() throws IOException {
-		final Path src = Path.create(getBase() + "/moveSrcFile.txt");
+		final Resource src = Resource.create(getBase() + "/moveSrcFile.txt");
 		Assert.assertFalse("new file must not exist", repository.exists(src, Revision.HEAD));
 
 		final String content = "content";
@@ -164,7 +164,7 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 		repository.upload(src, messageUpload, IOUtils.toInputStream(content));
 		RepositoryAssert.assertUpload(repository, src, content, messageUpload, getUsername());
 
-		final Path target = Path.create(getBase() + "/moveTargetFile.txt");
+		final Resource target = Resource.create(getBase() + "/moveTargetFile.txt");
 		Assert.assertFalse("new file must not exist", repository.exists(target, Revision.HEAD));
 
 		final String messageMove = "move file";
@@ -176,7 +176,7 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 
 	@Test
 	public void setPropertiesFile() throws IOException {
-		final Path file = Path.create(getBase() + "/setPropertiesFile.txt");
+		final Resource file = Resource.create(getBase() + "/setPropertiesFile.txt");
 		Assert.assertFalse("new file must not exist", repository.exists(file, Revision.HEAD));
 
 		final String content = "content";
@@ -195,7 +195,7 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 
 	@Test
 	public void updatedFile() throws IOException {
-		final Path file = Path.create(getBase() + "/updateFile.txt");
+		final Resource file = Resource.create(getBase() + "/updateFile.txt");
 		Assert.assertFalse("new file must not exist", repository.exists(file, Revision.HEAD));
 
 		final String content = "content";
@@ -213,7 +213,7 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 
 	@Test
 	public void updatedWithPropertiesFile() throws IOException {
-		final Path file = Path.create(getBase() + "/updatePropertiesFile.txt");
+		final Resource file = Resource.create(getBase() + "/updatePropertiesFile.txt");
 		Assert.assertFalse("new file must not exist", repository.exists(file, Revision.HEAD));
 
 		final String content = "content";
@@ -233,7 +233,7 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 
 	@Test
 	public void uploadFile() throws IOException {
-		final Path file = Path.create(getBase() + "/uploadFile.txt");
+		final Resource file = Resource.create(getBase() + "/uploadFile.txt");
 		Assert.assertFalse("new file must not exist", repository.exists(file, Revision.HEAD));
 
 		final String content = "content";
@@ -245,7 +245,7 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 
 	@Test
 	public void uploadFileWithProperties() throws IOException {
-		final Path file = Path.create(getBase() + "/uploadPropertiesFile.txt");
+		final Resource file = Resource.create(getBase() + "/uploadPropertiesFile.txt");
 		Assert.assertFalse("new file must not exist", repository.exists(file, Revision.HEAD));
 
 		final String content = "content";
@@ -259,7 +259,7 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 
 	@Test
 	public void uploadFileWithSpecialCharactes() throws IOException {
-		final Path file = Path.create(getBase() + "/specialChars-\u30b8\u30e3\u30ef.txt");
+		final Resource file = Resource.create(getBase() + "/specialChars-\u30b8\u30e3\u30ef.txt");
 		Assert.assertFalse("new file must not exist", repository.exists(file, Revision.HEAD));
 
 		final String content = "\u30b8\u30e3\u30ef";
@@ -271,7 +271,7 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 
 	@Test(expected = IllegalArgumentException.class)
 	public void uploadNullContent() {
-		final Path file = Path.create(getBase() + "/nullContentFile.txt");
+		final Resource file = Resource.create(getBase() + "/nullContentFile.txt");
 		repository.upload(file, "create file", null);
 		Assert.fail("null content not allowed");
 	}

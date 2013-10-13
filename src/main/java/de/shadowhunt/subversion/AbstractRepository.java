@@ -173,7 +173,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 		this(createClient(100, trustServerCertificat), repository, requestFactory);
 	}
 
-	protected Path createMissingFolders(final String prefix, final String uuid, final Path resource) {
+	protected Resource createMissingFolders(final String prefix, final String uuid, final Resource resource) {
 		final String[] resourceParts = resource.getValue().split("/");
 
 		String infoResource = "/";
@@ -193,11 +193,11 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 			}
 		}
 
-		return Path.create(infoResource);
+		return Resource.create(infoResource);
 	}
 
 	@Override
-	public InputStream download(final Path resource, final Revision revision) {
+	public InputStream download(final Resource resource, final Revision revision) {
 		final URI uri = downloadURI(resource, revision);
 
 		final HttpUriRequest request = requestFactory.createDownloadRequest(uri);
@@ -230,7 +230,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 	}
 
 	@Override
-	public boolean exists(final Path resource, final Revision revision) {
+	public boolean exists(final Resource resource, final Revision revision) {
 		final URI uri = downloadURI(resource, revision);
 
 		final HttpUriRequest request = requestFactory.createExistsRequest(uri);
@@ -238,7 +238,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 		return (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK);
 	}
 
-	protected Revision getConcreateRevision(final Path resource, final Revision revision) {
+	protected Revision getConcreateRevision(final Resource resource, final Revision revision) {
 		if (Revision.HEAD.equals(revision)) {
 			final InfoEntry info = info(resource, revision, false);
 			return info.getRevision();
@@ -247,7 +247,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 	}
 
 	@Override
-	public InfoEntry info(final Path resource, final Revision revision, final boolean withCustomProperties) {
+	public InfoEntry info(final Resource resource, final Revision revision, final boolean withCustomProperties) {
 		final URI uri = downloadURI(resource, revision);
 
 		final HttpUriRequest request = requestFactory.createInfoRequest(uri, Depth.EMPTY);
@@ -267,18 +267,18 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 	}
 
 	@Override
-	public LogEntry lastLog(final Path resource) {
+	public LogEntry lastLog(final Resource resource) {
 		final Revision revision = getConcreateRevision(resource, Revision.HEAD);
 		final List<LogEntry> logs = log(resource, revision, revision);
 		return logs.get(0);
 	}
 
-	protected List<InfoEntry> list(final String pathPrefix, final Path resource, final Depth depth, final boolean withCustomProperties) {
+	protected List<InfoEntry> list(final String pathPrefix, final Resource resource, final Depth depth, final boolean withCustomProperties) {
 		final URI uri = URIUtils.createURI(repository, pathPrefix + resource.getValue());
 
 		if (depth == Depth.INFINITY) {
 			final List<InfoEntry> root = list(uri, Depth.IMMEDIATES, withCustomProperties);
-			final Set<InfoEntry> result = new TreeSet<InfoEntry>(InfoEntry.PATH_COMPARATOR);
+			final Set<InfoEntry> result = new TreeSet<InfoEntry>(InfoEntry.RESOURCE_COMPARATOR);
 			listRecursive(pathPrefix, withCustomProperties, root, result);
 			return new ArrayList<InfoEntry>(result);
 		}
@@ -305,8 +305,8 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 
 			done.add(info);
 			if (info.isDirectory()) {
-				final Path path = info.getPath();
-				final URI uri = URIUtils.createURI(repository, pathPrefix + path.getValue());
+				final Resource resource = info.getResource();
+				final URI uri = URIUtils.createURI(repository, pathPrefix + resource.getValue());
 				final List<InfoEntry> children = list(uri, Depth.IMMEDIATES, withCustomProperties);
 				listRecursive(pathPrefix, withCustomProperties, children, done);
 			}
@@ -314,7 +314,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 	}
 
 	@Override
-	public void lock(final Path resource, final boolean steal) {
+	public void lock(final Resource resource, final boolean steal) {
 		final URI uri = downloadURI(resource, Revision.HEAD);
 
 		final HttpUriRequest request = requestFactory.createLockRequest(uri, steal);
@@ -322,7 +322,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 	}
 
 	@Override
-	public List<LogEntry> log(final Path resource, final Revision startRevision, final Revision endRevision) {
+	public List<LogEntry> log(final Resource resource, final Revision startRevision, final Revision endRevision) {
 		final URI uri = downloadURI(resource, Revision.HEAD);
 
 		final Revision concreateStartRevision = getConcreateRevision(resource, startRevision);
@@ -353,7 +353,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 	}
 
 	@Override
-	public void setProperties(final Path resource, final String message, final ResourceProperty... properties) {
+	public void setProperties(final Resource resource, final String message, final ResourceProperty... properties) {
 		upload0(resource, message, null, properties);
 	}
 
@@ -363,7 +363,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 	}
 
 	@Override
-	public void unlock(final Path resource, final boolean force) {
+	public void unlock(final Resource resource, final boolean force) {
 		final InfoEntry info = info(resource, Revision.HEAD, false);
 		final String lockToken = info.getLockToken();
 		if (lockToken == null) {
@@ -376,12 +376,12 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 	}
 
 	@Override
-	public void upload(final Path resource, final String message, final InputStream content, final ResourceProperty... properties) {
+	public void upload(final Resource resource, final String message, final InputStream content, final ResourceProperty... properties) {
 		if (content == null) {
 			throw new IllegalArgumentException("content can not be null");
 		}
 		upload0(resource, message, content, properties);
 	}
 
-	protected abstract void upload0(final Path resource, final String message, @Nullable final InputStream content, final ResourceProperty... properties);
+	protected abstract void upload0(final Resource resource, final String message, @Nullable final InputStream content, final ResourceProperty... properties);
 }

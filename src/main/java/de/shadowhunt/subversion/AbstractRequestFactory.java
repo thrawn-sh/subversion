@@ -244,19 +244,19 @@ public abstract class AbstractRequestFactory {
 	 * @param info current {@link InfoEntry} for the resource
 	 * @return {@link HttpUriRequest} merging all modifications from previous request
 	 */
-	public HttpUriRequest createMergeRequest(final URI uri, final Path path, final InfoEntry info) {
+	public HttpUriRequest createMergeRequest(final URI uri, final Resource resource, final InfoEntry info) {
 		final DavTemplateRequest request = new DavTemplateRequest("MERGE");
 		request.setURI(uri);
 		request.setHeader("X-SVN-Options", "release-locks");
 
 		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
 		body.append("<merge xmlns=\"DAV:\"><source><href>");
-		body.append(StringEscapeUtils.escapeXml(path.getValue()));
+		body.append(StringEscapeUtils.escapeXml(resource.getValue()));
 		body.append("</href></source><no-auto-merge/><no-checkout/><prop><checked-in/><version-name/><resourcetype/><creationdate/><creator-displayname/></prop>");
 		final String token = info.getLockToken();
 		if (token != null) {
 			body.append("<S:lock-token-list xmlns:S=\"svn:\"><S:lock><S:lock-path>");
-			body.append(StringEscapeUtils.escapeXml(info.getPath().getValueWithoutLeadingSeparator()));
+			body.append(StringEscapeUtils.escapeXml(info.getResource().getValueWithoutLeadingSeparator()));
 			body.append("</S:lock-path>");
 			body.append("<S:lock-token>");
 			body.append(token);

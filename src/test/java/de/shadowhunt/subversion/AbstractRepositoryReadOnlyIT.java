@@ -32,21 +32,21 @@ import de.shadowhunt.subversion.ResourceProperty.Type;
 
 public abstract class AbstractRepositoryReadOnlyIT {
 
-	protected static final Path EXISTING_DIR_WITH_DIRS = Path.create("/trunk/00000000-0000-0000-0000-000000000000/folder_with_dirs");
+	protected static final Resource EXISTING_DIR_WITH_DIRS = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/folder_with_dirs");
 
-	protected static final Path EXISTING_DIR_WITH_FILES = Path.create("/trunk/00000000-0000-0000-0000-000000000000/folder_with_files");
+	protected static final Resource EXISTING_DIR_WITH_FILES = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/folder_with_files");
 
-	protected static final Path EXISTING_EMPTY_DIR = Path.create("/trunk/00000000-0000-0000-0000-000000000000/folder_empty");
+	protected static final Resource EXISTING_EMPTY_DIR = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/folder_empty");
 
-	protected static final Path EXISTING_FILE = Path.create("/trunk/00000000-0000-0000-0000-000000000000/revisions.txt");
+	protected static final Resource EXISTING_FILE = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/revisions.txt");
 
-	protected static final Path EXISTING_MIXED_DIR = Path.create("/trunk/00000000-0000-0000-0000-000000000000/folder_mixed");
+	protected static final Resource EXISTING_MIXED_DIR = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/folder_mixed");
 
-	protected static final Path EXISTING_MULTIPLE_PROPERTIES = Path.create("/trunk/00000000-0000-0000-0000-000000000000/folder_mixed/a/file.txt");
+	protected static final Resource EXISTING_MULTIPLE_PROPERTIES = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/folder_mixed/a/file.txt");
 
-	protected static final Path EXISTING_PROPERTY_VERSION = Path.create("/trunk/00000000-0000-0000-0000-000000000000/folder_mixed/file.txt");
+	protected static final Resource EXISTING_PROPERTY_VERSION = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/folder_mixed/file.txt");
 
-	protected static final Path NON_EXISTING = Path.create("/trunk/00000000-0000-0000-0000-000000000000/no_exisiting.txt");
+	protected static final Resource NON_EXISTING = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/no_exisiting.txt");
 
 	protected final Repository repository;
 
@@ -102,7 +102,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 	}
 
 	@Test
-	public void existsNonExisitingPath() {
+	public void existsNonExisitingResource() {
 		Assert.assertFalse("revisions file doesn't exisits in head revision", repository.exists(NON_EXISTING, Revision.HEAD));
 		Assert.assertFalse("revisions file didn't exisits in revision 1", repository.exists(NON_EXISTING, Revision.INITIAL));
 	}
@@ -116,7 +116,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 		Assert.assertNull("not locked => no lock owner", info.getLockOwner());
 		Assert.assertNull("not locked => no lock token", info.getLockToken());
 		Assert.assertNull("folder don't have md5", info.getMd5());
-		Assert.assertEquals("path are equal", EXISTING_EMPTY_DIR, info.getPath());
+		Assert.assertEquals("resource are equal", EXISTING_EMPTY_DIR, info.getResource());
 		Assert.assertNotNull("repository uuid mut not be null", info.getRepositoryUuid());
 		Assert.assertEquals("last cahnged at", Revision.create(2), info.getRevision());
 		Assert.assertEquals("repository root is", root, info.getRoot());
@@ -137,7 +137,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 		Assert.assertNull("not locked => no lock owner", info.getLockOwner());
 		Assert.assertNull("not locked => no lock token", info.getLockToken());
 		Assert.assertNull("folder don't have md5", info.getMd5());
-		Assert.assertEquals("path are equal", EXISTING_EMPTY_DIR, info.getPath());
+		Assert.assertEquals("resource are equal", EXISTING_EMPTY_DIR, info.getResource());
 		Assert.assertNotNull("repository uuid mut not be null", info.getRepositoryUuid());
 		Assert.assertEquals("last cahnged at", revision, info.getRevision());
 		Assert.assertEquals("repository root is", root, info.getRoot());
@@ -157,7 +157,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 		Assert.assertNull("not locked => no lock owner", info.getLockOwner());
 		Assert.assertNull("not locked => no lock token", info.getLockToken());
 		Assert.assertEquals("is expected file", "c9aa593b08050501075f060ba1708196", info.getMd5());
-		Assert.assertEquals("path are equal", EXISTING_FILE, info.getPath());
+		Assert.assertEquals("resource are equal", EXISTING_FILE, info.getResource());
 		Assert.assertNotNull("repository uuid mut not be null", info.getRepositoryUuid());
 		Assert.assertEquals("last cahnged at", Revision.create(30), info.getRevision());
 		Assert.assertEquals("repository root is", root, info.getRoot());
@@ -178,7 +178,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 		Assert.assertNull("not locked => no lock owner", info.getLockOwner());
 		Assert.assertNull("not locked => no lock token", info.getLockToken());
 		Assert.assertEquals("is expected file", "5ae6c6c33fea175753939e037efeb751", info.getMd5());
-		Assert.assertEquals("path are equal", EXISTING_FILE, info.getPath());
+		Assert.assertEquals("resource are equal", EXISTING_FILE, info.getResource());
 		Assert.assertNotNull("repository uuid mut not be null", info.getRepositoryUuid());
 		Assert.assertEquals("last cahnged at", revision, info.getRevision());
 		Assert.assertEquals("repository root is", root, info.getRoot());
@@ -215,9 +215,9 @@ public abstract class AbstractRepositoryReadOnlyIT {
 	}
 
 	@Test(expected = SubversionException.class)
-	public void infoNonExisitingPath() {
+	public void infoNonExisitingResource() {
 		repository.info(NON_EXISTING, Revision.HEAD, true);
-		Assert.fail("no info for non exisiting path must be created");
+		Assert.fail("no info for non exisiting resource must be created");
 	}
 
 	@Test
@@ -274,9 +274,9 @@ public abstract class AbstractRepositoryReadOnlyIT {
 	}
 
 	@Test(expected = SubversionException.class)
-	public void lastLogNonExisitingPath() {
+	public void lastLogNonExisitingResource() {
 		repository.lastLog(NON_EXISTING);
-		Assert.fail("no log for non exisiting path must be created");
+		Assert.fail("no log for non exisiting resource must be created");
 	}
 
 	@Test
@@ -375,9 +375,9 @@ public abstract class AbstractRepositoryReadOnlyIT {
 	}
 
 	@Test(expected = SubversionException.class)
-	public void listNonExisitingPath() {
+	public void listNonExisitingResource() {
 		repository.list(NON_EXISTING, Revision.HEAD, Depth.EMPTY, false);
-		Assert.fail("no listings for non exisiting path must be created");
+		Assert.fail("no listings for non exisiting resource must be created");
 	}
 
 	@Test
@@ -419,9 +419,9 @@ public abstract class AbstractRepositoryReadOnlyIT {
 	}
 
 	@Test(expected = SubversionException.class)
-	public void logNonExisitingPath() {
+	public void logNonExisitingResource() {
 		repository.log(NON_EXISTING, Revision.INITIAL, Revision.HEAD);
-		Assert.fail("no logs for non exisiting path must be created");
+		Assert.fail("no logs for non exisiting resource must be created");
 	}
 
 	@Test

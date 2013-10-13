@@ -28,7 +28,7 @@ import org.junit.Assert;
 
 public final class RepositoryAssert {
 
-	public static void assertContent(final Repository repository, final Path resource, final String expectedContent) throws IOException {
+	public static void assertContent(final Repository repository, final Resource resource, final String expectedContent) throws IOException {
 		Assert.assertTrue("created resource must exist", repository.exists(resource, Revision.HEAD));
 
 		final InputStream download = repository.download(resource, Revision.HEAD);
@@ -37,14 +37,14 @@ public final class RepositoryAssert {
 		IOUtils.closeQuietly(download);
 	}
 
-	public static void assertLastLog(final Repository repository, final Path resource, final String expectedMessage, final String expectedUser) {
+	public static void assertLastLog(final Repository repository, final Resource resource, final String expectedMessage, final String expectedUser) {
 		final LogEntry log = repository.lastLog(resource);
 		Assert.assertNotNull("LogEntry must not be null", log);
 		Assert.assertEquals("message must match", expectedMessage, log.getMessage());
 		Assert.assertEquals("user must match", expectedUser, log.getUser());
 	}
 
-	public static void assertLocked(final Repository repository, final Path resource, final String expectedLockOwner) {
+	public static void assertLocked(final Repository repository, final Resource resource, final String expectedLockOwner) {
 		final InfoEntry info = repository.info(resource, Revision.HEAD, false);
 		Assert.assertNotNull("InfoEntry must not be null", info);
 		Assert.assertTrue(info.isLocked());
@@ -52,7 +52,7 @@ public final class RepositoryAssert {
 		Assert.assertNotNull("locked => lock token", info.getLockToken());
 	}
 
-	public static void assertNotLocked(final Repository repository, final Path resource) {
+	public static void assertNotLocked(final Repository repository, final Resource resource) {
 		final InfoEntry info = repository.info(resource, Revision.HEAD, false);
 		Assert.assertNotNull("InfoEntry must not be null", info);
 		Assert.assertFalse(info.isLocked());
@@ -60,7 +60,7 @@ public final class RepositoryAssert {
 		Assert.assertNull("not locked => no lock token", info.getLockToken());
 	}
 
-	public static void assertResourceProperties(final Repository repository, final Path resource, final ResourceProperty... expectedProperties) {
+	public static void assertResourceProperties(final Repository repository, final Resource resource, final ResourceProperty... expectedProperties) {
 		final InfoEntry info = repository.info(resource, Revision.HEAD, true);
 		Assert.assertNotNull("InfoEntry must not be null", info);
 
@@ -74,7 +74,7 @@ public final class RepositoryAssert {
 		}
 	}
 
-	public static void assertUpload(final Repository repository, final Path resource, final String expectedContent, final String expectedMessage, final String expectedUser, final ResourceProperty... expectedProperties) throws IOException {
+	public static void assertUpload(final Repository repository, final Resource resource, final String expectedContent, final String expectedMessage, final String expectedUser, final ResourceProperty... expectedProperties) throws IOException {
 		RepositoryAssert.assertContent(repository, resource, expectedContent);
 		RepositoryAssert.assertResourceProperties(repository, resource, expectedProperties);
 		RepositoryAssert.assertLastLog(repository, resource, expectedMessage, expectedUser);

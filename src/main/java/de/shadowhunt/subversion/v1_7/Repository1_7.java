@@ -19,6 +19,7 @@
  */
 package de.shadowhunt.subversion.v1_7;
 
+import de.shadowhunt.subversion.Resource;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
@@ -33,7 +34,6 @@ import org.apache.http.client.methods.HttpUriRequest;
 import de.shadowhunt.subversion.AbstractRepository;
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.InfoEntry;
-import de.shadowhunt.subversion.Path;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.util.URIUtils;
@@ -55,7 +55,7 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 		super(repositoryRoot, trustServerCertificat, new RequestFactory1_7());
 	}
 
-	protected void contentUpload(final Path resource, final InfoEntry info, final String uuid, @Nullable final InputStream content) {
+	protected void contentUpload(final Resource resource, final InfoEntry info, final String uuid, @Nullable final InputStream content) {
 		if (content == null) {
 			return;
 		}
@@ -68,7 +68,7 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 	}
 
 	@Override
-	public void copy(final Path srcResource, final Revision srcRevision, final Path targetResource, final String message) {
+	public void copy(final Resource srcResource, final Revision srcRevision, final Resource targetResource, final String message) {
 		final InfoEntry info = info(srcResource, srcRevision, false);
 		final String uuid = prepareTransaction();
 		setCommitMessage(uuid, message);
@@ -77,7 +77,7 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 		merge(info, uuid);
 	}
 
-	protected void copy0(final Path srcResource, final Revision srcRevision, final Path targetResource, final String uuid) {
+	protected void copy0(final Resource srcResource, final Revision srcRevision, final Resource targetResource, final String uuid) {
 		final URI src = URIUtils.createURI(repository, PREFIX_RVR + srcRevision + srcResource.getValue());
 		final URI target = URIUtils.createURI(repository, PREFIX_TXR + uuid + targetResource.getValue());
 		final HttpUriRequest request = requestFactory.createCopyRequest(src, target);
@@ -85,20 +85,20 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 	}
 
 	@Override
-	public void createFolder(final Path resource, final String message) {
+	public void createFolder(final Resource resource, final String message) {
 		if (exists(resource, Revision.HEAD)) {
 			return;
 		}
 
 		final String uuid = prepareTransaction();
-		final Path infoResource = createMissingFolders(PREFIX_TXR, uuid, resource);
+		final Resource infoResource = createMissingFolders(PREFIX_TXR, uuid, resource);
 		final InfoEntry info = info(infoResource, Revision.HEAD, false);
 		setCommitMessage(uuid, message);
 		merge(info, uuid);
 	}
 
 	@Override
-	public void delete(final Path resource, final String message) {
+	public void delete(final Resource resource, final String message) {
 		final String uuid = prepareTransaction();
 		setCommitMessage(uuid, message);
 		delete0(resource, uuid);
@@ -106,14 +106,14 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 		merge(info, uuid);
 	}
 
-	protected void delete0(final Path resource, final String uuid) {
+	protected void delete0(final Resource resource, final String uuid) {
 		final URI uri = URIUtils.createURI(repository, PREFIX_TXR + uuid + resource.getValue());
 		final HttpUriRequest request = requestFactory.createDeleteRequest(uri);
 		execute(request, HttpStatus.SC_NO_CONTENT);
 	}
 
 	@Override
-	public void deleteProperties(final Path resource, final String message, final ResourceProperty... properties) {
+	public void deleteProperties(final Resource resource, final String message, final ResourceProperty... properties) {
 		final String uuid = prepareTransaction();
 		setCommitMessage(uuid, message);
 		final InfoEntry info = info(resource, Revision.HEAD, false);
@@ -122,7 +122,7 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 	}
 
 	@Override
-	public URI downloadURI(final Path resource, final Revision revision) {
+	public URI downloadURI(final Resource resource, final Revision revision) {
 		if (Revision.HEAD.equals(revision)) {
 			return URIUtils.createURI(repository, resource.getValue());
 		}
@@ -130,20 +130,20 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 	}
 
 	@Override
-	public List<InfoEntry> list(final Path resource, final Revision revision, final Depth depth, final boolean withCustomProperties) {
+	public List<InfoEntry> list(final Resource resource, final Revision revision, final Depth depth, final boolean withCustomProperties) {
 		final Revision concreateRevision = getConcreateRevision(resource, revision);
 		final String pathPrefix = PREFIX_RVR + concreateRevision;
 		return list(pathPrefix, resource, depth, withCustomProperties);
 	}
 
 	protected void merge(final InfoEntry info, final String uuid) {
-		final Path path = Path.create(repository.getPath() + PREFIX_TXN + uuid);
-		final HttpUriRequest request = requestFactory.createMergeRequest(repository, path, info);
+		final Resource resource = Resource.create(repository.getPath() + PREFIX_TXN + uuid);
+		final HttpUriRequest request = requestFactory.createMergeRequest(repository, resource, info);
 		execute(request, HttpStatus.SC_OK);
 	}
 
 	@Override
-	public void move(final Path srcResource, final Path targetResource, final String message) {
+	public void move(final Resource srcResource, final Resource targetResource, final String message) {
 		final InfoEntry info = info(srcResource, Revision.HEAD, false);
 		final String uuid = prepareTransaction();
 		setCommitMessage(uuid, message);
@@ -161,7 +161,7 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 		return response.getFirstHeader("SVN-Txn-Name").getValue();
 	}
 
-	protected void propertiesRemove(final Path resource, final InfoEntry info, final String uuid, final ResourceProperty... properties) {
+	protected void propertiesRemove(final Resource resource, final InfoEntry info, final String uuid, final ResourceProperty... properties) {
 		final ResourceProperty[] filtered = ResourceProperty.filteroutSystemProperties(properties);
 		if (filtered.length == 0) {
 			return;
@@ -174,7 +174,7 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 		execute(request, HttpStatus.SC_MULTI_STATUS);
 	}
 
-	protected void propertiesSet(final Path resource, final InfoEntry info, final String uuid, final ResourceProperty... properties) {
+	protected void propertiesSet(final Resource resource, final InfoEntry info, final String uuid, final ResourceProperty... properties) {
 		final ResourceProperty[] filtered = ResourceProperty.filteroutSystemProperties(properties);
 		if (filtered.length == 0) {
 			return;
@@ -196,10 +196,10 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 	}
 
 	@Override
-	protected void upload0(final Path resource, final String message, @Nullable final InputStream content, @Nullable final ResourceProperty... properties) {
+	protected void upload0(final Resource resource, final String message, @Nullable final InputStream content, @Nullable final ResourceProperty... properties) {
 		final String uuid = prepareTransaction();
 
-		final Path infoResource;
+		final Resource infoResource;
 		if (exists(resource, Revision.HEAD)) {
 			infoResource = resource;
 		} else {

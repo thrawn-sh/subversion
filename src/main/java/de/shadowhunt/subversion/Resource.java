@@ -22,21 +22,21 @@ package de.shadowhunt.subversion;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * {@link Path} defines a resource location in the repository
+ * {@link Resource} defines a resource location in the repository
  */
-public final class Path implements Comparable<Path> {
+public final class Resource implements Comparable<Resource> {
 
 	/**
-	 * Represents the base {@link Path} in the repository
+	 * Represents the base {@link Resource} in the repository
 	 */
-	public static final Path ROOT = new Path("/");
+	public static final Resource ROOT = new Resource("/");
 
 	/**
-	 * Create a new {@link Path} instance for the given value
-	 * @param path value of the {@link Path}
-	 * @return the new {@link Path} instance with the given value
+	 * Create a new {@link Resource} instance for the given value
+	 * @param path value of the {@link Resource}
+	 * @return the new {@link Resource} instance with the given value
 	 */
-	public static Path create(final String path) {
+	public static Resource create(final String path) {
 		if (StringUtils.isEmpty(path) || "/".equals(path)) {
 			return ROOT;
 		}
@@ -49,17 +49,17 @@ public final class Path implements Comparable<Path> {
 			}
 		}
 
-		return new Path(sb.toString());
+		return new Resource(sb.toString());
 	}
 
 	private final String value;
 
-	private Path(final String value) {
+	private Resource(final String value) {
 		this.value = value;
 	}
 
 	@Override
-	public int compareTo(final Path o) {
+	public int compareTo(final Resource o) {
 		return value.compareTo(o.value);
 	}
 
@@ -74,33 +74,33 @@ public final class Path implements Comparable<Path> {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final Path other = (Path) obj;
+		final Resource other = (Resource) obj;
 		return value.equals(other.value);
 	}
 
 	/**
-	 * Returns the parent {@link Path} of the {@link Path}, the parent of the ROOT element is the ROOT itself
-	 * @return the parent {@link Path} of the {@link Path}
+	 * Returns the parent {@link Resource} of the {@link Resource}, the parent of the ROOT element is the ROOT itself
+	 * @return the parent {@link Resource} of the {@link Resource}
 	 */
-	public Path getParent() {
+	public Resource getParent() {
 		if (ROOT == this) {
 			return ROOT; // parent of root is root
 		}
 		final int indexOf = value.lastIndexOf('/');
-		return new Path(value.substring(0, indexOf));
+		return new Resource(value.substring(0, indexOf));
 	}
 
 	/**
-	 * Returns a {@link String} representation of the {@link Path}
-	 * @return the {@link String} representation of the {@link Path}
+	 * Returns a {@link String} representation of the {@link Resource}
+	 * @return the {@link String} representation of the {@link Resource}
 	 */
 	public String getValue() {
 		return value;
 	}
 
 	/**
-	 * Returns a {@link String} representation of the {@link Path} without the leading slash
-	 * @return the {@link String} representation of the {@link Path} without the leading slash
+	 * Returns a {@link String} representation of the {@link Resource} without the leading slash
+	 * @return the {@link String} representation of the {@link Resource} without the leading slash
 	 */
 	public String getValueWithoutLeadingSeparator() {
 		return value.substring(1);
