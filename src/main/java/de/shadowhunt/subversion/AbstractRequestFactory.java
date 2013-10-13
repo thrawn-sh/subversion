@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,15 +19,13 @@
  */
 package de.shadowhunt.subversion;
 
+import de.shadowhunt.http.client.methods.DavTemplateRequest;
 import java.io.InputStream;
 import java.net.URI;
-
 import javax.annotation.Nullable;
-
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.HttpRequest;
 import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpOptions;
@@ -42,44 +40,6 @@ import org.apache.http.message.BasicHeader;
  * Basic class for all SubversionRequestFactories
  */
 public abstract class AbstractRequestFactory {
-
-	/**
-	 * Basic implementation of an entity enclosing HTTP request for WebDav
-	 */
-	public static final class DavTemplateRequest extends HttpEntityEnclosingRequestBase {
-
-		private final String method;
-
-		/**
-		 * Create a new {@link DavTemplateRequest} with default {@link Depth}-level
-		 * @param method http method name
-		 */
-		public DavTemplateRequest(final String method) {
-			this(method, null);
-		}
-
-		/**
-		 * Create a new {@link DavTemplateRequest}
-		 * @param method http method name
-		 * @param depth {@link Depth}-level of the request
-		 */
-		public DavTemplateRequest(final String method, @Nullable final Depth depth) {
-			this.method = method;
-			if (depth != null) {
-				setHeader("Depth", depth.value);
-			}
-		}
-
-		@Override
-		public String getMethod() {
-			return method;
-		}
-
-		@Override
-		public String toString() {
-			return method + " " + getURI() + " " + getProtocolVersion();
-		}
-	}
 
 	protected static final ContentType CONTENT_TYPE_XML = ContentType.create("text/xml", "UTF-8");
 
@@ -133,7 +93,7 @@ public abstract class AbstractRequestFactory {
 	 * @return {@link HttpUriRequest} copying the resource to a new destination
 	 */
 	public HttpUriRequest createCopyRequest(final URI src, final URI target) {
-		final DavTemplateRequest request = new DavTemplateRequest("COPY", Depth.INFINITY);
+		final DavTemplateRequest request = new DavTemplateRequest("COPY", Depth.INFINITY.value);
 		request.addHeader(new BasicHeader("Destination", target.toASCIIString()));
 		request.addHeader(new BasicHeader("Override", "T"));
 		request.setURI(src);
@@ -174,7 +134,7 @@ public abstract class AbstractRequestFactory {
 	 * @return {@link HttpUriRequest} requesting info on the resource
 	 */
 	public HttpUriRequest createInfoRequest(final URI uri, final Depth depth) {
-		final DavTemplateRequest request = new DavTemplateRequest("PROPFIND", depth);
+		final DavTemplateRequest request = new DavTemplateRequest("PROPFIND", depth.value);
 		request.setURI(uri);
 
 		final StringBuilder body = new StringBuilder(XML_PREAMBLE);

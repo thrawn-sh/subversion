@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,6 @@ package de.shadowhunt.http.client;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
 import org.apache.http.HttpRequest;
 import org.apache.http.annotation.Immutable;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
@@ -38,7 +37,7 @@ public class WebDavHttpRequestRetryHandler extends DefaultHttpRequestRetryHandle
 
 	/**
 	 * Create a {@link WebDavHttpRequestRetryHandler}
-	 * @param retryCount number of times a method will be retried 
+	 * @param retryCount number of times a method will be retried
 	 * @param requestSentRetryEnabled whether or not methods that have successfully sent their request will be retried
 	 */
 	public WebDavHttpRequestRetryHandler(final int retryCount, final boolean requestSentRetryEnabled) {

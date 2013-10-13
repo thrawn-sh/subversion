@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,24 +19,21 @@
  */
 package de.shadowhunt.subversion.v1_6;
 
+import de.shadowhunt.subversion.AbstractRepository;
+import de.shadowhunt.subversion.Depth;
+import de.shadowhunt.subversion.InfoEntry;
 import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.ResourceProperty;
+import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.util.URIUtils;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
-
 import javax.annotation.Nullable;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
-
-import de.shadowhunt.subversion.AbstractRepository;
-import de.shadowhunt.subversion.Depth;
-import de.shadowhunt.subversion.InfoEntry;
-import de.shadowhunt.subversion.ResourceProperty;
-import de.shadowhunt.subversion.Revision;
-import de.shadowhunt.util.URIUtils;
 
 /**
  * {@link Repository1_6} supports subversion servers of version 1.6.X

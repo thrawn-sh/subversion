@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,7 +21,6 @@ package de.shadowhunt.util;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import org.apache.http.client.utils.URIBuilder;
 
 /**
@@ -30,8 +29,8 @@ import org.apache.http.client.utils.URIBuilder;
 public final class URIUtils {
 
 	/**
-	 * Creates an {@link URI} from the given repository with the additional pathSuffix, 
-	 * by combining the path from the repository and the pathSuffix and properly escaping both 
+	 * Creates an {@link URI} from the given repository with the additional pathSuffix,
+	 * by combining the path from the repository and the pathSuffix and properly escaping both
 	 * @param repository {@link URI} repository to connect to
 	 * @param pathSuffix additional path part that will be combined to the path from the repository
 	 * @return the {@link URI} from the given repository with the additional pathSuffix
