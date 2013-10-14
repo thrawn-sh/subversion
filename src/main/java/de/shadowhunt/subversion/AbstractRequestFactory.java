@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.net.URI;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpRequest;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -93,7 +94,8 @@ public abstract class AbstractRequestFactory {
 	 * @return {@link HttpUriRequest} copying the resource to a new destination
 	 */
 	public HttpUriRequest createCopyRequest(final URI src, final URI target) {
-		final DavTemplateRequest request = new DavTemplateRequest("COPY", Depth.INFINITY.value);
+		final Header depthHeader = new BasicHeader("Depth", Depth.INFINITY.value);
+		final DavTemplateRequest request = new DavTemplateRequest("COPY", depthHeader);
 		request.addHeader(new BasicHeader("Destination", target.toASCIIString()));
 		request.addHeader(new BasicHeader("Override", "T"));
 		request.setURI(src);
@@ -134,7 +136,8 @@ public abstract class AbstractRequestFactory {
 	 * @return {@link HttpUriRequest} requesting info on the resource
 	 */
 	public HttpUriRequest createInfoRequest(final URI uri, final Depth depth) {
-		final DavTemplateRequest request = new DavTemplateRequest("PROPFIND", depth.value);
+		final Header depthHeader = new BasicHeader("Depth", depth.value);
+		final DavTemplateRequest request = new DavTemplateRequest("PROPFIND", depthHeader);
 		request.setURI(uri);
 
 		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
@@ -200,7 +203,7 @@ public abstract class AbstractRequestFactory {
 	/**
 	 * Merge all modifications from previous request
 	 * @param uri {@link URI} to perform the request against
-	 * @param path absolute resource-path relative to the repository root
+	 * @param resource absolute resource-path relative to the repository root
 	 * @param info current {@link InfoEntry} for the resource
 	 * @return {@link HttpUriRequest} merging all modifications from previous request
 	 */
