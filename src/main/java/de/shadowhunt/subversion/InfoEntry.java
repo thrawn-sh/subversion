@@ -19,16 +19,19 @@
  */
 package de.shadowhunt.subversion;
 
-import de.shadowhunt.subversion.ResourceProperty.Type;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import javax.xml.parsers.SAXParser;
+
 import org.xml.sax.Attributes;
+
+import de.shadowhunt.subversion.ResourceProperty.Type;
 
 /**
  * Container that holds all status information for a single revision of a resource
@@ -94,6 +97,18 @@ public final class InfoEntry {
 				return;
 			}
 
+			if ("getetag".equals(name)) {
+				final String text = getText();
+
+				final int firstSlash = text.indexOf('/');
+				final String versionString = text.substring(0, firstSlash);
+
+				final int version = Integer.parseInt(versionString);
+				final Revision revision = Revision.create(version);
+
+				current.setRevision(revision);
+			}
+
 			if (locktoken && "href".equals(name)) {
 				current.setLockToken(getText());
 				locktoken = false;
@@ -107,21 +122,6 @@ public final class InfoEntry {
 
 			if ("repository-uuid".equals(name)) {
 				current.setRepositoryUuid(getText());
-				return;
-			}
-
-			if ("version-controlled-configuration".equals(name)) {
-				final String config = getText();
-				final int index = config.indexOf('!');
-				if (index >= 1) {
-					current.setRoot(config.substring(0, index - 1));
-				}
-				return;
-			}
-
-			if ("version-name".equals(name)) {
-				final int revision = Integer.parseInt(getText());
-				current.setRevision(Revision.create(revision));
 				return;
 			}
 
@@ -232,8 +232,6 @@ public final class InfoEntry {
 
 	private Revision revision;
 
-	private String root;
-
 	InfoEntry() {
 		// prevent direct instantiation
 	}
@@ -254,7 +252,7 @@ public final class InfoEntry {
 			if (other.resource != null) {
 				return false;
 			}
-		} else if (! resource.equals(other.resource)) {
+		} else if (!resource.equals(other.resource)) {
 			return false;
 		}
 		if (repositoryUuid == null) {
@@ -348,14 +346,6 @@ public final class InfoEntry {
 		return revision;
 	}
 
-	/**
-	 * Returns a root-resource of the repository (relative to the root of the subversion server)
-	 * @return the root-resource of the repository (relative to the root of the subversion server)
-	 */
-	public String getRoot() {
-		return root;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -430,10 +420,6 @@ public final class InfoEntry {
 		this.revision = revision;
 	}
 
-	void setRoot(final String root) {
-		this.root = root;
-	}
-
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
@@ -453,8 +439,6 @@ public final class InfoEntry {
 		builder.append(repositoryUuid);
 		builder.append(", revision=");
 		builder.append(revision);
-		builder.append(", root=");
-		builder.append(root);
 		builder.append("]");
 		return builder.toString();
 	}
