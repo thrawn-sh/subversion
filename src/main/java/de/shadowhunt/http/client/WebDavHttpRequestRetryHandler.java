@@ -50,6 +50,7 @@ public class WebDavHttpRequestRetryHandler extends DefaultHttpRequestRetryHandle
 		idempotentMethods.put("HEAD", Boolean.TRUE);
 		idempotentMethods.put("OPTIONS", Boolean.TRUE);
 		idempotentMethods.put("PUT", Boolean.TRUE);
+		idempotentMethods.put("POST", Boolean.FALSE); // not idempotent FIXME in subversion context idempotent?
 		idempotentMethods.put("TRACE", Boolean.TRUE);
 		// webdav
 		idempotentMethods.put("CHECKOUT", Boolean.TRUE);
