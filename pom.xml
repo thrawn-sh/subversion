@@ -334,7 +334,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
 				<configuration>
-					<keyname>77103E0B</keyname><!-- shadowhund package -->
+					<keyname>77103E0B</keyname><!-- shadowhunt package -->
 				</configuration>
 				<executions>
 					<execution>
