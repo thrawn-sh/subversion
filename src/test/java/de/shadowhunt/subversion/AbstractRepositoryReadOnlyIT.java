@@ -19,14 +19,16 @@
  */
 package de.shadowhunt.subversion;
 
-import de.shadowhunt.subversion.ResourceProperty.Type;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
+
+import de.shadowhunt.subversion.ResourceProperty.Type;
 
 public abstract class AbstractRepositoryReadOnlyIT {
 
@@ -48,11 +50,8 @@ public abstract class AbstractRepositoryReadOnlyIT {
 
 	protected final Repository repository;
 
-	protected final String root;
-
 	protected AbstractRepositoryReadOnlyIT(final URI uri, final ServerVersion version) {
 		repository = SubversionFactory.getInstance(uri, true, version);
-		root = uri.getPath();
 	}
 
 	@Test
@@ -117,7 +116,6 @@ public abstract class AbstractRepositoryReadOnlyIT {
 		Assert.assertEquals("resource are equal", EXISTING_EMPTY_DIR, info.getResource());
 		Assert.assertNotNull("repository uuid mut not be null", info.getRepositoryUuid());
 		Assert.assertEquals("last cahnged at", Revision.create(2), info.getRevision());
-		Assert.assertEquals("repository root is", root, info.getRoot());
 		Assert.assertFalse("resource is not a file", info.isFile());
 		Assert.assertTrue("resource is a directory", info.isDirectory());
 
@@ -138,7 +136,6 @@ public abstract class AbstractRepositoryReadOnlyIT {
 		Assert.assertEquals("resource are equal", EXISTING_EMPTY_DIR, info.getResource());
 		Assert.assertNotNull("repository uuid mut not be null", info.getRepositoryUuid());
 		Assert.assertEquals("last cahnged at", revision, info.getRevision());
-		Assert.assertEquals("repository root is", root, info.getRoot());
 		Assert.assertFalse("resource is not a file", info.isFile());
 		Assert.assertTrue("resource is a directory", info.isDirectory());
 
@@ -158,7 +155,6 @@ public abstract class AbstractRepositoryReadOnlyIT {
 		Assert.assertEquals("resource are equal", EXISTING_FILE, info.getResource());
 		Assert.assertNotNull("repository uuid mut not be null", info.getRepositoryUuid());
 		Assert.assertEquals("last cahnged at", Revision.create(30), info.getRevision());
-		Assert.assertEquals("repository root is", root, info.getRoot());
 		Assert.assertTrue("resource is a file", info.isFile());
 		Assert.assertFalse("resource is not a directory", info.isDirectory());
 
@@ -179,7 +175,6 @@ public abstract class AbstractRepositoryReadOnlyIT {
 		Assert.assertEquals("resource are equal", EXISTING_FILE, info.getResource());
 		Assert.assertNotNull("repository uuid mut not be null", info.getRepositoryUuid());
 		Assert.assertEquals("last cahnged at", revision, info.getRevision());
-		Assert.assertEquals("repository root is", root, info.getRoot());
 		Assert.assertTrue("resource is a file", info.isFile());
 		Assert.assertFalse("resource is not a directory", info.isDirectory());
 	}
