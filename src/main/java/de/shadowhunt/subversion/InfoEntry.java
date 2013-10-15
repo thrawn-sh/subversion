@@ -100,8 +100,9 @@ public final class InfoEntry {
 			if ("getetag".equals(name)) {
 				final String text = getText();
 
-				final int firstSlash = text.indexOf('/');
-				final String versionString = text.substring(0, firstSlash);
+				final int end = text.indexOf("//");
+				final int start = text.indexOf('"') + 1;
+				final String versionString = text.substring(start, end);
 
 				final int version = Integer.parseInt(versionString);
 				final Revision revision = Revision.create(version);
