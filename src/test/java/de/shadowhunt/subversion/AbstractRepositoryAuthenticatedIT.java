@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,13 +38,13 @@ public abstract class AbstractRepositoryAuthenticatedIT extends AbstractReposito
 	}
 
 	@Test(expected = SubversionException.class)
-	public void lockingExisitingDir() {
+	public void lockingExistingDir() {
 		repository.lock(EXISTING_EMPTY_DIR, false);
 		Assert.fail("only files can be locked");
 	}
 
 	@Test
-	public void lockingExisitingFile() {
+	public void lockingExistingFile() {
 		RepositoryAssert.assertNotLocked(repository, EXISTING_FILE);
 
 		try {
@@ -58,13 +58,13 @@ public abstract class AbstractRepositoryAuthenticatedIT extends AbstractReposito
 	}
 
 	@Test(expected = SubversionException.class)
-	public void lockingNonExisitingPath() {
+	public void lockingNonExistingPath() {
 		repository.lock(NON_EXISTING, false);
-		Assert.fail("locking of non exisiting path must not be possible");
+		Assert.fail("locking of non existing path must not be possible");
 	}
 
 	@Test
-	public void unlockNotLockedExisitingFile() {
+	public void unlockNotLockedExistingFile() {
 		RepositoryAssert.assertNotLocked(repository, EXISTING_FILE);
 		repository.unlock(EXISTING_FILE, false);
 		RepositoryAssert.assertNotLocked(repository, EXISTING_FILE);

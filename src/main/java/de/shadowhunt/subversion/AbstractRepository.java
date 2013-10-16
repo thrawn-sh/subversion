@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -82,12 +82,12 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 		return false;
 	}
 
-	protected static DefaultHttpClient createClient(final int maxConnections, final boolean trustServerCertificat) {
+	protected static DefaultHttpClient createClient(final int maxConnections, final boolean trustServerCertificate) {
 		final PoolingClientConnectionManager connectionManager = new PoolingClientConnectionManager();
 		connectionManager.setMaxTotal(maxConnections);
 		connectionManager.setDefaultMaxPerRoute(maxConnections);
 
-		if (trustServerCertificat) {
+		if (trustServerCertificate) {
 			final Scheme scheme = createTrustingAnySslCertScheme();
 			connectionManager.getSchemeRegistry().register(scheme);
 		}
@@ -169,8 +169,8 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 		this.authscope = new AuthScope(repository.getHost(), AuthScope.ANY_PORT);
 	}
 
-	protected AbstractRepository(final URI repository, final boolean trustServerCertificat, final T requestFactory) {
-		this(createClient(100, trustServerCertificat), repository, requestFactory);
+	protected AbstractRepository(final URI repository, final boolean trustServerCertificate, final T requestFactory) {
+		this(createClient(100, trustServerCertificate), repository, requestFactory);
 	}
 
 	protected Resource createMissingFolders(final String prefix, final String uuid, final Resource resource) {
@@ -238,7 +238,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 		return (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK);
 	}
 
-	protected Revision getConcreateRevision(final Resource resource, final Revision revision) {
+	protected Revision getConcreteRevision(final Resource resource, final Revision revision) {
 		if (Revision.HEAD.equals(revision)) {
 			final InfoEntry info = info(resource, revision, false);
 			return info.getRevision();
@@ -268,7 +268,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 
 	@Override
 	public LogEntry lastLog(final Resource resource) {
-		final Revision revision = getConcreateRevision(resource, Revision.HEAD);
+		final Revision revision = getConcreteRevision(resource, Revision.HEAD);
 		final List<LogEntry> logs = log(resource, revision, revision, 1);
 		return logs.get(0);
 	}
@@ -325,9 +325,9 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 	public List<LogEntry> log(final Resource resource, final Revision startRevision, final Revision endRevision, final int limit) {
 		final URI uri = downloadURI(resource, Revision.HEAD);
 
-		final Revision concreateStartRevision = getConcreateRevision(resource, startRevision);
-		final Revision concreateEndRevision = getConcreateRevision(resource, endRevision);
-		final HttpUriRequest request = requestFactory.createLogRequest(uri, concreateStartRevision, concreateEndRevision, limit);
+		final Revision concreteStartRevision = getConcreteRevision(resource, startRevision);
+		final Revision concreteEndRevision = getConcreteRevision(resource, endRevision);
+		final HttpUriRequest request = requestFactory.createLogRequest(uri, concreteStartRevision, concreteEndRevision, limit);
 		final HttpResponse response = execute(request, false, HttpStatus.SC_OK);
 
 		final InputStream in = getContent(response);

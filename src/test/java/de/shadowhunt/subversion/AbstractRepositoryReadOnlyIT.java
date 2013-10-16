@@ -135,7 +135,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 		Assert.assertNull("folder don't have md5", info.getMd5());
 		Assert.assertEquals("resource are equal", EXISTING_EMPTY_DIR, info.getResource());
 		Assert.assertNotNull("repository uuid mut not be null", info.getRepositoryUuid());
-		Assert.assertEquals("last cahnged at", revision, info.getRevision());
+		Assert.assertEquals("last changed at", revision, info.getRevision());
 		Assert.assertFalse("resource is not a file", info.isFile());
 		Assert.assertTrue("resource is a directory", info.isDirectory());
 
@@ -154,7 +154,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 		Assert.assertEquals("is expected file", "c9aa593b08050501075f060ba1708196", info.getMd5());
 		Assert.assertEquals("resource are equal", EXISTING_FILE, info.getResource());
 		Assert.assertNotNull("repository uuid mut not be null", info.getRepositoryUuid());
-		Assert.assertEquals("last cahnged at", Revision.create(30), info.getRevision());
+		Assert.assertEquals("last changed at", Revision.create(30), info.getRevision());
 		Assert.assertTrue("resource is a file", info.isFile());
 		Assert.assertFalse("resource is not a directory", info.isDirectory());
 
@@ -174,7 +174,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 		Assert.assertEquals("is expected file", "5ae6c6c33fea175753939e037efeb751", info.getMd5());
 		Assert.assertEquals("resource are equal", EXISTING_FILE, info.getResource());
 		Assert.assertNotNull("repository uuid mut not be null", info.getRepositoryUuid());
-		Assert.assertEquals("last cahnged at", revision, info.getRevision());
+		Assert.assertEquals("last changed at", revision, info.getRevision());
 		Assert.assertTrue("resource is a file", info.isFile());
 		Assert.assertFalse("resource is not a directory", info.isDirectory());
 	}

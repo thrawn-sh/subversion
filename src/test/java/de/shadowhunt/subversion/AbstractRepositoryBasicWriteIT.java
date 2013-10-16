@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -136,8 +136,8 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 	}
 
 	@Test
-	public void doublecreateFolder() {
-		final Resource folder = Resource.create(getBase() + "/doublecreateFolder");
+	public void doubleCreateFolder() {
+		final Resource folder = Resource.create(getBase() + "/doubleCreateFolder");
 		Assert.assertFalse("new folder must not exist", repository.exists(folder, Revision.HEAD));
 
 		repository.createFolder(folder, "create folder");
@@ -257,7 +257,7 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 	}
 
 	@Test
-	public void uploadFileWithSpecialCharactes() throws IOException {
+	public void uploadFileWithSpecialCharacters() throws IOException {
 		final Resource file = Resource.create(getBase() + "/specialChars-\u30b8\u30e3\u30ef.txt");
 		Assert.assertFalse("new file must not exist", repository.exists(file, Revision.HEAD));
 
