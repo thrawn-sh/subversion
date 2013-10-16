@@ -25,7 +25,6 @@ import java.net.URI;
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.http.Header;
 import org.apache.http.HttpRequest;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -36,7 +35,6 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicHeader;
 
 import de.shadowhunt.http.client.methods.DavTemplateRequest;
 
@@ -78,8 +76,7 @@ public abstract class AbstractRequestFactory {
 	 * @return {@link HttpUriRequest} setting the commit message for the current transaction on the resource
 	 */
 	public HttpUriRequest createCommitMessageRequest(final URI uri, final String message) {
-		final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH");
-		request.setURI(uri);
+		final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH", uri);
 
 		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
 		body.append("<propertyupdate xmlns=\"DAV:\" xmlns:S=\"http://subversion.tigris.org/xmlns/svn/\"><set><prop><S:log>");
@@ -97,10 +94,10 @@ public abstract class AbstractRequestFactory {
 	 * @return {@link HttpUriRequest} copying the resource to a new destination
 	 */
 	public HttpUriRequest createCopyRequest(final URI src, final URI target) {
-		final Header depthHeader = new BasicHeader("Depth", Depth.INFINITY.value);
-		final DavTemplateRequest request = new DavTemplateRequest("COPY", depthHeader);
-		request.addHeader(new BasicHeader("Destination", target.toASCIIString()));
-		request.addHeader(new BasicHeader("Override", "T"));
+		final DavTemplateRequest request = new DavTemplateRequest("COPY", src);
+		request.addHeader("Destination", target.toASCIIString());
+		request.addHeader("Depth", Depth.INFINITY.value);
+		request.addHeader("Override", "T");
 		request.setURI(src);
 		return request;
 	}
@@ -139,9 +136,8 @@ public abstract class AbstractRequestFactory {
 	 * @return {@link HttpUriRequest} requesting info on the resource
 	 */
 	public HttpUriRequest createInfoRequest(final URI uri, final Depth depth) {
-		final Header depthHeader = new BasicHeader("Depth", depth.value);
-		final DavTemplateRequest request = new DavTemplateRequest("PROPFIND", depthHeader);
-		request.setURI(uri);
+		final DavTemplateRequest request = new DavTemplateRequest("PROPFIND", uri);
+		request.addHeader("Depth", depth.value);
 
 		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
 		body.append("<propfind xmlns=\"DAV:\"><allprop/></propfind>");
@@ -157,8 +153,7 @@ public abstract class AbstractRequestFactory {
 	 * @return {@link HttpUriRequest} locking the resource
 	 */
 	public HttpUriRequest createLockRequest(final URI uri, final boolean steal) {
-		final DavTemplateRequest request = new DavTemplateRequest("LOCK");
-		request.setURI(uri);
+		final DavTemplateRequest request = new DavTemplateRequest("LOCK", uri);
 		if (steal) {
 			request.addHeader("X-SVN-Options", "lock-steal");
 		}
@@ -179,8 +174,7 @@ public abstract class AbstractRequestFactory {
 	 * @return {@link HttpUriRequest} containing all properties
 	 */
 	public HttpUriRequest createLogRequest(final URI uri, final Revision startRevision, final Revision endRevision, final int limit) {
-		final DavTemplateRequest request = new DavTemplateRequest("REPORT");
-		request.setURI(uri);
+		final DavTemplateRequest request = new DavTemplateRequest("REPORT", uri);
 
 		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
 		body.append("<log-report xmlns=\"svn:\"><start-revision>");
@@ -205,8 +199,7 @@ public abstract class AbstractRequestFactory {
 	 * @return {@link HttpUriRequest} creating the new folder
 	 */
 	public HttpUriRequest createMakeFolderRequest(final URI uri) {
-		final DavTemplateRequest request = new DavTemplateRequest("MKCOL");
-		request.setURI(uri);
+		final DavTemplateRequest request = new DavTemplateRequest("MKCOL", uri);
 		return request;
 	}
 
@@ -218,9 +211,8 @@ public abstract class AbstractRequestFactory {
 	 * @return {@link HttpUriRequest} merging all modifications from previous request
 	 */
 	public HttpUriRequest createMergeRequest(final URI uri, final Resource resource, final InfoEntry info) {
-		final DavTemplateRequest request = new DavTemplateRequest("MERGE");
-		request.setURI(uri);
-		request.setHeader("X-SVN-Options", "release-locks");
+		final DavTemplateRequest request = new DavTemplateRequest("MERGE", uri);
+		request.addHeader("X-SVN-Options", "release-locks");
 
 		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
 		body.append("<merge xmlns=\"DAV:\"><source><href>");
@@ -249,8 +241,7 @@ public abstract class AbstractRequestFactory {
 	 * @return {@link HttpUriRequest} removing the given properties form the resource
 	 */
 	public HttpUriRequest createRemovePropertiesRequest(final URI uri, @Nullable final String lockToken, @Nullable final URI lockTokenTarget, final ResourceProperty... properties) {
-		final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH");
-		request.setURI(uri);
+		final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH", uri);
 
 		addApproveTokenHeader(request, lockToken, lockTokenTarget);
 
@@ -276,8 +267,7 @@ public abstract class AbstractRequestFactory {
 	 * @return {@link HttpUriRequest} setting the given properties for the resource
 	 */
 	public HttpUriRequest createSetPropertiesRequest(final URI uri, @Nullable final String lockToken, @Nullable final URI lockTokenTarget, final ResourceProperty... properties) {
-		final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH");
-		request.setURI(uri);
+		final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH", uri);
 
 		addApproveTokenHeader(request, lockToken, lockTokenTarget);
 
@@ -309,8 +299,7 @@ public abstract class AbstractRequestFactory {
 	 * @return {@link HttpUriRequest} unlocking the resource
 	 */
 	public HttpUriRequest createUnlockRequest(final URI uri, final String lockToken, final boolean force) {
-		final DavTemplateRequest request = new DavTemplateRequest("UNLOCK");
-		request.setURI(uri);
+		final DavTemplateRequest request = new DavTemplateRequest("UNLOCK", uri);
 		request.addHeader("Lock-Token", "<" + lockToken + ">");
 		if (force) {
 			request.addHeader("X-SVN-Options", "lock-break");

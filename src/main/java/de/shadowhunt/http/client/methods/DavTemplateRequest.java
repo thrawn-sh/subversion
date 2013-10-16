@@ -19,8 +19,8 @@
  */
 package de.shadowhunt.http.client.methods;
 
-import javax.annotation.Nullable;
-import org.apache.http.Header;
+import java.net.URI;
+
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 
 /** Entity enclosing HTTP request for WebDav */
@@ -29,34 +29,18 @@ public final class DavTemplateRequest extends HttpEntityEnclosingRequestBase {
 	private final String method;
 
 	/**
-	 * Create a new {@link DavTemplateRequest} with default depth-level
-	 *
-	 * @param method HTTP method name
-	 */
-	public DavTemplateRequest(final String method) {
-		this.method = method;
-	}
-
-	/**
 	 * Create a new {@link DavTemplateRequest}
 	 *
 	 * @param method HTTP method name
 	 * @param depth  depth-level of the request
 	 */
-	public DavTemplateRequest(final String method, @Nullable final Header... headers) {
-		this(method);
-		for (Header header : headers) {
-			addHeader(header);
-		}
+	public DavTemplateRequest(final String method, final URI uri) {
+		this.method = method;
+		setURI(uri);
 	}
 
 	@Override
 	public String getMethod() {
 		return method;
-	}
-
-	@Override
-	public String toString() {
-		return method + " " + getURI() + " " + getProtocolVersion();
 	}
 }

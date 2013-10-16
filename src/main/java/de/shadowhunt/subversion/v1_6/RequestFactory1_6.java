@@ -19,12 +19,14 @@
  */
 package de.shadowhunt.subversion.v1_6;
 
-import de.shadowhunt.http.client.methods.DavTemplateRequest;
-import de.shadowhunt.subversion.AbstractRequestFactory;
 import java.net.URI;
+
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
+
+import de.shadowhunt.http.client.methods.DavTemplateRequest;
+import de.shadowhunt.subversion.AbstractRequestFactory;
 
 /**
  * {@link RequestFactory1_6} creates http requests suitable for subversion 1.6.X server
@@ -41,9 +43,7 @@ public class RequestFactory1_6 extends AbstractRequestFactory {
 	 * @return {@link HttpUriRequest} creating the new temporary directory for the transaction
 	 */
 	public HttpUriRequest createActivityRequest(final URI uri) {
-		final DavTemplateRequest request = new DavTemplateRequest("MKACTIVITY");
-		request.setURI(uri);
-		return request;
+		return new DavTemplateRequest("MKACTIVITY", uri);
 	}
 
 	/**
@@ -53,8 +53,7 @@ public class RequestFactory1_6 extends AbstractRequestFactory {
 	 * @return {@link HttpUriRequest} performing a server side checkout of the resource
 	 */
 	public HttpUriRequest createCheckoutRequest(final URI uri, final URI href) {
-		final DavTemplateRequest request = new DavTemplateRequest("CHECKOUT");
-		request.setURI(uri);
+		final DavTemplateRequest request = new DavTemplateRequest("CHECKOUT", uri);
 
 		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
 		body.append("<checkout xmlns=\"DAV:\"><activity-set><href>");
