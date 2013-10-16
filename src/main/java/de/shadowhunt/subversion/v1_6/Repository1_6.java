@@ -19,6 +19,17 @@
  */
 package de.shadowhunt.subversion.v1_6;
 
+import java.io.InputStream;
+import java.net.URI;
+import java.util.List;
+import java.util.UUID;
+
+import javax.annotation.Nullable;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpUriRequest;
+
 import de.shadowhunt.subversion.AbstractRepository;
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.InfoEntry;
@@ -26,14 +37,6 @@ import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.util.URIUtils;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.List;
-import java.util.UUID;
-import javax.annotation.Nullable;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpUriRequest;
 
 /**
  * {@link Repository1_6} supports subversion servers of version 1.6.X
@@ -52,7 +55,7 @@ public class Repository1_6 extends AbstractRepository<RequestFactory1_6> {
 
 	protected static final String PREFIX_WRK = "/!svn/wrk/";
 
-	protected Repository1_6(final URI repository, final boolean trustServerCertificat) {
+	public Repository1_6(final URI repository, final boolean trustServerCertificat) {
 		super(repository, trustServerCertificat, new RequestFactory1_6());
 	}
 
@@ -161,7 +164,7 @@ public class Repository1_6 extends AbstractRepository<RequestFactory1_6> {
 		if (Revision.HEAD.equals(revision)) {
 			return URIUtils.createURI(repository, resource.getValue());
 		}
-		return URIUtils.createURI(repository, PREFIX_BC + revision + resource.getValue());
+		return resolve(resource, revision, URIUtils.createURI(repository, PREFIX_BC + revision + resource.getValue()));
 	}
 
 	protected void endTransaction(final UUID uuid) {

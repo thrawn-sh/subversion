@@ -266,7 +266,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 	@Override
 	public LogEntry lastLog(final Resource resource) {
 		final Revision revision = getConcreateRevision(resource, Revision.HEAD);
-		final List<LogEntry> logs = log(resource, revision, revision);
+		final List<LogEntry> logs = log(resource, revision, revision, 1);
 		return logs.get(0);
 	}
 
@@ -319,12 +319,12 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 	}
 
 	@Override
-	public List<LogEntry> log(final Resource resource, final Revision startRevision, final Revision endRevision) {
+	public List<LogEntry> log(final Resource resource, final Revision startRevision, final Revision endRevision, final int limit) {
 		final URI uri = downloadURI(resource, Revision.HEAD);
 
 		final Revision concreateStartRevision = getConcreateRevision(resource, startRevision);
 		final Revision concreateEndRevision = getConcreateRevision(resource, endRevision);
-		final HttpUriRequest request = requestFactory.createLogRequest(uri, concreateStartRevision, concreateEndRevision);
+		final HttpUriRequest request = requestFactory.createLogRequest(uri, concreateStartRevision, concreateEndRevision, limit);
 		final HttpResponse response = execute(request, false, HttpStatus.SC_OK);
 
 		final InputStream in = getContent(response);

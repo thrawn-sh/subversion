@@ -19,10 +19,11 @@
  */
 package de.shadowhunt.subversion;
 
-import de.shadowhunt.http.client.methods.DavTemplateRequest;
 import java.io.InputStream;
 import java.net.URI;
+
 import javax.annotation.Nullable;
+
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpRequest;
@@ -36,6 +37,8 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
+
+import de.shadowhunt.http.client.methods.DavTemplateRequest;
 
 /**
  * Basic class for all SubversionRequestFactories
@@ -172,9 +175,10 @@ public abstract class AbstractRequestFactory {
 	 * @param uri {@link URI} to perform the request against
 	 * @param startRevision the first {@link Revision} of the resource to retrieve (including)
 	 * @param endRevision the last {@link Revision} of the resource to retrieve (including)
+	 * @param limit 
 	 * @return {@link HttpUriRequest} containing all properties
 	 */
-	public HttpUriRequest createLogRequest(final URI uri, final Revision startRevision, final Revision endRevision) {
+	public HttpUriRequest createLogRequest(final URI uri, final Revision startRevision, final Revision endRevision, final int limit) {
 		final DavTemplateRequest request = new DavTemplateRequest("REPORT");
 		request.setURI(uri);
 
@@ -183,7 +187,13 @@ public abstract class AbstractRequestFactory {
 		body.append(startRevision);
 		body.append("</start-revision><end-revision>");
 		body.append(endRevision);
-		body.append("</end-revision><discover-changed-paths/><encode-binary-props/><all-revprops/><path/></log-report>");
+		body.append("</end-revision>");
+		if (limit > 0) {
+			body.append("<limit>");
+			body.append(limit);
+			body.append("</limit>");
+		}
+		body.append("<discover-changed-paths/><encode-binary-props/><all-revprops/><path/></log-report>");
 
 		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
 		return request;

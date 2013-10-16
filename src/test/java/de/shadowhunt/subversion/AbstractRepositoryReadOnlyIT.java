@@ -375,7 +375,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 
 	@Test
 	public void logExisitingFileAscending() {
-		final List<LogEntry> logs = repository.log(EXISTING_FILE, Revision.INITIAL, Revision.HEAD);
+		final List<LogEntry> logs = repository.log(EXISTING_FILE, Revision.INITIAL, Revision.HEAD, 0);
 		Assert.assertNotNull("LogEntries must not be null", logs);
 		Assert.assertEquals("number of LogEntries must match", 9, logs.size());
 
@@ -394,7 +394,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 
 	@Test
 	public void logExisitingFileDescending() {
-		final List<LogEntry> logs = repository.log(EXISTING_FILE, Revision.HEAD, Revision.INITIAL);
+		final List<LogEntry> logs = repository.log(EXISTING_FILE, Revision.HEAD, Revision.INITIAL, 0);
 		Assert.assertNotNull("LogEntries must not be null", logs);
 		Assert.assertEquals("number of LogEntries must match", 9, logs.size());
 
@@ -413,7 +413,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 
 	@Test(expected = SubversionException.class)
 	public void logNonExisitingResource() {
-		repository.log(NON_EXISTING, Revision.INITIAL, Revision.HEAD);
+		repository.log(NON_EXISTING, Revision.INITIAL, Revision.HEAD, 0);
 		Assert.fail("no logs for non exisiting resource must be created");
 	}
 

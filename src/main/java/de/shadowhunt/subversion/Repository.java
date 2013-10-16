@@ -22,6 +22,7 @@ package de.shadowhunt.subversion;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
+
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -126,7 +127,7 @@ public interface Repository {
 	 * @param endRevision the last {@link Revision} of the resource to retrieve (including)
 	 * @return ordered (early to latest) {@link List} of {@link LogEntry} for the revisions between startRevision and endRevision of the resource
 	 */
-	public List<LogEntry> log(Resource resource, Revision startRevision, Revision endRevision);
+	public List<LogEntry> log(Resource resource, Revision startRevision, Revision endRevision, int limit);
 
 	/**
 	 * Recursively move a resource (latest revision)

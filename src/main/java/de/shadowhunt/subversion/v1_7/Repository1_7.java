@@ -19,6 +19,17 @@
  */
 package de.shadowhunt.subversion.v1_7;
 
+import java.io.InputStream;
+import java.net.URI;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpUriRequest;
+
 import de.shadowhunt.subversion.AbstractRepository;
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.InfoEntry;
@@ -26,14 +37,6 @@ import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.util.URIUtils;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.List;
-import javax.annotation.Nullable;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpUriRequest;
 
 /**
  * {@link Repository1_7} supports subversion servers of version 1.7.X
