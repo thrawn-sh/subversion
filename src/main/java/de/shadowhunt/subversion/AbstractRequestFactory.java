@@ -258,6 +258,20 @@ public abstract class AbstractRequestFactory {
 		return request;
 	}
 
+	public HttpUriRequest createResolveRequest(final URI uri, final Revision head, final Revision wanted) {
+		final DavTemplateRequest request = new DavTemplateRequest("REPORT", uri);
+
+		final StringBuilder sb = new StringBuilder(AbstractRequestFactory.XML_PREAMBLE);
+		sb.append("<get-locations xmlns=\"svn:\"><path/><peg-revision>");
+		sb.append(head);
+		sb.append("</peg-revision><location-revision>");
+		sb.append(wanted);
+		sb.append("</location-revision></get-locations>");
+
+		request.setEntity(new StringEntity(sb.toString(), AbstractRequestFactory.CONTENT_TYPE_XML));
+		return request;
+	}
+
 	/**
 	 * Set the given properties for the resource (new properties will be added, existing properties will be overridden)
 	 * @param uri {@link URI} to perform the request against

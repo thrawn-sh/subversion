@@ -126,7 +126,7 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 		if (Revision.HEAD.equals(revision)) {
 			return URIUtils.createURI(repository, resource.getValue());
 		}
-		return URIUtils.createURI(repository, PREFIX_RVR + revision + resource.getValue());
+		return resolve(URIUtils.createURI(repository, PREFIX_RVR + revision + resource.getValue()), resource, revision);
 	}
 
 	@Override

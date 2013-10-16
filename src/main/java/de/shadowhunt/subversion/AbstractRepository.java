@@ -19,13 +19,6 @@
  */
 package de.shadowhunt.subversion;
 
-import de.shadowhunt.http.auth.CredentialsUtils;
-import de.shadowhunt.http.auth.NtlmSchemeFactory;
-import de.shadowhunt.http.client.ThreadLocalCredentialsProvider;
-import de.shadowhunt.http.client.WebDavHttpRequestRetryHandler;
-import de.shadowhunt.http.conn.ssl.NonValidatingX509TrustManager;
-import de.shadowhunt.http.protocol.ThreadLocalHttpContext;
-import de.shadowhunt.util.URIUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -36,9 +29,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+
 import javax.annotation.Nullable;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.http.Header;
@@ -61,6 +56,14 @@ import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
+
+import de.shadowhunt.http.auth.CredentialsUtils;
+import de.shadowhunt.http.auth.NtlmSchemeFactory;
+import de.shadowhunt.http.client.ThreadLocalCredentialsProvider;
+import de.shadowhunt.http.client.WebDavHttpRequestRetryHandler;
+import de.shadowhunt.http.conn.ssl.NonValidatingX509TrustManager;
+import de.shadowhunt.http.protocol.ThreadLocalHttpContext;
+import de.shadowhunt.util.URIUtils;
 
 /**
  * Base for all {@link Repository}
@@ -330,6 +333,29 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 		final InputStream in = getContent(response);
 		try {
 			return LogEntry.read(in);
+		} finally {
+			IOUtils.closeQuietly(in);
+		}
+	}
+
+	protected URI resolve(final URI expectedUri, final Resource resource, final Revision revision) {
+		{ // check whether the expectedUri exists
+			final HttpUriRequest request = requestFactory.createExistsRequest(expectedUri);
+			final HttpResponse response = execute(request, /* found */HttpStatus.SC_OK, /* not found */HttpStatus.SC_NOT_FOUND);
+			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+				return expectedUri;
+			}
+		}
+
+		final InfoEntry headInfo = info(resource, Revision.HEAD, false);
+		final URI uri = downloadURI(resource, Revision.HEAD);
+
+		final HttpUriRequest request = requestFactory.createResolveRequest(uri, headInfo.getRevision(), revision);
+		final HttpResponse response = execute(request, false, HttpStatus.SC_OK);
+		final InputStream in = getContent(response);
+		try {
+			final ResolveEntry resolve = ResolveEntry.read(in);
+			return URIUtils.createURI(repository, Resource.create("/!svn/bc/" + resolve.getRevision()), resolve.getResource());
 		} finally {
 			IOUtils.closeQuietly(in);
 		}

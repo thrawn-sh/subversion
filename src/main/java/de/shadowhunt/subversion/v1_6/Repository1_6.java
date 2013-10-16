@@ -164,7 +164,7 @@ public class Repository1_6 extends AbstractRepository<RequestFactory1_6> {
 		if (Revision.HEAD.equals(revision)) {
 			return URIUtils.createURI(repository, resource.getValue());
 		}
-		return resolve(resource, revision, URIUtils.createURI(repository, PREFIX_BC + revision + resource.getValue()));
+		return resolve(URIUtils.createURI(repository, PREFIX_BC + revision + resource.getValue()), resource, revision);
 	}
 
 	protected void endTransaction(final UUID uuid) {

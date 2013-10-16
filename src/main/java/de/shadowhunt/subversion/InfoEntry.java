@@ -54,6 +54,8 @@ public final class InfoEntry {
 
 		private final boolean withCustomProperties;
 
+		private boolean checkedin = false;
+
 		SubversionInfoHandler(final boolean withCustomProperties, final boolean includeDirectories) {
 			super();
 			this.withCustomProperties = withCustomProperties;
@@ -97,17 +99,14 @@ public final class InfoEntry {
 				return;
 			}
 
-			if ("getetag".equals(name)) {
+			if (checkedin && "href".equals(name)) {
 				final String text = getText();
+				final String[] parts = text.split("/");
+				final int version = Integer.parseInt(parts[3 + 2]); // prefix + $svn + bc/vrv + VERSION);
 
-				final int end = text.indexOf("//");
-				final int start = text.indexOf('"') + 1;
-				final String versionString = text.substring(start, end);
-
-				final int version = Integer.parseInt(versionString);
-				final Revision revision = Revision.create(version);
-
-				current.setRevision(revision);
+				current.setRevision(Revision.create(version));
+				checkedin = false;
+				return;
 			}
 
 			if (locktoken && "href".equals(name)) {
@@ -146,6 +145,11 @@ public final class InfoEntry {
 			clearText();
 
 			final String name = getNameFromQName(qName);
+
+			if ("checked-in".equals(name)) {
+				checkedin = true;
+				return;
+			}
 
 			if ("response".equals(name)) {
 				current = new InfoEntry();
