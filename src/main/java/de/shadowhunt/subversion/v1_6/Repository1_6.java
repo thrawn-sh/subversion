@@ -31,6 +31,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 
 import de.shadowhunt.subversion.AbstractRepository;
 import de.shadowhunt.subversion.CommitMessageOperation;
+import de.shadowhunt.subversion.CreateTransactionOperationV1;
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.InfoEntry;
 import de.shadowhunt.subversion.Resource;
@@ -211,12 +212,8 @@ public class Repository1_6 extends AbstractRepository<RequestFactory1_6> {
 	}
 
 	protected UUID prepareTransaction() {
-		final UUID uuid = UUID.randomUUID();
-		final URI uri = URIUtils.createURI(repository, PREFIX_ACT + uuid);
-
-		final HttpUriRequest request = requestFactory.createActivityRequest(uri);
-		execute(request, HttpStatus.SC_CREATED);
-		return uuid;
+		final CreateTransactionOperationV1 ct = new CreateTransactionOperationV1(repository);
+		return ct.execute(client, context);
 	}
 
 	protected void propertiesRemove(final Resource resource, final InfoEntry info, final UUID uuid, final ResourceProperty... properties) {
