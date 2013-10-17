@@ -25,12 +25,12 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 
 import de.shadowhunt.subversion.AbstractRepository;
+import de.shadowhunt.subversion.CommitMessageOperation;
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.InfoEntry;
 import de.shadowhunt.subversion.Resource;
@@ -188,11 +188,9 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 	}
 
 	protected void setCommitMessage(final String uuid, final String message) {
-		final URI uri = URIUtils.createURI(repository, PREFIX_TXN + uuid);
-
-		final String trimmedMessage = StringUtils.trimToEmpty(message);
-		final HttpUriRequest request = requestFactory.createCommitMessageRequest(uri, trimmedMessage);
-		execute(request, HttpStatus.SC_MULTI_STATUS);
+		final Resource resource = Resource.create(PREFIX_TXN + uuid);
+		final CommitMessageOperation cmo = new CommitMessageOperation(repository, resource, message);
+		cmo.execute(client, context);
 	}
 
 	@Override
