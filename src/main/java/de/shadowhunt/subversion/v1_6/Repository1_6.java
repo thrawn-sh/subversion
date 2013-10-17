@@ -32,6 +32,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import de.shadowhunt.subversion.AbstractRepository;
 import de.shadowhunt.subversion.CommitMessageOperation;
 import de.shadowhunt.subversion.CreateTransactionOperationV1;
+import de.shadowhunt.subversion.DeleteOperation;
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.InfoEntry;
 import de.shadowhunt.subversion.Resource;
@@ -169,9 +170,9 @@ public class Repository1_6 extends AbstractRepository<RequestFactory1_6> {
 	}
 
 	protected void endTransaction(final UUID uuid) {
-		final URI uri = URIUtils.createURI(repository, PREFIX_ACT + uuid);
-		final HttpUriRequest request = requestFactory.createDeleteRequest(uri);
-		execute(request, HttpStatus.SC_NO_CONTENT);
+		final Resource resource = Resource.create(PREFIX_ACT + uuid);
+		final DeleteOperation o = new DeleteOperation(repository, resource);
+		o.execute(client, context);
 	}
 
 	@Override
