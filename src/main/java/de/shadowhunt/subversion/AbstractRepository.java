@@ -307,19 +307,10 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 
 	@Override
 	public List<LogEntry> log(final Resource resource, final Revision startRevision, final Revision endRevision, final int limit) {
-		final URI uri = downloadURI(resource, Revision.HEAD);
-
 		final Revision concreteStartRevision = getConcreteRevision(resource, startRevision);
 		final Revision concreteEndRevision = getConcreteRevision(resource, endRevision);
-		final HttpUriRequest request = requestFactory.createLogRequest(uri, concreteStartRevision, concreteEndRevision, limit);
-		final HttpResponse response = execute(request, false, HttpStatus.SC_OK);
-
-		final InputStream in = getContent(response);
-		try {
-			return LogEntry.read(in);
-		} finally {
-			IOUtils.closeQuietly(in);
-		}
+		final LogOperation lo = new LogOperation(repository, resource, concreteStartRevision, concreteEndRevision, limit);
+		return lo.execute(client, context);
 	}
 
 	protected Resource resolve(final Resource expectedResource, final Resource resource, final Revision revision) {
