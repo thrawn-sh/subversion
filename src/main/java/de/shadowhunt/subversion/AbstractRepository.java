@@ -197,10 +197,8 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 
 	@Override
 	public InputStream download(final Resource resource, final Revision revision) {
-		final URI uri = downloadURI(resource, revision);
-		final HttpUriRequest request = requestFactory.createDownloadRequest(uri);
-		final HttpResponse response = execute(request, false, HttpStatus.SC_OK);
-		return getContent(response);
+		final DownloadOperation o = new DownloadOperation(repository, downloadResource(resource, revision));
+		return o.execute(client, context);
 	}
 
 	protected abstract Resource downloadResource(Resource resource, Revision revision);
