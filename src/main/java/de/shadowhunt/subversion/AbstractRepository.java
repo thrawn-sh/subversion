@@ -368,10 +368,8 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 		if (lockToken == null) {
 			return;
 		}
-		final URI uri = downloadURI(resource, Revision.HEAD);
-
-		final HttpUriRequest request = requestFactory.createUnlockRequest(uri, lockToken, force);
-		execute(request, HttpStatus.SC_NO_CONTENT);
+		final UnlockOperation uo = new UnlockOperation(repository, resource, lockToken, force);
+		uo.execute(client, context);
 	}
 
 	@Override
