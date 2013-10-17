@@ -36,7 +36,6 @@ import javax.net.ssl.TrustManager;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthScope;
@@ -251,22 +250,8 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 
 	@Override
 	public InfoEntry info(final Resource resource, final Revision revision, final boolean withCustomProperties) {
-		final URI uri = downloadURI(resource, revision);
-
-		final HttpUriRequest request = requestFactory.createInfoRequest(uri, Depth.EMPTY);
-		final HttpResponse response = execute(request, false, HttpStatus.SC_MULTI_STATUS);
-
-		final InputStream in = getContent(response);
-		try {
-			final InfoEntry info = InfoEntry.read(in, withCustomProperties);
-			if (info.isLocked()) {
-				final Header header = response.getFirstHeader(LOCK_OWNER_HEADER);
-				info.setLockOwner(header.getValue());
-			}
-			return info;
-		} finally {
-			IOUtils.closeQuietly(in);
-		}
+		final InfoOperation io = new InfoOperation(repository, downloadResource(resource, revision), Depth.EMPTY, withCustomProperties);
+		return io.execute(client, context);
 	}
 
 	@Override
