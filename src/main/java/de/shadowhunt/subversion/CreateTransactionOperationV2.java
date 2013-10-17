@@ -28,7 +28,7 @@ public class CreateTransactionOperationV2 extends AbstractOperation<String> {
 
 	@Override
 	protected HttpUriRequest createRequest() {
-		final URI uri = URIUtils.createURI(repository, Resource.create("!/svn/me"));
+		final URI uri = URIUtils.createURI(repository, Resource.create("/!svn/me"));
 		final HttpPost request = new HttpPost(uri);
 		request.setEntity(entity);
 		return request;
