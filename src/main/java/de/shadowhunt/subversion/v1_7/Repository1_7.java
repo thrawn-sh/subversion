@@ -122,11 +122,11 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 	}
 
 	@Override
-	public URI downloadURI(final Resource resource, final Revision revision) {
+	protected Resource downloadResource(final Resource resource, final Revision revision) {
 		if (Revision.HEAD.equals(revision)) {
-			return URIUtils.createURI(repository, resource.getValue());
+			return resource;
 		}
-		return resolve(URIUtils.createURI(repository, PREFIX_RVR + revision + resource.getValue()), resource, revision);
+		return resolve(Resource.create(PREFIX_RVR + revision + resource.getValue()), resource, revision);
 	}
 
 	@Override

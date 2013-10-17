@@ -155,7 +155,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 
 	protected final HttpClient client;
 
-	private final ThreadLocalHttpContext context = new ThreadLocalHttpContext();
+	protected final ThreadLocalHttpContext context = new ThreadLocalHttpContext();
 
 	protected final URI repository;
 
@@ -199,10 +199,16 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 	@Override
 	public InputStream download(final Resource resource, final Revision revision) {
 		final URI uri = downloadURI(resource, revision);
-
 		final HttpUriRequest request = requestFactory.createDownloadRequest(uri);
 		final HttpResponse response = execute(request, false, HttpStatus.SC_OK);
 		return getContent(response);
+	}
+
+	protected abstract Resource downloadResource(Resource resource, Revision revision);
+
+	@Override
+	public URI downloadURI(final Resource resource, final Revision revision) {
+		return URIUtils.createURI(repository, downloadResource(resource, revision));
 	}
 
 	protected HttpResponse execute(final HttpUriRequest request, final boolean consume, final int... expectedStatusCodes) {
@@ -338,12 +344,13 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 		}
 	}
 
-	protected URI resolve(final URI expectedUri, final Resource resource, final Revision revision) {
+	protected Resource resolve(final Resource expectedResource, final Resource resource, final Revision revision) {
 		{ // check whether the expectedUri exists
+			final URI expectedUri = URIUtils.createURI(repository, expectedResource);
 			final HttpUriRequest request = requestFactory.createExistsRequest(expectedUri);
 			final HttpResponse response = execute(request, /* found */HttpStatus.SC_OK, /* not found */HttpStatus.SC_NOT_FOUND);
 			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-				return expectedUri;
+				return expectedResource;
 			}
 		}
 
@@ -355,7 +362,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 		final InputStream in = getContent(response);
 		try {
 			final ResolveEntry resolve = ResolveEntry.read(in);
-			return URIUtils.createURI(repository, Resource.create("/!svn/bc/" + resolve.getRevision()), resolve.getResource());
+			return Resource.create("/!svn/bc/" + resolve.getRevision()).append(resolve.getResource());
 		} finally {
 			IOUtils.closeQuietly(in);
 		}

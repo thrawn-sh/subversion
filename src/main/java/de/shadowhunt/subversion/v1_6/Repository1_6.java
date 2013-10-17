@@ -160,11 +160,11 @@ public class Repository1_6 extends AbstractRepository<RequestFactory1_6> {
 	}
 
 	@Override
-	public URI downloadURI(final Resource resource, final Revision revision) {
+	public Resource downloadResource(final Resource resource, final Revision revision) {
 		if (Revision.HEAD.equals(revision)) {
-			return URIUtils.createURI(repository, resource.getValue());
+			return resource;
 		}
-		return resolve(URIUtils.createURI(repository, PREFIX_BC + revision + resource.getValue()), resource, revision);
+		return resolve(Resource.create(PREFIX_BC + revision + resource.getValue()), resource, revision);
 	}
 
 	protected void endTransaction(final UUID uuid) {
