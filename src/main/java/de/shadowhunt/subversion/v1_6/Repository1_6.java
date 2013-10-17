@@ -30,6 +30,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 
 import de.shadowhunt.subversion.AbstractRepository;
+import de.shadowhunt.subversion.CheckoutOperationV1;
 import de.shadowhunt.subversion.CommitMessageOperation;
 import de.shadowhunt.subversion.CreateTransactionOperationV1;
 import de.shadowhunt.subversion.DeleteOperation;
@@ -62,11 +63,9 @@ public class Repository1_6 extends AbstractRepository<RequestFactory1_6> {
 	}
 
 	protected void checkout(final UUID uuid) {
-		final URI uri = URIUtils.createURI(repository, PREFIX_VCC + "default");
-		final URI href = URIUtils.createURI(repository, PREFIX_ACT + uuid);
-
-		final HttpUriRequest request = requestFactory.createCheckoutRequest(uri, href);
-		execute(request, HttpStatus.SC_CREATED);
+		final CheckoutOperationV1 co = new CheckoutOperationV1(repository, Resource.create(PREFIX_VCC + "default"), Resource.create(PREFIX_ACT
+				+ uuid));
+		co.execute(client, context);
 	}
 
 	protected void contentUpload(final Resource resource, final InfoEntry info, final UUID uuid, @Nullable final InputStream content) {
