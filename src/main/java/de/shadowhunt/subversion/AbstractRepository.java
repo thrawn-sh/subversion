@@ -301,10 +301,8 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 
 	@Override
 	public void lock(final Resource resource, final boolean steal) {
-		final URI uri = downloadURI(resource, Revision.HEAD);
-
-		final HttpUriRequest request = requestFactory.createLockRequest(uri, steal);
-		execute(request, HttpStatus.SC_OK);
+		final LockOperation lo = new LockOperation(repository, resource, steal);
+		lo.execute(client, context);
 	}
 
 	@Override
