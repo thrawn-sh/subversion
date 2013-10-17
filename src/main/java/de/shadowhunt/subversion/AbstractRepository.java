@@ -237,11 +237,8 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 
 	@Override
 	public boolean exists(final Resource resource, final Revision revision) {
-		final URI uri = downloadURI(resource, revision);
-
-		final HttpUriRequest request = requestFactory.createExistsRequest(uri);
-		final HttpResponse response = execute(request, /* found */HttpStatus.SC_OK, /* not found */HttpStatus.SC_NOT_FOUND);
-		return (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK);
+		final ExistsOperation o = new ExistsOperation(repository, downloadResource(resource, revision));
+		return o.execute(client, context);
 	}
 
 	protected Revision getConcreteRevision(final Resource resource, final Revision revision) {
