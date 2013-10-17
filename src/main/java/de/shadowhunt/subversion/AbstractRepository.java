@@ -315,26 +315,15 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 
 	protected Resource resolve(final Resource expectedResource, final Resource resource, final Revision revision) {
 		{ // check whether the expectedUri exists
-			final URI expectedUri = URIUtils.createURI(repository, expectedResource);
-			final HttpUriRequest request = requestFactory.createExistsRequest(expectedUri);
-			final HttpResponse response = execute(request, /* found */HttpStatus.SC_OK, /* not found */HttpStatus.SC_NOT_FOUND);
-			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+			final ExistsOperation eo = new ExistsOperation(repository, expectedResource);
+			if (eo.execute(client, context)) {
 				return expectedResource;
 			}
 		}
 
 		final InfoEntry headInfo = info(resource, Revision.HEAD, false);
-		final URI uri = downloadURI(resource, Revision.HEAD);
-
-		final HttpUriRequest request = requestFactory.createResolveRequest(uri, headInfo.getRevision(), revision);
-		final HttpResponse response = execute(request, false, HttpStatus.SC_OK);
-		final InputStream in = getContent(response);
-		try {
-			final ResolveEntry resolve = ResolveEntry.read(in);
-			return Resource.create("/!svn/bc/" + resolve.getRevision()).append(resolve.getResource());
-		} finally {
-			IOUtils.closeQuietly(in);
-		}
+		final ResolveOperationV1 ro = new ResolveOperationV1(repository, resource, revision, headInfo.getRevision());
+		return ro.execute(client, context);
 	}
 
 	@Override
