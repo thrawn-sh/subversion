@@ -138,9 +138,9 @@ public class Repository1_6 extends AbstractRepository<RequestFactory1_6> {
 	}
 
 	protected void delete0(final Resource resource, final String uuid) {
-		final URI uri = URIUtils.createURI(repository, PREFIX_WRK + uuid + resource.getValue());
-		final HttpUriRequest request = requestFactory.createDeleteRequest(uri);
-		execute(request, HttpStatus.SC_NO_CONTENT);
+		final DeleteOperation o = new DeleteOperation(repository, Resource.create(PREFIX_WRK + uuid
+				+ resource.getValue()));
+		o.execute(client, context);
 	}
 
 	@Override

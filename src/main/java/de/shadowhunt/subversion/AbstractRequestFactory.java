@@ -26,9 +26,6 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.HttpRequest;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -70,24 +67,6 @@ public abstract class AbstractRequestFactory {
 	}
 
 	/**
-	 * Setting a commit message for the current transaction on a resource
-	 * @param uri {@link URI} to perform the request against
-	 * @param message commit message for the current transaction
-	 * @return {@link HttpUriRequest} setting the commit message for the current transaction on the resource
-	 */
-	public HttpUriRequest createCommitMessageRequest(final URI uri, final String message) {
-		final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH", uri);
-
-		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
-		body.append("<propertyupdate xmlns=\"DAV:\" xmlns:S=\"http://subversion.tigris.org/xmlns/svn/\"><set><prop><S:log>");
-		body.append(StringEscapeUtils.escapeXml(message));
-		body.append("</S:log></prop></set></propertyupdate>");
-
-		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
-		return request;
-	}
-
-	/**
 	 * Copying a resource to a new destination
 	 * @param src {@link URI} to copy from
 	 * @param target {@link URI} to copy to
@@ -103,33 +82,6 @@ public abstract class AbstractRequestFactory {
 	}
 
 	/**
-	 * Deleting a resource
-	 * @param uri {@link URI} to perform the request against
-	 * @return {@link HttpUriRequest} deleting the resource
-	 */
-	public HttpUriRequest createDeleteRequest(final URI uri) {
-		return new HttpDelete(uri);
-	}
-
-	/**
-	 * Retrieving the content of a resource
-	 * @param uri {@link URI} to perform the request against
-	 * @return {@link HttpUriRequest} retrieving the content of a resource
-	 */
-	public HttpUriRequest createDownloadRequest(final URI uri) {
-		return new HttpGet(uri);
-	}
-
-	/**
-	 * Check whether a resource exists
-	 * @param uri {@link URI} to perform the request against
-	 * @return {@link HttpUriRequest} checking the existence of the resource
-	 */
-	public HttpUriRequest createExistsRequest(final URI uri) {
-		return new HttpHead(uri);
-	}
-
-	/**
 	 * Request info on a resource an its child resources (depending on depth parameter)
 	 * @param uri {@link URI} to perform the request against
 	 * @param depth whether to retrieve only for the given resource, its children or only part of its children depending on the value of {@link Depth}
@@ -141,25 +93,6 @@ public abstract class AbstractRequestFactory {
 
 		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
 		body.append("<propfind xmlns=\"DAV:\"><allprop/></propfind>");
-
-		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
-		return request;
-	}
-
-	/**
-	 * Locking a resource
-	 * @param uri {@link URI} to perform the request against
-	 * @param steal if the resource is locked by another user {@code true} will override the lock, otherwise the operation will fail
-	 * @return {@link HttpUriRequest} locking the resource
-	 */
-	public HttpUriRequest createLockRequest(final URI uri, final boolean steal) {
-		final DavTemplateRequest request = new DavTemplateRequest("LOCK", uri);
-		if (steal) {
-			request.addHeader("X-SVN-Options", "lock-steal");
-		}
-
-		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
-		body.append("<lockinfo xmlns=\"DAV:\"><lockscope><exclusive/></lockscope><locktype><write/></locktype></lockinfo>");
 
 		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
 		return request;
@@ -258,20 +191,6 @@ public abstract class AbstractRequestFactory {
 		return request;
 	}
 
-	public HttpUriRequest createResolveRequest(final URI uri, final Revision head, final Revision wanted) {
-		final DavTemplateRequest request = new DavTemplateRequest("REPORT", uri);
-
-		final StringBuilder sb = new StringBuilder(AbstractRequestFactory.XML_PREAMBLE);
-		sb.append("<get-locations xmlns=\"svn:\"><path/><peg-revision>");
-		sb.append(head);
-		sb.append("</peg-revision><location-revision>");
-		sb.append(wanted);
-		sb.append("</location-revision></get-locations>");
-
-		request.setEntity(new StringEntity(sb.toString(), AbstractRequestFactory.CONTENT_TYPE_XML));
-		return request;
-	}
-
 	/**
 	 * Set the given properties for the resource (new properties will be added, existing properties will be overridden)
 	 * @param uri {@link URI} to perform the request against
@@ -302,22 +221,6 @@ public abstract class AbstractRequestFactory {
 		}
 		sb.append("</prop></set></propertyupdate>");
 		request.setEntity(new StringEntity(sb.toString(), CONTENT_TYPE_XML));
-		return request;
-	}
-
-	/**
-	 * Unlocking a resource
-	 * @param uri {@link URI} to perform the request against
-	 * @param lockToken to unlock the resource the lock-token that was generated during the lock request must be provided
-	 * @param force the user that created the lock must match the user who wants to delete it, unless force is {@code true}
-	 * @return {@link HttpUriRequest} unlocking the resource
-	 */
-	public HttpUriRequest createUnlockRequest(final URI uri, final String lockToken, final boolean force) {
-		final DavTemplateRequest request = new DavTemplateRequest("UNLOCK", uri);
-		request.addHeader("Lock-Token", "<" + lockToken + ">");
-		if (force) {
-			request.addHeader("X-SVN-Options", "lock-break");
-		}
 		return request;
 	}
 
