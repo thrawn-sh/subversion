@@ -10,11 +10,11 @@ import de.shadowhunt.util.URIUtils;
 
 public class UnlockOperation extends AbstractOperation<Void> {
 
-	protected final Resource resource;
+	protected final boolean force;
 
 	protected final String lockToken;
 
-	protected final boolean force;
+	protected final Resource resource;
 
 	public UnlockOperation(final URI repository, final Resource resource, final String lockToken, final boolean force) {
 		super(repository);

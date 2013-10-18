@@ -28,19 +28,14 @@ import javax.annotation.Nullable;
 import de.shadowhunt.subversion.AbstractRepository;
 import de.shadowhunt.subversion.CheckoutOperationV1;
 import de.shadowhunt.subversion.CommitMessageOperation;
-import de.shadowhunt.subversion.CopyOperation;
 import de.shadowhunt.subversion.CreateTransactionOperationV1;
 import de.shadowhunt.subversion.DeleteOperation;
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.InfoEntry;
-import de.shadowhunt.subversion.MergeOperation;
-import de.shadowhunt.subversion.PropertiesDeleteOperation;
-import de.shadowhunt.subversion.PropertiesSetOperation;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
-import de.shadowhunt.subversion.UploadOperation;
 
 /**
  * {@link Repository1_6} supports subversion servers of version 1.6.X
@@ -60,16 +55,6 @@ public class Repository1_6 extends AbstractRepository {
 		co.execute(client, context);
 	}
 
-	protected void contentUpload(final Resource resource, final InfoEntry info, final String uuid, @Nullable final InputStream content) {
-		if (content == null) {
-			return;
-		}
-
-		final Resource r = config.getWorkingResource(uuid).append(resource);
-		final UploadOperation uo = new UploadOperation(repository, r, info.getLockToken(), content);
-		uo.execute(client, context);
-	}
-
 	@Override
 	public void copy(final Resource srcResource, final Revision srcRevision, final Resource targetResource, final String message) {
 		final String uuid = prepareTransaction().getId();
@@ -83,14 +68,6 @@ public class Repository1_6 extends AbstractRepository {
 		} finally {
 			endTransaction(uuid);
 		}
-	}
-
-	protected void copy0(final Resource srcResource, final Revision srcRevision, final Resource targetResource, final String uuid) {
-		final Resource s = config.getVersionedResource(srcRevision).append(srcResource);
-		final Resource t = config.getWorkingResource(uuid).append(targetResource);
-
-		final CopyOperation co = new CopyOperation(repository, s, t);
-		co.execute(client, context);
 	}
 
 	@Override
@@ -128,11 +105,6 @@ public class Repository1_6 extends AbstractRepository {
 		}
 	}
 
-	protected void delete0(final Resource resource, final String uuid) {
-		final DeleteOperation o = new DeleteOperation(repository, config.getWorkingResource(uuid).append(resource));
-		o.execute(client, context);
-	}
-
 	@Override
 	public void deleteProperties(final Resource resource, final String message, final ResourceProperty... properties) {
 		final InfoEntry info = info(resource, Revision.HEAD, false);
@@ -150,16 +122,6 @@ public class Repository1_6 extends AbstractRepository {
 		}
 	}
 
-	@Override
-	public Resource downloadResource(final Resource resource, final Revision revision) {
-		if (Revision.HEAD.equals(revision)) {
-			return resource;
-		}
-
-		final Resource expectedResource = config.getVersionedResource(revision).append(resource);
-		return resolve(expectedResource, resource, revision);
-	}
-
 	protected void endTransaction(final String uuid) {
 		final Resource resource = config.getTransactionResource(uuid);
 		final DeleteOperation o = new DeleteOperation(repository, resource);
@@ -171,12 +133,6 @@ public class Repository1_6 extends AbstractRepository {
 		final Revision concreateRevision = getConcreteRevision(resource, revision);
 		final Resource prefix = config.getVersionedResource(concreateRevision);
 		return list(prefix, resource, depth, withCustomProperties);
-	}
-
-	protected void merge(final InfoEntry info, final String uuid) {
-		final Resource resource = config.getTransactionResource(uuid);
-		final MergeOperation mo = new MergeOperation(repository, resource, info.getLockToken());
-		mo.execute(client, context);
 	}
 
 	@Override
@@ -203,28 +159,6 @@ public class Repository1_6 extends AbstractRepository {
 	protected Transaction prepareTransaction() {
 		final CreateTransactionOperationV1 ct = new CreateTransactionOperationV1(repository);
 		return ct.execute(client, context);
-	}
-
-	protected void propertiesRemove(final Resource resource, final InfoEntry info, final String uuid, final ResourceProperty... properties) {
-		final ResourceProperty[] filtered = ResourceProperty.filteroutSystemProperties(properties);
-		if (filtered.length == 0) {
-			return;
-		}
-
-		final Resource r = config.getWorkingResource(uuid).append(resource);
-		final PropertiesDeleteOperation uo = new PropertiesDeleteOperation(repository, r, info.getLockToken(), filtered);
-		uo.execute(client, context);
-	}
-
-	protected void propertiesSet(final Resource resource, final InfoEntry info, final String uuid, final ResourceProperty... properties) {
-		final ResourceProperty[] filtered = ResourceProperty.filteroutSystemProperties(properties);
-		if (filtered.length == 0) {
-			return;
-		}
-
-		final Resource r = config.getWorkingResource(uuid).append(resource);
-		final PropertiesSetOperation uo = new PropertiesSetOperation(repository, r, info.getLockToken(), filtered);
-		uo.execute(client, context);
 	}
 
 	protected void setCommitMessage(final String uuid, final Revision revision, final String message) {

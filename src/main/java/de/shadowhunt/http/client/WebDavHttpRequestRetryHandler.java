@@ -22,6 +22,7 @@ package de.shadowhunt.http.client;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
 import org.apache.http.HttpRequest;
 import org.apache.http.annotation.Immutable;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
@@ -34,6 +35,13 @@ import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 public class WebDavHttpRequestRetryHandler extends DefaultHttpRequestRetryHandler {
 
 	private final Map<String, Boolean> idempotentMethods;
+
+	/**
+	 * Create a {@link WebDavHttpRequestRetryHandler} with default settings
+	 */
+	public WebDavHttpRequestRetryHandler() {
+		this(3, true);
+	}
 
 	/**
 	 * Create a {@link WebDavHttpRequestRetryHandler}
@@ -63,13 +71,6 @@ public class WebDavHttpRequestRetryHandler extends DefaultHttpRequestRetryHandle
 		idempotentMethods.put("PROPPATCH", Boolean.TRUE);
 		idempotentMethods.put("REPORT", Boolean.TRUE);
 		idempotentMethods.put("UNLOCK", Boolean.TRUE);
-	}
-
-	/**
-	 * Create a {@link WebDavHttpRequestRetryHandler} with default settings
-	 */
-	public WebDavHttpRequestRetryHandler() {
-		this(3, true);
 	}
 
 	@Override

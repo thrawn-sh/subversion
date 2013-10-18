@@ -13,9 +13,9 @@ import de.shadowhunt.util.URIUtils;
 
 public class CreateTransactionOperationV2 extends AbstractOperation<Transaction> {
 
-	private static final String HEADER_NAME = "SVN-Txn-Name";
-
 	private static final HttpEntity entity;
+
+	private static final String HEADER_NAME = "SVN-Txn-Name";
 
 	static {
 		final ContentType contentType = ContentType.create("application/vnd.svn-skel");

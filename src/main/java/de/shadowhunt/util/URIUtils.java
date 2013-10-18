@@ -19,15 +19,25 @@
  */
 package de.shadowhunt.util;
 
-import de.shadowhunt.subversion.Resource;
 import java.net.URI;
 import java.net.URISyntaxException;
+
 import org.apache.http.client.utils.URIBuilder;
+
+import de.shadowhunt.subversion.Resource;
 
 /**
  * {@link URIUtils} provides convenience methods to create properly escaped {@link URI}s to connect to http servers
  */
 public final class URIUtils {
+
+	public static URI createURI(final URI repository, final Resource... resources) {
+		try {
+			return createURI0(repository, resources);
+		} catch (final URISyntaxException e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
 
 	/**
 	 * Creates an {@link URI} from the given repository with the additional pathSuffix,
@@ -44,6 +54,19 @@ public final class URIUtils {
 		}
 	}
 
+	private static URI createURI0(final URI repository, final Resource... resources) throws URISyntaxException {
+		final URIBuilder builder = new URIBuilder();
+		builder.setScheme(repository.getScheme());
+		builder.setHost(repository.getHost());
+		builder.setPort(repository.getPort());
+		final StringBuilder completePath = new StringBuilder(repository.getPath());
+		for (final Resource resource : resources) {
+			completePath.append(resource.getValue());
+		}
+		builder.setPath(completePath.toString());
+		return builder.build();
+	}
+
 	private static URI createURI0(final URI repository, final String pathSuffix) throws URISyntaxException {
 		final URIBuilder builder = new URIBuilder();
 		builder.setScheme(repository.getScheme());
@@ -56,26 +79,5 @@ public final class URIUtils {
 
 	private URIUtils() {
 		// prevent instantiation
-	}
-
-	private static URI createURI0(URI repository, Resource... resources) throws URISyntaxException {
-		final URIBuilder builder = new URIBuilder();
-		builder.setScheme(repository.getScheme());
-		builder.setHost(repository.getHost());
-		builder.setPort(repository.getPort());
-		final StringBuilder completePath = new StringBuilder(repository.getPath());
-		for (Resource resource : resources) {
-			completePath.append(resource.getValue());
-		}
-		builder.setPath(completePath.toString());
-		return builder.build();
-	}
-
-	public static URI createURI(final URI repository, Resource... resources) {
-		try {
-			return createURI0(repository, resources);
-		} catch (final URISyntaxException e) {
-			throw new IllegalArgumentException(e);
-		}
 	}
 }

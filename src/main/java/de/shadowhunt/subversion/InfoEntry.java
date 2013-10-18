@@ -40,6 +40,8 @@ public final class InfoEntry {
 
 	static class SubversionInfoHandler extends BasicHandler {
 
+		private boolean checkedin = false;
+
 		private InfoEntry current = null;
 
 		private List<ResourceProperty> customProperties;
@@ -53,8 +55,6 @@ public final class InfoEntry {
 		private boolean resourceType = false;
 
 		private final boolean withCustomProperties;
-
-		private boolean checkedin = false;
 
 		SubversionInfoHandler(final boolean withCustomProperties, final boolean includeDirectories) {
 			super();
@@ -231,9 +231,9 @@ public final class InfoEntry {
 
 	private String md5;
 
-	private Resource resource;
-
 	private String repositoryUuid;
+
+	private Resource resource;
 
 	private Revision revision;
 
@@ -313,19 +313,19 @@ public final class InfoEntry {
 	}
 
 	/**
-	 * Returns a {@link Resource} of the resource (relative to the root of the repository)
-	 * @return the {@link Resource} of the resource (relative to the root of the repository)
-	 */
-	public Resource getResource() {
-		return resource;
-	}
-
-	/**
 	 * Returns a globally unique identifier of the repository
 	 * @return the globally unique identifier of the repository
 	 */
 	public String getRepositoryUuid() {
 		return repositoryUuid;
+	}
+
+	/**
+	 * Returns a {@link Resource} of the resource (relative to the root of the repository)
+	 * @return the {@link Resource} of the resource (relative to the root of the repository)
+	 */
+	public Resource getResource() {
+		return resource;
 	}
 
 	/**
@@ -413,12 +413,12 @@ public final class InfoEntry {
 		this.md5 = md5;
 	}
 
-	void setResource(final Resource resource) {
-		this.resource = resource;
-	}
-
 	void setRepositoryUuid(final String repositoryUuid) {
 		this.repositoryUuid = repositoryUuid;
+	}
+
+	void setResource(final Resource resource) {
+		this.resource = resource;
 	}
 
 	void setRevision(final Revision revision) {

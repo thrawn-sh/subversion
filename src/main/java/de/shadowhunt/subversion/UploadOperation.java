@@ -12,9 +12,9 @@ import de.shadowhunt.util.URIUtils;
 
 public class UploadOperation extends AbstractOperation<Void> {
 
-	protected static final long STREAM_WHOLE_CONTENT = -1L;
-
 	protected static final int PREFIX = 4; // /$svn/{baseline}/{id}/
+
+	protected static final long STREAM_WHOLE_CONTENT = -1L;
 
 	protected final InputStream content;
 

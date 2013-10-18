@@ -146,11 +146,11 @@ public abstract class AbstractRepository implements Repository {
 
 	protected final HttpClient client;
 
+	protected final RepositoryConfig config = new RepositoryConfigHttpV2();
+
 	protected final ThreadLocalHttpContext context = new ThreadLocalHttpContext();
 
 	protected final URI repository;
-
-	protected final RepositoryConfig config = new RepositoryConfigHttpV2();
 
 	protected AbstractRepository(final DefaultHttpClient backend, final URI repository) {
 		client = new DecompressingHttpClient(backend);
@@ -161,6 +161,24 @@ public abstract class AbstractRepository implements Repository {
 
 	protected AbstractRepository(final URI repository, final boolean trustServerCertificate) {
 		this(createClient(100, trustServerCertificate), repository);
+	}
+
+	protected void contentUpload(final Resource resource, final InfoEntry info, final String uuid, @Nullable final InputStream content) {
+		if (content == null) {
+			return;
+		}
+
+		final Resource r = config.getWorkingResource(uuid).append(resource);
+		final UploadOperation uo = new UploadOperation(repository, r, info.getLockToken(), content);
+		uo.execute(client, context);
+	}
+
+	protected void copy0(final Resource srcResource, final Revision srcRevision, final Resource targetResource, final String uuid) {
+		final Resource s = config.getVersionedResource(srcRevision).append(srcResource);
+		final Resource t = config.getWorkingResource(uuid).append(targetResource);
+
+		final CopyOperation co = new CopyOperation(repository, s, t);
+		co.execute(client, context);
 	}
 
 	protected Resource createFolder(final Resource resource, final boolean parent) {
@@ -181,13 +199,25 @@ public abstract class AbstractRepository implements Repository {
 		return result;
 	}
 
+	protected void delete0(final Resource resource, final String uuid) {
+		final DeleteOperation o = new DeleteOperation(repository, config.getWorkingResource(uuid).append(resource));
+		o.execute(client, context);
+	}
+
 	@Override
 	public InputStream download(final Resource resource, final Revision revision) {
 		final DownloadOperation o = new DownloadOperation(repository, downloadResource(resource, revision));
 		return o.execute(client, context);
 	}
 
-	protected abstract Resource downloadResource(Resource resource, Revision revision);
+	public Resource downloadResource(final Resource resource, final Revision revision) {
+		if (Revision.HEAD.equals(revision)) {
+			return resource;
+		}
+
+		final Resource expectedResource = config.getVersionedResource(revision).append(resource);
+		return resolve(expectedResource, resource, revision);
+	}
 
 	@Override
 	public URI downloadURI(final Resource resource, final Revision revision) {
@@ -281,6 +311,34 @@ public abstract class AbstractRepository implements Repository {
 		final Revision concreteEndRevision = getConcreteRevision(resource, endRevision);
 		final LogOperation lo = new LogOperation(repository, resource, concreteStartRevision, concreteEndRevision, limit);
 		return lo.execute(client, context);
+	}
+
+	protected void merge(final InfoEntry info, final String uuid) {
+		final Resource resource = config.getTransactionResource(uuid);
+		final MergeOperation mo = new MergeOperation(repository, resource, info.getLockToken());
+		mo.execute(client, context);
+	}
+
+	protected void propertiesRemove(final Resource resource, final InfoEntry info, final String uuid, final ResourceProperty... properties) {
+		final ResourceProperty[] filtered = ResourceProperty.filteroutSystemProperties(properties);
+		if (filtered.length == 0) {
+			return;
+		}
+
+		final Resource r = config.getWorkingResource(uuid).append(resource);
+		final PropertiesDeleteOperation uo = new PropertiesDeleteOperation(repository, r, info.getLockToken(), filtered);
+		uo.execute(client, context);
+	}
+
+	protected void propertiesSet(final Resource resource, final InfoEntry info, final String uuid, final ResourceProperty... properties) {
+		final ResourceProperty[] filtered = ResourceProperty.filteroutSystemProperties(properties);
+		if (filtered.length == 0) {
+			return;
+		}
+
+		final Resource r = config.getWorkingResource(uuid).append(resource);
+		final PropertiesSetOperation uo = new PropertiesSetOperation(repository, r, info.getLockToken(), filtered);
+		uo.execute(client, context);
 	}
 
 	protected Resource resolve(final Resource expectedResource, final Resource resource, final Revision revision) {

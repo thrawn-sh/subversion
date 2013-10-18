@@ -21,6 +21,7 @@ package de.shadowhunt.subversion;
 
 import java.util.Arrays;
 import java.util.Comparator;
+
 import javax.annotation.concurrent.Immutable;
 
 /**

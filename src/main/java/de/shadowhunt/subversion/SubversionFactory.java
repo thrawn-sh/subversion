@@ -21,6 +21,7 @@ package de.shadowhunt.subversion;
 
 import java.net.URI;
 import java.util.ServiceLoader;
+
 import javax.annotation.concurrent.ThreadSafe;
 
 /**

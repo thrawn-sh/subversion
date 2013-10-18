@@ -20,6 +20,7 @@
 package de.shadowhunt.http.conn.ssl;
 
 import java.security.cert.X509Certificate;
+
 import javax.annotation.concurrent.ThreadSafe;
 import javax.net.ssl.X509TrustManager;
 

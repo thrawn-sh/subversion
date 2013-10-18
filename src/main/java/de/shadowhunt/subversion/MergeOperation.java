@@ -14,9 +14,9 @@ public class MergeOperation extends AbstractOperation<Void> {
 
 	protected static final int PREFIX = 4; // /$svn/{baseline}/{id}/
 
-	protected final Resource resource;
-
 	protected final String lock;
+
+	protected final Resource resource;
 
 	public MergeOperation(final URI repository, final Resource resource, final String lock) {
 		super(repository);

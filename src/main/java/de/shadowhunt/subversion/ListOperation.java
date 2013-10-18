@@ -14,11 +14,11 @@ import de.shadowhunt.util.URIUtils;
 
 public class ListOperation extends AbstractOperation<List<InfoEntry>> {
 
-	protected final Resource resource;
+	protected final boolean customProperties;
 
 	protected final Depth depth;
 
-	protected final boolean customProperties;
+	protected final Resource resource;
 
 	public ListOperation(final URI repository, final Resource resource, final Depth depth, final boolean customProperties) {
 		super(repository);

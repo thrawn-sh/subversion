@@ -21,7 +21,9 @@ package de.shadowhunt.http.protocol;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.annotation.concurrent.ThreadSafe;
+
 import org.apache.http.protocol.HttpContext;
 
 /**
