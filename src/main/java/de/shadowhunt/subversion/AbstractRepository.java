@@ -144,11 +144,11 @@ public abstract class AbstractRepository implements Repository {
 
 	private final DefaultHttpClient backend;
 
-	protected final HttpClient client;
+	public final HttpClient client;
 
-	protected final RepositoryConfig config = new RepositoryConfigHttpV2();
+	protected final RepositoryConfig config = new RepositoryConfigHttpV1();
 
-	protected final ThreadLocalHttpContext context = new ThreadLocalHttpContext();
+	public final ThreadLocalHttpContext context = new ThreadLocalHttpContext();
 
 	protected final URI repository;
 
@@ -206,22 +206,13 @@ public abstract class AbstractRepository implements Repository {
 
 	@Override
 	public InputStream download(final Resource resource, final Revision revision) {
-		final DownloadOperation o = new DownloadOperation(repository, downloadResource(resource, revision));
+		final DownloadOperation o = new DownloadOperation(repository, resolve(resource, revision, true));
 		return o.execute(client, context);
-	}
-
-	public Resource downloadResource(final Resource resource, final Revision revision) {
-		if (Revision.HEAD.equals(revision)) {
-			return resource;
-		}
-
-		final Resource expectedResource = config.getVersionedResource(revision).append(resource);
-		return resolve(expectedResource, resource, revision);
 	}
 
 	@Override
 	public URI downloadURI(final Resource resource, final Revision revision) {
-		return URIUtils.createURI(repository, downloadResource(resource, revision));
+		return URIUtils.createURI(repository, resolve(resource, revision, true));
 	}
 
 	@Deprecated
@@ -252,7 +243,7 @@ public abstract class AbstractRepository implements Repository {
 
 	@Override
 	public boolean exists(final Resource resource, final Revision revision) {
-		final ExistsOperation o = new ExistsOperation(repository, downloadResource(resource, revision));
+		final ExistsOperation o = new ExistsOperation(repository, resolve(resource, revision, false));
 		return o.execute(client, context);
 	}
 
@@ -266,7 +257,7 @@ public abstract class AbstractRepository implements Repository {
 
 	@Override
 	public InfoEntry info(final Resource resource, final Revision revision, final boolean withCustomProperties) {
-		final InfoOperation io = new InfoOperation(repository, downloadResource(resource, revision), Depth.EMPTY, withCustomProperties);
+		final InfoOperation io = new InfoOperation(repository, resolve(resource, revision, true), Depth.EMPTY, withCustomProperties);
 		return io.execute(client, context);
 	}
 
@@ -341,7 +332,16 @@ public abstract class AbstractRepository implements Repository {
 		uo.execute(client, context);
 	}
 
-	protected Resource resolve(final Resource expectedResource, final Resource resource, final Revision revision) {
+	protected Resource resolve(final Resource resource, final Revision revision, final boolean resolve) {
+		if (Revision.HEAD.equals(revision)) {
+			return resource;
+		}
+
+		final Resource expectedResource = config.getVersionedResource(revision).append(resource);
+		if (!resolve) {
+			return expectedResource;
+		}
+
 		{ // check whether the expectedUri exists
 			final ExistsOperation eo = new ExistsOperation(repository, expectedResource);
 			if (eo.execute(client, context)) {
