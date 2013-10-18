@@ -43,6 +43,11 @@ class RepositoryConfigHttpV1 implements RepositoryConfig {
 	}
 
 	@Override
+	public Version getProtocolVersion() {
+		return Version.HTTPv1;
+	}
+
+	@Override
 	public Resource getTransactionResource(final String id) {
 		final Resource suffix = Resource.create("/act/" + id);
 		return prefix.append(suffix);

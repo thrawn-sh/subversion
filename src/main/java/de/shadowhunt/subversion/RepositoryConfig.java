@@ -27,6 +27,8 @@ public interface RepositoryConfig {
 
 	Resource getPrefix();
 
+	Version getProtocolVersion();
+
 	Resource getTransactionResource(final String id);
 
 	Resource getVersionedResource(final Revision revision);

@@ -43,6 +43,11 @@ class RepositoryConfigHttpV2 implements RepositoryConfig {
 	}
 
 	@Override
+	public Version getProtocolVersion() {
+		return Version.HTTPv2;
+	}
+
+	@Override
 	public Resource getTransactionResource(final String id) {
 		return getCommitMessageResource(id);
 	}
