@@ -72,7 +72,7 @@ public final class LogEntry {
 
 			if ("date".equals(name)) {
 				try {
-					current.setDate(format.parse(getText()));
+					current.setDate(format.parse(getText())); // FIXME convert to local timezone
 				} catch (final ParseException e) {
 					throw new SAXException("date has unexpected format", e);
 				}
