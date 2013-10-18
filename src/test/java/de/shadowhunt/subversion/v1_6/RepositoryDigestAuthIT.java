@@ -20,12 +20,12 @@
 package de.shadowhunt.subversion.v1_6;
 
 import de.shadowhunt.subversion.AbstractRepositoryBasicWriteIT;
-import de.shadowhunt.subversion.ServerVersion;
+import de.shadowhunt.subversion.Version;
 import java.net.URI;
 
 public class RepositoryDigestAuthIT extends AbstractRepositoryBasicWriteIT {
 
 	public RepositoryDigestAuthIT() {
-		super(URI.create("http://subversion-16.vm.shadowhunt.de/svn-digest/test"), ServerVersion.V1_6, "svnuser", "svnpass", null);
+		super(URI.create("http://subversion-16.vm.shadowhunt.de/svn-digest/test"), Version.HTTPv1, "svnuser", "svnpass", null);
 	}
 }

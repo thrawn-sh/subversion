@@ -49,7 +49,7 @@ public class SubversionFactoryTest {
 	@Test
 	public void getInstanceTest() {
 		final URI uri = URI.create("http://subversion.example.net/svn/test-repo");
-		final Repository repository = SubversionFactory.getInstance(uri, true, ServerVersion.V1_6);
+		final Repository repository = SubversionFactory.getInstance(uri, true, Version.HTTPv1);
 		Assert.assertNotNull("SubversionRepository must not be null", repository);
 	}
 
@@ -57,7 +57,7 @@ public class SubversionFactoryTest {
 	public void getInstanceUnsupportedServerVersionTest() {
 		final URI uri = URI.create("http://subversion.example.net/svn/test-repo");
 		SubversionFactory.getInstance(uri, true, null);
-		Assert.fail("ServerVersion must not be null");
+		Assert.fail("Version must not be null");
 	}
 
 	@Test

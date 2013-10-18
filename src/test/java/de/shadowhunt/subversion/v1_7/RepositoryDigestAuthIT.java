@@ -20,12 +20,12 @@
 package de.shadowhunt.subversion.v1_7;
 
 import de.shadowhunt.subversion.AbstractRepositoryLockedWriteIT;
-import de.shadowhunt.subversion.ServerVersion;
+import de.shadowhunt.subversion.Version;
 import java.net.URI;
 
 public class RepositoryDigestAuthIT extends AbstractRepositoryLockedWriteIT {
 
 	public RepositoryDigestAuthIT() {
-		super(URI.create("http://subversion-17.vm.shadowhunt.de/svn-digest/test"), ServerVersion.V1_7, "svnuser", "svnpass", null);
+		super(URI.create("http://subversion-17.vm.shadowhunt.de/svn-digest/test"), Version.HTTPv2, "svnuser", "svnpass", null);
 	}
 }

@@ -34,9 +34,9 @@ public interface RepositoryFactory {
 	public Repository createRepository(URI repository, boolean trustServerCertificat);
 
 	/**
-	 * Determine whether the {@link ServerVersion} is supported by the {@link Repository} created by this factory
-	 * @param version the {@link ServerVersion} of the server
-	 * @return {@code true} if the {@link ServerVersion} is supported, otherwise {@code false}
+	 * Determine whether the {@link Version} is supported by the {@link Repository} created by this factory
+	 * @param version the {@link Version} of the server
+	 * @return {@code true} if the {@link Version} is supported, otherwise {@code false}
 	 */
-	public boolean isServerVersionSupported(ServerVersion version);
+	public boolean isServerVersionSupported(Version version);
 }

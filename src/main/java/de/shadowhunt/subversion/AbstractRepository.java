@@ -39,6 +39,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.AuthPolicy;
 import org.apache.http.conn.scheme.Scheme;
@@ -63,10 +64,10 @@ import de.shadowhunt.util.URIUtils;
 
 /**
  * Base for all {@link Repository}
- * @param <T> {@link AbstractRequestFactory} that will be used to create request to the subversion server
  */
-public abstract class AbstractRepository<T extends AbstractRequestFactory> implements Repository {
+public abstract class AbstractRepository implements Repository {
 
+	@Deprecated
 	protected static boolean contains(final int statusCode, final int... expectedStatusCodes) {
 		for (final int expectedStatusCode : expectedStatusCodes) {
 			if (expectedStatusCode == statusCode) {
@@ -129,14 +130,6 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 		}
 	}
 
-	protected static InputStream getContent(final HttpResponse response) {
-		try {
-			return response.getEntity().getContent();
-		} catch (final Exception e) {
-			throw new SubversionException("could not retrieve content stream", e);
-		}
-	}
-
 	@Deprecated
 	private static boolean hasJcifsSupport() {
 		try {
@@ -157,38 +150,35 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 
 	protected final URI repository;
 
-	protected final T requestFactory;
+	protected final RepositoryConfig config = new RepositoryConfigHttpV2();
 
-	protected AbstractRepository(final DefaultHttpClient backend, final URI repository, final T requestFactory) {
-		this.client = new DecompressingHttpClient(backend);
+	protected AbstractRepository(final DefaultHttpClient backend, final URI repository) {
+		client = new DecompressingHttpClient(backend);
 		this.backend = backend;
 		this.repository = repository;
-		this.requestFactory = requestFactory;
-		this.authscope = new AuthScope(repository.getHost(), AuthScope.ANY_PORT);
+		authscope = new AuthScope(repository.getHost(), AuthScope.ANY_PORT);
 	}
 
-	protected AbstractRepository(final URI repository, final boolean trustServerCertificate, final T requestFactory) {
-		this(createClient(100, trustServerCertificate), repository, requestFactory);
+	protected AbstractRepository(final URI repository, final boolean trustServerCertificate) {
+		this(createClient(100, trustServerCertificate), repository);
 	}
 
-	protected Resource createMissingFolders(final String prefix, final String uuid, final Resource resource) {
-		final String[] resourceParts = resource.getValue().split("/");
-
-		Resource infoResource = Resource.ROOT;
-		final StringBuilder partial = new StringBuilder();
-		for (int i = 1; i < resourceParts.length; i++) {
-			partial.append('/');
-			partial.append(resourceParts[i]);
-
-			final Resource partialResource = Resource.create(prefix + uuid + partial.toString());
-			final CreateFolderOperation cfo = new CreateFolderOperation(repository, partialResource);
-			final boolean created = cfo.execute(client, context);
-			if (!created) {
-				infoResource = partialResource;
+	protected Resource createFolder(final Resource resource, final boolean parent) {
+		Resource result = null;
+		if (parent) {
+			if (Resource.ROOT.equals(resource)) {
+				return null;
 			}
+
+			result = createFolder(resource.getParent(), parent);
 		}
 
-		return infoResource;
+		final CreateFolderOperation cfo = new CreateFolderOperation(repository, resource);
+		final boolean created = cfo.execute(client, context);
+		if (!created) {
+			result = resource;
+		}
+		return result;
 	}
 
 	@Override
@@ -257,14 +247,14 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 		return logs.get(0);
 	}
 
-	protected List<InfoEntry> list(final String pathPrefix, final Resource resource, final Depth depth, final boolean withCustomProperties) {
-		final Resource r = Resource.create(pathPrefix + resource.getValue());
+	protected List<InfoEntry> list(final Resource prefix, final Resource resource, final Depth depth, final boolean withCustomProperties) {
+		final Resource r = prefix.append(resource);
 
 		final ListOperation lo = new ListOperation(repository, r, depth, withCustomProperties);
 		return lo.execute(client, context);
 	}
 
-	protected void listRecursive(final String pathPrefix, final boolean withCustomProperties, final Collection<InfoEntry> todo, final Set<InfoEntry> done) {
+	protected void listRecursive(final Resource prefix, final boolean withCustomProperties, final Collection<InfoEntry> todo, final Set<InfoEntry> done) {
 		for (final InfoEntry info : todo) {
 			if (done.contains(info)) {
 				continue;
@@ -272,9 +262,9 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 
 			done.add(info);
 			if (info.isDirectory()) {
-				final Resource resource = Resource.create(pathPrefix + info.getResource());
-				final List<InfoEntry> children = list(pathPrefix, resource, Depth.IMMEDIATES, withCustomProperties);
-				listRecursive(pathPrefix, withCustomProperties, children, done);
+				final Resource resource = prefix.append(info.getResource());
+				final List<InfoEntry> children = list(prefix, resource, Depth.IMMEDIATES, withCustomProperties);
+				listRecursive(prefix, withCustomProperties, children, done);
 			}
 		}
 	}
@@ -326,8 +316,10 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 		upload0(resource, message, null, properties);
 	}
 
+	@Deprecated
 	protected final void triggerAuthentication() {
-		final HttpUriRequest request = requestFactory.createAuthRequest(repository);
+		final HttpOptions request = new HttpOptions(repository);
+		request.addHeader("Keep-Alive", "");
 		execute(request, HttpStatus.SC_OK);
 	}
 

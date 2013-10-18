@@ -27,7 +27,7 @@ public abstract class AbstractRepositoryAuthenticatedIT extends AbstractReposito
 
 	private final String username;
 
-	protected AbstractRepositoryAuthenticatedIT(final URI uri, final ServerVersion version, final String username, final String password, final String workstation) {
+	protected AbstractRepositoryAuthenticatedIT(final URI uri, final Version version, final String username, final String password, final String workstation) {
 		super(uri, version);
 		this.username = username;
 		repository.setCredentials(username, password, workstation);

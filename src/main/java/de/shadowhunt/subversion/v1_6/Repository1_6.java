@@ -25,9 +25,6 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpUriRequest;
-
 import de.shadowhunt.subversion.AbstractRepository;
 import de.shadowhunt.subversion.CheckoutOperationV1;
 import de.shadowhunt.subversion.CommitMessageOperation;
@@ -36,36 +33,30 @@ import de.shadowhunt.subversion.CreateTransactionOperationV1;
 import de.shadowhunt.subversion.DeleteOperation;
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.InfoEntry;
+import de.shadowhunt.subversion.MergeOperation;
+import de.shadowhunt.subversion.PropertiesDeleteOperation;
+import de.shadowhunt.subversion.PropertiesSetOperation;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
-import de.shadowhunt.util.URIUtils;
+import de.shadowhunt.subversion.UploadOperation;
 
 /**
  * {@link Repository1_6} supports subversion servers of version 1.6.X
  */
-public class Repository1_6 extends AbstractRepository<RequestFactory1_6> {
-
-	protected static final String PREFIX_ACT = "/!svn/act/";
-
-	protected static final String PREFIX_BC = "/!svn/bc/";
+public class Repository1_6 extends AbstractRepository {
 
 	protected static final String PREFIX_VCC = "/!svn/vcc/";
 
 	protected static final String PREFIX_VER = "/!svn/ver/";
 
-	protected static final String PREFIX_WBL = "/!svn/wbl/";
-
-	protected static final String PREFIX_WRK = "/!svn/wrk/";
-
 	public Repository1_6(final URI repository, final boolean trustServerCertificat) {
-		super(repository, trustServerCertificat, new RequestFactory1_6());
+		super(repository, trustServerCertificat);
 	}
 
 	protected void checkout(final String uuid) {
-		final CheckoutOperationV1 co = new CheckoutOperationV1(repository, Resource.create(PREFIX_VCC + "default"), Resource.create(PREFIX_ACT
-				+ uuid));
+		final CheckoutOperationV1 co = new CheckoutOperationV1(repository, Resource.create(PREFIX_VCC + "default"), config.getTransactionResource(uuid));
 		co.execute(client, context);
 	}
 
@@ -74,11 +65,9 @@ public class Repository1_6 extends AbstractRepository<RequestFactory1_6> {
 			return;
 		}
 
-		final URI uri = URIUtils.createURI(repository, PREFIX_WRK + uuid + resource.getValue());
-		final URI resourceUri = URIUtils.createURI(repository, resource.getValue());
-
-		final HttpUriRequest request = requestFactory.createUploadRequest(uri, info.getLockToken(), resourceUri, content);
-		execute(request, HttpStatus.SC_CREATED, HttpStatus.SC_NO_CONTENT);
+		final Resource r = config.getWorkingResource(uuid).append(resource);
+		final UploadOperation uo = new UploadOperation(repository, r, info.getLockToken(), content);
+		uo.execute(client, context);
 	}
 
 	@Override
@@ -88,7 +77,7 @@ public class Repository1_6 extends AbstractRepository<RequestFactory1_6> {
 			final InfoEntry info = info(srcResource, srcRevision, false);
 			final Revision realSourceRevision = info.getRevision();
 			setCommitMessage(uuid, realSourceRevision, message);
-			createMissingFolders(PREFIX_WRK, uuid.toString(), targetResource.getParent());
+			createFolder(config.getWorkingResource(uuid).append(targetResource.getParent()), true);
 			copy0(srcResource, realSourceRevision, targetResource, uuid);
 			merge(info, uuid);
 		} finally {
@@ -97,22 +86,22 @@ public class Repository1_6 extends AbstractRepository<RequestFactory1_6> {
 	}
 
 	protected void copy0(final Resource srcResource, final Revision srcRevision, final Resource targetResource, final String uuid) {
-		final Resource s = Resource.create(PREFIX_BC + srcRevision + srcResource.getValue());
-		final Resource t = Resource.create(PREFIX_WRK + uuid + targetResource.getValue());
+		final Resource s = config.getVersionedResource(srcRevision).append(srcResource);
+		final Resource t = config.getWorkingResource(uuid).append(targetResource);
 
 		final CopyOperation co = new CopyOperation(repository, s, t);
 		co.execute(client, context);
 	}
 
 	@Override
-	public void createFolder(final Resource resource, final String message) {
+	public void createFolder(final Resource resource, final boolean parent, final String message) {
 		if (exists(resource, Revision.HEAD)) {
 			return;
 		}
 
 		final String uuid = prepareTransaction().getId();
 		try {
-			final Resource infoResource = createMissingFolders(PREFIX_WRK, uuid.toString(), resource);
+			final Resource infoResource = createFolder(config.getWorkingResource(uuid).append(resource), parent);
 			final InfoEntry info = info(infoResource, Revision.HEAD, false);
 			checkout(uuid);
 			setCommitMessage(uuid, info.getRevision(), message);
@@ -140,8 +129,7 @@ public class Repository1_6 extends AbstractRepository<RequestFactory1_6> {
 	}
 
 	protected void delete0(final Resource resource, final String uuid) {
-		final DeleteOperation o = new DeleteOperation(repository, Resource.create(PREFIX_WRK + uuid
-				+ resource.getValue()));
+		final DeleteOperation o = new DeleteOperation(repository, config.getWorkingResource(uuid).append(resource));
 		o.execute(client, context);
 	}
 
@@ -167,11 +155,13 @@ public class Repository1_6 extends AbstractRepository<RequestFactory1_6> {
 		if (Revision.HEAD.equals(revision)) {
 			return resource;
 		}
-		return resolve(Resource.create(PREFIX_BC + revision + resource.getValue()), resource, revision);
+
+		final Resource expectedResource = config.getVersionedResource(revision).append(resource);
+		return resolve(expectedResource, resource, revision);
 	}
 
 	protected void endTransaction(final String uuid) {
-		final Resource resource = Resource.create(PREFIX_ACT + uuid);
+		final Resource resource = config.getTransactionResource(uuid);
 		final DeleteOperation o = new DeleteOperation(repository, resource);
 		o.execute(client, context);
 	}
@@ -179,14 +169,14 @@ public class Repository1_6 extends AbstractRepository<RequestFactory1_6> {
 	@Override
 	public List<InfoEntry> list(final Resource resource, final Revision revision, final Depth depth, final boolean withCustomProperties) {
 		final Revision concreateRevision = getConcreteRevision(resource, revision);
-		final String pathPrefix = PREFIX_BC + concreateRevision;
-		return list(pathPrefix, resource, depth, withCustomProperties);
+		final Resource prefix = config.getVersionedResource(concreateRevision);
+		return list(prefix, resource, depth, withCustomProperties);
 	}
 
 	protected void merge(final InfoEntry info, final String uuid) {
-		final Resource resource = Resource.create(repository.getPath() + PREFIX_ACT + uuid);
-		final HttpUriRequest request = requestFactory.createMergeRequest(repository, resource, info);
-		execute(request, HttpStatus.SC_OK);
+		final Resource resource = config.getTransactionResource(uuid);
+		final MergeOperation mo = new MergeOperation(repository, resource, info.getLockToken());
+		mo.execute(client, context);
 	}
 
 	@Override
@@ -206,8 +196,7 @@ public class Repository1_6 extends AbstractRepository<RequestFactory1_6> {
 	}
 
 	protected void prepareContentUpload(final Resource resource, final String uuid, final Revision revision) {
-		final CheckoutOperationV1 co = new CheckoutOperationV1(repository, Resource.create(PREFIX_VER + revision).append(resource), Resource.create(PREFIX_ACT
-				+ uuid));
+		final CheckoutOperationV1 co = new CheckoutOperationV1(repository, Resource.create(PREFIX_VER + revision).append(resource), config.getTransactionResource(uuid));
 		co.execute(client, context);
 	}
 
@@ -222,11 +211,9 @@ public class Repository1_6 extends AbstractRepository<RequestFactory1_6> {
 			return;
 		}
 
-		final URI uri = URIUtils.createURI(repository, PREFIX_WRK + uuid + resource.getValue());
-		final URI resourceUri = downloadURI(resource, Revision.HEAD);
-
-		final HttpUriRequest request = requestFactory.createRemovePropertiesRequest(uri, info.getLockToken(), resourceUri, filtered);
-		execute(request, HttpStatus.SC_MULTI_STATUS);
+		final Resource r = config.getWorkingResource(uuid).append(resource);
+		final PropertiesDeleteOperation uo = new PropertiesDeleteOperation(repository, r, info.getLockToken(), filtered);
+		uo.execute(client, context);
 	}
 
 	protected void propertiesSet(final Resource resource, final InfoEntry info, final String uuid, final ResourceProperty... properties) {
@@ -235,15 +222,13 @@ public class Repository1_6 extends AbstractRepository<RequestFactory1_6> {
 			return;
 		}
 
-		final URI uri = URIUtils.createURI(repository, PREFIX_WRK + uuid + resource.getValue());
-		final URI resourceUri = URIUtils.createURI(repository, resource.getValue());
-
-		final HttpUriRequest request = requestFactory.createSetPropertiesRequest(uri, info.getLockToken(), resourceUri, filtered);
-		execute(request, HttpStatus.SC_MULTI_STATUS);
+		final Resource r = config.getWorkingResource(uuid).append(resource);
+		final PropertiesSetOperation uo = new PropertiesSetOperation(repository, r, info.getLockToken(), filtered);
+		uo.execute(client, context);
 	}
 
 	protected void setCommitMessage(final String uuid, final Revision revision, final String message) {
-		final Resource resource = Resource.create(PREFIX_WBL + uuid + "/" + revision);
+		final Resource resource = Resource.create(config.getCommitMessageResource(uuid) + "/" + revision);
 		final CommitMessageOperation cmo = new CommitMessageOperation(repository, resource, message);
 		cmo.execute(client, context);
 	}
@@ -257,7 +242,7 @@ public class Repository1_6 extends AbstractRepository<RequestFactory1_6> {
 			if (exists) {
 				infoResource = resource;
 			} else {
-				infoResource = createMissingFolders(PREFIX_WRK, uuid.toString(), resource.getParent());
+				infoResource = createFolder(config.getWorkingResource(uuid).append(resource.getParent()), true);
 			}
 
 			final InfoEntry info = info(infoResource, Revision.HEAD, false);

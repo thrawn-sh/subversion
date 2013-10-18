@@ -37,13 +37,13 @@ public final class SubversionFactory {
 	}
 
 	/**
-	 * Create a new {@link Repository} for given {@link URI} and {@link ServerVersion}
+	 * Create a new {@link Repository} for given {@link URI} and {@link Version}
 	 * @param repository {@link URI} to the root of the repository (e.g: http://repository.example.net/svn/test_repo), only http and https scheme are supported
 	 * @param trustServerCertificat whether to trust all SSL certificates (see {@code NonValidatingX509TrustManager})
-	 * @param version the {@link ServerVersion} of the server
-	 * @return a new {@link Repository} for given {@link URI} and {@link ServerVersion}
+	 * @param version the {@link Version} of the server
+	 * @return a new {@link Repository} for given {@link URI} and {@link Version}
 	 */
-	public static final Repository getInstance(final URI repository, final boolean trustServerCertificat, final ServerVersion version) {
+	public static final Repository getInstance(final URI repository, final boolean trustServerCertificat, final Version version) {
 		assertSupportedScheme(repository);
 
 		final URI cleaned = removeEndingSlash(repository);

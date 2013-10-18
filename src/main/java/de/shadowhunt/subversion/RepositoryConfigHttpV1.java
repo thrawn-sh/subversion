@@ -1,0 +1,63 @@
+/*
+ * #%L
+ * Shadowhunt Subversion
+ * %%
+ * Copyright (C) 2013 shadowhunt
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+package de.shadowhunt.subversion;
+
+class RepositoryConfigHttpV1 implements RepositoryConfig {
+
+	private final Resource prefix;
+
+	RepositoryConfigHttpV1() {
+		this(DEFAULT_PREFIX);
+	}
+
+	RepositoryConfigHttpV1(final Resource prefix) {
+		this.prefix = prefix;
+	}
+
+	@Override
+	public Resource getCommitMessageResource(final String id) {
+		final Resource suffix = Resource.create("/wbl/" + id);
+		return prefix.append(suffix);
+	}
+
+	@Override
+	public Resource getPrefix() {
+		return prefix;
+	}
+
+	@Override
+	public Resource getTransactionResource(final String id) {
+		final Resource suffix = Resource.create("/act/" + id);
+		return prefix.append(suffix);
+	}
+
+	@Override
+	public Resource getVersionedResource(final Revision revision) {
+		final Resource suffix = Resource.create("/bc/" + revision);
+		return prefix.append(suffix);
+	}
+
+	@Override
+	public Resource getWorkingResource(final String id) {
+		final Resource suffix = Resource.create("/wrk/" + id);
+		return prefix.append(suffix);
+	}
+
+}

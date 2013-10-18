@@ -27,7 +27,7 @@ import org.junit.Test;
 
 public abstract class AbstractRepositoryLockedWriteIT extends AbstractRepositoryBasicWriteIT {
 
-	protected AbstractRepositoryLockedWriteIT(final URI uri, final ServerVersion version, final String username, final String password, final String workstation) {
+	protected AbstractRepositoryLockedWriteIT(final URI uri, final Version version, final String username, final String password, final String workstation) {
 		super(uri, version, username, password, workstation);
 	}
 

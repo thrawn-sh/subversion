@@ -29,14 +29,14 @@ public class ResolveOperationV1 extends AbstractOperation<Resource> {
 		final URI uri = URIUtils.createURI(repository, resource);
 		final DavTemplateRequest request = new DavTemplateRequest("REPORT", uri);
 
-		final StringBuilder sb = new StringBuilder(AbstractRequestFactory.XML_PREAMBLE);
+		final StringBuilder sb = new StringBuilder(XML_PREAMBLE);
 		sb.append("<get-locations xmlns=\"svn:\"><path/><peg-revision>");
 		sb.append(head);
 		sb.append("</peg-revision><location-revision>");
 		sb.append(revision);
 		sb.append("</location-revision></get-locations>");
 
-		request.setEntity(new StringEntity(sb.toString(), AbstractRequestFactory.CONTENT_TYPE_XML));
+		request.setEntity(new StringEntity(sb.toString(), CONTENT_TYPE_XML));
 		return request;
 	}
 

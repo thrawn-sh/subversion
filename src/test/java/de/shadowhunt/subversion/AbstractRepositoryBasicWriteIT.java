@@ -41,7 +41,7 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 		uid = UUID.randomUUID().toString();
 	}
 
-	protected AbstractRepositoryBasicWriteIT(final URI uri, final ServerVersion version, final String username, final String password, final String workstation) {
+	protected AbstractRepositoryBasicWriteIT(final URI uri, final Version version, final String username, final String password, final String workstation) {
 		super(uri, version, username, password, workstation);
 		run = new File(uri.getPath()).getParent();
 	}

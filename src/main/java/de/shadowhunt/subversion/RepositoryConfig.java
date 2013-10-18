@@ -17,16 +17,19 @@
  * limitations under the License.
  * #L%
  */
-package de.shadowhunt.subversion.v1_7;
+package de.shadowhunt.subversion;
 
-import de.shadowhunt.subversion.AbstractRequestFactory;
+public interface RepositoryConfig {
 
-/**
- * {@link RequestFactory1_7} creates http requests suitable for subversion 1.7.X server
- */
-public class RequestFactory1_7 extends AbstractRequestFactory {
+	final static Resource DEFAULT_PREFIX = Resource.create("/!svn");
 
-	protected RequestFactory1_7() {
-		// prevent global instantiation
-	}
+	Resource getCommitMessageResource(final String id);
+
+	Resource getPrefix();
+
+	Resource getTransactionResource(final String id);
+
+	Resource getVersionedResource(final Revision revision);
+
+	Resource getWorkingResource(final String id);
 }

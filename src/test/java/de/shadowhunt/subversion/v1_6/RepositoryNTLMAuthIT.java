@@ -20,13 +20,13 @@
 package de.shadowhunt.subversion.v1_6;
 
 import de.shadowhunt.subversion.AbstractRepositoryLockedWriteIT;
-import de.shadowhunt.subversion.ServerVersion;
+import de.shadowhunt.subversion.Version;
 import java.net.URI;
 
 public class RepositoryNTLMAuthIT extends AbstractRepositoryLockedWriteIT {
 
 	public RepositoryNTLMAuthIT() {
-		super(URI.create("http://subversion-16.vm.shadowhunt.de/svn-ntlm/test"), ServerVersion.V1_6, "SVNDOMAIN\\svnuser", "svnpass", "svn-client.shadowhunt.de");
+		super(URI.create("http://subversion-16.vm.shadowhunt.de/svn-ntlm/test"), Version.HTTPv1, "SVNDOMAIN\\svnuser", "svnpass", "svn-client.shadowhunt.de");
 	}
 
 	@Override

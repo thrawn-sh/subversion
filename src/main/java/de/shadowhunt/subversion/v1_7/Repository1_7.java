@@ -25,9 +25,6 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpUriRequest;
-
 import de.shadowhunt.subversion.AbstractRepository;
 import de.shadowhunt.subversion.CommitMessageOperation;
 import de.shadowhunt.subversion.CopyOperation;
@@ -35,27 +32,22 @@ import de.shadowhunt.subversion.CreateTransactionOperationV2;
 import de.shadowhunt.subversion.DeleteOperation;
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.InfoEntry;
+import de.shadowhunt.subversion.MergeOperation;
+import de.shadowhunt.subversion.PropertiesDeleteOperation;
+import de.shadowhunt.subversion.PropertiesSetOperation;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
-import de.shadowhunt.util.URIUtils;
+import de.shadowhunt.subversion.UploadOperation;
 
 /**
  * {@link Repository1_7} supports subversion servers of version 1.7.X
  */
-public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
-
-	protected static final String PREFIX_ME = "/!svn/me";
-
-	protected static final String PREFIX_RVR = "/!svn/rvr/";
-
-	protected static final String PREFIX_TXN = "/!svn/txn/";
-
-	protected static final String PREFIX_TXR = "/!svn/txr/";
+public class Repository1_7 extends AbstractRepository {
 
 	protected Repository1_7(final URI repositoryRoot, final boolean trustServerCertificat) {
-		super(repositoryRoot, trustServerCertificat, new RequestFactory1_7());
+		super(repositoryRoot, trustServerCertificat);
 	}
 
 	protected void contentUpload(final Resource resource, final InfoEntry info, final String uuid, @Nullable final InputStream content) {
@@ -63,11 +55,9 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 			return;
 		}
 
-		final URI uri = URIUtils.createURI(repository, PREFIX_TXR + uuid + resource.getValue());
-		final URI resourceUri = URIUtils.createURI(repository, resource.getValue());
-
-		final HttpUriRequest request = requestFactory.createUploadRequest(uri, info.getLockToken(), resourceUri, content);
-		execute(request, HttpStatus.SC_CREATED, HttpStatus.SC_NO_CONTENT);
+		final Resource r = config.getWorkingResource(uuid).append(resource);
+		final UploadOperation uo = new UploadOperation(repository, r, info.getLockToken(), content);
+		uo.execute(client, context);
 	}
 
 	@Override
@@ -75,27 +65,27 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 		final InfoEntry info = info(srcResource, srcRevision, false);
 		final String uuid = prepareTransaction().getId();
 		setCommitMessage(uuid, message);
-		createMissingFolders(PREFIX_TXR, uuid, targetResource.getParent());
+		createFolder(config.getWorkingResource(uuid).append(targetResource.getParent()), true);
 		copy0(srcResource, info.getRevision(), targetResource, uuid);
 		merge(info, uuid);
 	}
 
 	protected void copy0(final Resource srcResource, final Revision srcRevision, final Resource targetResource, final String uuid) {
-		final Resource s = Resource.create(PREFIX_RVR + srcRevision + srcResource.getValue());
-		final Resource t = Resource.create(PREFIX_TXR + uuid + targetResource.getValue());
+		final Resource s = config.getVersionedResource(srcRevision).append(srcResource);
+		final Resource t = config.getWorkingResource(uuid).append(targetResource);
 
 		final CopyOperation co = new CopyOperation(repository, s, t);
 		co.execute(client, context);
 	}
 
 	@Override
-	public void createFolder(final Resource resource, final String message) {
+	public void createFolder(final Resource resource, final boolean parent, final String message) {
 		if (exists(resource, Revision.HEAD)) {
 			return;
 		}
 
 		final String uuid = prepareTransaction().getId();
-		final Resource infoResource = createMissingFolders(PREFIX_TXR, uuid, resource);
+		final Resource infoResource = createFolder(config.getWorkingResource(uuid).append(resource), parent);
 		final InfoEntry info = info(infoResource, Revision.HEAD, false);
 		setCommitMessage(uuid, message);
 		merge(info, uuid);
@@ -111,8 +101,7 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 	}
 
 	protected void delete0(final Resource resource, final String uuid) {
-		final DeleteOperation o = new DeleteOperation(repository, Resource.create(PREFIX_TXR + uuid
-				+ resource.getValue()));
+		final DeleteOperation o = new DeleteOperation(repository, config.getWorkingResource(uuid).append(resource));
 		o.execute(client, context);
 	}
 
@@ -130,20 +119,21 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 		if (Revision.HEAD.equals(revision)) {
 			return resource;
 		}
-		return resolve(Resource.create(PREFIX_RVR + revision + resource.getValue()), resource, revision);
+		return resolve(config.getVersionedResource(revision).append(resource), resource, revision);
 	}
 
 	@Override
 	public List<InfoEntry> list(final Resource resource, final Revision revision, final Depth depth, final boolean withCustomProperties) {
 		final Revision concreateRevision = getConcreteRevision(resource, revision);
-		final String pathPrefix = PREFIX_RVR + concreateRevision;
-		return list(pathPrefix, resource, depth, withCustomProperties);
+		final Resource prefix = config.getVersionedResource(concreateRevision);
+		return list(prefix, resource, depth, withCustomProperties);
 	}
 
 	protected void merge(final InfoEntry info, final String uuid) {
-		final Resource resource = Resource.create(repository.getPath() + PREFIX_TXN + uuid);
-		final HttpUriRequest request = requestFactory.createMergeRequest(repository, resource, info);
-		execute(request, HttpStatus.SC_OK);
+		final Resource resource = config.getCommitMessageResource(uuid);
+
+		final MergeOperation mo = new MergeOperation(repository, resource, info.getLockToken());
+		mo.execute(client, context);
 	}
 
 	@Override
@@ -167,11 +157,9 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 			return;
 		}
 
-		final URI uri = URIUtils.createURI(repository, PREFIX_TXR + uuid + resource.getValue());
-		final URI resourceUri = URIUtils.createURI(repository, resource.getValue());
-
-		final HttpUriRequest request = requestFactory.createRemovePropertiesRequest(uri, info.getLockToken(), resourceUri, filtered);
-		execute(request, HttpStatus.SC_MULTI_STATUS);
+		final Resource r = config.getWorkingResource(uuid).append(resource);
+		final PropertiesDeleteOperation uo = new PropertiesDeleteOperation(repository, r, info.getLockToken(), filtered);
+		uo.execute(client, context);
 	}
 
 	protected void propertiesSet(final Resource resource, final InfoEntry info, final String uuid, final ResourceProperty... properties) {
@@ -180,15 +168,13 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 			return;
 		}
 
-		final URI uri = URIUtils.createURI(repository, PREFIX_TXR + uuid + resource.getValue());
-		final URI resourceUri = URIUtils.createURI(repository, resource.getValue());
-
-		final HttpUriRequest request = requestFactory.createSetPropertiesRequest(uri, info.getLockToken(), resourceUri, filtered);
-		execute(request, HttpStatus.SC_MULTI_STATUS);
+		final Resource r = config.getWorkingResource(uuid).append(resource);
+		final PropertiesSetOperation uo = new PropertiesSetOperation(repository, r, info.getLockToken(), filtered);
+		uo.execute(client, context);
 	}
 
 	protected void setCommitMessage(final String uuid, final String message) {
-		final Resource resource = Resource.create(PREFIX_TXN + uuid);
+		final Resource resource = config.getCommitMessageResource(uuid);
 		final CommitMessageOperation cmo = new CommitMessageOperation(repository, resource, message);
 		cmo.execute(client, context);
 	}
@@ -201,7 +187,7 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 		if (exists(resource, Revision.HEAD)) {
 			infoResource = resource;
 		} else {
-			infoResource = createMissingFolders(PREFIX_TXR, uuid, resource.getParent());
+			infoResource = createFolder(config.getWorkingResource(uuid).append(resource.getParent()), true);
 		}
 		final InfoEntry info = info(infoResource, Revision.HEAD, false);
 		setCommitMessage(uuid, message);

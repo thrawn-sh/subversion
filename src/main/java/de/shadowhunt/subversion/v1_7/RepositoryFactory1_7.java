@@ -21,7 +21,7 @@ package de.shadowhunt.subversion.v1_7;
 
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.RepositoryFactory;
-import de.shadowhunt.subversion.ServerVersion;
+import de.shadowhunt.subversion.Version;
 import java.net.URI;
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -37,8 +37,8 @@ public class RepositoryFactory1_7 implements RepositoryFactory {
 	}
 
 	@Override
-	public boolean isServerVersionSupported(final ServerVersion version) {
-		return ServerVersion.V1_7 == version;
+	public boolean isServerVersionSupported(final Version version) {
+		return Version.HTTPv2 == version;
 	}
 
 }

@@ -50,7 +50,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 
 	protected final Repository repository;
 
-	protected AbstractRepositoryReadOnlyIT(final URI uri, final ServerVersion version) {
+	protected AbstractRepositoryReadOnlyIT(final URI uri, final Version version) {
 		repository = SubversionFactory.getInstance(uri, true, version);
 	}
 

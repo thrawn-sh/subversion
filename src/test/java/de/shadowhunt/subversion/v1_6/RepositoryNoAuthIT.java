@@ -20,12 +20,12 @@
 package de.shadowhunt.subversion.v1_6;
 
 import de.shadowhunt.subversion.AbstractRepositoryReadOnlyIT;
-import de.shadowhunt.subversion.ServerVersion;
+import de.shadowhunt.subversion.Version;
 import java.net.URI;
 
 public class RepositoryNoAuthIT extends AbstractRepositoryReadOnlyIT {
 
 	public RepositoryNoAuthIT() {
-		super(URI.create("http://subversion-16.vm.shadowhunt.de/svn-non/test"), ServerVersion.V1_6);
+		super(URI.create("http://subversion-16.vm.shadowhunt.de/svn-non/test"), Version.HTTPv1);
 	}
 }

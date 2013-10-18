@@ -46,7 +46,7 @@ public interface Repository {
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
 	 * @param message the commit message for the current operation
 	 */
-	public void createFolder(Resource resource, String message);
+	public void createFolder(Resource resource, boolean parent, String message);
 
 	/**
 	 * Delete the resource from the repository

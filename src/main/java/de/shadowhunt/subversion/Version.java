@@ -17,16 +17,13 @@
  * limitations under the License.
  * #L%
  */
-package de.shadowhunt.subversion.v1_6;
-
-import de.shadowhunt.subversion.AbstractRequestFactory;
+package de.shadowhunt.subversion;
 
 /**
- * {@link RequestFactory1_6} creates http requests suitable for subversion 1.6.X server
+ * Enum that represents the version of the subversion server
  */
-public class RequestFactory1_6 extends AbstractRequestFactory {
+public enum Version {
 
-	protected RequestFactory1_6() {
-		// prevent global instantiation
-	}
+	HTTPv1,
+	HTTPv2
 }

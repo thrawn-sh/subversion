@@ -29,7 +29,7 @@ public final class Resource implements Comparable<Resource> {
 	/**
 	 * Represents the base {@link Resource} in the repository
 	 */
-	public static final Resource ROOT = new Resource("/");
+	public static final Resource ROOT = new Resource("");
 
 	/**
 	 * Create a new {@link Resource} instance for the given value
@@ -115,12 +115,22 @@ public final class Resource implements Comparable<Resource> {
 		return value.hashCode();
 	}
 
+	public Resource prepend(final Resource resource) {
+		return new Resource(resource.value + value);
+	}
+
+	public Resource subResource(final int begin) {
+		final StringBuilder sb = new StringBuilder();
+		final String[] segments = value.split("/");
+		for (int i = begin; i < segments.length; i++) {
+			sb.append('/');
+			sb.append(segments[i]);
+		}
+		return Resource.create(sb.toString());
+	}
+
 	@Override
 	public String toString() {
 		return value;
-	}
-
-	public Resource prepend(final Resource resource) {
-		return new Resource(resource.value + value);
 	}
 }
