@@ -10,7 +10,7 @@ import org.apache.http.entity.StringEntity;
 import de.shadowhunt.http.client.methods.DavTemplateRequest;
 import de.shadowhunt.util.URIUtils;
 
-public class CommitMessageOperation extends AbstractOperation<Void> {
+public class CommitMessageOperation extends AbstractVoidOperation {
 
 	protected final String message;
 
@@ -37,9 +37,8 @@ public class CommitMessageOperation extends AbstractOperation<Void> {
 	}
 
 	@Override
-	protected Void processResponse(final HttpResponse response) {
+	protected void checkResponse(final HttpResponse response) {
 		// TODO HttpStatus.SC_MULTI_STATUS
-		return null;
 	}
 
 }

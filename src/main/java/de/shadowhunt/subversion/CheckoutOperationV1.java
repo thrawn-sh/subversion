@@ -10,7 +10,7 @@ import org.apache.http.entity.StringEntity;
 import de.shadowhunt.http.client.methods.DavTemplateRequest;
 import de.shadowhunt.util.URIUtils;
 
-public class CheckoutOperationV1 extends AbstractOperation<Void> {
+public class CheckoutOperationV1 extends AbstractVoidOperation {
 
 	protected final Resource resource, transaction;
 
@@ -37,8 +37,7 @@ public class CheckoutOperationV1 extends AbstractOperation<Void> {
 	}
 
 	@Override
-	protected Void processResponse(final HttpResponse response) {
+	protected void checkResponse(final HttpResponse response) {
 		// TODO SC_CREATED
-		return null;
 	}
 }

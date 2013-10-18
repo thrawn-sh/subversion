@@ -9,7 +9,7 @@ import org.apache.http.entity.StringEntity;
 import de.shadowhunt.http.client.methods.DavTemplateRequest;
 import de.shadowhunt.util.URIUtils;
 
-public class LockOperation extends AbstractOperation<Void> {
+public class LockOperation extends AbstractVoidOperation {
 
 	protected final Resource resource;
 
@@ -37,9 +37,8 @@ public class LockOperation extends AbstractOperation<Void> {
 	}
 
 	@Override
-	protected Void processResponse(final HttpResponse response) {
+	protected void checkResponse(final HttpResponse response) {
 		// TODO HttpStatus.SC_OK
-		return null;
 	}
 
 }

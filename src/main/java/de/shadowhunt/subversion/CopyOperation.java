@@ -8,7 +8,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import de.shadowhunt.http.client.methods.DavTemplateRequest;
 import de.shadowhunt.util.URIUtils;
 
-public class CopyOperation extends AbstractOperation<Void> {
+public class CopyOperation extends AbstractVoidOperation {
 
 	protected final Resource source, target;
 
@@ -30,8 +30,7 @@ public class CopyOperation extends AbstractOperation<Void> {
 	}
 
 	@Override
-	protected Void processResponse(final HttpResponse response) {
+	protected void checkResponse(final HttpResponse response) {
 		// TODO HttpStatus.SC_CREATED
-		return null;
 	}
 }

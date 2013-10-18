@@ -10,7 +10,7 @@ import org.apache.http.entity.InputStreamEntity;
 
 import de.shadowhunt.util.URIUtils;
 
-public class UploadOperation extends AbstractOperation<Void> {
+public class UploadOperation extends AbstractVoidOperation {
 
 	protected static final int PREFIX = 4; // /$svn/{baseline}/{id}/
 
@@ -43,8 +43,7 @@ public class UploadOperation extends AbstractOperation<Void> {
 	}
 
 	@Override
-	protected Void processResponse(final HttpResponse response) {
+	protected void checkResponse(final HttpResponse response) {
 		// TODO HttpStatus.SC_CREATED, HttpStatus.SC_NO_CONTENT
-		return null;
 	}
 }

@@ -8,7 +8,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import de.shadowhunt.http.client.methods.DavTemplateRequest;
 import de.shadowhunt.util.URIUtils;
 
-public class UnlockOperation extends AbstractOperation<Void> {
+public class UnlockOperation extends AbstractVoidOperation {
 
 	protected final boolean force;
 
@@ -35,8 +35,7 @@ public class UnlockOperation extends AbstractOperation<Void> {
 	}
 
 	@Override
-	protected Void processResponse(final HttpResponse response) {
+	protected void checkResponse(final HttpResponse response) {
 		// TODO SC_NO_CONTENT
-		return null;
 	}
 }

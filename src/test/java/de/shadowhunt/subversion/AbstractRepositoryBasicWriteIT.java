@@ -25,6 +25,7 @@ import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -72,7 +73,7 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 		Assert.assertFalse("new folder must not exist", repository.exists(folder, Revision.HEAD));
 		final String message = "create folder";
 
-		repository.createFolder(folder, message);
+		repository.createFolder(folder, true, message);
 		Assert.assertTrue("created folder must exist", repository.exists(folder, Revision.HEAD));
 		RepositoryAssert.assertLastLog(repository, folder, message, getUsername());
 	}
@@ -95,7 +96,7 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 	public void deleteFolder() {
 		final Resource folder = Resource.create(getBase() + "/deleteFolder");
 
-		repository.createFolder(folder, "create folder");
+		repository.createFolder(folder, true, "create folder");
 		Assert.assertTrue("created folder must exist", repository.exists(folder, Revision.HEAD));
 
 		repository.delete(folder, "delete folder");
@@ -140,10 +141,10 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 		final Resource folder = Resource.create(getBase() + "/doubleCreateFolder");
 		Assert.assertFalse("new folder must not exist", repository.exists(folder, Revision.HEAD));
 
-		repository.createFolder(folder, "create folder");
+		repository.createFolder(folder, true, "create folder");
 		Assert.assertTrue("created folder must exist", repository.exists(folder, Revision.HEAD));
 
-		repository.createFolder(folder, "create folder");
+		repository.createFolder(folder, true, "create folder");
 		Assert.assertTrue("created folder must exist", repository.exists(folder, Revision.HEAD));
 	}
 

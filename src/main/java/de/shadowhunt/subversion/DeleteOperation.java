@@ -8,7 +8,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 
 import de.shadowhunt.util.URIUtils;
 
-public class DeleteOperation extends AbstractOperation<Void> {
+public class DeleteOperation extends AbstractVoidOperation {
 
 	protected final Resource resource;
 
@@ -24,8 +24,7 @@ public class DeleteOperation extends AbstractOperation<Void> {
 	}
 
 	@Override
-	protected Void processResponse(final HttpResponse response) {
+	protected void checkResponse(final HttpResponse response) {
 		// TODO SC_NO_CONTENT
-		return null;
 	}
 }
