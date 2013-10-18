@@ -36,6 +36,7 @@ import de.shadowhunt.subversion.InfoEntry;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.util.URIUtils;
 
 /**
@@ -70,7 +71,7 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 	@Override
 	public void copy(final Resource srcResource, final Revision srcRevision, final Resource targetResource, final String message) {
 		final InfoEntry info = info(srcResource, srcRevision, false);
-		final String uuid = prepareTransaction();
+		final String uuid = prepareTransaction().getId();
 		setCommitMessage(uuid, message);
 		createMissingFolders(PREFIX_TXR, uuid, targetResource.getParent());
 		copy0(srcResource, info.getRevision(), targetResource, uuid);
@@ -90,7 +91,7 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 			return;
 		}
 
-		final String uuid = prepareTransaction();
+		final String uuid = prepareTransaction().getId();
 		final Resource infoResource = createMissingFolders(PREFIX_TXR, uuid, resource);
 		final InfoEntry info = info(infoResource, Revision.HEAD, false);
 		setCommitMessage(uuid, message);
@@ -99,7 +100,7 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 
 	@Override
 	public void delete(final Resource resource, final String message) {
-		final String uuid = prepareTransaction();
+		final String uuid = prepareTransaction().getId();
 		setCommitMessage(uuid, message);
 		delete0(resource, uuid);
 		final InfoEntry info = info(resource, Revision.HEAD, false);
@@ -114,7 +115,7 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 
 	@Override
 	public void deleteProperties(final Resource resource, final String message, final ResourceProperty... properties) {
-		final String uuid = prepareTransaction();
+		final String uuid = prepareTransaction().getId();
 		setCommitMessage(uuid, message);
 		final InfoEntry info = info(resource, Revision.HEAD, false);
 		propertiesRemove(resource, info, uuid, properties);
@@ -145,14 +146,14 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 	@Override
 	public void move(final Resource srcResource, final Resource targetResource, final String message) {
 		final InfoEntry info = info(srcResource, Revision.HEAD, false);
-		final String uuid = prepareTransaction();
+		final String uuid = prepareTransaction().getId();
 		setCommitMessage(uuid, message);
 		copy0(srcResource, info.getRevision(), targetResource, uuid);
 		delete0(srcResource, uuid);
 		merge(info, uuid);
 	}
 
-	protected String prepareTransaction() {
+	protected Transaction prepareTransaction() {
 		final CreateTransactionOperationV2 cto = new CreateTransactionOperationV2(repository);
 		return cto.execute(client, context);
 	}
@@ -191,7 +192,7 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 
 	@Override
 	protected void upload0(final Resource resource, final String message, @Nullable final InputStream content, @Nullable final ResourceProperty... properties) {
-		final String uuid = prepareTransaction();
+		final String uuid = prepareTransaction().getId();
 
 		final Resource infoResource;
 		if (exists(resource, Revision.HEAD)) {

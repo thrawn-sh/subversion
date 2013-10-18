@@ -9,7 +9,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import de.shadowhunt.http.client.methods.DavTemplateRequest;
 import de.shadowhunt.util.URIUtils;
 
-public class CreateTransactionOperationV1 extends AbstractOperation<UUID> {
+public class CreateTransactionOperationV1 extends AbstractOperation<Transaction> {
 
 	private final UUID uuid = UUID.randomUUID();
 
@@ -24,8 +24,8 @@ public class CreateTransactionOperationV1 extends AbstractOperation<UUID> {
 	}
 
 	@Override
-	protected UUID processResponse(final HttpResponse response) {
+	protected Transaction processResponse(final HttpResponse response) {
 		// TODO HttpStatus.SC_CREATED
-		return uuid;
+		return new Transaction(uuid.toString());
 	}
 }

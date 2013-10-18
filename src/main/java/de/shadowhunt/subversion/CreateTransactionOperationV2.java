@@ -11,7 +11,7 @@ import org.apache.http.entity.StringEntity;
 
 import de.shadowhunt.util.URIUtils;
 
-public class CreateTransactionOperationV2 extends AbstractOperation<String> {
+public class CreateTransactionOperationV2 extends AbstractOperation<Transaction> {
 
 	private static final String HEADER_NAME = "SVN-Txn-Name";
 
@@ -35,9 +35,10 @@ public class CreateTransactionOperationV2 extends AbstractOperation<String> {
 	}
 
 	@Override
-	protected String processResponse(final HttpResponse response) {
+	protected Transaction processResponse(final HttpResponse response) {
 		// TODO HttpStatus.SC_CREATED
-		return response.getFirstHeader(HEADER_NAME).getValue();
+		final String id = response.getFirstHeader(HEADER_NAME).getValue();
+		return new Transaction(id);
 	}
 
 }
