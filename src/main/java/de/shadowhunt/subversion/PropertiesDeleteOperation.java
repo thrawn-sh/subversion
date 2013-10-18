@@ -3,6 +3,7 @@ package de.shadowhunt.subversion;
 import java.net.URI;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 
@@ -51,7 +52,7 @@ public class PropertiesDeleteOperation extends AbstractVoidOperation {
 
 	@Override
 	protected void checkResponse(final HttpResponse response) {
-		// TODO SC_MULTI_STATUS
+		check(response, HttpStatus.SC_MULTI_STATUS);
 	}
 
 }

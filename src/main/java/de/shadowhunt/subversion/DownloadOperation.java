@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.net.URI;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 
@@ -26,7 +27,7 @@ public class DownloadOperation extends AbstractOperation<InputStream> {
 
 	@Override
 	protected InputStream processResponse(final HttpResponse response) {
-		// TODO HttpStatus.SC_OK
+		check(response, HttpStatus.SC_OK);
 		return getContent(response);
 	}
 

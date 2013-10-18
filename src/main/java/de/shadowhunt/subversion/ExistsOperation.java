@@ -26,8 +26,10 @@ public class ExistsOperation extends AbstractOperation<Boolean> {
 
 	@Override
 	protected Boolean processResponse(final HttpResponse response) {
-		// TODO /* found */HttpStatus.SC_OK, /* not found */HttpStatus.SC_NOT_FOUND
-		return (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK);
+		check(response, /* found */HttpStatus.SC_OK, /* not found */HttpStatus.SC_NOT_FOUND);
+
+		final int statusCode = getStatusCode(response);
+		return (statusCode == HttpStatus.SC_OK);
 	}
 
 }

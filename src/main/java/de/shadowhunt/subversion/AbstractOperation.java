@@ -21,14 +21,17 @@ package de.shadowhunt.subversion;
 
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Arrays;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 
 public abstract class AbstractOperation<T> implements Operation<T> {
 
@@ -88,4 +91,32 @@ public abstract class AbstractOperation<T> implements Operation<T> {
 	}
 
 	protected abstract T processResponse(final HttpResponse response);
+
+	protected static final int getStatusCode(final HttpResponse response) {
+		final StatusLine statusLine = response.getStatusLine();
+		return (statusLine == null) ? 0 : statusLine.getStatusCode();
+	}
+
+	protected static final boolean isExpected(final int statusCode, final int... expectedStatusCodes) {
+		for (final int expectedStatusCode : expectedStatusCodes) {
+			if (expectedStatusCode == statusCode) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	protected static final void check(final HttpResponse response, final int... expectedStatusCodes) {
+		final int statusCode = getStatusCode(response);
+
+		if (isExpected(statusCode, expectedStatusCodes)) {
+			return;
+		}
+
+		// FIXME throw more detailed exceptions
+
+		EntityUtils.consumeQuietly(response.getEntity()); // in case of unexpected status code we consume everything
+		throw new SubversionException("status code is: " + statusCode + ", expected was: "
+				+ Arrays.toString(expectedStatusCodes));
+	}
 }

@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 
@@ -42,7 +43,8 @@ public class ListOperation extends AbstractOperation<List<InfoEntry>> {
 
 	@Override
 	protected List<InfoEntry> processResponse(final HttpResponse response) {
-		// TODO SC_MULTI_STATUS
+		check(response, HttpStatus.SC_MULTI_STATUS);
+
 		final InputStream in = getContent(response);
 		try {
 			return InfoEntry.readList(in, customProperties, (Depth.FILES != depth));

@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.net.URI;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.InputStreamEntity;
@@ -44,6 +45,6 @@ public class UploadOperation extends AbstractVoidOperation {
 
 	@Override
 	protected void checkResponse(final HttpResponse response) {
-		// TODO HttpStatus.SC_CREATED, HttpStatus.SC_NO_CONTENT
+		check(response, HttpStatus.SC_CREATED, HttpStatus.SC_NO_CONTENT);
 	}
 }

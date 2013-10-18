@@ -26,8 +26,8 @@ public class CreateFolderOperation extends AbstractOperation<Boolean> {
 
 	@Override
 	protected Boolean processResponse(final HttpResponse response) {
-		// /* created */HttpStatus.SC_CREATED, /* existed */ HttpStatus.SC_METHOD_NOT_ALLOWED
-		final int status = response.getStatusLine().getStatusCode();
+		check(response, /* created */HttpStatus.SC_CREATED, /* existed */HttpStatus.SC_METHOD_NOT_ALLOWED);
+		final int status = getStatusCode(response);
 		return (status == HttpStatus.SC_CREATED);
 	}
 

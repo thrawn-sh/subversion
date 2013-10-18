@@ -3,6 +3,7 @@ package de.shadowhunt.subversion;
 import java.net.URI;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 
 import de.shadowhunt.http.client.methods.DavTemplateRequest;
@@ -31,6 +32,6 @@ public class CopyOperation extends AbstractVoidOperation {
 
 	@Override
 	protected void checkResponse(final HttpResponse response) {
-		// TODO HttpStatus.SC_CREATED
+		check(response, HttpStatus.SC_CREATED);
 	}
 }

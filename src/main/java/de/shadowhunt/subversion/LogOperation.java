@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 
@@ -52,7 +53,8 @@ public class LogOperation extends AbstractOperation<List<LogEntry>> {
 
 	@Override
 	protected List<LogEntry> processResponse(final HttpResponse response) {
-		// TODO HttpStatus.SC_OK
+		check(response, HttpStatus.SC_OK);
+
 		final InputStream in = getContent(response);
 		try {
 			return LogEntry.read(in);

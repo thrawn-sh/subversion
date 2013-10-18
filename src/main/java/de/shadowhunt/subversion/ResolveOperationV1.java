@@ -5,6 +5,7 @@ import java.net.URI;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 
@@ -42,7 +43,8 @@ public class ResolveOperationV1 extends AbstractOperation<Resource> {
 
 	@Override
 	protected Resource processResponse(final HttpResponse response) {
-		// TODO SC_OK
+		check(response, HttpStatus.SC_OK);
+
 		final InputStream in = getContent(response);
 		try {
 			final ResolveEntry resolve = ResolveEntry.read(in);

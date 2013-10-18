@@ -3,6 +3,7 @@ package de.shadowhunt.subversion;
 import java.net.URI;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 
 import de.shadowhunt.http.client.methods.DavTemplateRequest;
@@ -36,6 +37,6 @@ public class UnlockOperation extends AbstractVoidOperation {
 
 	@Override
 	protected void checkResponse(final HttpResponse response) {
-		// TODO SC_NO_CONTENT
+		check(response, HttpStatus.SC_NO_CONTENT);
 	}
 }

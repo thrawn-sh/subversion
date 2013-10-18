@@ -4,6 +4,7 @@ import java.net.URI;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
@@ -36,7 +37,7 @@ public class CreateTransactionOperationV2 extends AbstractOperation<Transaction>
 
 	@Override
 	protected Transaction processResponse(final HttpResponse response) {
-		// TODO HttpStatus.SC_CREATED
+		check(response, HttpStatus.SC_CREATED);
 		final String id = response.getFirstHeader(HEADER_NAME).getValue();
 		return new Transaction(id);
 	}

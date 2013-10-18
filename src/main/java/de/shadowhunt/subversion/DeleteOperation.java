@@ -3,6 +3,7 @@ package de.shadowhunt.subversion;
 import java.net.URI;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpUriRequest;
 
@@ -25,6 +26,6 @@ public class DeleteOperation extends AbstractVoidOperation {
 
 	@Override
 	protected void checkResponse(final HttpResponse response) {
-		// TODO SC_NO_CONTENT
+		check(response, HttpStatus.SC_NO_CONTENT);
 	}
 }

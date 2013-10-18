@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.UUID;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 
 import de.shadowhunt.http.client.methods.DavTemplateRequest;
@@ -25,7 +26,7 @@ public class CreateTransactionOperationV1 extends AbstractOperation<Transaction>
 
 	@Override
 	protected Transaction processResponse(final HttpResponse response) {
-		// TODO HttpStatus.SC_CREATED
+		check(response, HttpStatus.SC_CREATED);
 		return new Transaction(uuid.toString());
 	}
 }

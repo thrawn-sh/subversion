@@ -6,6 +6,7 @@ import java.net.URI;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 
@@ -44,7 +45,8 @@ public class InfoOperation extends AbstractOperation<InfoEntry> {
 
 	@Override
 	protected InfoEntry processResponse(final HttpResponse response) {
-		// TODO SC_MULTI_STATUS
+		check(response, HttpStatus.SC_MULTI_STATUS);
+
 		final InputStream in = getContent(response);
 		try {
 			final InfoEntry info = InfoEntry.read(in, customProperties);

@@ -4,6 +4,7 @@ import java.net.URI;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 
@@ -38,6 +39,6 @@ public class CheckoutOperationV1 extends AbstractVoidOperation {
 
 	@Override
 	protected void checkResponse(final HttpResponse response) {
-		// TODO SC_CREATED
+		check(response, HttpStatus.SC_CREATED);
 	}
 }
