@@ -30,6 +30,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 
 import de.shadowhunt.subversion.AbstractRepository;
 import de.shadowhunt.subversion.CommitMessageOperation;
+import de.shadowhunt.subversion.CopyOperation;
 import de.shadowhunt.subversion.CreateTransactionOperationV2;
 import de.shadowhunt.subversion.DeleteOperation;
 import de.shadowhunt.subversion.Depth;
@@ -80,10 +81,11 @@ public class Repository1_7 extends AbstractRepository<RequestFactory1_7> {
 	}
 
 	protected void copy0(final Resource srcResource, final Revision srcRevision, final Resource targetResource, final String uuid) {
-		final URI src = URIUtils.createURI(repository, PREFIX_RVR + srcRevision + srcResource.getValue());
-		final URI target = URIUtils.createURI(repository, PREFIX_TXR + uuid + targetResource.getValue());
-		final HttpUriRequest request = requestFactory.createCopyRequest(src, target);
-		execute(request, HttpStatus.SC_CREATED);
+		final Resource s = Resource.create(PREFIX_RVR + srcRevision + srcResource.getValue());
+		final Resource t = Resource.create(PREFIX_TXR + uuid + targetResource.getValue());
+
+		final CopyOperation co = new CopyOperation(repository, s, t);
+		co.execute(client, context);
 	}
 
 	@Override

@@ -23,18 +23,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.annotation.Nullable;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -70,8 +67,6 @@ import de.shadowhunt.util.URIUtils;
  */
 public abstract class AbstractRepository<T extends AbstractRequestFactory> implements Repository {
 
-	protected static final String LOCK_OWNER_HEADER = "X-SVN-Lock-Owner";
-
 	protected static boolean contains(final int statusCode, final int... expectedStatusCodes) {
 		for (final int expectedStatusCode : expectedStatusCodes) {
 			if (expectedStatusCode == statusCode) {
@@ -81,6 +76,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 		return false;
 	}
 
+	@Deprecated
 	protected static DefaultHttpClient createClient(final int maxConnections, final boolean trustServerCertificate) {
 		final PoolingClientConnectionManager connectionManager = new PoolingClientConnectionManager();
 		connectionManager.setMaxTotal(maxConnections);
@@ -105,6 +101,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 		return defaultClient;
 	}
 
+	@Deprecated
 	protected static Scheme createTrustingAnySslCertScheme() {
 		try {
 			final SSLContext sc = SSLContext.getInstance("SSL");
@@ -118,6 +115,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 		}
 	}
 
+	@Deprecated
 	static void ensureResponse(final HttpResponse response, final boolean consume, final int... expectedStatusCodes) throws IOException {
 		final int statusCode = response.getStatusLine().getStatusCode();
 		if (consume) {
@@ -139,6 +137,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 		}
 	}
 
+	@Deprecated
 	private static boolean hasJcifsSupport() {
 		try {
 			Class.forName("jcifs.ntlmssp.NtlmFlags");
@@ -175,24 +174,21 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 	protected Resource createMissingFolders(final String prefix, final String uuid, final Resource resource) {
 		final String[] resourceParts = resource.getValue().split("/");
 
-		String infoResource = "/";
+		Resource infoResource = Resource.ROOT;
 		final StringBuilder partial = new StringBuilder();
 		for (int i = 1; i < resourceParts.length; i++) {
 			partial.append('/');
 			partial.append(resourceParts[i]);
 
-			final String partialResource = partial.toString();
-			final URI uri = URIUtils.createURI(repository, prefix + uuid + partialResource);
-			final HttpUriRequest request = requestFactory.createMakeFolderRequest(uri);
-			final HttpResponse response = execute(request, /* created */HttpStatus.SC_CREATED, /* existed */
-					HttpStatus.SC_METHOD_NOT_ALLOWED);
-			final int status = response.getStatusLine().getStatusCode();
-			if (status == HttpStatus.SC_METHOD_NOT_ALLOWED) {
+			final Resource partialResource = Resource.create(prefix + uuid + partial.toString());
+			final CreateFolderOperation cfo = new CreateFolderOperation(repository, partialResource);
+			final boolean created = cfo.execute(client, context);
+			if (!created) {
 				infoResource = partialResource;
 			}
 		}
 
-		return Resource.create(infoResource);
+		return infoResource;
 	}
 
 	@Override
@@ -208,6 +204,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 		return URIUtils.createURI(repository, downloadResource(resource, revision));
 	}
 
+	@Deprecated
 	protected HttpResponse execute(final HttpUriRequest request, final boolean consume, final int... expectedStatusCodes) {
 		try {
 			final HttpResponse response = client.execute(request, context);
@@ -228,6 +225,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 		}
 	}
 
+	@Deprecated
 	protected HttpResponse execute(final HttpUriRequest request, final int... expectedStatusCodes) {
 		return execute(request, true, expectedStatusCodes);
 	}
@@ -260,27 +258,10 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 	}
 
 	protected List<InfoEntry> list(final String pathPrefix, final Resource resource, final Depth depth, final boolean withCustomProperties) {
-		final URI uri = URIUtils.createURI(repository, pathPrefix + resource.getValue());
+		final Resource r = Resource.create(pathPrefix + resource.getValue());
 
-		if (depth == Depth.INFINITY) {
-			final List<InfoEntry> root = list(uri, Depth.IMMEDIATES, withCustomProperties);
-			final Set<InfoEntry> result = new TreeSet<InfoEntry>(InfoEntry.RESOURCE_COMPARATOR);
-			listRecursive(pathPrefix, withCustomProperties, root, result);
-			return new ArrayList<InfoEntry>(result);
-		}
-		return list(uri, depth, withCustomProperties);
-	}
-
-	protected List<InfoEntry> list(final URI uri, final Depth depth, final boolean withCustomProperties) {
-		final HttpUriRequest request = requestFactory.createInfoRequest(uri, depth);
-		final HttpResponse response = execute(request, false, HttpStatus.SC_MULTI_STATUS);
-
-		final InputStream in = getContent(response);
-		try {
-			return InfoEntry.readList(in, withCustomProperties, (Depth.FILES != depth));
-		} finally {
-			IOUtils.closeQuietly(in);
-		}
+		final ListOperation lo = new ListOperation(repository, r, depth, withCustomProperties);
+		return lo.execute(client, context);
 	}
 
 	protected void listRecursive(final String pathPrefix, final boolean withCustomProperties, final Collection<InfoEntry> todo, final Set<InfoEntry> done) {
@@ -291,9 +272,8 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 
 			done.add(info);
 			if (info.isDirectory()) {
-				final Resource resource = info.getResource();
-				final URI uri = URIUtils.createURI(repository, pathPrefix + resource.getValue());
-				final List<InfoEntry> children = list(uri, Depth.IMMEDIATES, withCustomProperties);
+				final Resource resource = Resource.create(pathPrefix + info.getResource());
+				final List<InfoEntry> children = list(pathPrefix, resource, Depth.IMMEDIATES, withCustomProperties);
 				listRecursive(pathPrefix, withCustomProperties, children, done);
 			}
 		}
@@ -327,6 +307,7 @@ public abstract class AbstractRepository<T extends AbstractRequestFactory> imple
 	}
 
 	@Override
+	@Deprecated
 	public final void setCredentials(@Nullable final String username, @Nullable final String password, @Nullable final String workstation) {
 		final Credentials credentials = CredentialsUtils.creteCredentials(username, password, workstation);
 		final CredentialsProvider credentialsProvider = backend.getCredentialsProvider();
