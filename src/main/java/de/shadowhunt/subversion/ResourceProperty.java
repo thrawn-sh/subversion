@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,7 +28,7 @@ import javax.annotation.concurrent.Immutable;
  * {@link ResourceProperty} represents a resource property
  */
 @Immutable
-public class ResourceProperty {
+public final class ResourceProperty {
 
 	/**
 	 * {@link ResourceProperty} can have various types, depending of the context they are used
@@ -66,21 +66,11 @@ public class ResourceProperty {
 	};
 
 	/**
-	 * Factory method to create custom properties
-	 * @param name name of the property
-	 * @param value value of the property
-	 * @return {@link ResourceProperty} with the given name and value, type is always {@code Type.CUSTOM}
-	 */
-	public static ResourceProperty createCustomProperty(final String name, final String value) {
-		return new ResourceProperty(Type.CUSTOM, name, value);
-	}
-
-	/**
 	 * Filter out {@code Type.Base} and {@code Type.DAV} {@link ResourceProperty}
 	 * @param properties {@link ResourceProperty} that shall be filtered
 	 * @return filtered {@link ResourceProperty}
 	 */
-	public static ResourceProperty[] filteroutSystemProperties(final ResourceProperty... properties) {
+	public static ResourceProperty[] filterSystemProperties(final ResourceProperty... properties) {
 		final ResourceProperty[] filtered = new ResourceProperty[properties.length];
 		int index = 0;
 		for (final ResourceProperty property : properties) {
@@ -97,7 +87,7 @@ public class ResourceProperty {
 
 	private final String value;
 
-	ResourceProperty(final Type type, final String name, final String value) {
+	public ResourceProperty(final Type type, final String name, final String value) {
 		this.type = type;
 		this.name = name;
 		this.value = value;

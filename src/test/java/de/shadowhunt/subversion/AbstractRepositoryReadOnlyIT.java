@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,7 +51,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 	protected final Repository repository;
 
 	protected AbstractRepositoryReadOnlyIT(final URI uri, final Version version) {
-		repository = SubversionFactory.getInstance(uri, true, version);
+		repository = RepositoryFactory.getInstance(uri, true, version);
 	}
 
 	@Test
@@ -106,7 +106,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 
 	@Test
 	public void infoExisitingDirHeadRevision() {
-		final InfoEntry info = repository.info(EXISTING_EMPTY_DIR, Revision.HEAD, true);
+		final Info info = repository.info(EXISTING_EMPTY_DIR, Revision.HEAD, true);
 		Assert.assertNotNull("result must not be null", info);
 
 		Assert.assertFalse("resource is not locked", info.isLocked());
@@ -126,7 +126,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 	@Test
 	public void infoExisitingDirRevision() {
 		final Revision revision = Revision.create(2);
-		final InfoEntry info = repository.info(EXISTING_EMPTY_DIR, revision, true);
+		final Info info = repository.info(EXISTING_EMPTY_DIR, revision, true);
 		Assert.assertNotNull("result must not be null", info);
 
 		Assert.assertFalse("resource is not locked", info.isLocked());
@@ -145,7 +145,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 
 	@Test
 	public void infoExisitingFileHeadRevision() {
-		final InfoEntry info = repository.info(EXISTING_FILE, Revision.HEAD, true);
+		final Info info = repository.info(EXISTING_FILE, Revision.HEAD, true);
 		Assert.assertNotNull("result must not be null", info);
 
 		Assert.assertFalse("resource is not locked", info.isLocked());
@@ -165,7 +165,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 	@Test
 	public void infoExisitingFileRevision() {
 		final Revision revision = Revision.create(20);
-		final InfoEntry info = repository.info(EXISTING_FILE, revision, true);
+		final Info info = repository.info(EXISTING_FILE, revision, true);
 		Assert.assertNotNull("result must not be null", info);
 
 		Assert.assertFalse("resource is not locked", info.isLocked());
@@ -181,7 +181,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 
 	@Test
 	public void infoMultipleProperties() {
-		final InfoEntry info = repository.info(EXISTING_MULTIPLE_PROPERTIES, Revision.HEAD, true);
+		final Info info = repository.info(EXISTING_MULTIPLE_PROPERTIES, Revision.HEAD, true);
 		Assert.assertNotNull("result must not be null", info);
 
 		final ResourceProperty[] properties = info.getCustomProperties();
@@ -195,7 +195,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 
 	@Test
 	public void infoMultiplePropertiesRevision() {
-		final InfoEntry info = repository.info(EXISTING_MULTIPLE_PROPERTIES, Revision.create(11), true);
+		final Info info = repository.info(EXISTING_MULTIPLE_PROPERTIES, Revision.create(11), true);
 		Assert.assertNotNull("result must not be null", info);
 
 		final ResourceProperty[] properties = info.getCustomProperties();
@@ -215,7 +215,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 
 	@Test
 	public void infoPropertyIgnore() {
-		final InfoEntry info = repository.info(EXISTING_PROPERTY_VERSION, Revision.HEAD, false);
+		final Info info = repository.info(EXISTING_PROPERTY_VERSION, Revision.HEAD, false);
 		Assert.assertNotNull("result must not be null", info);
 
 		final ResourceProperty[] properties = info.getCustomProperties();
@@ -224,7 +224,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 
 	@Test
 	public void infoPropertyVersions() {
-		final InfoEntry info = repository.info(EXISTING_PROPERTY_VERSION, Revision.HEAD, true);
+		final Info info = repository.info(EXISTING_PROPERTY_VERSION, Revision.HEAD, true);
 		Assert.assertNotNull("result must not be null", info);
 
 		final ResourceProperty[] properties = info.getCustomProperties();
@@ -235,7 +235,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 
 	@Test
 	public void infoPropertyVersionsRevision() {
-		final InfoEntry info = repository.info(EXISTING_PROPERTY_VERSION, Revision.create(6), true);
+		final Info info = repository.info(EXISTING_PROPERTY_VERSION, Revision.create(6), true);
 		Assert.assertNotNull("result must not be null", info);
 
 		final ResourceProperty[] properties = info.getCustomProperties();
@@ -246,8 +246,8 @@ public abstract class AbstractRepositoryReadOnlyIT {
 
 	@Test
 	public void lastLogExisitingDir() {
-		final LogEntry log = repository.lastLog(EXISTING_EMPTY_DIR);
-		Assert.assertNotNull("LogEntry must not be null", log);
+		final Log log = repository.lastLog(EXISTING_EMPTY_DIR);
+		Assert.assertNotNull("Log must not be null", log);
 
 		Assert.assertEquals("comment must match", "create test structure", log.getMessage());
 		Assert.assertNotNull("Date must not be null", log.getDate());
@@ -257,8 +257,8 @@ public abstract class AbstractRepositoryReadOnlyIT {
 
 	@Test
 	public void lastLogExisitingFile() {
-		final LogEntry log = repository.lastLog(EXISTING_FILE);
-		Assert.assertNotNull("LogEntry must not be null", log);
+		final Log log = repository.lastLog(EXISTING_FILE);
+		Assert.assertNotNull("Log must not be null", log);
 
 		Assert.assertEquals("comment must match", "adding revisions file 9", log.getMessage());
 		Assert.assertNotNull("Date must not be null", log.getDate());
@@ -274,95 +274,95 @@ public abstract class AbstractRepositoryReadOnlyIT {
 
 	@Test
 	public void listExisitingDirWithDirs() {
-		final List<InfoEntry> listEmpty = repository.list(EXISTING_DIR_WITH_DIRS, Revision.HEAD, Depth.EMPTY, false);
+		final List<Info> listEmpty = repository.list(EXISTING_DIR_WITH_DIRS, Revision.HEAD, Depth.EMPTY, false);
 		Assert.assertNotNull("InfoEntries must not be null", listEmpty);
 		Assert.assertEquals("number of LogEntries must match", 1, listEmpty.size());
 
-		final List<InfoEntry> listFiles = repository.list(EXISTING_DIR_WITH_DIRS, Revision.HEAD, Depth.FILES, false);
+		final List<Info> listFiles = repository.list(EXISTING_DIR_WITH_DIRS, Revision.HEAD, Depth.FILES, false);
 		Assert.assertNotNull("InfoEntries must not be null", listFiles);
 		Assert.assertTrue("number of LogEntries must match", listFiles.isEmpty());
 
-		final List<InfoEntry> listImmediates = repository.list(EXISTING_DIR_WITH_DIRS, Revision.HEAD, Depth.IMMEDIATES, false);
+		final List<Info> listImmediates = repository.list(EXISTING_DIR_WITH_DIRS, Revision.HEAD, Depth.IMMEDIATES, false);
 		Assert.assertNotNull("InfoEntries must not be null", listImmediates);
 		Assert.assertEquals("number of LogEntries must match", 5, listImmediates.size());
 
-		final List<InfoEntry> listInfinity = repository.list(EXISTING_DIR_WITH_DIRS, Revision.HEAD, Depth.INFINITY, false);
+		final List<Info> listInfinity = repository.list(EXISTING_DIR_WITH_DIRS, Revision.HEAD, Depth.INFINITY, false);
 		Assert.assertNotNull("InfoEntries must not be null", listInfinity);
 		Assert.assertEquals("number of LogEntries must match", 5, listInfinity.size());
 	}
 
 	@Test
 	public void listExisitingDirWithFiles() {
-		final List<InfoEntry> listEmpty = repository.list(EXISTING_DIR_WITH_FILES, Revision.HEAD, Depth.EMPTY, false);
+		final List<Info> listEmpty = repository.list(EXISTING_DIR_WITH_FILES, Revision.HEAD, Depth.EMPTY, false);
 		Assert.assertNotNull("InfoEntries must not be null", listEmpty);
 		Assert.assertEquals("number of LogEntries must match", 1, listEmpty.size());
 
-		final List<InfoEntry> listFiles = repository.list(EXISTING_DIR_WITH_FILES, Revision.HEAD, Depth.FILES, false);
+		final List<Info> listFiles = repository.list(EXISTING_DIR_WITH_FILES, Revision.HEAD, Depth.FILES, false);
 		Assert.assertNotNull("InfoEntries must not be null", listFiles);
 		Assert.assertEquals("number of LogEntries must match", 4, listFiles.size());
 
-		final List<InfoEntry> listImmediates = repository.list(EXISTING_DIR_WITH_FILES, Revision.HEAD, Depth.IMMEDIATES, false);
+		final List<Info> listImmediates = repository.list(EXISTING_DIR_WITH_FILES, Revision.HEAD, Depth.IMMEDIATES, false);
 		Assert.assertNotNull("InfoEntries must not be null", listImmediates);
 		Assert.assertEquals("number of LogEntries must match", 5, listImmediates.size());
 
-		final List<InfoEntry> listInfinity = repository.list(EXISTING_DIR_WITH_FILES, Revision.HEAD, Depth.INFINITY, false);
+		final List<Info> listInfinity = repository.list(EXISTING_DIR_WITH_FILES, Revision.HEAD, Depth.INFINITY, false);
 		Assert.assertNotNull("InfoEntries must not be null", listInfinity);
 		Assert.assertEquals("number of LogEntries must match", 5, listInfinity.size());
 	}
 
 	@Test
 	public void listExisitingEmptyDir() {
-		final List<InfoEntry> listEmpty = repository.list(EXISTING_EMPTY_DIR, Revision.HEAD, Depth.EMPTY, false);
+		final List<Info> listEmpty = repository.list(EXISTING_EMPTY_DIR, Revision.HEAD, Depth.EMPTY, false);
 		Assert.assertNotNull("InfoEntries must not be null", listEmpty);
 		Assert.assertEquals("number of LogEntries must match", 1, listEmpty.size());
 
-		final List<InfoEntry> listFiles = repository.list(EXISTING_EMPTY_DIR, Revision.HEAD, Depth.FILES, false);
+		final List<Info> listFiles = repository.list(EXISTING_EMPTY_DIR, Revision.HEAD, Depth.FILES, false);
 		Assert.assertNotNull("InfoEntries must not be null", listFiles);
 		Assert.assertTrue("number of LogEntries must match", listFiles.isEmpty());
 
-		final List<InfoEntry> listImmediates = repository.list(EXISTING_EMPTY_DIR, Revision.HEAD, Depth.IMMEDIATES, false);
+		final List<Info> listImmediates = repository.list(EXISTING_EMPTY_DIR, Revision.HEAD, Depth.IMMEDIATES, false);
 		Assert.assertNotNull("InfoEntries must not be null", listImmediates);
 		Assert.assertEquals("number of LogEntries must match", 1, listImmediates.size());
 
-		final List<InfoEntry> listInfinity = repository.list(EXISTING_EMPTY_DIR, Revision.HEAD, Depth.INFINITY, false);
+		final List<Info> listInfinity = repository.list(EXISTING_EMPTY_DIR, Revision.HEAD, Depth.INFINITY, false);
 		Assert.assertNotNull("InfoEntries must not be null", listInfinity);
 		Assert.assertEquals("number of LogEntries must match", 1, listInfinity.size());
 	}
 
 	@Test
 	public void listExisitingFile() {
-		final List<InfoEntry> listEmpty = repository.list(EXISTING_FILE, Revision.HEAD, Depth.EMPTY, false);
+		final List<Info> listEmpty = repository.list(EXISTING_FILE, Revision.HEAD, Depth.EMPTY, false);
 		Assert.assertNotNull("InfoEntries must not be null", listEmpty);
 		Assert.assertEquals("number of LogEntries must match", 1, listEmpty.size());
 
-		final List<InfoEntry> listFiles = repository.list(EXISTING_FILE, Revision.HEAD, Depth.FILES, false);
+		final List<Info> listFiles = repository.list(EXISTING_FILE, Revision.HEAD, Depth.FILES, false);
 		Assert.assertNotNull("InfoEntries must not be null", listFiles);
 		Assert.assertEquals("number of LogEntries must match", 1, listFiles.size());
 
-		final List<InfoEntry> listImmediates = repository.list(EXISTING_FILE, Revision.HEAD, Depth.IMMEDIATES, false);
+		final List<Info> listImmediates = repository.list(EXISTING_FILE, Revision.HEAD, Depth.IMMEDIATES, false);
 		Assert.assertNotNull("InfoEntries must not be null", listImmediates);
 		Assert.assertEquals("number of LogEntries must match", 1, listImmediates.size());
 
-		final List<InfoEntry> listInfinity = repository.list(EXISTING_FILE, Revision.HEAD, Depth.INFINITY, false);
+		final List<Info> listInfinity = repository.list(EXISTING_FILE, Revision.HEAD, Depth.INFINITY, false);
 		Assert.assertNotNull("InfoEntries must not be null", listInfinity);
 		Assert.assertEquals("number of LogEntries must match", 1, listInfinity.size());
 	}
 
 	@Test
 	public void listExisitingMixedDir() {
-		final List<InfoEntry> listEmpty = repository.list(EXISTING_MIXED_DIR, Revision.HEAD, Depth.EMPTY, false);
+		final List<Info> listEmpty = repository.list(EXISTING_MIXED_DIR, Revision.HEAD, Depth.EMPTY, false);
 		Assert.assertNotNull("InfoEntries must not be null", listEmpty);
 		Assert.assertEquals("number of LogEntries must match", 1, listEmpty.size());
 
-		final List<InfoEntry> listFiles = repository.list(EXISTING_MIXED_DIR, Revision.HEAD, Depth.FILES, false);
+		final List<Info> listFiles = repository.list(EXISTING_MIXED_DIR, Revision.HEAD, Depth.FILES, false);
 		Assert.assertNotNull("InfoEntries must not be null", listFiles);
 		Assert.assertEquals("number of LogEntries must match", 1, listFiles.size());
 
-		final List<InfoEntry> listImmediates = repository.list(EXISTING_MIXED_DIR, Revision.HEAD, Depth.IMMEDIATES, false);
+		final List<Info> listImmediates = repository.list(EXISTING_MIXED_DIR, Revision.HEAD, Depth.IMMEDIATES, false);
 		Assert.assertNotNull("InfoEntries must not be null", listImmediates);
 		Assert.assertEquals("number of LogEntries must match", 3, listImmediates.size());
 
-		final List<InfoEntry> listInfinity = repository.list(EXISTING_MIXED_DIR, Revision.HEAD, Depth.INFINITY, false);
+		final List<Info> listInfinity = repository.list(EXISTING_MIXED_DIR, Revision.HEAD, Depth.INFINITY, false);
 		Assert.assertNotNull("InfoEntries must not be null", listInfinity);
 		Assert.assertEquals("number of LogEntries must match", 6, listInfinity.size());
 	}
@@ -375,13 +375,13 @@ public abstract class AbstractRepositoryReadOnlyIT {
 
 	@Test
 	public void logExisitingFileAscending() {
-		final List<LogEntry> logs = repository.log(EXISTING_FILE, Revision.INITIAL, Revision.HEAD, 0);
+		final List<Log> logs = repository.log(EXISTING_FILE, Revision.INITIAL, Revision.HEAD, 0);
 		Assert.assertNotNull("LogEntries must not be null", logs);
 		Assert.assertEquals("number of LogEntries must match", 9, logs.size());
 
 		Revision last = Revision.INITIAL;
 		for (int i = 0; i < 9; i++) {
-			final LogEntry entry = logs.get(i);
+			final Log entry = logs.get(i);
 
 			Assert.assertEquals("comment must match", "adding revisions file " + (i + 1), entry.getMessage());
 			Assert.assertNotNull("Date must not be null", entry.getDate());
@@ -394,13 +394,13 @@ public abstract class AbstractRepositoryReadOnlyIT {
 
 	@Test
 	public void logExisitingFileDescending() {
-		final List<LogEntry> logs = repository.log(EXISTING_FILE, Revision.HEAD, Revision.INITIAL, 0);
+		final List<Log> logs = repository.log(EXISTING_FILE, Revision.HEAD, Revision.INITIAL, 0);
 		Assert.assertNotNull("LogEntries must not be null", logs);
 		Assert.assertEquals("number of LogEntries must match", 9, logs.size());
 
 		Revision last = Revision.create(99);
 		for (int i = 0; i < 9; i++) {
-			final LogEntry entry = logs.get(i);
+			final Log entry = logs.get(i);
 
 			Assert.assertEquals("comment must match", "adding revisions file " + (9 - i), entry.getMessage());
 			Assert.assertNotNull("Date must not be null", entry.getDate());
@@ -419,7 +419,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 
 	@Test
 	public void removeEmptyResourceProperties() {
-		final InfoEntry before = repository.info(EXISTING_PROPERTY_VERSION, Revision.HEAD, true);
+		final Info before = repository.info(EXISTING_PROPERTY_VERSION, Revision.HEAD, true);
 		Assert.assertNotNull("result must not be null", before);
 
 		final ResourceProperty[] beforeProperties = before.getCustomProperties();
@@ -427,7 +427,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 
 		repository.deleteProperties(EXISTING_PROPERTY_VERSION, "remove properties", new ResourceProperty[0]);
 
-		final InfoEntry after = repository.info(EXISTING_PROPERTY_VERSION, Revision.HEAD, true);
+		final Info after = repository.info(EXISTING_PROPERTY_VERSION, Revision.HEAD, true);
 		Assert.assertNotNull("result must not be null", after);
 
 		final ResourceProperty[] afterProperties = after.getCustomProperties();
@@ -436,7 +436,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 
 	@Test
 	public void removeSystemResourceProperties() {
-		final InfoEntry before = repository.info(EXISTING_PROPERTY_VERSION, Revision.HEAD, true);
+		final Info before = repository.info(EXISTING_PROPERTY_VERSION, Revision.HEAD, true);
 		Assert.assertNotNull("result must not be null", before);
 
 		final ResourceProperty[] beforeProperties = before.getCustomProperties();
@@ -447,7 +447,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 		final ResourceProperty svnProperty = new ResourceProperty(Type.SVN, "svn", "svn");
 		repository.deleteProperties(EXISTING_PROPERTY_VERSION, "remove properties", baseProperty, davProperty, svnProperty);
 
-		final InfoEntry after = repository.info(EXISTING_PROPERTY_VERSION, Revision.HEAD, true);
+		final Info after = repository.info(EXISTING_PROPERTY_VERSION, Revision.HEAD, true);
 		Assert.assertNotNull("result must not be null", after);
 
 		final ResourceProperty[] afterProperties = after.getCustomProperties();

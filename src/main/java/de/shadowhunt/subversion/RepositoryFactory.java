@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,23 +20,35 @@
 package de.shadowhunt.subversion;
 
 import java.net.URI;
+import javax.annotation.concurrent.ThreadSafe;
 
 /**
- * {@link RepositoryFactory} creates {@link Repository}
+ * {@link RepositoryFactory} creates a new {@link Repository}
  */
-public interface RepositoryFactory {
-
+@ThreadSafe
+public final class RepositoryFactory {
 	/**
-	 * @param repository {@link URI} to the root of the repository
+	 * Create a new {@link Repository} for given {@link URI} and {@link Version}
+	 * @param repository {@link URI} to the root of the repository (e.g: http://repository.example.net/svn/test_repo), only http and https scheme are supported
 	 * @param trustServerCertificat whether to trust all SSL certificates (see {@code NonValidatingX509TrustManager})
-	 * @return a new {@link Repository} for given {@link URI}
-	 */
-	public Repository createRepository(URI repository, boolean trustServerCertificat);
-
-	/**
-	 * Determine whether the {@link Version} is supported by the {@link Repository} created by this factory
 	 * @param version the {@link Version} of the server
-	 * @return {@code true} if the {@link Version} is supported, otherwise {@code false}
+	 * @return a new {@link Repository} for given {@link URI} and {@link Version}
 	 */
-	public boolean isServerVersionSupported(Version version);
+	public static final Repository getInstance(final URI repository, final boolean trustServerCertificat, final Version version) {
+
+		throw new SubversionException("no repository found for version " + version);
+	}
+
+	static URI removeEndingSlash(final URI uri) {
+		final String string = uri.toString();
+		final int lastChar = string.length() - 1;
+		if (string.charAt(lastChar) == '/') {
+			return URI.create(string.substring(0, lastChar));
+		}
+		return uri;
+	}
+
+	private RepositoryFactory() {
+		// prevent instantiation
+	}
 }

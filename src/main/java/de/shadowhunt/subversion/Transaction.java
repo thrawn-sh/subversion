@@ -1,6 +1,6 @@
 package de.shadowhunt.subversion;
 
-public class Transaction {
+public final class Transaction {
 
 	private final String id;
 

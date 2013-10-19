@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,31 +37,31 @@ public final class RepositoryAssert {
 	}
 
 	public static void assertLastLog(final Repository repository, final Resource resource, final String expectedMessage, final String expectedUser) {
-		final LogEntry log = repository.lastLog(resource);
-		Assert.assertNotNull("LogEntry must not be null", log);
+		final Log log = repository.lastLog(resource);
+		Assert.assertNotNull("Log must not be null", log);
 		Assert.assertEquals("message must match", expectedMessage, log.getMessage());
 		Assert.assertEquals("user must match", expectedUser, log.getUser());
 	}
 
 	public static void assertLocked(final Repository repository, final Resource resource, final String expectedLockOwner) {
-		final InfoEntry info = repository.info(resource, Revision.HEAD, false);
-		Assert.assertNotNull("InfoEntry must not be null", info);
+		final Info info = repository.info(resource, Revision.HEAD, false);
+		Assert.assertNotNull("Info must not be null", info);
 		Assert.assertTrue(info.isLocked());
 		Assert.assertEquals("locked => lock owner", expectedLockOwner, info.getLockOwner());
 		Assert.assertNotNull("locked => lock token", info.getLockToken());
 	}
 
 	public static void assertNotLocked(final Repository repository, final Resource resource) {
-		final InfoEntry info = repository.info(resource, Revision.HEAD, false);
-		Assert.assertNotNull("InfoEntry must not be null", info);
+		final Info info = repository.info(resource, Revision.HEAD, false);
+		Assert.assertNotNull("Info must not be null", info);
 		Assert.assertFalse(info.isLocked());
 		Assert.assertNull("not locked => no lock owner", info.getLockOwner());
 		Assert.assertNull("not locked => no lock token", info.getLockToken());
 	}
 
 	public static void assertResourceProperties(final Repository repository, final Resource resource, final ResourceProperty... expectedProperties) {
-		final InfoEntry info = repository.info(resource, Revision.HEAD, true);
-		Assert.assertNotNull("InfoEntry must not be null", info);
+		final Info info = repository.info(resource, Revision.HEAD, true);
+		Assert.assertNotNull("Info must not be null", info);
 
 		final ResourceProperty[] customProperties = info.getCustomProperties();
 		Assert.assertEquals("ResourceProperties are missing", expectedProperties.length, customProperties.length);

@@ -124,8 +124,8 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 		RepositoryAssert.assertUpload(repository, file, content, messageUpload, getUsername());
 
 		final String messageProperties = "set properties";
-		final ResourceProperty a = ResourceProperty.createCustomProperty("a", "A");
-		final ResourceProperty b = ResourceProperty.createCustomProperty("b", "B");
+		final ResourceProperty a = new ResourceProperty(ResourceProperty.Type.CUSTOM, "a", "A");
+		final ResourceProperty b = new ResourceProperty(ResourceProperty.Type.CUSTOM, "b", "B");
 
 		repository.setProperties(file, messageProperties, a, b);
 		RepositoryAssert.assertUpload(repository, file, content, messageProperties, getUsername(), a, b);
@@ -186,8 +186,8 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 		RepositoryAssert.assertUpload(repository, file, content, messageUpload, getUsername());
 
 		final String messageProperties = "set properties";
-		final ResourceProperty a = ResourceProperty.createCustomProperty("a", "A");
-		final ResourceProperty b = ResourceProperty.createCustomProperty("b", "B");
+		final ResourceProperty a = new ResourceProperty(ResourceProperty.Type.CUSTOM, "a", "A");
+		final ResourceProperty b = new ResourceProperty(ResourceProperty.Type.CUSTOM, "b", "B");
 
 		repository.setProperties(file, messageProperties, a, b);
 		RepositoryAssert.assertUpload(repository, file, content, messageProperties, getUsername(), a, b);
@@ -218,8 +218,8 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 
 		final String content = "content";
 		final String message = "create file";
-		final ResourceProperty a = ResourceProperty.createCustomProperty("a", "A");
-		final ResourceProperty b = ResourceProperty.createCustomProperty("b", "B");
+		final ResourceProperty a = new ResourceProperty(ResourceProperty.Type.CUSTOM, "a", "A");
+		final ResourceProperty b = new ResourceProperty(ResourceProperty.Type.CUSTOM, "b", "B");
 
 		repository.upload(file, message, IOUtils.toInputStream(content), a, b);
 		RepositoryAssert.assertUpload(repository, file, content, message, getUsername(), a, b);
@@ -250,8 +250,8 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 
 		final String content = "content";
 		final String message = "create file";
-		final ResourceProperty a = ResourceProperty.createCustomProperty("a", "A");
-		final ResourceProperty b = ResourceProperty.createCustomProperty("b", "B");
+		final ResourceProperty a = new ResourceProperty(ResourceProperty.Type.CUSTOM, "a", "A");
+		final ResourceProperty b = new ResourceProperty(ResourceProperty.Type.CUSTOM, "b", "B");
 
 		repository.upload(file, message, IOUtils.toInputStream(content), a, b);
 		RepositoryAssert.assertUpload(repository, file, content, message, getUsername(), a, b);

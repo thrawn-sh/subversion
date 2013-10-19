@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -92,16 +92,16 @@ public interface Repository {
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
 	 * @param revision the {@link Revision} of the resource to retrieve
 	 * @param withCustomProperties whether to retrieve user defined properties
-	 * @return {@link InfoEntry} for the resource
+	 * @return {@link de.shadowhunt.subversion.internal.InfoImpl} for the resource
 	 */
-	public InfoEntry info(Resource resource, Revision revision, boolean withCustomProperties);
+	public Info info(Resource resource, Revision revision, boolean withCustomProperties);
 
 	/**
 	 * Retrieve log information for the latest revision of the resource
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
-	 * @return {@link LogEntry} for latest revision of the resource
+	 * @return {@link de.shadowhunt.subversion.internal.LogImpl} for latest revision of the resource
 	 */
-	public LogEntry lastLog(Resource resource);
+	public Log lastLog(Resource resource);
 
 	/**
 	 * Retrieve information for the resource in the given revision and its child resources (depending on depth parameter)
@@ -109,9 +109,9 @@ public interface Repository {
 	 * @param revision the {@link Revision} of the resource to retrieve
 	 * @param depth whether to retrieve only for the given resource, its children or only part of its children depending on the value of {@link Depth}
 	 * @param withCustomProperties whether to retrieve user defined properties
-	 * @return {@link List} of {@link InfoEntry} for the resource and its child resources (depending on depth parameter)
+	 * @return {@link List} of {@link de.shadowhunt.subversion.internal.InfoImpl} for the resource and its child resources (depending on depth parameter)
 	 */
-	public List<InfoEntry> list(Resource resource, Revision revision, Depth depth, boolean withCustomProperties);
+	public List<Info> list(Resource resource, Revision revision, Depth depth, boolean withCustomProperties);
 
 	/**
 	 * Mark the current revision of the resource as locked
@@ -125,9 +125,9 @@ public interface Repository {
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
 	 * @param startRevision the first {@link Revision} of the resource to retrieve (including)
 	 * @param endRevision the last {@link Revision} of the resource to retrieve (including)
-	 * @return ordered (early to latest) {@link List} of {@link LogEntry} for the revisions between startRevision and endRevision of the resource
+	 * @return ordered (early to latest) {@link List} of {@link de.shadowhunt.subversion.internal.LogImpl} for the revisions between startRevision and endRevision of the resource
 	 */
-	public List<LogEntry> log(Resource resource, Revision startRevision, Revision endRevision, int limit);
+	public List<Log> log(Resource resource, Revision startRevision, Revision endRevision, int limit);
 
 	/**
 	 * Recursively move a resource (latest revision)

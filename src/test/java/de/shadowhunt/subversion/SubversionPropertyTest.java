@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,7 +29,7 @@ public class SubversionPropertyTest {
 	public void createCustomPropertyTest() {
 		final String name = "testName";
 		final String value = "testValue";
-		final ResourceProperty property = ResourceProperty.createCustomProperty(name, value);
+		final ResourceProperty property = new ResourceProperty(Type.CUSTOM, name, value);
 
 		Assert.assertNotNull("property must not be null", property);
 		Assert.assertEquals("type is not CUSTOM", Type.CUSTOM, property.getType());
@@ -39,7 +39,7 @@ public class SubversionPropertyTest {
 
 	@Test
 	public void filteroutSystemPropertiesEmptyTest() {
-		final ResourceProperty[] properties = ResourceProperty.filteroutSystemProperties();
+		final ResourceProperty[] properties = ResourceProperty.filterSystemProperties();
 
 		Assert.assertNotNull("properties must not be null", properties);
 		Assert.assertEquals("properties is not empty", 0, properties.length);
@@ -47,7 +47,7 @@ public class SubversionPropertyTest {
 
 	@Test
 	public void filteroutSystemPropertiesNullTest() {
-		final ResourceProperty[] properties = ResourceProperty.filteroutSystemProperties((ResourceProperty) null);
+		final ResourceProperty[] properties = ResourceProperty.filterSystemProperties((ResourceProperty) null);
 
 		Assert.assertNotNull("properties must not be null", properties);
 		Assert.assertEquals("properties is not empty", 0, properties.length);
@@ -63,7 +63,7 @@ public class SubversionPropertyTest {
 			input[3] = new ResourceProperty(Type.DAV, "dav", "dav-value");
 			input[4] = new ResourceProperty(Type.SVN, "svn", "svn-value");
 		}
-		final ResourceProperty[] properties = ResourceProperty.filteroutSystemProperties(input);
+		final ResourceProperty[] properties = ResourceProperty.filterSystemProperties(input);
 
 		Assert.assertNotNull("properties must not be null", properties);
 		Assert.assertEquals("properties is not empty", 2, properties.length);
