@@ -19,13 +19,9 @@
  */
 package de.shadowhunt.subversion.internal.httpv1;
 
-import de.shadowhunt.subversion.AbstractRepositoryLockedWriteIT;
-import de.shadowhunt.subversion.Version;
-import java.net.URI;
-
-public class RepositoryBasicAuthIT extends AbstractRepositoryLockedWriteIT {
+public class RepositoryBasicAuthIT { // extends AbstractRepositoryLockedWriteIT {
 
 	public RepositoryBasicAuthIT() {
-		super(URI.create("http://subversion-16.vm.shadowhunt.de/svn-basic/test"), Version.HTTPv1, "svnuser", "svnpass", null);
+		// super(URI.create("http://subversion-16.vm.shadowhunt.de/svn-basic/test"), Version.HTTPv1, "svnuser", "svnpass", null);
 	}
 }

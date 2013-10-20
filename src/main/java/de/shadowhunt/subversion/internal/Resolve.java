@@ -54,7 +54,9 @@ public final class Resolve {
 
 	/**
 	 * Reads log information for a resource from the given {@link InputStream}
+	 *
 	 * @param in {@link InputStream} from which the status information is read (Note: will not be closed)
+	 *
 	 * @return {@link de.shadowhunt.subversion.internal.LogImpl} for the resource
 	 */
 	public static Resolve read(final InputStream in) {

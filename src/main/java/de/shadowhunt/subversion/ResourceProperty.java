@@ -21,7 +21,6 @@ package de.shadowhunt.subversion;
 
 import java.util.Arrays;
 import java.util.Comparator;
-
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -47,6 +46,7 @@ public final class ResourceProperty {
 
 		/**
 		 * Returns the prefix of the {@link Type}
+		 *
 		 * @return the prefix of the {@link Type}
 		 */
 		public String getPrefix() {
@@ -67,7 +67,9 @@ public final class ResourceProperty {
 
 	/**
 	 * Filter out {@code Type.Base} and {@code Type.DAV} {@link ResourceProperty}
+	 *
 	 * @param properties {@link ResourceProperty} that shall be filtered
+	 *
 	 * @return filtered {@link ResourceProperty}
 	 */
 	public static ResourceProperty[] filterSystemProperties(final ResourceProperty... properties) {

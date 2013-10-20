@@ -17,18 +17,32 @@
  * limitations under the License.
  * #L%
  */
-package de.shadowhunt.subversion;
+package de.shadowhunt.subversion.internal;
 
+import de.shadowhunt.subversion.Depth;
+import de.shadowhunt.subversion.Info;
+import de.shadowhunt.subversion.Log;
+import de.shadowhunt.subversion.Repository;
+import de.shadowhunt.subversion.RepositoryFactory;
+import de.shadowhunt.subversion.RepositoryUtils;
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.ResourceProperty;
+import de.shadowhunt.subversion.ResourceProperty.Type;
+import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.SubversionException;
+import de.shadowhunt.subversion.Transaction;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
-
 import org.apache.commons.io.IOUtils;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
-
-import de.shadowhunt.subversion.ResourceProperty.Type;
 
 public abstract class AbstractRepositoryReadOnlyIT {
 
@@ -50,8 +64,20 @@ public abstract class AbstractRepositoryReadOnlyIT {
 
 	protected final Repository repository;
 
-	protected AbstractRepositoryReadOnlyIT(final URI uri, final Version version) {
-		repository = RepositoryFactory.getInstance(uri, true, version);
+	protected AbstractRepositoryReadOnlyIT(URI uri) {
+		this.repository =  createRepository(uri, createClient(), createContext());
+	}
+
+	HttpContext createContext() {
+		return new BasicHttpContext();
+	}
+
+	HttpClient createClient() {
+		return new DefaultHttpClient();
+	}
+
+	Repository createRepository(final URI uri, final HttpClient client, final HttpContext context) {
+		return RepositoryFactory.createRepository(uri, client, context);
 	}
 
 	@Test
@@ -82,25 +108,25 @@ public abstract class AbstractRepositoryReadOnlyIT {
 
 	@Test
 	public void existsExistingDir() {
-		Assert.assertTrue("folder exists in head revision", repository.exists(EXISTING_EMPTY_DIR, Revision.HEAD));
+		Assert.assertTrue("folder exists in expected revision", repository.exists(EXISTING_EMPTY_DIR, Revision.HEAD));
 		Assert.assertFalse("folder didn't exists in revision 1", repository.exists(EXISTING_EMPTY_DIR, Revision.INITIAL));
 	}
 
 	@Test
 	public void existsExistingFile() {
-		Assert.assertTrue("file exists in head revision", repository.exists(EXISTING_FILE, Revision.HEAD));
+		Assert.assertTrue("file exists in expected revision", repository.exists(EXISTING_FILE, Revision.HEAD));
 		Assert.assertFalse("file didn't exists in revision 1", repository.exists(EXISTING_FILE, Revision.INITIAL));
 	}
 
 	@Test
 	public void existsNonExistingFile() {
-		Assert.assertFalse("file exists in head revision", repository.exists(NON_EXISTING, Revision.HEAD));
+		Assert.assertFalse("file exists in expected revision", repository.exists(NON_EXISTING, Revision.HEAD));
 		Assert.assertFalse("file didn't exists in revision 1", repository.exists(NON_EXISTING, Revision.INITIAL));
 	}
 
 	@Test
 	public void existsNonExistingResource() {
-		Assert.assertFalse("revisions file doesn't exists in head revision", repository.exists(NON_EXISTING, Revision.HEAD));
+		Assert.assertFalse("revisions file doesn't exists in expected revision", repository.exists(NON_EXISTING, Revision.HEAD));
 		Assert.assertFalse("revisions file didn't exists in revision 1", repository.exists(NON_EXISTING, Revision.INITIAL));
 	}
 
@@ -417,6 +443,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 		Assert.fail("no logs for non existing resource must be created");
 	}
 
+	@Ignore
 	@Test
 	public void removeEmptyResourceProperties() {
 		final Info before = repository.info(EXISTING_PROPERTY_VERSION, Revision.HEAD, true);
@@ -425,8 +452,14 @@ public abstract class AbstractRepositoryReadOnlyIT {
 		final ResourceProperty[] beforeProperties = before.getCustomProperties();
 		Assert.assertEquals("custom properties", 1, beforeProperties.length);
 
-		repository.deleteProperties(EXISTING_PROPERTY_VERSION, "remove properties", new ResourceProperty[0]);
-
+		Transaction transaction = repository.createTransaction();
+		try {
+			repository.deleteProperties(transaction, EXISTING_PROPERTY_VERSION, new ResourceProperty[0]);
+			repository.commit(transaction, "remove properties");
+		} catch(SubversionException se) {
+			repository.rollback(transaction);
+			throw se;
+		}
 		final Info after = repository.info(EXISTING_PROPERTY_VERSION, Revision.HEAD, true);
 		Assert.assertNotNull("result must not be null", after);
 
@@ -434,6 +467,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 		Assert.assertEquals("custom properties", 1, afterProperties.length);
 	}
 
+	@Ignore
 	@Test
 	public void removeSystemResourceProperties() {
 		final Info before = repository.info(EXISTING_PROPERTY_VERSION, Revision.HEAD, true);
@@ -445,7 +479,14 @@ public abstract class AbstractRepositoryReadOnlyIT {
 		final ResourceProperty baseProperty = new ResourceProperty(Type.BASE, "base", "base");
 		final ResourceProperty davProperty = new ResourceProperty(Type.DAV, "dav", "dav");
 		final ResourceProperty svnProperty = new ResourceProperty(Type.SVN, "svn", "svn");
-		repository.deleteProperties(EXISTING_PROPERTY_VERSION, "remove properties", baseProperty, davProperty, svnProperty);
+		Transaction transaction = repository.createTransaction();
+		try {
+			repository.deleteProperties(transaction, EXISTING_PROPERTY_VERSION, baseProperty, davProperty, svnProperty);
+			repository.commit(transaction, "remove properties");
+		} catch(SubversionException se) {
+			repository.rollback(transaction);
+			throw se;
+		}
 
 		final Info after = repository.info(EXISTING_PROPERTY_VERSION, Revision.HEAD, true);
 		Assert.assertNotNull("result must not be null", after);

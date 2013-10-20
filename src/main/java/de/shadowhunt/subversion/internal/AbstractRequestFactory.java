@@ -20,7 +20,6 @@
 package de.shadowhunt.subversion.internal;
 
 import java.net.URI;
-
 import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpUriRequest;
 
@@ -31,7 +30,9 @@ public abstract class AbstractRequestFactory {
 
 	/**
 	 * Perform authentication, with a cheap http request without any payload, the http connection will be authenticated afterwards
+	 *
 	 * @param uri {@link URI} to perform the request against
+	 *
 	 * @return {@link HttpUriRequest} performing the authentication
 	 */
 	public HttpUriRequest createAuthRequest(final URI uri) {

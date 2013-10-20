@@ -73,13 +73,6 @@ public final class RepositoryAssert {
 		}
 	}
 
-	public static void assertUpload(final Repository repository, final Resource resource, final String expectedContent, final String expectedMessage, final String expectedUser, final ResourceProperty... expectedProperties) throws IOException {
-		RepositoryAssert.assertContent(repository, resource, expectedContent);
-		RepositoryAssert.assertResourceProperties(repository, resource, expectedProperties);
-		RepositoryAssert.assertLastLog(repository, resource, expectedMessage, expectedUser);
-		RepositoryAssert.assertNotLocked(repository, resource);
-	}
-
 	private RepositoryAssert() {
 		// prevent instantiation
 	}

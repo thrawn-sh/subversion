@@ -33,7 +33,9 @@ public final class Resource implements Comparable<Resource> {
 
 	/**
 	 * Create a new {@link Resource} instance for the given value
+	 *
 	 * @param path value of the {@link Resource}
+	 *
 	 * @return the new {@link Resource} instance with the given value
 	 */
 	public static Resource create(final String path) {
@@ -84,6 +86,7 @@ public final class Resource implements Comparable<Resource> {
 
 	/**
 	 * Returns the parent {@link Resource} of the {@link Resource}, the parent of the ROOT element is the ROOT itself
+	 *
 	 * @return the parent {@link Resource} of the {@link Resource}
 	 */
 	public Resource getParent() {
@@ -96,6 +99,7 @@ public final class Resource implements Comparable<Resource> {
 
 	/**
 	 * Returns a {@link String} representation of the {@link Resource}
+	 *
 	 * @return the {@link String} representation of the {@link Resource}
 	 */
 	public String getValue() {
@@ -104,6 +108,7 @@ public final class Resource implements Comparable<Resource> {
 
 	/**
 	 * Returns a {@link String} representation of the {@link Resource} without the leading slash
+	 *
 	 * @return the {@link String} representation of the {@link Resource} without the leading slash
 	 */
 	public String getValueWithoutLeadingSeparator() {

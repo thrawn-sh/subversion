@@ -24,7 +24,7 @@ public class Prefix {
 		public void endElement(final String uri, final String localName, final String qName) throws SAXException {
 			final String name = getNameFromQName(qName);
 
-			if (Version.HTTPv1 == version) {
+			if ((Version.HTTPv1 == version) || (Version.HTTPv2 == version)) {
 				if ("href".equals(name)) {
 					final String text = getText();
 					// .../${svn}/act/

@@ -20,7 +20,6 @@
 package de.shadowhunt.subversion.internal;
 
 import javax.xml.parsers.SAXParserFactory;
-
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.xml.sax.helpers.DefaultHandler;
 

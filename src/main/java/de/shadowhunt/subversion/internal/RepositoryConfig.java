@@ -19,24 +19,30 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.Version;
+import java.net.URI;
+import org.apache.http.client.HttpClient;
+import org.apache.http.protocol.HttpContext;
 
 public interface RepositoryConfig {
 
-	final static Resource DEFAULT_PREFIX = Resource.create("/!svn");
+	static Resource DEFAULT_PREFIX = Resource.create("/!svn");
 
-	Resource getCommitMessageResource(final Transaction transaction);
+	Resource getCommitMessageResource(Transaction transaction);
 
 	Resource getPrefix();
 
 	Version getProtocolVersion();
 
-	Resource getTransactionResource(final Transaction transaction);
+	Resource getTransactionResource(Transaction transaction);
 
-	Resource getVersionedResource(final Revision revision);
+	Resource getVersionedResource(Revision revision);
 
-	Resource getWorkingResource(final Transaction transaction);
+	Resource getWorkingResource(Transaction transaction);
+
+	Repository create(URI repository, HttpClient client, HttpContext context);
 }

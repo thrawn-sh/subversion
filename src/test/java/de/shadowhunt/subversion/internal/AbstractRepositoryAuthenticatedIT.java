@@ -17,8 +17,10 @@
  * limitations under the License.
  * #L%
  */
-package de.shadowhunt.subversion;
+package de.shadowhunt.subversion.internal;
 
+import de.shadowhunt.subversion.RepositoryAssert;
+import de.shadowhunt.subversion.SubversionException;
 import java.net.URI;
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,10 +29,9 @@ public abstract class AbstractRepositoryAuthenticatedIT extends AbstractReposito
 
 	private final String username;
 
-	protected AbstractRepositoryAuthenticatedIT(final URI uri, final Version version, final String username, final String password, final String workstation) {
-		super(uri, version);
+	protected AbstractRepositoryAuthenticatedIT(final URI uri, final String username) {
+		super(uri);
 		this.username = username;
-		repository.setCredentials(username, password, workstation);
 	}
 
 	protected String getUsername() {

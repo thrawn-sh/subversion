@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,9 +40,12 @@ public final class Revision implements Comparable<Revision>, Serializable {
 
 	/**
 	 * Create a new {@link Revision} instance for the given value
+	 *
 	 * @param revision value of the {@link Revision} must be greater or equal than 0
-	 * @throws IllegalArgumentException if revision is smaller than 0
+	 *
 	 * @return the new {@link Revision} instance with the given value
+	 *
+	 * @throws IllegalArgumentException if revision is smaller than 0
 	 */
 	public static Revision create(final int revision) {
 		if (revision < 0) {

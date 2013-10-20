@@ -19,8 +19,12 @@
  */
 package de.shadowhunt.subversion;
 
+import de.shadowhunt.subversion.internal.ProbeServerOperation;
+import de.shadowhunt.subversion.internal.RepositoryConfig;
 import java.net.URI;
 import javax.annotation.concurrent.ThreadSafe;
+import org.apache.http.client.HttpClient;
+import org.apache.http.protocol.HttpContext;
 
 /**
  * {@link RepositoryFactory} creates a new {@link Repository}
@@ -29,14 +33,17 @@ import javax.annotation.concurrent.ThreadSafe;
 public final class RepositoryFactory {
 	/**
 	 * Create a new {@link Repository} for given {@link URI} and {@link Version}
+	 *
 	 * @param repository {@link URI} to the root of the repository (e.g: http://repository.example.net/svn/test_repo), only http and https scheme are supported
-	 * @param trustServerCertificat whether to trust all SSL certificates (see {@code NonValidatingX509TrustManager})
-	 * @param version the {@link Version} of the server
+	 *
 	 * @return a new {@link Repository} for given {@link URI} and {@link Version}
 	 */
-	public static final Repository getInstance(final URI repository, final boolean trustServerCertificat, final Version version) {
+	public static final Repository createRepository(final URI repository, final HttpClient client, final HttpContext context) {
+		final URI cleaned = removeEndingSlash(repository);
 
-		throw new SubversionException("no repository found for version " + version);
+		final ProbeServerOperation operation = new ProbeServerOperation(cleaned);
+		final RepositoryConfig config = operation.execute(client, context);
+		return config.create(cleaned, client, context);
 	}
 
 	static URI removeEndingSlash(final URI uri) {

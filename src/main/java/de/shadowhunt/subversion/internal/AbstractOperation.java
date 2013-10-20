@@ -67,7 +67,6 @@ public abstract class AbstractOperation<T> implements Operation<T> {
 	 * determine the real target we can't prevent this from happening.
 	 * Allowing circular redirects globally could lead to live locks on
 	 * the other hand. Therefore we clear the redirection cache explicitly.
-	 * @param context
 	 */
 	protected final void clearRedirects(final HttpContext context) {
 		context.removeAttribute(DefaultRedirectStrategy.REDIRECT_LOCATIONS);

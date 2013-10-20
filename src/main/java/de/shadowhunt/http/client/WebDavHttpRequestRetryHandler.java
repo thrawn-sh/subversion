@@ -22,7 +22,6 @@ package de.shadowhunt.http.client;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
 import org.apache.http.HttpRequest;
 import org.apache.http.annotation.Immutable;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
@@ -45,6 +44,7 @@ public class WebDavHttpRequestRetryHandler extends DefaultHttpRequestRetryHandle
 
 	/**
 	 * Create a {@link WebDavHttpRequestRetryHandler}
+	 *
 	 * @param retryCount number of times a method will be retried
 	 * @param requestSentRetryEnabled whether or not methods that have successfully sent their request will be retried
 	 */

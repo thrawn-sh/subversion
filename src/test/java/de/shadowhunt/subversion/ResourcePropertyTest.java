@@ -23,7 +23,7 @@ import de.shadowhunt.subversion.ResourceProperty.Type;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class SubversionPropertyTest {
+public class ResourcePropertyTest {
 
 	@Test
 	public void createCustomPropertyTest() {
@@ -38,7 +38,7 @@ public class SubversionPropertyTest {
 	}
 
 	@Test
-	public void filteroutSystemPropertiesEmptyTest() {
+	public void filterSystemPropertiesEmptyTest() {
 		final ResourceProperty[] properties = ResourceProperty.filterSystemProperties();
 
 		Assert.assertNotNull("properties must not be null", properties);
@@ -46,7 +46,7 @@ public class SubversionPropertyTest {
 	}
 
 	@Test
-	public void filteroutSystemPropertiesNullTest() {
+	public void filterSystemPropertiesNullTest() {
 		final ResourceProperty[] properties = ResourceProperty.filterSystemProperties((ResourceProperty) null);
 
 		Assert.assertNotNull("properties must not be null", properties);
@@ -54,7 +54,7 @@ public class SubversionPropertyTest {
 	}
 
 	@Test
-	public void filteroutSystemPropertiesTest() {
+	public void filterSystemPropertiesTest() {
 		final ResourceProperty[] input = new ResourceProperty[5];
 		{
 			input[0] = null;

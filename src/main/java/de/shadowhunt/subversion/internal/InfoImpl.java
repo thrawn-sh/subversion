@@ -179,8 +179,10 @@ public final class InfoImpl implements Info {
 
 	/**
 	 * Reads status information for a single revision of a resource from the given {@link InputStream}
+	 *
 	 * @param in {@link InputStream} from which the status information is read (Note: will not be closed)
 	 * @param withCustomProperties whether to read user defined properties
+	 *
 	 * @return {@link InfoImpl} for the resource
 	 */
 	public static InfoImpl read(final InputStream in, final boolean withCustomProperties) {
@@ -193,9 +195,11 @@ public final class InfoImpl implements Info {
 
 	/**
 	 * Reads a {@link List} of status information for a single revision of various resources from the given {@link InputStream}
+	 *
 	 * @param in {@link InputStream} from which the status information is read (Note: will not be closed)
 	 * @param withCustomProperties whether to read user defined properties
 	 * @param includeDirectories whether directory resources shall be included in the result
+	 *
 	 * @return {@link InfoImpl} for the resources
 	 */
 	public static List<InfoImpl> readList(final InputStream in, final boolean withCustomProperties, final boolean includeDirectories) {
@@ -269,6 +273,7 @@ public final class InfoImpl implements Info {
 
 	/**
 	 * Returns an array of the custom {@link ResourceProperty}
+	 *
 	 * @return the array of the custom {@link ResourceProperty} or an empty array if there a non
 	 */
 	@Override
@@ -278,6 +283,7 @@ public final class InfoImpl implements Info {
 
 	/**
 	 * Returns a name of the lock owner
+	 *
 	 * @return the name of the lock owner or {@code null} if the resource is not locked
 	 */
 	@Override
@@ -288,6 +294,7 @@ public final class InfoImpl implements Info {
 
 	/**
 	 * Returns a lock-token
+	 *
 	 * @return the lock-token or {@code null} if the resource is not locked
 	 */
 	@Override
@@ -298,6 +305,7 @@ public final class InfoImpl implements Info {
 
 	/**
 	 * Returns a MD5 checksum of the resource
+	 *
 	 * @return the MD5 checksum of the resource or {@code null} if the resource is a directory
 	 */
 	@Override
@@ -308,6 +316,7 @@ public final class InfoImpl implements Info {
 
 	/**
 	 * Returns a globally unique identifier of the repository
+	 *
 	 * @return the globally unique identifier of the repository
 	 */
 	@Override
@@ -317,6 +326,7 @@ public final class InfoImpl implements Info {
 
 	/**
 	 * Returns a {@link Resource} of the resource (relative to the root of the repository)
+	 *
 	 * @return the {@link Resource} of the resource (relative to the root of the repository)
 	 */
 	@Override
@@ -326,7 +336,9 @@ public final class InfoImpl implements Info {
 
 	/**
 	 * Returns the value of the custom property with the given name
+	 *
 	 * @param name name of the custom property
+	 *
 	 * @return the value of the custom property or {@code null} if no custom property with the given name was found
 	 */
 	@Override
@@ -342,6 +354,7 @@ public final class InfoImpl implements Info {
 
 	/**
 	 * Returns a {@link Revision} of the resource
+	 *
 	 * @return the {@link Revision} of the resource
 	 */
 	@Override
@@ -361,6 +374,7 @@ public final class InfoImpl implements Info {
 
 	/**
 	 * Determines if the resource is a directory
+	 *
 	 * @return {@code true} if the resource is a directory otherwise {@code false}
 	 */
 	@Override
@@ -370,6 +384,7 @@ public final class InfoImpl implements Info {
 
 	/**
 	 * Determines if the resource is a file
+	 *
 	 * @return {@code true} if the resource is a file otherwise {@code false}
 	 */
 	@Override
@@ -379,6 +394,7 @@ public final class InfoImpl implements Info {
 
 	/**
 	 * Determines if the resource is locked
+	 *
 	 * @return {@code true} if the resource is locked otherwise {@code false}
 	 */
 	@Override

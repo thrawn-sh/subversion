@@ -1,7 +1,6 @@
 package de.shadowhunt.subversion.internal;
 
 import java.net.URI;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 

@@ -27,7 +27,6 @@ import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
-import de.shadowhunt.subversion.internal.httpv1.ResolveOperation;
 import de.shadowhunt.subversion.internal.util.URIUtils;
 import java.io.InputStream;
 import java.net.URI;
@@ -74,8 +73,8 @@ public abstract class AbstractRepository implements Repository {
 		final Resource s = config.getVersionedResource(info.getRevision()).append(info.getResource());
 		final Resource t = config.getWorkingResource(transaction).append(targetResource);
 
-		final CopyOperation co = new CopyOperation(repository, s, t);
-		co.execute(client, context);
+		final CopyOperation operation = new CopyOperation(repository, s, t);
+		operation.execute(client, context);
 	}
 
 	protected Resource createFolder0(final Resource resource, final boolean parent) {
@@ -88,8 +87,8 @@ public abstract class AbstractRepository implements Repository {
 			result = createFolder0(resource.getParent(), parent);
 		}
 
-		final CreateFolderOperation cfo = new CreateFolderOperation(repository, resource);
-		final boolean created = cfo.execute(client, context);
+		final CreateFolderOperation operation = new CreateFolderOperation(repository, resource);
+		final boolean created = operation.execute(client, context);
 		if (!created) {
 			result = resource;
 		}
@@ -98,14 +97,14 @@ public abstract class AbstractRepository implements Repository {
 
 	@Override
 	public void delete(final Transaction transaction, final Resource resource) {
-		final DeleteOperation o = new DeleteOperation(repository, config.getWorkingResource(transaction).append(resource));
-		o.execute(client, context);
+		final DeleteOperation operation = new DeleteOperation(repository, config.getWorkingResource(transaction).append(resource));
+		operation.execute(client, context);
 	}
 
 	@Override
 	public InputStream download(final Resource resource, final Revision revision) {
-		final DownloadOperation o = new DownloadOperation(repository, resolve(resource, revision, true));
-		return o.execute(client, context);
+		final DownloadOperation operation = new DownloadOperation(repository, resolve(resource, revision, true));
+		return operation.execute(client, context);
 	}
 
 	@Override
@@ -115,8 +114,8 @@ public abstract class AbstractRepository implements Repository {
 
 	@Override
 	public boolean exists(final Resource resource, final Revision revision) {
-		final ExistsOperation o = new ExistsOperation(repository, resolve(resource, revision, false));
-		return o.execute(client, context);
+		final ExistsOperation operation = new ExistsOperation(repository, resolve(resource, revision, false));
+		return operation.execute(client, context);
 	}
 
 	protected Revision getConcreteRevision(final Resource resource, final Revision revision) {
@@ -129,8 +128,8 @@ public abstract class AbstractRepository implements Repository {
 
 	@Override
 	public Info info(final Resource resource, final Revision revision, final boolean withCustomProperties) {
-		final InfoOperation io = new InfoOperation(repository, resolve(resource, revision, true), Depth.EMPTY, withCustomProperties);
-		return io.execute(client, context);
+		final InfoOperation operation = new InfoOperation(repository, resolve(resource, revision, true), Depth.EMPTY, withCustomProperties);
+		return operation.execute(client, context);
 	}
 
 	@Override
@@ -143,8 +142,8 @@ public abstract class AbstractRepository implements Repository {
 	protected List<Info> list(final Resource prefix, final Resource resource, final Depth depth, final boolean withCustomProperties) {
 		final Resource r = prefix.append(resource);
 
-		final ListOperation lo = new ListOperation(repository, r, depth, withCustomProperties);
-		return lo.execute(client, context);
+		final ListOperation operation = new ListOperation(repository, r, depth, withCustomProperties);
+		return operation.execute(client, context);
 	}
 
 	protected void listRecursive(final Resource prefix, final boolean withCustomProperties, final Collection<Info> todo, final Set<Info> done) {
@@ -164,20 +163,16 @@ public abstract class AbstractRepository implements Repository {
 
 	@Override
 	public void lock(final Resource resource, final boolean steal) {
-		final LockOperation lo = new LockOperation(repository, resource, steal);
-		lo.execute(client, context);
+		final LockOperation operation = new LockOperation(repository, resource, steal);
+		operation.execute(client, context);
 	}
 
 	@Override
 	public List<Log> log(final Resource resource, final Revision startRevision, final Revision endRevision, final int limit) {
 		final Revision concreteStartRevision = getConcreteRevision(resource, startRevision);
 		final Revision concreteEndRevision = getConcreteRevision(resource, endRevision);
-		final LogOperation lo = new LogOperation(repository, resource, concreteStartRevision, concreteEndRevision, limit);
-		return lo.execute(client, context);
-	}
-
-	protected void merge(final Info info, final String uuid) {
-
+		final LogOperation operation = new LogOperation(repository, resource, concreteStartRevision, concreteEndRevision, limit);
+		return operation.execute(client, context);
 	}
 
 	@Override
@@ -190,8 +185,8 @@ public abstract class AbstractRepository implements Repository {
 		final Info info = info(resource, Revision.HEAD, false);
 
 		final Resource r = config.getWorkingResource(transaction).append(resource);
-		final PropertiesDeleteOperation uo = new PropertiesDeleteOperation(repository, r, info.getLockToken(), filtered);
-		uo.execute(client, context);
+		final PropertiesDeleteOperation operation = new PropertiesDeleteOperation(repository, r, info.getLockToken(), filtered);
+		operation.execute(client, context);
 	}
 
 	@Override
@@ -218,15 +213,15 @@ public abstract class AbstractRepository implements Repository {
 		}
 
 		{ // check whether the expectedUri exists
-			final ExistsOperation eo = new ExistsOperation(repository, expectedResource);
-			if (eo.execute(client, context)) {
+			final ExistsOperation operation = new ExistsOperation(repository, expectedResource);
+			if (operation.execute(client, context)) {
 				return expectedResource;
 			}
 		}
 
 		final Info headInfo = info(resource, Revision.HEAD, false);
-		final ResolveOperation ro = new ResolveOperation(repository, resource, revision, headInfo.getRevision());
-		return ro.execute(client, context);
+		final ResolveOperation operation = new ResolveOperation(repository, resource, headInfo.getRevision(), revision, config);
+		return operation.execute(client, context);
 	}
 
 	@Override
@@ -238,8 +233,8 @@ public abstract class AbstractRepository implements Repository {
 
 		final Info info = info(resource, Revision.HEAD, false);
 		final Resource r = config.getWorkingResource(transaction).append(resource);
-		final PropertiesSetOperation uo = new PropertiesSetOperation(repository, r, info.getLockToken(), filtered);
-		uo.execute(client, context);
+		final PropertiesSetOperation operation = new PropertiesSetOperation(repository, r, info.getLockToken(), filtered);
+		operation.execute(client, context);
 	}
 
 	@Override
@@ -249,8 +244,8 @@ public abstract class AbstractRepository implements Repository {
 		if (lockToken == null) {
 			return;
 		}
-		final UnlockOperation uo = new UnlockOperation(repository, resource, lockToken, force);
-		uo.execute(client, context);
+		final UnlockOperation operation = new UnlockOperation(repository, resource, lockToken, force);
+		operation.execute(client, context);
 	}
 
 	@Override
@@ -267,8 +262,8 @@ public abstract class AbstractRepository implements Repository {
 		}
 		final Info info = info(infoResource, Revision.HEAD, false);
 		final Resource r = config.getWorkingResource(transaction).append(resource);
-		final UploadOperation uo = new UploadOperation(repository, r, info.getLockToken(), content);
-		uo.execute(client, context);
+		final UploadOperation operation = new UploadOperation(repository, r, info.getLockToken(), content);
+		operation.execute(client, context);
 	}
 
 	@Override

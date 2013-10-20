@@ -106,7 +106,9 @@ public final class LogImpl implements Log {
 
 	/**
 	 * Reads log information for a resource from the given {@link InputStream}
+	 *
 	 * @param in {@link InputStream} from which the status information is read (Note: will not be closed)
+	 *
 	 * @return {@link LogImpl} for the resource
 	 */
 	public static List<LogImpl> read(final InputStream in) {
@@ -178,6 +180,7 @@ public final class LogImpl implements Log {
 
 	/**
 	 * Returns the time of the commit
+	 *
 	 * @return the time of the commit
 	 */
 	@Override
@@ -187,6 +190,7 @@ public final class LogImpl implements Log {
 
 	/**
 	 * Returns the commit message
+	 *
 	 * @return the commit message or an empty {@link String} if no commit message was specified
 	 */
 	@Override
@@ -196,6 +200,7 @@ public final class LogImpl implements Log {
 
 	/**
 	 * Returns the {@link Revision} that was created by the commit
+	 *
 	 * @return the {@link Revision} that was created by the commit
 	 */
 	@Override
@@ -205,6 +210,7 @@ public final class LogImpl implements Log {
 
 	/**
 	 * Returns the name of the user that committed changes to the repository
+	 *
 	 * @return the name of the user that committed changes to the repository
 	 */
 	@Override

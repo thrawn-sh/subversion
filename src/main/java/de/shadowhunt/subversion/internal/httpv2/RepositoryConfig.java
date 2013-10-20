@@ -23,6 +23,9 @@ import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.Version;
+import java.net.URI;
+import org.apache.http.client.HttpClient;
+import org.apache.http.protocol.HttpContext;
 
 public class RepositoryConfig implements de.shadowhunt.subversion.internal.RepositoryConfig {
 
@@ -69,4 +72,8 @@ public class RepositoryConfig implements de.shadowhunt.subversion.internal.Repos
 		return prefix.append(suffix);
 	}
 
+	@Override
+	public de.shadowhunt.subversion.Repository create(final URI repository, final HttpClient client, final HttpContext context) {
+		return new de.shadowhunt.subversion.internal.httpv2.Repository(repository, this, client, context);
+	}
 }
