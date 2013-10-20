@@ -44,6 +44,7 @@ public interface Repository {
 	 *
 	 * @param transaction the current running {@link Transaction}
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
+	 * @param parent whether to create missing parent folders or not
 	 */
 	void createFolder(Transaction transaction, Resource resource, boolean parent);
 
@@ -140,6 +141,7 @@ public interface Repository {
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
 	 * @param startRevision the first {@link Revision} of the resource to retrieve (including)
 	 * @param endRevision the last {@link Revision} of the resource to retrieve (including)
+	 * @param limit maximal number of {@link Log} entries, if the value is lower or equal to {@code 0} all entries will be returned
 	 *
 	 * @return ordered (early to latest) {@link List} of {@link de.shadowhunt.subversion.internal.LogImpl} for the revisions between startRevision and endRevision of the resource
 	 */
