@@ -5,6 +5,7 @@ import de.shadowhunt.subversion.internal.Resolve;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.internal.AbstractOperation;
+import de.shadowhunt.subversion.internal.util.URIUtils;
 import java.io.InputStream;
 import java.net.URI;
 import org.apache.commons.io.IOUtils;
@@ -13,13 +14,13 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 
-public class ResolveOperationV1 extends AbstractOperation<Resource> {
+public class ResolveOperation extends AbstractOperation<Resource> {
 
 	protected final Resource resource;
 
 	protected final Revision revision, head;
 
-	public ResolveOperationV1(final URI repository, final Resource resource, final Revision revision, final Revision head) {
+	public ResolveOperation(final URI repository, final Resource resource, final Revision revision, final Revision head) {
 		super(repository);
 		this.resource = resource;
 		this.revision = revision;
@@ -28,7 +29,7 @@ public class ResolveOperationV1 extends AbstractOperation<Resource> {
 
 	@Override
 	protected HttpUriRequest createRequest() {
-		final URI uri = createURI(repository, resource);
+		final URI uri = URIUtils.createURI(repository, resource);
 		final DavTemplateRequest request = new DavTemplateRequest("REPORT", uri);
 
 		final StringBuilder sb = new StringBuilder(XML_PREAMBLE);

@@ -23,15 +23,12 @@ import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.SubversionException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Arrays;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.protocol.HttpContext;
@@ -42,27 +39,6 @@ public abstract class AbstractOperation<T> implements Operation<T> {
 	protected static final ContentType CONTENT_TYPE_XML = ContentType.create("text/xml", "UTF-8");
 
 	protected static final String XML_PREAMBLE = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
-
-	protected static URI createURI(final URI repository, final Resource... resources) {
-		try {
-			return createURI0(repository, resources);
-		} catch (final URISyntaxException e) {
-			throw new IllegalArgumentException(e);
-		}
-	}
-
-	private static URI createURI0(final URI repository, final Resource... resources) throws URISyntaxException {
-		final URIBuilder builder = new URIBuilder();
-		builder.setScheme(repository.getScheme());
-		builder.setHost(repository.getHost());
-		builder.setPort(repository.getPort());
-		final StringBuilder completePath = new StringBuilder(repository.getPath());
-		for (final Resource resource : resources) {
-			completePath.append(resource.getValue());
-		}
-		builder.setPath(completePath.toString());
-		return builder.build();
-	}
 
 	protected static final InputStream getContent(final HttpResponse response) {
 		final HttpEntity entity = response.getEntity();

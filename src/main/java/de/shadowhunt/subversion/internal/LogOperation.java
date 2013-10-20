@@ -4,6 +4,7 @@ import de.shadowhunt.http.client.methods.DavTemplateRequest;
 import de.shadowhunt.subversion.Log;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.internal.util.URIUtils;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
@@ -31,7 +32,7 @@ public class LogOperation extends AbstractOperation<List<Log>> {
 
 	@Override
 	protected HttpUriRequest createRequest() {
-		final URI uri = createURI(repository, resource);
+		final URI uri = URIUtils.createURI(repository, resource);
 		final DavTemplateRequest request = new DavTemplateRequest("REPORT", uri);
 
 		final StringBuilder body = new StringBuilder(XML_PREAMBLE);

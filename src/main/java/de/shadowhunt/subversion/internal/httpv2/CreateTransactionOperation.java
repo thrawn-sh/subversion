@@ -3,6 +3,7 @@ package de.shadowhunt.subversion.internal.httpv2;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.internal.AbstractOperation;
+import de.shadowhunt.subversion.internal.util.URIUtils;
 import java.net.URI;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -12,7 +13,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 
-public class CreateTransactionOperationV2 extends AbstractOperation<Transaction> {
+public class CreateTransactionOperation extends AbstractOperation<Transaction> {
 
 	private static final HttpEntity entity;
 
@@ -23,13 +24,13 @@ public class CreateTransactionOperationV2 extends AbstractOperation<Transaction>
 		entity = new StringEntity("( create-txn )", contentType);
 	}
 
-	public CreateTransactionOperationV2(final URI repository) {
+	public CreateTransactionOperation(final URI repository) {
 		super(repository);
 	}
 
 	@Override
 	protected HttpUriRequest createRequest() {
-		final URI uri = createURI(repository, Resource.create("/!svn/me"));
+		final URI uri = URIUtils.createURI(repository, Resource.create("/!svn/me"));
 		final HttpPost request = new HttpPost(uri);
 		request.setEntity(entity);
 		return request;

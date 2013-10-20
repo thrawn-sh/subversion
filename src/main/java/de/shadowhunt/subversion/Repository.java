@@ -22,8 +22,6 @@ package de.shadowhunt.subversion;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
-
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
 /**
@@ -39,21 +37,21 @@ public interface Repository {
 	 * @param targetResource the {@link Resource} of the target resource (relative to the repository root)
 	 * @param message the commit message for the current operation
 	 */
-	public void copy(Resource srcResource, Revision srcRevision, Resource targetResource, String message);
+	 void copy(Transaction transaction, Resource srcResource, Revision srcRevision, Resource targetResource);
 
 	/**
 	 * Create a folder with all necessary parent folders
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
 	 * @param message the commit message for the current operation
 	 */
-	public void createFolder(Resource resource, boolean parent, String message);
+	 void createFolder(Transaction transaction, Resource resource, boolean parent);
 
 	/**
 	 * Delete the resource from the repository
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
 	 * @param message the commit message for the current operation
 	 */
-	public void delete(Resource resource, String message);
+	 void delete(Transaction transaction, Resource resource);
 
 	/**
 	 * Remove the given properties form the resource
@@ -61,7 +59,7 @@ public interface Repository {
 	 * @param message the commit message for the current operation
 	 * @param properties {@link ResourceProperty} to remove
 	 */
-	public void deleteProperties(Resource resource, String message, ResourceProperty... properties);
+	 void deleteProperties(Transaction transaction, Resource resource, ResourceProperty... properties);
 
 	/**
 	 * Download the resource
@@ -69,7 +67,7 @@ public interface Repository {
 	 * @param revision the {@link Revision} of the resource to retrieve
 	 * @return {@link InputStream} from which the content can be read (caller has to close the stream properly)
 	 */
-	public InputStream download(Resource resource, Revision revision);
+	 InputStream download(Resource resource, Revision revision);
 
 	/**
 	 * Determine the HTTP download URI for the resource
@@ -77,7 +75,7 @@ public interface Repository {
 	 * @param revision the {@link Revision} of the resource to retrieve
 	 * @return the HTTP download {@link URI} for the resource
 	 */
-	public URI downloadURI(Resource resource, Revision revision);
+	 URI downloadURI(Resource resource, Revision revision);
 
 	/**
 	 * Check if the resource already exists in the latest revision of the repository
@@ -85,7 +83,7 @@ public interface Repository {
 	 * @param revision the {@link Revision} of the resource to retrieve
 	 * @return {@code true} if the resource already exists in the latest revision of the repository otherwise {@code false}
 	 */
-	public boolean exists(Resource resource, Revision revision);
+	 boolean exists(Resource resource, Revision revision);
 
 	/**
 	 * Retrieve information for the resource
@@ -94,14 +92,14 @@ public interface Repository {
 	 * @param withCustomProperties whether to retrieve user defined properties
 	 * @return {@link de.shadowhunt.subversion.internal.InfoImpl} for the resource
 	 */
-	public Info info(Resource resource, Revision revision, boolean withCustomProperties);
+	 Info info(Resource resource, Revision revision, boolean withCustomProperties);
 
 	/**
 	 * Retrieve log information for the latest revision of the resource
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
 	 * @return {@link de.shadowhunt.subversion.internal.LogImpl} for latest revision of the resource
 	 */
-	public Log lastLog(Resource resource);
+	 Log lastLog(Resource resource);
 
 	/**
 	 * Retrieve information for the resource in the given revision and its child resources (depending on depth parameter)
@@ -111,14 +109,14 @@ public interface Repository {
 	 * @param withCustomProperties whether to retrieve user defined properties
 	 * @return {@link List} of {@link de.shadowhunt.subversion.internal.InfoImpl} for the resource and its child resources (depending on depth parameter)
 	 */
-	public List<Info> list(Resource resource, Revision revision, Depth depth, boolean withCustomProperties);
+	 List<Info> list(Resource resource, Revision revision, Depth depth, boolean withCustomProperties);
 
 	/**
 	 * Mark the current revision of the resource as locked
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
 	 * @param steal if the resource is locked by another user {@code true} will override the lock, otherwise the operation will fail
 	 */
-	public void lock(Resource resource, boolean steal);
+	 void lock(Resource resource, boolean steal);
 
 	/**
 	 * Retrieve the log information for the revisions between startRevision and endRevision of the resource
@@ -127,7 +125,7 @@ public interface Repository {
 	 * @param endRevision the last {@link Revision} of the resource to retrieve (including)
 	 * @return ordered (early to latest) {@link List} of {@link de.shadowhunt.subversion.internal.LogImpl} for the revisions between startRevision and endRevision of the resource
 	 */
-	public List<Log> log(Resource resource, Revision startRevision, Revision endRevision, int limit);
+	 List<Log> log(Resource resource, Revision startRevision, Revision endRevision, int limit);
 
 	/**
 	 * Recursively move a resource (latest revision)
@@ -135,16 +133,7 @@ public interface Repository {
 	 * @param targetResource the {@link Resource} of the target resource (relative to the repository root)
 	 * @param message the commit message for the current operation
 	 */
-	public void move(Resource srcResource, Resource targetResource, String message);
-
-	/**
-	 * Authenticate with the given username, password and workstation against the server (NOTE: only the current thread will be authenticated)
-	 * <p>to reset authentication call setCredentials(null, null, null)</p>
-	 * @param user username to authenticate with against the repository my include the domain ("DOMAIN\\username") (relevant for BAISC, DIGEST and NTLM)
-	 * @param password password to authenticate with against the repository (relevant for BAISC, DIGEST and NTLM)
-	 * @param workstation FQDN of the computer to authenticate from against the repository (relevant for NTLM)
-	 */
-	public void setCredentials(@Nullable String user, @Nullable String password, @Nullable String workstation);
+	 void move(Transaction transaction, Resource srcResource, Resource targetResource);
 
 	/**
 	 * Set the given properties for the resource (new properties will be added, existing properties will be overridden)
@@ -152,14 +141,14 @@ public interface Repository {
 	 * @param message the commit message for the current operation
 	 * @param properties {@link ResourceProperty} to add or override
 	 */
-	public void setProperties(Resource resource, String message, ResourceProperty... properties);
+	 void setProperties(Transaction transaction, Resource resource, ResourceProperty... properties);
 
 	/**
 	 * Remove the lock on the current revision of the resource
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
 	 * @param force the user that created the lock must match the user who wants to delete it, unless force is {@code true}
 	 */
-	public void unlock(Resource resource, boolean force);
+	 void unlock(Resource resource, boolean force);
 
 	/**
 	 * Upload a new revision of the resource and set properties
@@ -168,5 +157,11 @@ public interface Repository {
 	 * @param content {@link InputStream} from which the content will be read (will be closed after transfer)
 	 * @param properties {@link ResourceProperty} to add or override
 	 */
-	public void upload(Resource resource, String message, InputStream content, ResourceProperty... properties);
+	 void upload(Transaction transaction, Resource resource, InputStream content);
+
+	Transaction createTransaction();
+
+	void commit(Transaction transaction, String message);
+
+	void rollback(Transaction transaction);
 }

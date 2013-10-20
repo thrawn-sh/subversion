@@ -3,6 +3,7 @@ package de.shadowhunt.subversion.internal;
 import de.shadowhunt.http.client.methods.DavTemplateRequest;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
+import de.shadowhunt.subversion.internal.util.URIUtils;
 import java.net.URI;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -28,11 +29,11 @@ public class PropertiesDeleteOperation extends AbstractVoidOperation {
 
 	@Override
 	protected HttpUriRequest createRequest() {
-		final URI uri = createURI(repository, resource);
+		final URI uri = URIUtils.createURI(repository, resource);
 		final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH", uri);
 
 		if (lock != null) {
-			final URI lockTarget = createURI(repository, resource.subResource(PREFIX));
+			final URI lockTarget = URIUtils.createURI(repository, resource.subResource(PREFIX));
 			request.addHeader("If", "<" + lockTarget.toASCIIString() + "> (<" + lock + ">)");
 		}
 

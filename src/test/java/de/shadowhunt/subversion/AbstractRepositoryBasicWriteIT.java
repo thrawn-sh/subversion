@@ -69,7 +69,7 @@ public abstract class AbstractRepositoryBasicWriteIT extends AbstractRepositoryA
 
 	@Test
 	public void createFolder() {
-		final Resource folder = Resource.create(getBase() + "/createFolder");
+		final Resource folder = Resource.create(getBase() + "/createFolder0");
 		Assert.assertFalse("new folder must not exist", repository.exists(folder, Revision.HEAD));
 		final String message = "create folder";
 

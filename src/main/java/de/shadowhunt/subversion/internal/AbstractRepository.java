@@ -26,179 +26,66 @@ import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.Revision;
-import de.shadowhunt.subversion.SubversionException;
-import de.shadowhunt.subversion.internal.httpv1.RepositoryConfigHttpV1;
-import de.shadowhunt.subversion.internal.httpv1.ResolveOperationV1;
-import java.io.IOException;
+import de.shadowhunt.subversion.Transaction;
+import de.shadowhunt.subversion.internal.httpv1.ResolveOperation;
+import de.shadowhunt.subversion.internal.util.URIUtils;
 import java.io.InputStream;
 import java.net.URI;
-import java.security.SecureRandom;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-
-import javax.annotation.Nullable;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.Credentials;
-import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpOptions;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.params.AuthPolicy;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeSocketFactory;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.conn.ssl.X509HostnameVerifier;
-import org.apache.http.impl.client.DecompressingHttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.client.DefaultRedirectStrategy;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpParams;
-import org.apache.http.util.EntityUtils;
-
-import de.shadowhunt.http.auth.CredentialsUtils;
-import de.shadowhunt.http.auth.NtlmSchemeFactory;
-import de.shadowhunt.http.client.ThreadLocalCredentialsProvider;
-import de.shadowhunt.http.client.WebDavHttpRequestRetryHandler;
-import de.shadowhunt.http.conn.ssl.NonValidatingX509TrustManager;
-import de.shadowhunt.http.protocol.ThreadLocalHttpContext;
-import de.shadowhunt.util.URIUtils;
+import org.apache.http.protocol.HttpContext;
 
 /**
  * Base for all {@link de.shadowhunt.subversion.Repository}
  */
 public abstract class AbstractRepository implements Repository {
 
-	@Deprecated
-	protected static boolean contains(final int statusCode, final int... expectedStatusCodes) {
-		for (final int expectedStatusCode : expectedStatusCodes) {
-			if (expectedStatusCode == statusCode) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@Deprecated
-	protected static DefaultHttpClient createClient(final int maxConnections, final boolean trustServerCertificate) {
-		final PoolingClientConnectionManager connectionManager = new PoolingClientConnectionManager();
-		connectionManager.setMaxTotal(maxConnections);
-		connectionManager.setDefaultMaxPerRoute(maxConnections);
-
-		if (trustServerCertificate) {
-			final Scheme scheme = createTrustingAnySslCertScheme();
-			connectionManager.getSchemeRegistry().register(scheme);
-		}
-
-		final DefaultHttpClient defaultClient = new DefaultHttpClient(connectionManager);
-		defaultClient.setCredentialsProvider(new ThreadLocalCredentialsProvider());
-		defaultClient.setHttpRequestRetryHandler(new WebDavHttpRequestRetryHandler());
-
-		final HttpParams params = defaultClient.getParams();
-		params.setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, true);
-
-		if (hasJcifsSupport()) {
-			defaultClient.getAuthSchemes().register(AuthPolicy.NTLM, NtlmSchemeFactory.INSTANCE);
-		}
-
-		return defaultClient;
-	}
-
-	@Deprecated
-	protected static Scheme createTrustingAnySslCertScheme() {
-		try {
-			final SSLContext sc = SSLContext.getInstance("SSL");
-			sc.init(null, new TrustManager[] { NonValidatingX509TrustManager.INSTANCE }, new SecureRandom());
-
-			final X509HostnameVerifier verifier = SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
-			final SchemeSocketFactory socketFactory = new SSLSocketFactory(sc, verifier);
-			return new Scheme("https", 443, socketFactory);
-		} catch (final Exception e) {
-			throw new SubversionException("could not create ssl scheme", e);
-		}
-	}
-
-	@Deprecated
-	static void ensureResponse(final HttpResponse response, final boolean consume, final int... expectedStatusCodes) throws IOException {
-		final int statusCode = response.getStatusLine().getStatusCode();
-		if (consume) {
-			EntityUtils.consume(response.getEntity());
-		}
-
-		if (!contains(statusCode, expectedStatusCodes)) {
-			EntityUtils.consume(response.getEntity()); // in case of unexpected status code we consume everything
-			throw new SubversionException("status code is: " + statusCode + ", expected was: "
-					+ Arrays.toString(expectedStatusCodes));
-		}
-	}
-
-	@Deprecated
-	private static boolean hasJcifsSupport() {
-		try {
-			Class.forName("jcifs.ntlmssp.NtlmFlags");
-			return true;
-		} catch (final ClassNotFoundException e) {
-			return false;
-		}
-	}
-
-	protected final AuthScope authscope;
-
-	private final DefaultHttpClient backend;
-
 	public final HttpClient client;
 
-	protected final RepositoryConfig config = new RepositoryConfigHttpV1();
+	protected final RepositoryConfig config;
 
-	public final ThreadLocalHttpContext context = new ThreadLocalHttpContext();
+	protected final HttpContext context;
 
 	protected final URI repository;
 
-	protected AbstractRepository(final DefaultHttpClient backend, final URI repository) {
-		client = new DecompressingHttpClient(backend);
-		this.backend = backend;
+	protected AbstractRepository(final URI repository, final RepositoryConfig config, final HttpClient client, final HttpContext context) {
 		this.repository = repository;
-		authscope = new AuthScope(repository.getHost(), AuthScope.ANY_PORT);
+		this.config = config;
+		this.client = client;
+		this.context = context;
 	}
 
-	protected AbstractRepository(final URI repository, final boolean trustServerCertificate) {
-		this(createClient(100, trustServerCertificate), repository);
-	}
-
-	protected void contentUpload(final Resource resource, final Info info, final String uuid, @Nullable final InputStream content) {
-		if (content == null) {
+	@Override
+	public void createFolder(final Transaction transaction, final Resource resource, final boolean parent) {
+		if (exists(resource, Revision.HEAD)) {
 			return;
 		}
 
-		final Resource r = config.getWorkingResource(uuid).append(resource);
-		final UploadOperation uo = new UploadOperation(repository, r, info.getLockToken(), content);
-		uo.execute(client, context);
+		createFolder0(config.getWorkingResource(transaction).append(resource), parent);
 	}
 
-	protected void copy0(final Resource srcResource, final Revision srcRevision, final Resource targetResource, final String uuid) {
-		final Resource s = config.getVersionedResource(srcRevision).append(srcResource);
-		final Resource t = config.getWorkingResource(uuid).append(targetResource);
+	@Override
+	public void copy(final Transaction transaction, final Resource srcResource, final Revision srcRevision, final Resource targetResource) {
+		createFolder0(config.getWorkingResource(transaction).append(targetResource.getParent()), true);
+
+		final Info info = info(srcResource, srcRevision, false);
+		final Resource s = config.getVersionedResource(info.getRevision()).append(info.getResource());
+		final Resource t = config.getWorkingResource(transaction).append(targetResource);
 
 		final CopyOperation co = new CopyOperation(repository, s, t);
 		co.execute(client, context);
 	}
 
-	protected Resource createFolder(final Resource resource, final boolean parent) {
+	protected Resource createFolder0(final Resource resource, final boolean parent) {
 		Resource result = null;
 		if (parent) {
 			if (Resource.ROOT.equals(resource)) {
 				return null;
 			}
 
-			result = createFolder(resource.getParent(), parent);
+			result = createFolder0(resource.getParent(), parent);
 		}
 
 		final CreateFolderOperation cfo = new CreateFolderOperation(repository, resource);
@@ -209,8 +96,9 @@ public abstract class AbstractRepository implements Repository {
 		return result;
 	}
 
-	protected void delete0(final Resource resource, final String uuid) {
-		final DeleteOperation o = new DeleteOperation(repository, config.getWorkingResource(uuid).append(resource));
+	@Override
+	public void delete(final Transaction transaction, final Resource resource) {
+		final DeleteOperation o = new DeleteOperation(repository, config.getWorkingResource(transaction).append(resource));
 		o.execute(client, context);
 	}
 
@@ -223,32 +111,6 @@ public abstract class AbstractRepository implements Repository {
 	@Override
 	public URI downloadURI(final Resource resource, final Revision revision) {
 		return URIUtils.createURI(repository, resolve(resource, revision, true));
-	}
-
-	@Deprecated
-	protected HttpResponse execute(final HttpUriRequest request, final boolean consume, final int... expectedStatusCodes) {
-		try {
-			final HttpResponse response = client.execute(request, context);
-			ensureResponse(response, consume, expectedStatusCodes);
-			return response;
-		} catch (final Exception e) {
-			throw new SubversionException("could not execute request (" + request + ")", e);
-		} finally {
-			// as the path objects can not differ between files and directories
-			// each request for an directory (without ending '/') will result
-			// in a redirect (with ending '/'), if another call to a redirected
-			// URI occurs a CircularRedirectException is thrown, as we can't
-			// determine the real target we can't prevent this from happening.
-			// Allowing circular redirects globally could lead to live locks on
-			// the other hand. Therefore we clear the redirection cache after
-			// each completed request cycle
-			context.removeAttribute(DefaultRedirectStrategy.REDIRECT_LOCATIONS);
-		}
-	}
-
-	@Deprecated
-	protected HttpResponse execute(final HttpUriRequest request, final int... expectedStatusCodes) {
-		return execute(request, true, expectedStatusCodes);
 	}
 
 	@Override
@@ -315,31 +177,34 @@ public abstract class AbstractRepository implements Repository {
 	}
 
 	protected void merge(final Info info, final String uuid) {
-		final Resource resource = config.getTransactionResource(uuid);
-		final MergeOperation mo = new MergeOperation(repository, resource, info.getLockToken());
-		mo.execute(client, context);
+
 	}
 
-	protected void propertiesRemove(final Resource resource, final Info info, final String uuid, final ResourceProperty... properties) {
+	@Override
+	public void deleteProperties(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
 		final ResourceProperty[] filtered = ResourceProperty.filterSystemProperties(properties);
 		if (filtered.length == 0) {
 			return;
 		}
 
-		final Resource r = config.getWorkingResource(uuid).append(resource);
+		final Info info = info(resource, Revision.HEAD, false);
+
+		final Resource r = config.getWorkingResource(transaction).append(resource);
 		final PropertiesDeleteOperation uo = new PropertiesDeleteOperation(repository, r, info.getLockToken(), filtered);
 		uo.execute(client, context);
 	}
 
-	protected void propertiesSet(final Resource resource, final Info info, final String uuid, final ResourceProperty... properties) {
-		final ResourceProperty[] filtered = ResourceProperty.filterSystemProperties(properties);
-		if (filtered.length == 0) {
-			return;
-		}
+	@Override
+	public List<Info> list(final Resource resource, final Revision revision, final Depth depth, final boolean withCustomProperties) {
+		final Revision concreteRevision = getConcreteRevision(resource, revision);
+		final Resource prefix = config.getVersionedResource(concreteRevision);
+		return list(prefix, resource, depth, withCustomProperties);
+	}
 
-		final Resource r = config.getWorkingResource(uuid).append(resource);
-		final PropertiesSetOperation uo = new PropertiesSetOperation(repository, r, info.getLockToken(), filtered);
-		uo.execute(client, context);
+	@Override
+	public void move(final Transaction transaction, final Resource srcResource, final Resource targetResource) {
+		copy(transaction, srcResource, Revision.HEAD, targetResource);
+		delete(transaction, srcResource);
 	}
 
 	protected Resource resolve(final Resource resource, final Revision revision, final boolean resolve) {
@@ -360,35 +225,21 @@ public abstract class AbstractRepository implements Repository {
 		}
 
 		final Info headInfo = info(resource, Revision.HEAD, false);
-		final ResolveOperationV1 ro = new ResolveOperationV1(repository, resource, revision, headInfo.getRevision());
+		final ResolveOperation ro = new ResolveOperation(repository, resource, revision, headInfo.getRevision());
 		return ro.execute(client, context);
 	}
 
 	@Override
-	@Deprecated
-	public final void setCredentials(@Nullable final String username, @Nullable final String password, @Nullable final String workstation) {
-		final Credentials credentials = CredentialsUtils.creteCredentials(username, password, workstation);
-		final CredentialsProvider credentialsProvider = backend.getCredentialsProvider();
-
-		final Credentials oldCredentials = credentialsProvider.getCredentials(authscope);
-		if (!ObjectUtils.equals(credentials, oldCredentials)) {
-			context.clear();
-			credentialsProvider.setCredentials(authscope, credentials);
-
-			triggerAuthentication();
+	public void setProperties(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
+		final ResourceProperty[] filtered = ResourceProperty.filterSystemProperties(properties);
+		if (filtered.length == 0) {
+			return;
 		}
-	}
 
-	@Override
-	public void setProperties(final Resource resource, final String message, final ResourceProperty... properties) {
-		upload0(resource, message, null, properties);
-	}
-
-	@Deprecated
-	protected final void triggerAuthentication() {
-		final HttpOptions request = new HttpOptions(repository);
-		request.addHeader("Keep-Alive", "");
-		execute(request, HttpStatus.SC_OK);
+		final Info info = info(resource, Revision.HEAD, false);
+		final Resource r = config.getWorkingResource(transaction).append(resource);
+		final PropertiesSetOperation uo = new PropertiesSetOperation(repository, r, info.getLockToken(), filtered);
+		uo.execute(client, context);
 	}
 
 	@Override
@@ -403,12 +254,27 @@ public abstract class AbstractRepository implements Repository {
 	}
 
 	@Override
-	public void upload(final Resource resource, final String message, final InputStream content, final ResourceProperty... properties) {
+	public void upload(Transaction transaction, final Resource resource, final InputStream content) {
 		if (content == null) {
 			throw new IllegalArgumentException("content can not be null");
 		}
-		upload0(resource, message, content, properties);
+
+		final Resource infoResource;
+		if (exists(resource, Revision.HEAD)) {
+			infoResource = resource;
+		} else {
+			infoResource = createFolder0(config.getWorkingResource(transaction).append(resource.getParent()), true);
+		}
+		final Info info = info(infoResource, Revision.HEAD, false);
+		final Resource r = config.getWorkingResource(transaction).append(resource);
+		final UploadOperation uo = new UploadOperation(repository, r, info.getLockToken(), content);
+		uo.execute(client, context);
 	}
 
-	protected abstract void upload0(final Resource resource, final String message, @Nullable final InputStream content, final ResourceProperty... properties);
+	@Override
+	public void rollback(Transaction transaction) {
+		final Resource resource = config.getTransactionResource(transaction);
+		final DeleteOperation operation = new DeleteOperation(repository, resource);
+		operation.execute(client, context);
+	}
 }

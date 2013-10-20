@@ -21,6 +21,7 @@ package de.shadowhunt.subversion.internal.httpv1;
 
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.Version;
 
 public class RepositoryConfig implements de.shadowhunt.subversion.internal.RepositoryConfig {
@@ -36,8 +37,8 @@ public class RepositoryConfig implements de.shadowhunt.subversion.internal.Repos
 	}
 
 	@Override
-	public Resource getCommitMessageResource(final String id) {
-		final Resource suffix = Resource.create("/wbl/" + id);
+	public Resource getCommitMessageResource(final Transaction transaction) {
+		final Resource suffix = Resource.create("/wbl/" + transaction.getId());
 		return prefix.append(suffix);
 	}
 
@@ -52,8 +53,8 @@ public class RepositoryConfig implements de.shadowhunt.subversion.internal.Repos
 	}
 
 	@Override
-	public Resource getTransactionResource(final String id) {
-		final Resource suffix = Resource.create("/act/" + id);
+	public Resource getTransactionResource(final Transaction transaction) {
+		final Resource suffix = Resource.create("/act/" + transaction.getId());
 		return prefix.append(suffix);
 	}
 
@@ -64,8 +65,8 @@ public class RepositoryConfig implements de.shadowhunt.subversion.internal.Repos
 	}
 
 	@Override
-	public Resource getWorkingResource(final String id) {
-		final Resource suffix = Resource.create("/wrk/" + id);
+	public Resource getWorkingResource(final Transaction transaction) {
+		final Resource suffix = Resource.create("/wrk/" + transaction.getId());
 		return prefix.append(suffix);
 	}
 

@@ -21,21 +21,22 @@ package de.shadowhunt.subversion.internal;
 
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.Version;
 
 public interface RepositoryConfig {
 
 	final static Resource DEFAULT_PREFIX = Resource.create("/!svn");
 
-	Resource getCommitMessageResource(final String id);
+	Resource getCommitMessageResource(final Transaction transaction);
 
 	Resource getPrefix();
 
 	Version getProtocolVersion();
 
-	Resource getTransactionResource(final String id);
+	Resource getTransactionResource(final Transaction transaction);
 
 	Resource getVersionedResource(final Revision revision);
 
-	Resource getWorkingResource(final String id);
+	Resource getWorkingResource(final Transaction transaction);
 }
