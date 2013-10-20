@@ -22,6 +22,6 @@ package de.shadowhunt.subversion.internal.httpv1;
 public class RepositoryDigestAuthIT { // { extends AbstractRepositoryBasicWriteIT {
 
 	public RepositoryDigestAuthIT() {
-	//	super(URI.create("http://subversion-16.vm.shadowhunt.de/svn-digest/test"), Version.HTTPv1, "svnuser", "svnpass", null);
+		//	super(URI.create("http://subversion-16.vm.shadowhunt.de/svn-digest/test"), Version.HTTPv1, "svnuser", "svnpass", null);
 	}
 }

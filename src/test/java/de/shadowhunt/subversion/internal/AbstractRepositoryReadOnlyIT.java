@@ -65,7 +65,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 	protected final Repository repository;
 
 	protected AbstractRepositoryReadOnlyIT(URI uri) {
-		this.repository =  createRepository(uri, createClient(), createContext());
+		this.repository = createRepository(uri, createClient(), createContext());
 	}
 
 	HttpContext createContext() {
@@ -456,7 +456,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 		try {
 			repository.deleteProperties(transaction, EXISTING_PROPERTY_VERSION, new ResourceProperty[0]);
 			repository.commit(transaction, "remove properties");
-		} catch(SubversionException se) {
+		} catch (SubversionException se) {
 			repository.rollback(transaction);
 			throw se;
 		}
@@ -483,7 +483,7 @@ public abstract class AbstractRepositoryReadOnlyIT {
 		try {
 			repository.deleteProperties(transaction, EXISTING_PROPERTY_VERSION, baseProperty, davProperty, svnProperty);
 			repository.commit(transaction, "remove properties");
-		} catch(SubversionException se) {
+		} catch (SubversionException se) {
 			repository.rollback(transaction);
 			throw se;
 		}
