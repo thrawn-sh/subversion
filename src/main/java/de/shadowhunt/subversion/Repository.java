@@ -22,6 +22,7 @@ package de.shadowhunt.subversion;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
+
 import javax.annotation.concurrent.ThreadSafe;
 
 /**
@@ -33,6 +34,7 @@ public interface Repository {
 	/**
 	 * Recursively copy a resource in the given revision
 	 *
+	 * @param transaction the current running {@link Transaction}
 	 * @param srcResource the {@link Resource} of the source resource (relative to the repository root)
 	 * @param srcRevision {@link Revision} of the resource to copy
 	 * @param targetResource the {@link Resource} of the target resource (relative to the repository root)
