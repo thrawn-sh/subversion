@@ -19,13 +19,15 @@
  */
 package de.shadowhunt.subversion.internal;
 
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.internal.util.URIUtils;
 import java.net.URI;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpUriRequest;
+
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.internal.util.URIUtils;
 
 public class ExistsOperation extends AbstractOperation<Boolean> {
 

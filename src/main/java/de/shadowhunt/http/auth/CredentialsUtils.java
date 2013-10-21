@@ -21,6 +21,7 @@ package de.shadowhunt.http.auth;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.NTCredentials;
 import org.apache.http.auth.UsernamePasswordCredentials;

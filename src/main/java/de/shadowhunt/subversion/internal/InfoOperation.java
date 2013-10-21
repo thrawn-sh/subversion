@@ -19,19 +19,21 @@
  */
 package de.shadowhunt.subversion.internal;
 
-import de.shadowhunt.http.client.methods.DavTemplateRequest;
-import de.shadowhunt.subversion.Depth;
-import de.shadowhunt.subversion.Info;
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.internal.util.URIUtils;
 import java.io.InputStream;
 import java.net.URI;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
+
+import de.shadowhunt.http.client.methods.DavTemplateRequest;
+import de.shadowhunt.subversion.Depth;
+import de.shadowhunt.subversion.Info;
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.internal.util.URIUtils;
 
 public class InfoOperation extends AbstractOperation<Info> {
 

@@ -22,6 +22,7 @@ package de.shadowhunt.http.client;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
 import org.apache.http.HttpRequest;
 import org.apache.http.annotation.Immutable;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;

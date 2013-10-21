@@ -19,13 +19,16 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.io.InputStream;
+
+import javax.xml.parsers.SAXParser;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Version;
-import java.io.InputStream;
-import javax.xml.parsers.SAXParser;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 
 public class Prefix {
 

@@ -19,14 +19,16 @@
  */
 package de.shadowhunt.subversion.internal;
 
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.internal.util.URIUtils;
 import java.io.InputStream;
 import java.net.URI;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
+
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.internal.util.URIUtils;
 
 public class DownloadOperation extends AbstractOperation<InputStream> {
 

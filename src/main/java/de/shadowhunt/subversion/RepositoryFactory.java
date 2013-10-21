@@ -19,12 +19,15 @@
  */
 package de.shadowhunt.subversion;
 
-import de.shadowhunt.subversion.internal.ProbeServerOperation;
-import de.shadowhunt.subversion.internal.RepositoryConfig;
 import java.net.URI;
+
 import javax.annotation.concurrent.ThreadSafe;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
+
+import de.shadowhunt.subversion.internal.ProbeServerOperation;
+import de.shadowhunt.subversion.internal.RepositoryConfig;
 
 /**
  * {@link RepositoryFactory} creates a new {@link Repository}

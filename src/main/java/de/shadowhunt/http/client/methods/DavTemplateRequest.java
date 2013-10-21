@@ -20,6 +20,7 @@
 package de.shadowhunt.http.client.methods;
 
 import java.net.URI;
+
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 
 /**

@@ -20,6 +20,7 @@
 package de.shadowhunt.subversion;
 
 import java.util.Comparator;
+
 import javax.annotation.CheckForNull;
 
 public interface Info {

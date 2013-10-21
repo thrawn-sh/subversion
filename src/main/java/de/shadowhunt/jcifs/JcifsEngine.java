@@ -20,12 +20,15 @@
 package de.shadowhunt.jcifs;
 
 import java.io.IOException;
+
 import javax.annotation.concurrent.ThreadSafe;
+
 import jcifs.ntlmssp.NtlmFlags;
 import jcifs.ntlmssp.Type1Message;
 import jcifs.ntlmssp.Type2Message;
 import jcifs.ntlmssp.Type3Message;
 import jcifs.util.Base64;
+
 import org.apache.http.impl.auth.NTLMEngine;
 import org.apache.http.impl.auth.NTLMEngineException;
 

@@ -19,10 +19,12 @@
  */
 package de.shadowhunt.subversion.internal.util;
 
-import de.shadowhunt.subversion.Resource;
 import java.net.URI;
 import java.net.URISyntaxException;
+
 import org.apache.http.client.utils.URIBuilder;
+
+import de.shadowhunt.subversion.Resource;
 
 public final class URIUtils {
 

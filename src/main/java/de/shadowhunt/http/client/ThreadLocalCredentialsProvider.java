@@ -21,8 +21,10 @@ package de.shadowhunt.http.client;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import org.apache.http.annotation.ThreadSafe;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;

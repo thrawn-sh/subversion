@@ -19,17 +19,19 @@
  */
 package de.shadowhunt.subversion.internal;
 
-import de.shadowhunt.http.client.methods.DavTemplateRequest;
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.Version;
 import java.io.InputStream;
 import java.net.URI;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
+
+import de.shadowhunt.http.client.methods.DavTemplateRequest;
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.Version;
 
 public class ProbeServerOperation extends AbstractOperation<RepositoryConfig> {
 

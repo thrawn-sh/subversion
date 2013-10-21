@@ -19,15 +19,17 @@
  */
 package de.shadowhunt.subversion.internal;
 
-import de.shadowhunt.http.client.methods.DavTemplateRequest;
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.ResourceProperty;
-import de.shadowhunt.subversion.internal.util.URIUtils;
 import java.net.URI;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
+
+import de.shadowhunt.http.client.methods.DavTemplateRequest;
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.ResourceProperty;
+import de.shadowhunt.subversion.internal.util.URIUtils;
 
 public class PropertiesDeleteOperation extends AbstractVoidOperation {
 

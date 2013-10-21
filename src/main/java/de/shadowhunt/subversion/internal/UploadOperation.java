@@ -19,15 +19,17 @@
  */
 package de.shadowhunt.subversion.internal;
 
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.internal.util.URIUtils;
 import java.io.InputStream;
 import java.net.URI;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.InputStreamEntity;
+
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.internal.util.URIUtils;
 
 public class UploadOperation extends AbstractVoidOperation {
 

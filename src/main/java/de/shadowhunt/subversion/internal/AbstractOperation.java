@@ -19,11 +19,10 @@
  */
 package de.shadowhunt.subversion.internal;
 
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.SubversionException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Arrays;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -33,6 +32,9 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
+
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.SubversionException;
 
 public abstract class AbstractOperation<T> implements Operation<T> {
 

@@ -19,11 +19,8 @@
  */
 package de.shadowhunt.subversion.internal.httpv2;
 
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.Transaction;
-import de.shadowhunt.subversion.internal.AbstractOperation;
-import de.shadowhunt.subversion.internal.util.URIUtils;
 import java.net.URI;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -31,6 +28,11 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.Transaction;
+import de.shadowhunt.subversion.internal.AbstractOperation;
+import de.shadowhunt.subversion.internal.util.URIUtils;
 
 public class CreateTransactionOperation extends AbstractOperation<Transaction> {
 

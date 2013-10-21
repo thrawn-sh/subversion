@@ -19,9 +19,6 @@
  */
 package de.shadowhunt.subversion.internal;
 
-import de.shadowhunt.subversion.Log;
-import de.shadowhunt.subversion.Revision;
-import de.shadowhunt.subversion.SubversionException;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -30,9 +27,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
 import javax.xml.parsers.SAXParser;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+
+import de.shadowhunt.subversion.Log;
+import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.SubversionException;
 
 /**
  * Container that holds all log information for a single revision of a resource

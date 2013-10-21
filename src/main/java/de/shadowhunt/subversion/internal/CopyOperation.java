@@ -19,14 +19,16 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.net.URI;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpUriRequest;
+
 import de.shadowhunt.http.client.methods.DavTemplateRequest;
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.internal.util.URIUtils;
-import java.net.URI;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpUriRequest;
 
 public class CopyOperation extends AbstractVoidOperation {
 

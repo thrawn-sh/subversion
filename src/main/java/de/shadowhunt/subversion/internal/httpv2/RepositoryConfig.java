@@ -19,13 +19,15 @@
  */
 package de.shadowhunt.subversion.internal.httpv2;
 
+import java.net.URI;
+
+import org.apache.http.client.HttpClient;
+import org.apache.http.protocol.HttpContext;
+
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.Version;
-import java.net.URI;
-import org.apache.http.client.HttpClient;
-import org.apache.http.protocol.HttpContext;
 
 public class RepositoryConfig implements de.shadowhunt.subversion.internal.RepositoryConfig {
 
