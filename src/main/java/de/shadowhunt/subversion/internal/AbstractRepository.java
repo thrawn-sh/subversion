@@ -19,6 +19,15 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.io.InputStream;
+import java.net.URI;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.http.client.HttpClient;
+import org.apache.http.protocol.HttpContext;
+
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Log;
@@ -28,13 +37,6 @@ import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.internal.util.URIUtils;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import org.apache.http.client.HttpClient;
-import org.apache.http.protocol.HttpContext;
 
 /**
  * Base for all {@link de.shadowhunt.subversion.Repository}
@@ -118,9 +120,9 @@ public abstract class AbstractRepository implements Repository {
 		return operation.execute(client, context);
 	}
 
-	protected Revision getConcreteRevision(final Resource resource, final Revision revision) {
+	protected Revision getConcreteRevision(final Revision revision) {
 		if (Revision.HEAD.equals(revision)) {
-			final Info info = info(resource, revision, false);
+			final Info info = info(Resource.ROOT, Revision.HEAD, false);
 			return info.getRevision();
 		}
 		return revision;
@@ -134,7 +136,7 @@ public abstract class AbstractRepository implements Repository {
 
 	@Override
 	public Log lastLog(final Resource resource) {
-		final Revision revision = getConcreteRevision(resource, Revision.HEAD);
+		final Revision revision = getConcreteRevision(Revision.HEAD);
 		final List<Log> logs = log(resource, revision, revision, 1);
 		return logs.get(0);
 	}
@@ -169,8 +171,8 @@ public abstract class AbstractRepository implements Repository {
 
 	@Override
 	public List<Log> log(final Resource resource, final Revision startRevision, final Revision endRevision, final int limit) {
-		final Revision concreteStartRevision = getConcreteRevision(resource, startRevision);
-		final Revision concreteEndRevision = getConcreteRevision(resource, endRevision);
+		final Revision concreteStartRevision = getConcreteRevision(startRevision);
+		final Revision concreteEndRevision = getConcreteRevision(endRevision);
 		final LogOperation operation = new LogOperation(repository, resource, concreteStartRevision, concreteEndRevision, limit);
 		return operation.execute(client, context);
 	}
@@ -191,7 +193,7 @@ public abstract class AbstractRepository implements Repository {
 
 	@Override
 	public List<Info> list(final Resource resource, final Revision revision, final Depth depth, final boolean withCustomProperties) {
-		final Revision concreteRevision = getConcreteRevision(resource, revision);
+		final Revision concreteRevision = getConcreteRevision(revision);
 		final Resource prefix = config.getVersionedResource(concreteRevision);
 		return list(prefix, resource, depth, withCustomProperties);
 	}
@@ -249,7 +251,7 @@ public abstract class AbstractRepository implements Repository {
 	}
 
 	@Override
-	public void upload(Transaction transaction, final Resource resource, final InputStream content) {
+	public void upload(final Transaction transaction, final Resource resource, final InputStream content) {
 		if (content == null) {
 			throw new IllegalArgumentException("content can not be null");
 		}
@@ -267,7 +269,7 @@ public abstract class AbstractRepository implements Repository {
 	}
 
 	@Override
-	public void rollback(Transaction transaction) {
+	public void rollback(final Transaction transaction) {
 		final Resource resource = config.getTransactionResource(transaction);
 		final DeleteOperation operation = new DeleteOperation(repository, resource);
 		operation.execute(client, context);
