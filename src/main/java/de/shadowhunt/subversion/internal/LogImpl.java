@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import javax.xml.parsers.SAXParser;
 
@@ -44,9 +45,11 @@ public final class LogImpl implements Log {
 
 	static class SubversionLogHandler extends BasicHandler {
 
+		private static TimeZone ZULU = TimeZone.getTimeZone("ZULU");
+
 		private LogImpl current = null;
 
-		private final DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", Locale.US); // FIXME
+		private final DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
 
 		private final List<LogImpl> logs = new ArrayList<LogImpl>();
 
@@ -76,7 +79,9 @@ public final class LogImpl implements Log {
 
 			if ("date".equals(name)) {
 				try {
-					current.setDate(format.parse(getText())); // FIXME convert to local timezone
+					format.setTimeZone(ZULU);
+					final Date date = format.parse(getText());
+					current.setDate(date);
 				} catch (final ParseException e) {
 					throw new SAXException("date has unexpected format", e);
 				}
