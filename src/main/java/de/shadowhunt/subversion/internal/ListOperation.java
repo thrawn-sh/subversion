@@ -19,19 +19,21 @@
  */
 package de.shadowhunt.subversion.internal;
 
-import de.shadowhunt.http.client.methods.DavTemplateRequest;
-import de.shadowhunt.subversion.Depth;
-import de.shadowhunt.subversion.Info;
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.internal.util.URIUtils;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
+
+import de.shadowhunt.http.client.methods.DavTemplateRequest;
+import de.shadowhunt.subversion.Depth;
+import de.shadowhunt.subversion.Info;
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.internal.util.URIUtils;
 
 public class ListOperation extends AbstractOperation<List<Info>> {
 
@@ -67,7 +69,9 @@ public class ListOperation extends AbstractOperation<List<Info>> {
 
 		final InputStream in = getContent(response);
 		try {
-			return ((List<Info>) (List) InfoImpl.readList(in, customProperties, (Depth.FILES != depth)));
+			@SuppressWarnings({ "rawtypes", "unchecked" })
+			final List<Info> info = ((List) InfoImpl.readList(in, customProperties, (Depth.FILES != depth)));
+			return info;
 		} finally {
 			IOUtils.closeQuietly(in);
 		}

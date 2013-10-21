@@ -19,19 +19,21 @@
  */
 package de.shadowhunt.subversion.internal;
 
-import de.shadowhunt.http.client.methods.DavTemplateRequest;
-import de.shadowhunt.subversion.Log;
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.Revision;
-import de.shadowhunt.subversion.internal.util.URIUtils;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
+
+import de.shadowhunt.http.client.methods.DavTemplateRequest;
+import de.shadowhunt.subversion.Log;
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.internal.util.URIUtils;
 
 public class LogOperation extends AbstractOperation<List<Log>> {
 
@@ -77,7 +79,9 @@ public class LogOperation extends AbstractOperation<List<Log>> {
 
 		final InputStream in = getContent(response);
 		try {
-			return ((List<Log>) (List) LogImpl.read(in));
+			@SuppressWarnings({ "rawtypes", "unchecked" })
+			final List<Log> logs = ((List) LogImpl.read(in));
+			return logs;
 		} finally {
 			IOUtils.closeQuietly(in);
 		}
