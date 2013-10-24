@@ -1,12 +1,30 @@
+/*
+ * #%L
+ * Shadowhunt Subversion
+ * %%
+ * Copyright (C) 2013 shadowhunt
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package de.shadowhunt.subversion.internal;
-
-import java.util.List;
 
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import de.shadowhunt.Main;
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
@@ -17,11 +35,25 @@ import de.shadowhunt.subversion.SubversionException;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class RepositoryInfo {
 
-	private Repository repository;
+	private static final Resource PREFIX = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/info");
+
+	private final Repository repository;
+
+	public RepositoryInfo() {
+		this(Main.create());
+	}
+
+	protected RepositoryInfo(final Repository repository) {
+		this.repository = repository;
+	}
+
+	private String createMessage(final Resource resource, final Revision revision, final boolean withCustomProperties) {
+		return resource + ": @" + revision + " with withCustomProperties: " + withCustomProperties;
+	}
 
 	@Test(expected = SubversionException.class)
-	public void test00_NonExisitingResource() {
-		final Resource resource = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/info/non_existing.txt");
+	public void test00_NonExisitingResource() throws Exception {
+		final Resource resource = PREFIX.append(Resource.create("/non_existing.txt"));
 		final Revision revision = Revision.HEAD;
 
 		repository.info(resource, revision, true);
@@ -29,8 +61,8 @@ public class RepositoryInfo {
 	}
 
 	@Test(expected = SubversionException.class)
-	public void test00_NonExisitingRevision() {
-		final Resource resource = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/info/file.txt");
+	public void test00_NonExisitingRevision() throws Exception {
+		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
 		final Revision revision = Revision.create(10000000); // there should not be a such high revision
 
 		repository.info(resource, revision, true);
@@ -38,60 +70,98 @@ public class RepositoryInfo {
 	}
 
 	@Test
-	public void test01_FileHead() {
-		final Resource resource = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/info/file.txt");
+	public void test01_FileHead() throws Exception {
+		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
 		final Revision revision = Revision.HEAD;
 
 		for (final boolean withCustomProperties : new boolean[] { true, false }) {
-			final List<Info> expected = null;
-			final String message = resource + "@ " + revision + " with withCustomProperties" + withCustomProperties;
+			final Info expected = InfoLoader.load(resource, revision, withCustomProperties);
+			final String message = createMessage(resource, revision, withCustomProperties);
 			Assert.assertEquals(message, expected, repository.info(resource, revision, withCustomProperties));
 		}
 	}
 
 	@Test
-	public void test01_FileRevision() {
-		final Resource resource = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/info/file.txt");
-		final Revision revision = null; // FIXME
+	public void test01_FileRevision() throws Exception {
+		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
+		final Revision revision = Revision.create(48);
 
 		for (final boolean withCustomProperties : new boolean[] { true, false }) {
-			final List<Info> expected = null;
-			final String message = resource + "@ " + revision + " with withCustomProperties" + withCustomProperties;
+			final Info expected = InfoLoader.load(resource, revision, withCustomProperties);
+			final String message = createMessage(resource, revision, withCustomProperties);
 			Assert.assertEquals(message, expected, repository.info(resource, revision, withCustomProperties));
 		}
 	}
 
 	@Test
-	public void test02_FolderHead() {
-		final Resource resource = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/info/folder");
+	public void test01_FolderHead() throws Exception {
+		final Resource resource = PREFIX.append(Resource.create("/folder"));
 		final Revision revision = Revision.HEAD;
 
 		for (final boolean withCustomProperties : new boolean[] { true, false }) {
-			final List<Info> expected = null;
-			final String message = resource + "@ " + revision + " with withCustomProperties" + withCustomProperties;
+			final Info expected = InfoLoader.load(resource, revision, withCustomProperties);
+			final String message = createMessage(resource, revision, withCustomProperties);
 			Assert.assertEquals(message, expected, repository.info(resource, revision, withCustomProperties));
 		}
 	}
 
 	@Test
-	public void test02_FolderRevision() {
-		final Resource resource = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/info/folder");
-		final Revision revision = null; // FIXME
+	public void test01_FolderRevision() throws Exception {
+		final Resource resource = PREFIX.append(Resource.create("/folder"));
+		final Revision revision = Revision.create(56);
 
 		for (final boolean withCustomProperties : new boolean[] { true, false }) {
-			final List<Info> expected = null;
-			final String message = resource + "@ " + revision + " with withCustomProperties" + withCustomProperties;
+			final Info expected = InfoLoader.load(resource, revision, withCustomProperties);
+			final String message = createMessage(resource, revision, withCustomProperties);
 			Assert.assertEquals(message, expected, repository.info(resource, revision, withCustomProperties));
 		}
 	}
 
 	@Test
-	public void test03_RenamedFolder() {
-		final Resource resource = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/info/renamed"); // head name
-		final Revision revision = null; // FIXME
+	public void test02_FileCopy() throws Exception {
+		final Resource resource = PREFIX.append(Resource.create("/file_copy.txt"));
+		final Revision revision = Revision.create(51);
 
-		final List<Info> expected = null;
-		final String message = resource + "@ " + revision + " with withCustomProperties" + true;
-		Assert.assertEquals(message, expected, repository.info(resource, revision, true));
+		for (final boolean withCustomProperties : new boolean[] { true, false }) {
+			final Info expected = InfoLoader.load(resource, revision, withCustomProperties);
+			final String message = createMessage(resource, revision, withCustomProperties);
+			Assert.assertEquals(message, expected, repository.info(resource, revision, withCustomProperties));
+		}
+	}
+
+	@Test
+	public void test02_FileMove() throws Exception {
+		final Resource resource = PREFIX.append(Resource.create("/file_move.txt"));
+		final Revision revision = Revision.create(53);
+
+		for (final boolean withCustomProperties : new boolean[] { true, false }) {
+			final Info expected = InfoLoader.load(resource, revision, withCustomProperties);
+			final String message = createMessage(resource, revision, withCustomProperties);
+			Assert.assertEquals(message, expected, repository.info(resource, revision, withCustomProperties));
+		}
+	}
+
+	@Test
+	public void test02_FolderCopy() throws Exception {
+		final Resource resource = PREFIX.append(Resource.create("/folder_copy"));
+		final Revision revision = Revision.create(57);
+
+		for (final boolean withCustomProperties : new boolean[] { true, false }) {
+			final Info expected = InfoLoader.load(resource, revision, withCustomProperties);
+			final String message = createMessage(resource, revision, withCustomProperties);
+			Assert.assertEquals(message, expected, repository.info(resource, revision, withCustomProperties));
+		}
+	}
+
+	@Test
+	public void test02_FolderMove() throws Exception {
+		final Resource resource = PREFIX.append(Resource.create("/folder_move"));
+		final Revision revision = Revision.create(59);
+
+		for (final boolean withCustomProperties : new boolean[] { true, false }) {
+			final Info expected = InfoLoader.load(resource, revision, withCustomProperties);
+			final String message = createMessage(resource, revision, withCustomProperties);
+			Assert.assertEquals(message, expected, repository.info(resource, revision, withCustomProperties));
+		}
 	}
 }

@@ -17,7 +17,13 @@ import de.shadowhunt.subversion.SubversionException;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class RepositoryLog {
 
-	private Repository repository;
+	private static final Resource PREFIX = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/log");
+
+	private final Repository repository;
+
+	protected RepositoryLog(final Repository repository) {
+		this.repository = repository;
+	}
 
 	private String createMessage(final Resource resource, final Revision start, final Revision end, final int limit) {
 		return resource + ": " + start + " -> " + end + " (" + limit + ")";
@@ -25,7 +31,7 @@ public class RepositoryLog {
 
 	@Test(expected = SubversionException.class)
 	public void test00_NonExisitingEndRevision() {
-		final Resource resource = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/log/file.txt");
+		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
 		final Revision start = Revision.INITIAL;
 		final Revision end = Revision.create(10000000); // there should not be a such high revision
 		final int limit = 0;
@@ -36,7 +42,7 @@ public class RepositoryLog {
 
 	@Test(expected = SubversionException.class)
 	public void test00_NonExisitingResource() {
-		final Resource resource = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/log/non_existing.txt");
+		final Resource resource = PREFIX.append(Resource.create("/non_existing.txt"));
 		final Revision start = Revision.INITIAL;
 		final Revision end = Revision.HEAD;
 		final int limit = 0;
@@ -47,7 +53,7 @@ public class RepositoryLog {
 
 	@Test(expected = SubversionException.class)
 	public void test00_NonExisitingStartRevision() {
-		final Resource resource = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/log/file.txt");
+		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
 		final Revision start = Revision.create(10000000); // there should not be a such high revision
 		final Revision end = Revision.HEAD;
 		final int limit = 0;
@@ -58,7 +64,7 @@ public class RepositoryLog {
 
 	@Test
 	public void test01_AllAscending() {
-		final Resource resource = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/log/file.txt");
+		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
 		final Revision start = Revision.INITIAL;
 		final Revision end = Revision.HEAD;
 		final int limit = 0;
@@ -70,7 +76,7 @@ public class RepositoryLog {
 
 	@Test
 	public void test01_AllDescending() {
-		final Resource resource = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/log/file.txt");
+		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
 		final Revision start = Revision.HEAD;
 		final Revision end = Revision.INITIAL;
 		final int limit = 0;
@@ -82,7 +88,7 @@ public class RepositoryLog {
 
 	@Test
 	public void test01_Only2Ascending() {
-		final Resource resource = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/log/file.txt");
+		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
 		final Revision start = Revision.INITIAL;
 		final Revision end = Revision.HEAD;
 		final int limit = 2;
@@ -94,7 +100,7 @@ public class RepositoryLog {
 
 	@Test
 	public void test01_Only2Descending() {
-		final Resource resource = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/log/file.txt");
+		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
 		final Revision start = Revision.HEAD;
 		final Revision end = Revision.INITIAL;
 		final int limit = 2;
