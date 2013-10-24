@@ -192,7 +192,14 @@ public abstract class AbstractRepository implements Repository {
 	public List<Log> log(final Resource resource, final Revision startRevision, final Revision endRevision, final int limit) {
 		final Revision concreteStartRevision = getConcreteRevision(startRevision);
 		final Revision concreteEndRevision = getConcreteRevision(endRevision);
-		final LogOperation operation = new LogOperation(repository, resource, concreteStartRevision, concreteEndRevision, limit);
+
+		final Resource resolvedResource;
+		if (concreteStartRevision.compareTo(concreteEndRevision) > 0) {
+			resolvedResource = resolve(resource, concreteStartRevision, true);
+		} else {
+			resolvedResource = resolve(resource, concreteEndRevision, true);
+		}
+		final LogOperation operation = new LogOperation(repository, resolvedResource, concreteStartRevision, concreteEndRevision, limit);
 		return operation.execute(client, context);
 	}
 
