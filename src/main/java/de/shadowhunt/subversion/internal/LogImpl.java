@@ -49,7 +49,7 @@ public final class LogImpl implements Log {
 
 		private LogImpl current = null;
 
-		private final DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+		private final DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US);
 
 		private final List<LogImpl> logs = new ArrayList<LogImpl>();
 
@@ -80,7 +80,12 @@ public final class LogImpl implements Log {
 			if ("date".equals(name)) {
 				try {
 					format.setTimeZone(ZULU);
-					final Date date = format.parse(getText());
+					String time = getText();
+					final int index = time.indexOf('.');
+					if (index > 0) {
+						time = time.substring(0, index + 4); // remove nanoseconds
+					}
+					final Date date = format.parse(time);
 					current.setDate(date);
 				} catch (final ParseException e) {
 					throw new SAXException("date has unexpected format", e);
