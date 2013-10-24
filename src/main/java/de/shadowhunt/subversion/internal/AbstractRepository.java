@@ -153,13 +153,6 @@ public abstract class AbstractRepository implements Repository {
 		return operation.execute(client, context);
 	}
 
-	@Override
-	public Log lastLog(final Resource resource) {
-		final Revision revision = getConcreteRevision(Revision.HEAD);
-		final List<Log> logs = log(resource, revision, revision, 1);
-		return logs.get(0);
-	}
-
 	protected List<Info> list(final Resource prefix, final Resource resource, final Depth depth, final boolean withCustomProperties) {
 		final Resource r = prefix.append(resource);
 

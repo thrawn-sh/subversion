@@ -126,15 +126,6 @@ public interface Repository {
 	Info info(Resource resource, Revision revision, boolean withCustomProperties);
 
 	/**
-	 * Retrieve log information for the latest revision of the resource
-	 *
-	 * @param resource the {@link Resource} of the resource (relative to the repository root)
-	 *
-	 * @return {@link de.shadowhunt.subversion.internal.LogImpl} for latest revision of the resource
-	 */
-	Log lastLog(Resource resource);
-
-	/**
 	 * Retrieve information for the resource in the given revision and its child resources (depending on depth parameter)
 	 *
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
