@@ -32,6 +32,14 @@ import javax.annotation.concurrent.ThreadSafe;
 public interface Repository {
 
 	/**
+	 * Save all modifications of the current running {@link Transaction}
+	 *
+	 * @param transaction the current running {@link Transaction}
+	 * @param message the commit message for the expected operation
+	 */
+	void commit(Transaction transaction, String message);
+
+	/**
 	 * Recursively copy a resource in the given revision
 	 *
 	 * @param transaction the current running {@link Transaction}
@@ -49,6 +57,13 @@ public interface Repository {
 	 * @param parent whether to create missing parent folders or not
 	 */
 	void createFolder(Transaction transaction, Resource resource, boolean parent);
+
+	/**
+	 * Create a new {@link Transaction} to make modifications within
+	 *
+	 * @return the new {@link Transaction}
+	 */
+	Transaction createTransaction();
 
 	/**
 	 * Delete the resource from the repository
@@ -96,6 +111,8 @@ public interface Repository {
 	 * @return {@code true} if the resource already exists in the latest revision of the repository otherwise {@code false}
 	 */
 	boolean exists(Resource resource, Revision revision);
+
+	URI getBaseUri();
 
 	/**
 	 * Retrieve information for the resource
@@ -159,6 +176,13 @@ public interface Repository {
 	void move(Transaction transaction, Resource srcResource, Resource targetResource);
 
 	/**
+	 * Abort the current running {@link Transaction} and revert all modifications
+	 *
+	 * @param transaction the current running {@link Transaction}
+	 */
+	void rollback(Transaction transaction);
+
+	/**
 	 * Set the given properties for the resource (new properties will be added, existing properties will be overridden)
 	 *
 	 * @param transaction the current running {@link Transaction}
@@ -183,26 +207,4 @@ public interface Repository {
 	 * @param content {@link InputStream} from which the content will be read (will be closed after transfer)
 	 */
 	void upload(Transaction transaction, Resource resource, InputStream content);
-
-	/**
-	 * Create a new {@link Transaction} to make modifications within
-	 *
-	 * @return the new {@link Transaction}
-	 */
-	Transaction createTransaction();
-
-	/**
-	 * Save all modifications of the current running {@link Transaction}
-	 *
-	 * @param transaction the current running {@link Transaction}
-	 * @param message the commit message for the expected operation
-	 */
-	void commit(Transaction transaction, String message);
-
-	/**
-	 * Abort the current running {@link Transaction} and revert all modifications
-	 *
-	 * @param transaction the current running {@link Transaction}
-	 */
-	void rollback(Transaction transaction);
 }

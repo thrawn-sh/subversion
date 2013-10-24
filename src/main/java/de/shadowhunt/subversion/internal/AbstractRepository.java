@@ -52,19 +52,10 @@ public abstract class AbstractRepository implements Repository {
 	protected final URI repository;
 
 	protected AbstractRepository(final URI repository, final RepositoryConfig config, final HttpClient client, final HttpContext context) {
-		this.repository = repository;
+		this.repository = URIUtils.createURI(repository);
 		this.config = config;
 		this.client = client;
 		this.context = context;
-	}
-
-	@Override
-	public void createFolder(final Transaction transaction, final Resource resource, final boolean parent) {
-		if (exists(resource, Revision.HEAD)) {
-			return;
-		}
-
-		createFolder0(config.getWorkingResource(transaction).append(resource), parent);
 	}
 
 	@Override
@@ -77,6 +68,15 @@ public abstract class AbstractRepository implements Repository {
 
 		final CopyOperation operation = new CopyOperation(repository, s, t);
 		operation.execute(client, context);
+	}
+
+	@Override
+	public void createFolder(final Transaction transaction, final Resource resource, final boolean parent) {
+		if (exists(resource, Revision.HEAD)) {
+			return;
+		}
+
+		createFolder0(config.getWorkingResource(transaction).append(resource), parent);
 	}
 
 	protected Resource createFolder0(final Resource resource, final boolean parent) {
@@ -104,6 +104,20 @@ public abstract class AbstractRepository implements Repository {
 	}
 
 	@Override
+	public void deleteProperties(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
+		final ResourceProperty[] filtered = ResourceProperty.filterSystemProperties(properties);
+		if (filtered.length == 0) {
+			return;
+		}
+
+		final Info info = info(resource, Revision.HEAD, false);
+
+		final Resource r = config.getWorkingResource(transaction).append(resource);
+		final PropertiesDeleteOperation operation = new PropertiesDeleteOperation(repository, r, info.getLockToken(), filtered);
+		operation.execute(client, context);
+	}
+
+	@Override
 	public InputStream download(final Resource resource, final Revision revision) {
 		final DownloadOperation operation = new DownloadOperation(repository, resolve(resource, revision, true));
 		return operation.execute(client, context);
@@ -118,6 +132,11 @@ public abstract class AbstractRepository implements Repository {
 	public boolean exists(final Resource resource, final Revision revision) {
 		final ExistsOperation operation = new ExistsOperation(repository, resolve(resource, revision, false));
 		return operation.execute(client, context);
+	}
+
+	@Override
+	public final URI getBaseUri() {
+		return URIUtils.createURI(repository);
 	}
 
 	protected Revision getConcreteRevision(final Revision revision) {
@@ -146,6 +165,13 @@ public abstract class AbstractRepository implements Repository {
 
 		final ListOperation operation = new ListOperation(repository, r, depth, withCustomProperties);
 		return operation.execute(client, context);
+	}
+
+	@Override
+	public List<Info> list(final Resource resource, final Revision revision, final Depth depth, final boolean withCustomProperties) {
+		final Revision concreteRevision = getConcreteRevision(revision);
+		final Resource prefix = config.getVersionedResource(concreteRevision);
+		return list(prefix, resource, depth, withCustomProperties);
 	}
 
 	protected void listRecursive(final Resource prefix, final boolean withCustomProperties, final Collection<Info> todo, final Set<Info> done) {
@@ -178,27 +204,6 @@ public abstract class AbstractRepository implements Repository {
 	}
 
 	@Override
-	public void deleteProperties(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
-		final ResourceProperty[] filtered = ResourceProperty.filterSystemProperties(properties);
-		if (filtered.length == 0) {
-			return;
-		}
-
-		final Info info = info(resource, Revision.HEAD, false);
-
-		final Resource r = config.getWorkingResource(transaction).append(resource);
-		final PropertiesDeleteOperation operation = new PropertiesDeleteOperation(repository, r, info.getLockToken(), filtered);
-		operation.execute(client, context);
-	}
-
-	@Override
-	public List<Info> list(final Resource resource, final Revision revision, final Depth depth, final boolean withCustomProperties) {
-		final Revision concreteRevision = getConcreteRevision(revision);
-		final Resource prefix = config.getVersionedResource(concreteRevision);
-		return list(prefix, resource, depth, withCustomProperties);
-	}
-
-	@Override
 	public void move(final Transaction transaction, final Resource srcResource, final Resource targetResource) {
 		copy(transaction, srcResource, Revision.HEAD, targetResource);
 		delete(transaction, srcResource);
@@ -224,6 +229,13 @@ public abstract class AbstractRepository implements Repository {
 		final Info headInfo = info(resource, Revision.HEAD, false);
 		final ResolveOperation operation = new ResolveOperation(repository, resource, headInfo.getRevision(), revision, config);
 		return operation.execute(client, context);
+	}
+
+	@Override
+	public void rollback(final Transaction transaction) {
+		final Resource resource = config.getTransactionResource(transaction);
+		final DeleteOperation operation = new DeleteOperation(repository, resource);
+		operation.execute(client, context);
 	}
 
 	@Override
@@ -265,13 +277,6 @@ public abstract class AbstractRepository implements Repository {
 		final Info info = info(infoResource, Revision.HEAD, false);
 		final Resource r = config.getWorkingResource(transaction).append(resource);
 		final UploadOperation operation = new UploadOperation(repository, r, info.getLockToken(), content);
-		operation.execute(client, context);
-	}
-
-	@Override
-	public void rollback(final Transaction transaction) {
-		final Resource resource = config.getTransactionResource(transaction);
-		final DeleteOperation operation = new DeleteOperation(repository, resource);
 		operation.execute(client, context);
 	}
 }
