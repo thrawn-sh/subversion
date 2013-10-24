@@ -1,3 +1,22 @@
+/*
+ * #%L
+ * Shadowhunt Subversion
+ * %%
+ * Copyright (C) 2013 shadowhunt
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package de.shadowhunt.subversion.internal;
 
 import java.io.File;
@@ -20,7 +39,7 @@ public class InfoLoader extends BaseLoader {
 
 	static class InfoHandler extends BasicHandler {
 
-		private InfoImpl current = null;
+		private InfoImpl current = new InfoImpl();
 
 		@Override
 		public void endElement(final String uri, final String localName, final String qName) throws SAXException {
@@ -54,7 +73,7 @@ public class InfoLoader extends BaseLoader {
 		}
 	}
 
-	public static Info load(final Resource resource, final Revision revision) throws Exception {
+	public static Info load(final Resource resource, final Revision revision, final boolean withCustomProperties) throws Exception {
 		final File infoFile = new File(ROOT, resolve(revision) + resource.getValue() + SUFFIX);
 
 		final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
@@ -67,7 +86,7 @@ public class InfoLoader extends BaseLoader {
 		final File f = new File(ROOT, resolve(revision) + resource.getValue());
 		info.setDirectory(f.isDirectory());
 		if (info.isFile()) {
-			final FileInputStream fis = new FileInputStream(new File("foo"));
+			final FileInputStream fis = new FileInputStream(f);
 			try {
 				info.setMd5(DigestUtils.md5Hex(fis));
 			} finally {
@@ -75,7 +94,7 @@ public class InfoLoader extends BaseLoader {
 			}
 		}
 
-		info.setCustomProperties(ResourcePropertyLoader.load(resource, revision));
+		info.setCustomProperties(ResourcePropertyLoader.load(resource, revision, withCustomProperties));
 		return info;
 	}
 }
