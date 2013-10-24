@@ -27,42 +27,47 @@ import java.io.Serializable;
 public final class Revision implements Comparable<Revision>, Serializable {
 
 	/**
+	 * Represents the {@link Revision} of an empty repository
+	 */
+	public static final Revision EMPTY = new Revision(0L);
+
+	/**
 	 * Represents the newest {@link Revision} in the repository
 	 */
-	public static final Revision HEAD = new Revision(-1);
+	public static final Revision HEAD = new Revision(Long.MAX_VALUE);
 
 	/**
 	 * Represents the first {@link Revision} in the repository
 	 */
-	public static final Revision INITIAL = new Revision(0);
+	public static final Revision INITIAL = new Revision(1L);
 
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Create a new {@link Revision} instance for the given value
 	 *
-	 * @param revision value of the {@link Revision} must be greater or equal than 0
+	 * @param revision value of the {@link Revision} must be greater or equal than 1
 	 *
 	 * @return the new {@link Revision} instance with the given value
 	 *
-	 * @throws IllegalArgumentException if revision is smaller than 0
+	 * @throws IllegalArgumentException if revision is smaller than 1
 	 */
 	public static Revision create(final int revision) {
-		if (revision < 0) {
-			throw new IllegalArgumentException("revision must be greater or equal than 0, was " + revision);
+		if (revision < 1) {
+			throw new IllegalArgumentException("revision must be greater or equal than 1, was " + revision);
 		}
 		return new Revision(revision);
 	}
 
-	private final int version;
+	private final long version;
 
-	private Revision(final int revision) {
+	private Revision(final long revision) {
 		version = revision;
 	}
 
 	@Override
 	public int compareTo(final Revision o) {
-		return version - o.version;
+		return Long.compare(version, o.version);
 	}
 
 	@Override
@@ -77,16 +82,25 @@ public final class Revision implements Comparable<Revision>, Serializable {
 			return false;
 		}
 		final Revision other = (Revision) obj;
-		return version == other.version;
+		if (version != other.version) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
 	public int hashCode() {
-		return version;
+		final int prime = 31;
+		int result = 1;
+		result = (prime * result) + (int) (version ^ (version >>> 32));
+		return result;
 	}
 
 	@Override
 	public String toString() {
-		return Integer.toString(version);
+		if (version == HEAD.version) {
+			return "HEAD";
+		}
+		return Long.toString(version);
 	}
 }
