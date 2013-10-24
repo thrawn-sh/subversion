@@ -212,7 +212,7 @@ public abstract class AbstractRepository implements Repository {
 			return expectedResource;
 		}
 
-		{ // check whether the expectedUri exists
+		{ // check whether the expectedResource exists
 			final ExistsOperation operation = new ExistsOperation(repository, expectedResource);
 			if (operation.execute(client, context)) {
 				return expectedResource;
