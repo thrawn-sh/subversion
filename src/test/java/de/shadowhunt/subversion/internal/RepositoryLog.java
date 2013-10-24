@@ -21,6 +21,8 @@ public class RepositoryLog {
 
 	private final Repository repository;
 
+	public static final int UNLIMITED = 0;
+
 	protected RepositoryLog(final Repository repository) {
 		this.repository = repository;
 	}
@@ -30,88 +32,134 @@ public class RepositoryLog {
 	}
 
 	@Test(expected = SubversionException.class)
-	public void test00_NonExisitingEndRevision() {
+	public void test00_NonExisitingEndRevision() throws Exception {
 		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
 		final Revision start = Revision.INITIAL;
 		final Revision end = Revision.create(10000000); // there should not be a such high revision
-		final int limit = 0;
+		final int limit = UNLIMITED;
 
 		repository.log(resource, start, end, limit);
 		Assert.fail("log must not complete");
 	}
 
 	@Test(expected = SubversionException.class)
-	public void test00_NonExisitingResource() {
+	public void test00_NonExisitingResource() throws Exception {
 		final Resource resource = PREFIX.append(Resource.create("/non_existing.txt"));
 		final Revision start = Revision.INITIAL;
 		final Revision end = Revision.HEAD;
-		final int limit = 0;
+		final int limit = UNLIMITED;
 
 		repository.log(resource, start, end, limit);
 		Assert.fail("log must not complete");
 	}
 
 	@Test(expected = SubversionException.class)
-	public void test00_NonExisitingStartRevision() {
+	public void test00_NonExisitingStartRevision() throws Exception {
 		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
 		final Revision start = Revision.create(10000000); // there should not be a such high revision
 		final Revision end = Revision.HEAD;
-		final int limit = 0;
+		final int limit = UNLIMITED;
 
 		repository.log(resource, start, end, limit);
 		Assert.fail("log must not complete");
 	}
 
 	@Test
-	public void test01_AllAscending() {
+	public void test01_FileHeadAllAscending() throws Exception {
 		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
 		final Revision start = Revision.INITIAL;
 		final Revision end = Revision.HEAD;
-		final int limit = 0;
+		final int limit = UNLIMITED;
 
-		final List<Log> expected = null;
+		final List<Log> expected = LogLoader.load(resource, start, end, limit);
 		final String message = createMessage(resource, start, end, limit);
 		Assert.assertEquals(message, expected, repository.log(resource, start, end, limit));
 	}
 
 	@Test
-	public void test01_AllDescending() {
+	public void test01_FileHeadAllDescending() throws Exception {
 		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
 		final Revision start = Revision.HEAD;
 		final Revision end = Revision.INITIAL;
-		final int limit = 0;
+		final int limit = UNLIMITED;
 
-		final List<Log> expected = null;
+		final List<Log> expected = LogLoader.load(resource, start, end, limit);
 		final String message = createMessage(resource, start, end, limit);
 		Assert.assertEquals(message, expected, repository.log(resource, start, end, limit));
 	}
 
 	@Test
-	public void test01_Only2Ascending() {
+	public void test01_FileHeadOnly2Ascending() throws Exception {
 		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
 		final Revision start = Revision.INITIAL;
 		final Revision end = Revision.HEAD;
 		final int limit = 2;
 
-		final List<Log> expected = null;
+		final List<Log> expected = LogLoader.load(resource, start, end, limit);
 		final String message = createMessage(resource, start, end, limit);
+		Assert.assertEquals(message, limit, expected.size());
 		Assert.assertEquals(message, expected, repository.log(resource, start, end, limit));
 	}
 
 	@Test
-	public void test01_Only2Descending() {
+	public void test01_FileHeadOnly2Descending() throws Exception {
 		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
 		final Revision start = Revision.HEAD;
 		final Revision end = Revision.INITIAL;
 		final int limit = 2;
 
-		final List<Log> expected = null;
+		final List<Log> expected = LogLoader.load(resource, start, end, limit);
+		final String message = createMessage(resource, start, end, limit);
+		Assert.assertEquals(message, limit, expected.size());
+		Assert.assertEquals(message, expected, repository.log(resource, start, end, limit));
+	}
+
+	@Test
+	public void test01_FileRevisionAscending() throws Exception {
+		final Resource resource = PREFIX.append(Resource.create("/file_delete.txt"));
+		final Revision start = Revision.INITIAL;
+		final Revision end = Revision.create(82);
+		final int limit = UNLIMITED;
+
+		final List<Log> expected = LogLoader.load(resource, start, end, limit);
 		final String message = createMessage(resource, start, end, limit);
 		Assert.assertEquals(message, expected, repository.log(resource, start, end, limit));
 	}
 
 	@Test
-	public void test01_Renamed() {
-		Assert.fail(); // TODO
+	public void test01_FileRevisionDescending() throws Exception {
+		final Resource resource = PREFIX.append(Resource.create("/file_delete.txt"));
+		final Revision start = Revision.create(82);
+		final Revision end = Revision.INITIAL;
+		final int limit = UNLIMITED;
+
+		final List<Log> expected = LogLoader.load(resource, start, end, limit);
+		final String message = createMessage(resource, start, end, limit);
+		Assert.assertEquals(message, expected, repository.log(resource, start, end, limit));
+	}
+
+	@Test
+	public void test02_FileCopy() throws Exception {
+		final Resource resource = PREFIX.append(Resource.create("/file_copy.txt"));
+		final Revision start = Revision.INITIAL;
+		final Revision end = Revision.create(85);
+		final int limit = UNLIMITED;
+
+		final List<Log> expected = LogLoader.load(resource, start, end, limit);
+		final String message = createMessage(resource, start, end, limit);
+		Assert.assertEquals(message, expected, repository.log(resource, start, end, limit));
+	}
+
+	@Test
+	public void test02_FileMove() throws Exception {
+		final Resource resource = PREFIX.append(Resource.create("/file_move.txt"));
+		final Revision start = Revision.INITIAL;
+		final Revision end = Revision.create(87);
+		final int limit = UNLIMITED;
+
+		// NOTE: determine last existing revision for loader
+		final List<Log> expected = LogLoader.load(resource, start, Revision.create(86), limit);
+		final String message = createMessage(resource, start, end, limit);
+		Assert.assertEquals(message, expected, repository.log(resource, start, end, limit));
 	}
 }
