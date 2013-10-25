@@ -33,6 +33,16 @@ import javax.annotation.concurrent.ThreadSafe;
 public interface Repository {
 
 	/**
+	 * Upload a new revision of the resource and set properties
+	 *
+	 * @param transaction the current running {@link Transaction}
+	 * @param resource the {@link Resource} of the resource (relative to the repository root)
+	 * @param parents whether to create missing parents folders or not
+	 * @param content {@link InputStream} from which the content will be read (will be closed after transfer)
+	 */
+	void add(Transaction transaction, Resource resource, boolean parents, InputStream content);
+
+	/**
 	 * Save all modifications of the current running {@link Transaction}
 	 *
 	 * @param transaction the current running {@link Transaction}
@@ -47,17 +57,18 @@ public interface Repository {
 	 * @param srcResource the {@link Resource} of the source resource (relative to the repository root)
 	 * @param srcRevision {@link Revision} of the resource to copy
 	 * @param targetResource the {@link Resource} of the target resource (relative to the repository root)
+	 * @param parents whether to create missing parents folders or not
 	 */
-	void copy(Transaction transaction, Resource srcResource, Revision srcRevision, Resource targetResource);
+	void copy(Transaction transaction, Resource srcResource, Revision srcRevision, Resource targetResource, boolean parents);
 
 	/**
-	 * Create a folder with all necessary parent folders
+	 * Create a folder with all necessary parents folders
 	 *
 	 * @param transaction the current running {@link Transaction}
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
-	 * @param parent whether to create missing parent folders or not
+	 * @param parents whether to create missing parents folders or not
 	 */
-	void createFolder(Transaction transaction, Resource resource, boolean parent);
+	void createFolder(Transaction transaction, Resource resource, boolean parents);
 
 	/**
 	 * Create a new {@link Transaction} to make modifications within
@@ -160,8 +171,9 @@ public interface Repository {
 	 * @param transaction the current running {@link Transaction}
 	 * @param srcResource the {@link Resource} of the source resource (relative to the repository root)
 	 * @param targetResource the {@link Resource} of the target resource (relative to the repository root)
+	 * @param parents whether to create missing parents folders or not
 	 */
-	void move(Transaction transaction, Resource srcResource, Resource targetResource);
+	void move(Transaction transaction, Resource srcResource, Resource targetResource, boolean parents);
 
 	/**
 	 * Abort the current running {@link Transaction} and revert all modifications
@@ -186,13 +198,4 @@ public interface Repository {
 	 * @param force the user that created the lock must match the user who wants to delete it, unless force is {@code true}
 	 */
 	void unlock(Resource resource, boolean force);
-
-	/**
-	 * Upload a new revision of the resource and set properties
-	 *
-	 * @param transaction the current running {@link Transaction}
-	 * @param resource the {@link Resource} of the resource (relative to the repository root)
-	 * @param content {@link InputStream} from which the content will be read (will be closed after transfer)
-	 */
-	void upload(Transaction transaction, Resource resource, InputStream content);
 }

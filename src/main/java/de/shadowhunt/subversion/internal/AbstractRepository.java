@@ -60,7 +60,25 @@ public abstract class AbstractRepository implements Repository {
 	}
 
 	@Override
-	public void copy(final Transaction transaction, final Resource srcResource, final Revision srcRevision, final Resource targetResource) {
+	public void add(final Transaction transaction, final Resource resource, final boolean parents, final InputStream content) {
+		if (content == null) {
+			throw new IllegalArgumentException("content can not be null");
+		}
+
+		final Resource infoResource;
+		if (exists(resource, Revision.HEAD)) {
+			infoResource = resource;
+		} else {
+			infoResource = createFolder0(config.getWorkingResource(transaction).append(resource.getParent()), true);
+		}
+		final Info info = info(infoResource, Revision.HEAD);
+		final Resource r = config.getWorkingResource(transaction).append(resource);
+		final UploadOperation operation = new UploadOperation(repository, r, info.getLockToken(), content);
+		operation.execute(client, context);
+	}
+
+	@Override
+	public void copy(final Transaction transaction, final Resource srcResource, final Revision srcRevision, final Resource targetResource, final boolean parents) {
 		createFolder0(config.getWorkingResource(transaction).append(targetResource.getParent()), true);
 
 		final Info info = info(srcResource, srcRevision);
@@ -199,8 +217,8 @@ public abstract class AbstractRepository implements Repository {
 	}
 
 	@Override
-	public void move(final Transaction transaction, final Resource srcResource, final Resource targetResource) {
-		copy(transaction, srcResource, Revision.HEAD, targetResource);
+	public void move(final Transaction transaction, final Resource srcResource, final Resource targetResource, final boolean parents) {
+		copy(transaction, srcResource, Revision.HEAD, targetResource, parents);
 		delete(transaction, srcResource);
 	}
 
@@ -210,7 +228,7 @@ public abstract class AbstractRepository implements Repository {
 			if (operation.execute(client, context)) {
 				return resource;
 			}
-			throw new SubversionException("TODO"); // FIXME
+			throw new SubversionException(resource.getValue());
 		}
 
 		final Resource expectedResource = config.getVersionedResource(revision).append(resource);
@@ -253,24 +271,6 @@ public abstract class AbstractRepository implements Repository {
 			return;
 		}
 		final UnlockOperation operation = new UnlockOperation(repository, resource, lockToken, force);
-		operation.execute(client, context);
-	}
-
-	@Override
-	public void upload(final Transaction transaction, final Resource resource, final InputStream content) {
-		if (content == null) {
-			throw new IllegalArgumentException("content can not be null");
-		}
-
-		final Resource infoResource;
-		if (exists(resource, Revision.HEAD)) {
-			infoResource = resource;
-		} else {
-			infoResource = createFolder0(config.getWorkingResource(transaction).append(resource.getParent()), true);
-		}
-		final Info info = info(infoResource, Revision.HEAD);
-		final Resource r = config.getWorkingResource(transaction).append(resource);
-		final UploadOperation operation = new UploadOperation(repository, r, info.getLockToken(), content);
 		operation.execute(client, context);
 	}
 }
