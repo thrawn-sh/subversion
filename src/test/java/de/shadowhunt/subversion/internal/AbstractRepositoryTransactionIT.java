@@ -2,18 +2,17 @@ package de.shadowhunt.subversion.internal;
 
 import java.util.UUID;
 
+import de.shadowhunt.subversion.Repository;
+import de.shadowhunt.subversion.SubversionException;
+import de.shadowhunt.subversion.Transaction;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import de.shadowhunt.subversion.Repository;
-import de.shadowhunt.subversion.SubversionException;
-import de.shadowhunt.subversion.Transaction;
-
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class AbstractRepositoryTransactionIT {
+public abstract class AbstractRepositoryTransactionIT {
 
 	private final Repository repository;
 

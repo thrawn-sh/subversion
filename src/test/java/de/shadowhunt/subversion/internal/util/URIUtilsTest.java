@@ -19,9 +19,10 @@
  */
 package de.shadowhunt.subversion.internal.util;
 
-import de.shadowhunt.subversion.Resource;
 import java.lang.reflect.Field;
 import java.net.URI;
+
+import de.shadowhunt.subversion.Resource;
 import org.junit.Assert;
 import org.junit.Test;
 

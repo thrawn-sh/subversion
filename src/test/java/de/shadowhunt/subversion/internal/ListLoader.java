@@ -11,7 +11,7 @@ import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 
-public class ListLoader extends BaseLoader {
+public final class ListLoader extends BaseLoader {
 
 	private static final FilenameFilter NO_META = new FilenameFilter() {
 
@@ -29,6 +29,10 @@ public class ListLoader extends BaseLoader {
 			return true;
 		}
 	};
+
+	private ListLoader() {
+		// prevent instantiation
+	}
 
 	public static Set<Info> load(final Resource resource, final Revision revision, final Depth depth) throws Exception {
 		final File root = new File(ROOT, resolve(revision) + resource.getValue());
