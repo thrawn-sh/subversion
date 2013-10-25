@@ -31,7 +31,7 @@ public abstract class AbstractRepositoryTransactionIT {
 	public void test00_rollback() throws Exception {
 		final Transaction transaction = repository.createTransaction();
 		repository.rollback(transaction);
-		Assert.assertTrue("rollback empty transaction", true);
+		Assert.assertFalse("transaction is ended", transaction.isActive());
 	}
 
 	@Test(expected = SubversionException.class)

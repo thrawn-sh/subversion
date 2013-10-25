@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,6 +22,10 @@ package de.shadowhunt.subversion.internal.httpv2;
 import java.net.URI;
 import java.util.UUID;
 
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.Transaction;
+import de.shadowhunt.subversion.internal.AbstractOperation;
+import de.shadowhunt.subversion.internal.util.URIUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -30,11 +34,6 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.Transaction;
-import de.shadowhunt.subversion.internal.AbstractOperation;
-import de.shadowhunt.subversion.internal.util.URIUtils;
-
 public class CreateTransactionOperation extends AbstractOperation<Transaction> {
 
 	private static final HttpEntity entity;
@@ -42,6 +41,7 @@ public class CreateTransactionOperation extends AbstractOperation<Transaction> {
 	private static final String HEADER_NAME = "SVN-Txn-Name";
 
 	private final UUID repositoryId;
+
 	static {
 		final ContentType contentType = ContentType.create("application/vnd.svn-skel");
 		entity = new StringEntity("( create-txn )", contentType);
