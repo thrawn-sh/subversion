@@ -37,6 +37,11 @@ public class RepositoryInfo {
 
 	private static final Resource PREFIX = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/info");
 
+	private static void assertEquals(final String message, final Info expected, final Info actual) {
+		Assert.assertEquals(message, expected, actual);
+		Assert.assertArrayEquals(message, expected.getProperties(), actual.getProperties());
+	}
+
 	private final Repository repository;
 
 	public RepositoryInfo() {
@@ -56,7 +61,7 @@ public class RepositoryInfo {
 		final Resource resource = PREFIX.append(Resource.create("/non_existing.txt"));
 		final Revision revision = Revision.HEAD;
 
-		repository.info(resource, revision, true);
+		repository.info(resource, revision);
 		Assert.fail("info must not complete");
 	}
 
@@ -65,7 +70,7 @@ public class RepositoryInfo {
 		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
 		final Revision revision = Revision.create(Integer.MAX_VALUE); // there should not be a such high revision
 
-		repository.info(resource, revision, true);
+		repository.info(resource, revision);
 		Assert.fail("info must not complete");
 	}
 
@@ -77,7 +82,7 @@ public class RepositoryInfo {
 		for (final boolean withCustomProperties : new boolean[] { true, false }) {
 			final Info expected = InfoLoader.load(resource, revision, withCustomProperties);
 			final String message = createMessage(resource, revision, withCustomProperties);
-			Assert.assertEquals(message, expected, repository.info(resource, revision, withCustomProperties));
+			assertEquals(message, expected, repository.info(resource, revision));
 		}
 	}
 
@@ -89,7 +94,7 @@ public class RepositoryInfo {
 		for (final boolean withCustomProperties : new boolean[] { true, false }) {
 			final Info expected = InfoLoader.load(resource, revision, withCustomProperties);
 			final String message = createMessage(resource, revision, withCustomProperties);
-			Assert.assertEquals(message, expected, repository.info(resource, revision, withCustomProperties));
+			assertEquals(message, expected, repository.info(resource, revision));
 		}
 	}
 
@@ -101,7 +106,7 @@ public class RepositoryInfo {
 		for (final boolean withCustomProperties : new boolean[] { true, false }) {
 			final Info expected = InfoLoader.load(resource, revision, withCustomProperties);
 			final String message = createMessage(resource, revision, withCustomProperties);
-			Assert.assertEquals(message, expected, repository.info(resource, revision, withCustomProperties));
+			assertEquals(message, expected, repository.info(resource, revision));
 		}
 	}
 
@@ -113,7 +118,7 @@ public class RepositoryInfo {
 		for (final boolean withCustomProperties : new boolean[] { true, false }) {
 			final Info expected = InfoLoader.load(resource, revision, withCustomProperties);
 			final String message = createMessage(resource, revision, withCustomProperties);
-			Assert.assertEquals(message, expected, repository.info(resource, revision, withCustomProperties));
+			assertEquals(message, expected, repository.info(resource, revision));
 		}
 	}
 
@@ -125,7 +130,7 @@ public class RepositoryInfo {
 		for (final boolean withCustomProperties : new boolean[] { true, false }) {
 			final Info expected = InfoLoader.load(resource, revision, withCustomProperties);
 			final String message = createMessage(resource, revision, withCustomProperties);
-			Assert.assertEquals(message, expected, repository.info(resource, revision, withCustomProperties));
+			assertEquals(message, expected, repository.info(resource, revision));
 		}
 	}
 
@@ -137,7 +142,7 @@ public class RepositoryInfo {
 		for (final boolean withCustomProperties : new boolean[] { true, false }) {
 			final Info expected = InfoLoader.load(resource, revision, withCustomProperties);
 			final String message = createMessage(resource, revision, withCustomProperties);
-			Assert.assertEquals(message, expected, repository.info(resource, revision, withCustomProperties));
+			assertEquals(message, expected, repository.info(resource, revision));
 		}
 	}
 
@@ -149,7 +154,7 @@ public class RepositoryInfo {
 		for (final boolean withCustomProperties : new boolean[] { true, false }) {
 			final Info expected = InfoLoader.load(resource, revision, withCustomProperties);
 			final String message = createMessage(resource, revision, withCustomProperties);
-			Assert.assertEquals(message, expected, repository.info(resource, revision, withCustomProperties));
+			assertEquals(message, expected, repository.info(resource, revision));
 		}
 	}
 
@@ -161,7 +166,7 @@ public class RepositoryInfo {
 		for (final boolean withCustomProperties : new boolean[] { true, false }) {
 			final Info expected = InfoLoader.load(resource, revision, withCustomProperties);
 			final String message = createMessage(resource, revision, withCustomProperties);
-			Assert.assertEquals(message, expected, repository.info(resource, revision, withCustomProperties));
+			assertEquals(message, expected, repository.info(resource, revision));
 		}
 	}
 }

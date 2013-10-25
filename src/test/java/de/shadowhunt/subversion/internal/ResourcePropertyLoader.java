@@ -90,7 +90,7 @@ public class ResourcePropertyLoader extends BaseLoader {
 		saxParser.parse(file, handler);
 		final List<ResourceProperty> list = handler.getResourceProperties();
 		if (!withCustomProperties) {
-			return ResourceProperty.filterSystemProperties(list.toArray(new ResourceProperty[list.size()]));
+			return ResourceProperty.filterOutByType(Type.CUSTOM, list.toArray(new ResourceProperty[list.size()]));
 		}
 		return list.toArray(new ResourceProperty[list.size()]);
 	}

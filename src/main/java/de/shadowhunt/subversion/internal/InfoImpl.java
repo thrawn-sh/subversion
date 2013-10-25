@@ -19,20 +19,23 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+import javax.xml.parsers.SAXParser;
+
+import org.xml.sax.Attributes;
+
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.ResourceProperty.Type;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-import javax.xml.parsers.SAXParser;
-import org.xml.sax.Attributes;
 
 /**
  * Container that holds all status information for a single revision of a resource
@@ -45,21 +48,18 @@ public final class InfoImpl implements Info {
 
 		private InfoImpl current = null;
 
-		private List<ResourceProperty> customProperties;
-
 		private final boolean includeDirectories;
 
 		private final List<InfoImpl> infos = new ArrayList<InfoImpl>();
 
 		private boolean locktoken = false;
 
+		private List<ResourceProperty> properties;
+
 		private boolean resourceType = false;
 
-		private final boolean withCustomProperties;
-
-		SubversionInfoHandler(final boolean withCustomProperties, final boolean includeDirectories) {
+		SubversionInfoHandler(final boolean includeDirectories) {
 			super();
-			this.withCustomProperties = withCustomProperties;
 			this.includeDirectories = includeDirectories;
 		}
 
@@ -72,10 +72,8 @@ public final class InfoImpl implements Info {
 			}
 
 			if ("response".equals(name)) {
-				if (withCustomProperties) {
-					current.setCustomProperties(customProperties.toArray(new ResourceProperty[customProperties.size()]));
-					customProperties = null;
-				}
+				current.setProperties(properties.toArray(new ResourceProperty[properties.size()]));
+				properties = null;
 
 				infos.add(current);
 				current = null;
@@ -126,14 +124,10 @@ public final class InfoImpl implements Info {
 				return;
 			}
 
-			if (!withCustomProperties) {
-				return;
-			}
-
 			final String namespace = getNamespaceFromQName(qName);
 			if ("C".equals(namespace)) {
 				final ResourceProperty property = new ResourceProperty(Type.CUSTOM, name, getText());
-				customProperties.add(property);
+				properties.add(property);
 			}
 		}
 
@@ -156,10 +150,7 @@ public final class InfoImpl implements Info {
 				current = new InfoImpl();
 				locktoken = false;
 				resourceType = false;
-
-				if (withCustomProperties) {
-					customProperties = new ArrayList<ResourceProperty>();
-				}
+				properties = new ArrayList<ResourceProperty>();
 				return;
 			}
 
@@ -181,12 +172,11 @@ public final class InfoImpl implements Info {
 	 * Reads status information for a single revision of a resource from the given {@link InputStream}
 	 *
 	 * @param in {@link InputStream} from which the status information is read (Note: will not be closed)
-	 * @param withCustomProperties whether to read user defined properties
 	 *
 	 * @return {@link InfoImpl} for the resource
 	 */
-	public static InfoImpl read(final InputStream in, final boolean withCustomProperties) {
-		final List<InfoImpl> infos = readList(in, withCustomProperties, true);
+	public static InfoImpl read(final InputStream in) {
+		final List<InfoImpl> infos = readList(in, true);
 		if (infos.isEmpty()) {
 			throw new SubversionException("could not find any SubversionInfo in input");
 		}
@@ -197,15 +187,14 @@ public final class InfoImpl implements Info {
 	 * Reads a {@link List} of status information for a single revision of various resources from the given {@link InputStream}
 	 *
 	 * @param in {@link InputStream} from which the status information is read (Note: will not be closed)
-	 * @param withCustomProperties whether to read user defined properties
 	 * @param includeDirectories whether directory resources shall be included in the result
 	 *
 	 * @return {@link InfoImpl} for the resources
 	 */
-	public static List<InfoImpl> readList(final InputStream in, final boolean withCustomProperties, final boolean includeDirectories) {
+	public static List<InfoImpl> readList(final InputStream in, final boolean includeDirectories) {
 		try {
 			final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
-			final SubversionInfoHandler handler = new SubversionInfoHandler(withCustomProperties, includeDirectories);
+			final SubversionInfoHandler handler = new SubversionInfoHandler(includeDirectories);
 
 			saxParser.parse(in, handler);
 			return handler.getInfos();
@@ -213,8 +202,6 @@ public final class InfoImpl implements Info {
 			throw new SubversionException("could not parse input", e);
 		}
 	}
-
-	private ResourceProperty[] customProperties = EMPTY;
 
 	private boolean directory;
 
@@ -224,6 +211,8 @@ public final class InfoImpl implements Info {
 	private String lockToken;
 
 	private String md5;
+
+	private ResourceProperty[] properties = EMPTY;
 
 	private String repositoryUuid;
 
@@ -247,11 +236,28 @@ public final class InfoImpl implements Info {
 			return false;
 		}
 		final InfoImpl other = (InfoImpl) obj;
-		if (resource == null) {
-			if (other.resource != null) {
+		if (directory != other.directory) {
+			return false;
+		}
+		if (lockOwner == null) {
+			if (other.lockOwner != null) {
 				return false;
 			}
-		} else if (!resource.equals(other.resource)) {
+		} else if (!lockOwner.equals(other.lockOwner)) {
+			return false;
+		}
+		if (lockToken == null) {
+			if (other.lockToken != null) {
+				return false;
+			}
+		} else if (!lockToken.equals(other.lockToken)) {
+			return false;
+		}
+		if (md5 == null) {
+			if (other.md5 != null) {
+				return false;
+			}
+		} else if (!md5.equals(other.md5)) {
 			return false;
 		}
 		if (repositoryUuid == null) {
@@ -259,6 +265,13 @@ public final class InfoImpl implements Info {
 				return false;
 			}
 		} else if (!repositoryUuid.equals(other.repositoryUuid)) {
+			return false;
+		}
+		if (resource == null) {
+			if (other.resource != null) {
+				return false;
+			}
+		} else if (!resource.equals(other.resource)) {
 			return false;
 		}
 		if (revision == null) {
@@ -269,16 +282,6 @@ public final class InfoImpl implements Info {
 			return false;
 		}
 		return true;
-	}
-
-	/**
-	 * Returns an array of the custom {@link ResourceProperty}
-	 *
-	 * @return the array of the custom {@link ResourceProperty} or an empty array if there a non
-	 */
-	@Override
-	public ResourceProperty[] getCustomProperties() {
-		return Arrays.copyOf(customProperties, customProperties.length);
 	}
 
 	/**
@@ -315,6 +318,16 @@ public final class InfoImpl implements Info {
 	}
 
 	/**
+	 * Returns an array of the custom {@link ResourceProperty}
+	 *
+	 * @return the array of the custom {@link ResourceProperty} or an empty array if there a non
+	 */
+	@Override
+	public ResourceProperty[] getProperties() {
+		return Arrays.copyOf(properties, properties.length);
+	}
+
+	/**
 	 * Returns a globally unique identifier of the repository
 	 *
 	 * @return the globally unique identifier of the repository
@@ -344,7 +357,7 @@ public final class InfoImpl implements Info {
 	@Override
 	@CheckForNull
 	public String getResourcePropertyValue(final String name) {
-		for (final ResourceProperty property : customProperties) {
+		for (final ResourceProperty property : properties) {
 			if (name.equals(property.getName())) {
 				return property.getValue();
 			}
@@ -366,8 +379,12 @@ public final class InfoImpl implements Info {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = (prime * result) + ((resource == null) ? 0 : resource.hashCode());
+		result = (prime * result) + (directory ? 1231 : 1237);
+		result = (prime * result) + ((lockOwner == null) ? 0 : lockOwner.hashCode());
+		result = (prime * result) + ((lockToken == null) ? 0 : lockToken.hashCode());
+		result = (prime * result) + ((md5 == null) ? 0 : md5.hashCode());
 		result = (prime * result) + ((repositoryUuid == null) ? 0 : repositoryUuid.hashCode());
+		result = (prime * result) + ((resource == null) ? 0 : resource.hashCode());
 		result = (prime * result) + ((revision == null) ? 0 : revision.hashCode());
 		return result;
 	}
@@ -402,14 +419,6 @@ public final class InfoImpl implements Info {
 		return lockToken != null;
 	}
 
-	void setCustomProperties(@Nullable final ResourceProperty[] customProperties) {
-		if ((customProperties == null) || (customProperties.length == 0)) {
-			this.customProperties = EMPTY;
-		} else {
-			this.customProperties = Arrays.copyOf(customProperties, customProperties.length);
-		}
-	}
-
 	void setDirectory(final boolean directory) {
 		this.directory = directory;
 	}
@@ -430,6 +439,14 @@ public final class InfoImpl implements Info {
 		this.md5 = md5;
 	}
 
+	void setProperties(@Nullable final ResourceProperty[] properties) {
+		if ((properties == null) || (properties.length == 0)) {
+			this.properties = EMPTY;
+		} else {
+			this.properties = Arrays.copyOf(properties, properties.length);
+		}
+	}
+
 	void setRepositoryUuid(final String repositoryUuid) {
 		this.repositoryUuid = repositoryUuid;
 	}
@@ -445,9 +462,7 @@ public final class InfoImpl implements Info {
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("SubversionInfo [customProperties=");
-		builder.append(Arrays.toString(customProperties));
-		builder.append(", directory=");
+		builder.append("Info [directory=");
 		builder.append(directory);
 		builder.append(", lockOwner=");
 		builder.append(lockOwner);
@@ -455,10 +470,12 @@ public final class InfoImpl implements Info {
 		builder.append(lockToken);
 		builder.append(", md5=");
 		builder.append(md5);
-		builder.append(", resource=");
-		builder.append(resource);
+		builder.append(", properties=");
+		builder.append(Arrays.toString(properties));
 		builder.append(", repositoryUuid=");
 		builder.append(repositoryUuid);
+		builder.append(", resource=");
+		builder.append(resource);
 		builder.append(", revision=");
 		builder.append(revision);
 		builder.append("]");

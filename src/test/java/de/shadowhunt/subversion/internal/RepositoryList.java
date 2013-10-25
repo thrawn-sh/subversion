@@ -59,7 +59,7 @@ public class RepositoryList {
 		final Resource resource = PREFIX.append(Resource.create("/non_existing.txt"));
 		final Revision revision = Revision.HEAD;
 
-		repository.list(resource, revision, Depth.EMPTY, true);
+		repository.list(resource, revision, Depth.EMPTY);
 		Assert.fail("list must not complete");
 	}
 
@@ -68,7 +68,7 @@ public class RepositoryList {
 		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
 		final Revision revision = Revision.create(Integer.MAX_VALUE); // there should not be a such high revision
 
-		repository.list(resource, revision, Depth.EMPTY, true);
+		repository.list(resource, revision, Depth.EMPTY);
 		Assert.fail("list must not complete");
 	}
 
@@ -80,7 +80,7 @@ public class RepositoryList {
 		for (final Depth depth : Depth.values()) {
 			final List<Info> expected = ListLoader.load(resource, revision, depth, true);
 			final String message = createMessage(resource, revision, depth);
-			Assert.assertEquals(message, expected, repository.list(resource, revision, depth, true));
+			Assert.assertEquals(message, expected, repository.list(resource, revision, depth));
 		}
 	}
 
@@ -92,7 +92,7 @@ public class RepositoryList {
 		for (final Depth depth : Depth.values()) {
 			final List<Info> expected = ListLoader.load(resource, revision, depth, true);
 			final String message = createMessage(resource, revision, depth);
-			Assert.assertEquals(message, expected, repository.list(resource, revision, depth, true));
+			Assert.assertEquals(message, expected, repository.list(resource, revision, depth));
 		}
 	}
 
@@ -104,7 +104,7 @@ public class RepositoryList {
 		for (final Depth depth : Depth.values()) {
 			final List<Info> expected = ListLoader.load(resource, revision, depth, true);
 			final String message = createMessage(resource, revision, depth);
-			Assert.assertEquals(message, expected, repository.list(resource, revision, depth, true));
+			Assert.assertEquals(message, expected, repository.list(resource, revision, depth));
 		}
 	}
 
@@ -116,7 +116,7 @@ public class RepositoryList {
 		for (final Depth depth : Depth.values()) {
 			final List<Info> expected = ListLoader.load(resource, revision, depth, true);
 			final String message = createMessage(resource, revision, depth);
-			Assert.assertEquals(message, expected, repository.list(resource, revision, depth, true));
+			Assert.assertEquals(message, expected, repository.list(resource, revision, depth));
 		}
 	}
 
@@ -128,7 +128,7 @@ public class RepositoryList {
 		for (final Depth depth : Depth.values()) {
 			final List<Info> expected = ListLoader.load(resource, revision, depth, true);
 			final String message = createMessage(resource, revision, depth);
-			Assert.assertEquals(message, expected, repository.list(resource, revision, depth, true));
+			Assert.assertEquals(message, expected, repository.list(resource, revision, depth));
 		}
 	}
 
@@ -140,7 +140,7 @@ public class RepositoryList {
 		for (final Depth depth : Depth.values()) {
 			final List<Info> expected = ListLoader.load(resource, revision, depth, true);
 			final String message = createMessage(resource, revision, depth);
-			Assert.assertEquals(message, expected, repository.list(resource, revision, depth, true));
+			Assert.assertEquals(message, expected, repository.list(resource, revision, depth));
 		}
 	}
 
@@ -152,7 +152,7 @@ public class RepositoryList {
 		for (final Depth depth : Depth.values()) {
 			final List<Info> expected = ListLoader.load(resource, revision, depth, true);
 			final String message = createMessage(resource, revision, depth);
-			Assert.assertEquals(message, expected, repository.list(resource, revision, depth, true));
+			Assert.assertEquals(message, expected, repository.list(resource, revision, depth));
 		}
 	}
 
@@ -164,6 +164,6 @@ public class RepositoryList {
 
 		final List<Info> expected = ListLoader.load(resource, revision, depth, true);
 		final String message = createMessage(resource, revision, depth);
-		Assert.assertEquals(message, expected, repository.list(resource, revision, depth, true));
+		Assert.assertEquals(message, expected, repository.list(resource, revision, depth));
 	}
 }

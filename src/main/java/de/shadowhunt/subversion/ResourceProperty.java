@@ -67,17 +67,35 @@ public final class ResourceProperty {
 	};
 
 	/**
-	 * Filter out {@code Type.Base} and {@code Type.DAV} {@link ResourceProperty}
+	 * Filter {@link ResourceProperty} by type
 	 *
 	 * @param properties {@link ResourceProperty} that shall be filtered
-	 *
-	 * @return filtered {@link ResourceProperty}
+	 * @param type {@link Type} that all returned {@link ResourceProperty} shall belong to
+	 * @return filtered {@link ResourceProperty} only containing {@link ResourceProperty} of the requested Type
 	 */
-	public static ResourceProperty[] filterSystemProperties(final ResourceProperty... properties) {
+	public static ResourceProperty[] filterByType(final Type type, final ResourceProperty... properties) {
 		final ResourceProperty[] filtered = new ResourceProperty[properties.length];
 		int index = 0;
 		for (final ResourceProperty property : properties) {
-			if ((property != null) && ((Type.CUSTOM == property.type) || (Type.SVN == property.type))) {
+			if ((property != null) && (type == property.type)) {
+				filtered[index++] = property;
+			}
+		}
+		return Arrays.copyOf(filtered, index);
+	}
+
+	/**
+	 * Filter {@link ResourceProperty} by type
+	 *
+	 * @param properties {@link ResourceProperty} that shall be filtered
+	 * @param type {@link Type} that all returned {@link ResourceProperty} shall *NOT* belong to
+	 * @return filtered {@link ResourceProperty} only containing {@link ResourceProperty} *NOT* of the requested Type
+	 */
+	public static ResourceProperty[] filterOutByType(final Type type, final ResourceProperty... properties) {
+		final ResourceProperty[] filtered = new ResourceProperty[properties.length];
+		int index = 0;
+		for (final ResourceProperty property : properties) {
+			if ((property != null) && (type != property.type)) {
 				filtered[index++] = property;
 			}
 		}

@@ -94,7 +94,7 @@ public class InfoLoader extends BaseLoader {
 			}
 		}
 
-		info.setCustomProperties(ResourcePropertyLoader.load(resource, revision, withCustomProperties));
+		info.setProperties(ResourcePropertyLoader.load(resource, revision, withCustomProperties));
 		return info;
 	}
 }

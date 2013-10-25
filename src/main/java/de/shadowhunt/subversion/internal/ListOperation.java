@@ -37,17 +37,14 @@ import de.shadowhunt.subversion.internal.util.URIUtils;
 
 public class ListOperation extends AbstractOperation<List<Info>> {
 
-	protected final boolean customProperties;
-
 	protected final Depth depth;
 
 	protected final Resource resource;
 
-	public ListOperation(final URI repository, final Resource resource, final Depth depth, final boolean customProperties) {
+	public ListOperation(final URI repository, final Resource resource, final Depth depth) {
 		super(repository);
 		this.resource = resource;
 		this.depth = depth;
-		this.customProperties = customProperties;
 	}
 
 	@Override
@@ -70,7 +67,7 @@ public class ListOperation extends AbstractOperation<List<Info>> {
 		final InputStream in = getContent(response);
 		try {
 			@SuppressWarnings({ "rawtypes", "unchecked" })
-			final List<Info> info = ((List) InfoImpl.readList(in, customProperties, (Depth.FILES != depth)));
+			final List<Info> info = ((List) InfoImpl.readList(in, (Depth.FILES != depth)));
 			return info;
 		} finally {
 			IOUtils.closeQuietly(in);

@@ -35,7 +35,7 @@ public interface Info {
 		}
 	};
 
-	ResourceProperty[] getCustomProperties();
+	ResourceProperty[] getProperties();
 
 	@CheckForNull
 	String getLockOwner();

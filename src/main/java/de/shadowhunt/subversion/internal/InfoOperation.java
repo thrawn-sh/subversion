@@ -39,17 +39,14 @@ public class InfoOperation extends AbstractOperation<Info> {
 
 	protected static final String LOCK_OWNER_HEADER = "X-SVN-Lock-Owner";
 
-	protected final boolean customProperties;
-
 	protected final Depth depth;
 
 	protected final Resource resource;
 
-	public InfoOperation(final URI repository, final Resource resource, final Depth depth, final boolean customProperties) {
+	public InfoOperation(final URI repository, final Resource resource, final Depth depth) {
 		super(repository);
 		this.resource = resource;
 		this.depth = depth;
-		this.customProperties = customProperties;
 	}
 
 	@Override
@@ -71,7 +68,7 @@ public class InfoOperation extends AbstractOperation<Info> {
 
 		final InputStream in = getContent(response);
 		try {
-			final InfoImpl info = InfoImpl.read(in, customProperties);
+			final InfoImpl info = InfoImpl.read(in);
 			if (info.isLocked()) {
 				final Header header = response.getFirstHeader(LOCK_OWNER_HEADER);
 				info.setLockOwner(header.getValue());

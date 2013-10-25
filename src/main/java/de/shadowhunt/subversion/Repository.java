@@ -119,11 +119,9 @@ public interface Repository {
 	 *
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
 	 * @param revision the {@link Revision} of the resource to retrieve
-	 * @param withCustomProperties whether to retrieve user defined properties
-	 *
 	 * @return {@link de.shadowhunt.subversion.internal.InfoImpl} for the resource
 	 */
-	Info info(Resource resource, Revision revision, boolean withCustomProperties);
+	Info info(Resource resource, Revision revision);
 
 	/**
 	 * Retrieve information for the resource in the given revision and its child resources (depending on depth parameter)
@@ -131,11 +129,9 @@ public interface Repository {
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
 	 * @param revision the {@link Revision} of the resource to retrieve
 	 * @param depth whether to retrieve only for the given resource, its children or only part of its children depending on the value of {@link Depth}
-	 * @param withCustomProperties whether to retrieve user defined properties
-	 *
 	 * @return {@link List} of {@link de.shadowhunt.subversion.internal.InfoImpl} for the resource and its child resources (depending on depth parameter)
 	 */
-	List<Info> list(Resource resource, Revision revision, Depth depth, boolean withCustomProperties);
+	List<Info> list(Resource resource, Revision revision, Depth depth);
 
 	/**
 	 * Mark the expected revision of the resource as locked
