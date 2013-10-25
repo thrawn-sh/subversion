@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.UUID;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -109,7 +110,7 @@ public final class InfoImpl implements Info {
 			}
 
 			if ("repository-uuid".equals(name)) {
-				current.setRepositoryUuid(getText());
+				current.setRepositoryId(UUID.fromString(getText()));
 				return;
 			}
 
@@ -208,7 +209,7 @@ public final class InfoImpl implements Info {
 
 	private ResourceProperty[] properties = EMPTY;
 
-	private String repositoryUuid;
+	private UUID repositoryId;
 
 	private Resource resource;
 
@@ -254,11 +255,11 @@ public final class InfoImpl implements Info {
 		} else if (!md5.equals(other.md5)) {
 			return false;
 		}
-		if (repositoryUuid == null) {
-			if (other.repositoryUuid != null) {
+		if (repositoryId == null) {
+			if (other.repositoryId != null) {
 				return false;
 			}
-		} else if (!repositoryUuid.equals(other.repositoryUuid)) {
+		} else if (!repositoryId.equals(other.repositoryId)) {
 			return false;
 		}
 		if (resource == null) {
@@ -327,8 +328,8 @@ public final class InfoImpl implements Info {
 	 * @return the globally unique identifier of the repository
 	 */
 	@Override
-	public String getRepositoryUuid() {
-		return repositoryUuid;
+	public UUID getRepositoryId() {
+		return repositoryId;
 	}
 
 	/**
@@ -377,7 +378,7 @@ public final class InfoImpl implements Info {
 		result = (prime * result) + ((lockOwner == null) ? 0 : lockOwner.hashCode());
 		result = (prime * result) + ((lockToken == null) ? 0 : lockToken.hashCode());
 		result = (prime * result) + ((md5 == null) ? 0 : md5.hashCode());
-		result = (prime * result) + ((repositoryUuid == null) ? 0 : repositoryUuid.hashCode());
+		result = (prime * result) + ((repositoryId == null) ? 0 : repositoryId.hashCode());
 		result = (prime * result) + ((resource == null) ? 0 : resource.hashCode());
 		result = (prime * result) + ((revision == null) ? 0 : revision.hashCode());
 		return result;
@@ -441,8 +442,8 @@ public final class InfoImpl implements Info {
 		}
 	}
 
-	void setRepositoryUuid(final String repositoryUuid) {
-		this.repositoryUuid = repositoryUuid;
+	void setRepositoryId(final UUID repositoryId) {
+		this.repositoryId = repositoryId;
 	}
 
 	void setResource(final Resource resource) {
@@ -466,8 +467,8 @@ public final class InfoImpl implements Info {
 		builder.append(md5);
 		builder.append(", properties=");
 		builder.append(Arrays.toString(properties));
-		builder.append(", repositoryUuid=");
-		builder.append(repositoryUuid);
+		builder.append(", repositoryId=");
+		builder.append(repositoryId);
 		builder.append(", resource=");
 		builder.append(resource);
 		builder.append(", revision=");

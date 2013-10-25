@@ -21,6 +21,7 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.UUID;
 
 import javax.xml.parsers.SAXParser;
 
@@ -52,7 +53,7 @@ public class InfoLoader extends BaseLoader {
 			}
 
 			if ("uuid".equals(name)) {
-				current.setRepositoryUuid(getText());
+				current.setRepositoryId(UUID.fromString(getText()));
 				return;
 			}
 		}

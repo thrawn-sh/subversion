@@ -24,6 +24,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
@@ -44,19 +45,33 @@ import de.shadowhunt.subversion.internal.util.URIUtils;
  */
 public abstract class AbstractRepository implements Repository {
 
+	private static UUID determineRepoistoryId(final URI repository, final HttpClient client, final HttpContext context) {
+		final InfoOperation operation = new InfoOperation(repository, Resource.ROOT, Depth.EMPTY);
+		final Info info = operation.execute(client, context);
+		return info.getRepositoryId();
+	}
+
 	public final HttpClient client;
 
 	protected final RepositoryConfig config;
 
+	public UUID getRepositoryId() {
+		return repositoryId;
+	}
+
 	protected final HttpContext context;
 
 	protected final URI repository;
+
+	protected final UUID repositoryId;
 
 	protected AbstractRepository(final URI repository, final RepositoryConfig config, final HttpClient client, final HttpContext context) {
 		this.repository = URIUtils.createURI(repository);
 		this.config = config;
 		this.client = client;
 		this.context = context;
+
+		repositoryId = determineRepoistoryId(repository, client, context);
 	}
 
 	@Override

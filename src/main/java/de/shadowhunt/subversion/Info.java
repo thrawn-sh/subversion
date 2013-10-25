@@ -20,10 +20,12 @@
 package de.shadowhunt.subversion;
 
 import java.util.Comparator;
+import java.util.UUID;
 
 import javax.annotation.CheckForNull;
 
 public interface Info {
+
 	/**
 	 * {@link java.util.Comparator} orders {@link de.shadowhunt.subversion.Info}s by their relative {@link Resource}
 	 */
@@ -46,7 +48,7 @@ public interface Info {
 	@CheckForNull
 	String getMd5();
 
-	String getRepositoryUuid();
+	UUID getRepositoryId();
 
 	Resource getResource();
 
