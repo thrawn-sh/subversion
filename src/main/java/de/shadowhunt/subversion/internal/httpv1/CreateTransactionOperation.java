@@ -25,6 +25,7 @@ import java.util.UUID;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.util.EntityUtils;
 
 import de.shadowhunt.http.client.methods.DavTemplateRequest;
 import de.shadowhunt.subversion.Resource;
@@ -34,21 +35,28 @@ import de.shadowhunt.subversion.internal.util.URIUtils;
 
 public class CreateTransactionOperation extends AbstractOperation<Transaction> {
 
-	private final UUID uuid = UUID.randomUUID();
+	private final UUID repositoryId;
 
-	public CreateTransactionOperation(final URI repository) {
+	private final UUID transactionId = UUID.randomUUID();
+
+	public CreateTransactionOperation(final URI repository, final UUID repositoryId) {
 		super(repository);
+		this.repositoryId = repositoryId;
 	}
 
 	@Override
 	protected HttpUriRequest createRequest() {
-		final URI uri = URIUtils.createURI(repository, Resource.create("/!svn/act/" + uuid));
+		final URI uri = URIUtils.createURI(repository, Resource.create("/!svn/act/" + transactionId));
 		return new DavTemplateRequest("MKACTIVITY", uri);
 	}
 
 	@Override
 	protected Transaction processResponse(final HttpResponse response) {
-		check(response, HttpStatus.SC_CREATED);
-		return new Transaction(uuid.toString());
+		try {
+			check(response, HttpStatus.SC_CREATED);
+		} finally {
+			EntityUtils.consumeQuietly(response.getEntity());
+		}
+		return new Transaction(repositoryId, transactionId.toString());
 	}
 }

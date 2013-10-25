@@ -19,15 +19,24 @@
  */
 package de.shadowhunt.subversion;
 
+import java.util.UUID;
+
 public final class Transaction {
 
 	private final String id;
 
-	public Transaction(final String id) {
+	private final UUID repositoryId;
+
+	public Transaction(final UUID repositoryId, final String id) {
 		this.id = id;
+		this.repositoryId = repositoryId;
 	}
 
 	public String getId() {
 		return id;
+	}
+
+	public UUID getRepositoryId() {
+		return repositoryId;
 	}
 }

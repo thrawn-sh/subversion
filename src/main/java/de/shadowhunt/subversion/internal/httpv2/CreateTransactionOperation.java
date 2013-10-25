@@ -20,6 +20,7 @@
 package de.shadowhunt.subversion.internal.httpv2;
 
 import java.net.URI;
+import java.util.UUID;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -40,13 +41,15 @@ public class CreateTransactionOperation extends AbstractOperation<Transaction> {
 
 	private static final String HEADER_NAME = "SVN-Txn-Name";
 
+	private final UUID repositoryId;
 	static {
 		final ContentType contentType = ContentType.create("application/vnd.svn-skel");
 		entity = new StringEntity("( create-txn )", contentType);
 	}
 
-	public CreateTransactionOperation(final URI repository) {
+	public CreateTransactionOperation(final URI repository, final UUID repositoryId) {
 		super(repository);
+		this.repositoryId = repositoryId;
 	}
 
 	@Override
@@ -60,8 +63,8 @@ public class CreateTransactionOperation extends AbstractOperation<Transaction> {
 	@Override
 	protected Transaction processResponse(final HttpResponse response) {
 		check(response, HttpStatus.SC_CREATED);
-		final String id = response.getFirstHeader(HEADER_NAME).getValue();
-		return new Transaction(id);
+		final String transactionId = response.getFirstHeader(HEADER_NAME).getValue();
+		return new Transaction(repositoryId, transactionId);
 	}
 
 }

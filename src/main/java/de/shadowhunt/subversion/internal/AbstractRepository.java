@@ -51,13 +51,16 @@ public abstract class AbstractRepository implements Repository {
 		return info.getRepositoryId();
 	}
 
+	protected void validateTransaction(final Transaction transaction) {
+		final UUID transactionRepositoryId = transaction.getRepositoryId();
+		if (!repositoryId.equals(transactionRepositoryId)) {
+			throw new SubversionException("TODO"); // FIXME
+		}
+	}
+
 	public final HttpClient client;
 
 	protected final RepositoryConfig config;
-
-	public UUID getRepositoryId() {
-		return repositoryId;
-	}
 
 	protected final HttpContext context;
 
@@ -94,6 +97,8 @@ public abstract class AbstractRepository implements Repository {
 
 	@Override
 	public void copy(final Transaction transaction, final Resource srcResource, final Revision srcRevision, final Resource targetResource, final boolean parents) {
+		validateTransaction(transaction);
+
 		createFolder0(config.getWorkingResource(transaction).append(targetResource.getParent()), true);
 
 		final Info info = info(srcResource, srcRevision);
@@ -106,6 +111,8 @@ public abstract class AbstractRepository implements Repository {
 
 	@Override
 	public void createFolder(final Transaction transaction, final Resource resource, final boolean parent) {
+		validateTransaction(transaction);
+
 		if (exists(resource, Revision.HEAD)) {
 			return;
 		}
@@ -133,12 +140,16 @@ public abstract class AbstractRepository implements Repository {
 
 	@Override
 	public void delete(final Transaction transaction, final Resource resource) {
+		validateTransaction(transaction);
+
 		final DeleteOperation operation = new DeleteOperation(repository, config.getWorkingResource(transaction).append(resource));
 		operation.execute(client, context);
 	}
 
 	@Override
 	public void deleteProperties(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
+		validateTransaction(transaction);
+
 		final Info info = info(resource, Revision.HEAD);
 
 		final Resource r = config.getWorkingResource(transaction).append(resource);
@@ -177,6 +188,11 @@ public abstract class AbstractRepository implements Repository {
 			return info.getRevision();
 		}
 		return revision;
+	}
+
+	@Override
+	public final UUID getRepositoryId() {
+		return repositoryId;
 	}
 
 	@Override
@@ -233,6 +249,8 @@ public abstract class AbstractRepository implements Repository {
 
 	@Override
 	public void move(final Transaction transaction, final Resource srcResource, final Resource targetResource, final boolean parents) {
+		validateTransaction(transaction);
+
 		copy(transaction, srcResource, Revision.HEAD, targetResource, parents);
 		delete(transaction, srcResource);
 	}
@@ -265,6 +283,8 @@ public abstract class AbstractRepository implements Repository {
 
 	@Override
 	public void rollback(final Transaction transaction) {
+		validateTransaction(transaction);
+
 		final Resource resource = config.getTransactionResource(transaction);
 		final DeleteOperation operation = new DeleteOperation(repository, resource);
 		operation.execute(client, context);
@@ -272,6 +292,8 @@ public abstract class AbstractRepository implements Repository {
 
 	@Override
 	public void setProperties(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
+		validateTransaction(transaction);
+
 		final Info info = info(resource, Revision.HEAD);
 		final Resource r = config.getWorkingResource(transaction).append(resource);
 		final PropertiesSetOperation operation = new PropertiesSetOperation(repository, r, info.getLockToken(), properties);

@@ -36,18 +36,20 @@ import de.shadowhunt.subversion.internal.RepositoryConfig;
  */
 public class Repository extends AbstractRepository {
 
-	public Repository(URI repository, RepositoryConfig config, HttpClient client, HttpContext context) {
+	public Repository(final URI repository, final RepositoryConfig config, final HttpClient client, final HttpContext context) {
 		super(repository, config, client, context);
 	}
 
 	@Override
 	public Transaction createTransaction() {
-		final CreateTransactionOperation cto = new CreateTransactionOperation(repository);
+		final CreateTransactionOperation cto = new CreateTransactionOperation(repository, repositoryId);
 		return cto.execute(client, context);
 	}
 
 	@Override
-	public void commit(Transaction transaction, String message) {
+	public void commit(final Transaction transaction, final String message) {
+		validateTransaction(transaction);
+
 		final Resource messageResource = config.getCommitMessageResource(transaction);
 		final CommitMessageOperation cmo = new CommitMessageOperation(repository, messageResource, message);
 		cmo.execute(client, context);

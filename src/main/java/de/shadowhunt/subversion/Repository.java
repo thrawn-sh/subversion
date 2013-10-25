@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -125,6 +126,8 @@ public interface Repository {
 	boolean exists(Resource resource, Revision revision);
 
 	URI getBaseUri();
+
+	UUID getRepositoryId();
 
 	/**
 	 * Retrieve information for the resource
