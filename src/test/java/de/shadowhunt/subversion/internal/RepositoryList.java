@@ -26,6 +26,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import de.shadowhunt.Main;
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Repository;
@@ -41,7 +42,11 @@ public class RepositoryList {
 
 	private final Repository repository;
 
-	public RepositoryList(final Repository repository) {
+	public RepositoryList() {
+		this(Main.create());
+	}
+
+	protected RepositoryList(final Repository repository) {
 		this.repository = repository;
 	}
 
@@ -50,7 +55,7 @@ public class RepositoryList {
 	}
 
 	@Test(expected = SubversionException.class)
-	public void test00_NonExisitingResource() {
+	public void test00_NonExisitingResource() throws Exception {
 		final Resource resource = PREFIX.append(Resource.create("/non_existing.txt"));
 		final Revision revision = Revision.HEAD;
 
@@ -59,7 +64,7 @@ public class RepositoryList {
 	}
 
 	@Test(expected = SubversionException.class)
-	public void test00_NonExisitingRevision() {
+	public void test00_NonExisitingRevision() throws Exception {
 		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
 		final Revision revision = Revision.create(Integer.MAX_VALUE); // there should not be a such high revision
 
@@ -68,48 +73,48 @@ public class RepositoryList {
 	}
 
 	@Test
-	public void test01_FileHead() {
+	public void test01_FileHead() throws Exception {
 		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
 		final Revision revision = Revision.HEAD;
 
 		for (final Depth depth : Depth.values()) {
-			final List<Info> expected = null;
+			final List<Info> expected = ListLoader.load(resource, revision, depth, true);
 			final String message = createMessage(resource, revision, depth);
 			Assert.assertEquals(message, expected, repository.list(resource, revision, depth, true));
 		}
 	}
 
 	@Test
-	public void test01_FileRevision() {
+	public void test01_FileRevision() throws Exception {
 		final Resource resource = PREFIX.append(Resource.create("/file_deleted.txt"));
-		final Revision revision = null; // FIXME
+		final Revision revision = Revision.create(64);
 
 		for (final Depth depth : Depth.values()) {
-			final List<Info> expected = null; //FIXME
+			final List<Info> expected = ListLoader.load(resource, revision, depth, true);
 			final String message = createMessage(resource, revision, depth);
 			Assert.assertEquals(message, expected, repository.list(resource, revision, depth, true));
 		}
 	}
 
 	@Test
-	public void test01_FolderHead() {
+	public void test01_FolderHead() throws Exception {
 		final Resource resource = PREFIX.append(Resource.create("/folder"));
 		final Revision revision = Revision.HEAD;
 
 		for (final Depth depth : Depth.values()) {
-			final List<Info> expected = null; //FIXME
+			final List<Info> expected = ListLoader.load(resource, revision, depth, true);
 			final String message = createMessage(resource, revision, depth);
 			Assert.assertEquals(message, expected, repository.list(resource, revision, depth, true));
 		}
 	}
 
 	@Test
-	public void test01_FolderRevision() {
+	public void test01_FolderRevision() throws Exception {
 		final Resource resource = PREFIX.append(Resource.create("/folder_deleted"));
-		final Revision revision = null; // FIXME
+		final Revision revision = Revision.create(72);
 
 		for (final Depth depth : Depth.values()) {
-			final List<Info> expected = null; //FIXME
+			final List<Info> expected = ListLoader.load(resource, revision, depth, true);
 			final String message = createMessage(resource, revision, depth);
 			Assert.assertEquals(message, expected, repository.list(resource, revision, depth, true));
 		}
@@ -118,10 +123,10 @@ public class RepositoryList {
 	@Test
 	public void test02_FileCopy() throws Exception {
 		final Resource resource = PREFIX.append(Resource.create("/file_copy.txt"));
-		final Revision revision = Revision.create(51);
+		final Revision revision = Revision.create(67);
 
 		for (final Depth depth : Depth.values()) {
-			final List<Info> expected = null; //FIXME
+			final List<Info> expected = ListLoader.load(resource, revision, depth, true);
 			final String message = createMessage(resource, revision, depth);
 			Assert.assertEquals(message, expected, repository.list(resource, revision, depth, true));
 		}
@@ -130,10 +135,10 @@ public class RepositoryList {
 	@Test
 	public void test02_FileMove() throws Exception {
 		final Resource resource = PREFIX.append(Resource.create("/file_move.txt"));
-		final Revision revision = null; // FIXME
+		final Revision revision = Revision.create(69);
 
 		for (final Depth depth : Depth.values()) {
-			final List<Info> expected = null; //FIXME
+			final List<Info> expected = ListLoader.load(resource, revision, depth, true);
 			final String message = createMessage(resource, revision, depth);
 			Assert.assertEquals(message, expected, repository.list(resource, revision, depth, true));
 		}
@@ -142,24 +147,23 @@ public class RepositoryList {
 	@Test
 	public void test02_FolderCopy() throws Exception {
 		final Resource resource = PREFIX.append(Resource.create("/folder_copy"));
-		final Revision revision = Revision.create(57);
+		final Revision revision = Revision.create(73);
 
 		for (final Depth depth : Depth.values()) {
-			final List<Info> expected = null; //FIXME
+			final List<Info> expected = ListLoader.load(resource, revision, depth, true);
 			final String message = createMessage(resource, revision, depth);
 			Assert.assertEquals(message, expected, repository.list(resource, revision, depth, true));
 		}
 	}
 
 	@Test
-	public void test02_FolderMove() throws Exception {
-		final Resource resource = PREFIX.append(Resource.create("/folder_move"));
-		final Revision revision = null; // FIXME
+	public void test03_Base() throws Exception {
+		final Resource resource = PREFIX;
+		final Revision revision = Revision.HEAD;
+		final Depth depth = Depth.INFINITY;
 
-		for (final Depth depth : Depth.values()) {
-			final List<Info> expected = null; //FIXME
-			final String message = createMessage(resource, revision, depth);
-			Assert.assertEquals(message, expected, repository.list(resource, revision, depth, true));
-		}
+		final List<Info> expected = ListLoader.load(resource, revision, depth, true);
+		final String message = createMessage(resource, revision, depth);
+		Assert.assertEquals(message, expected, repository.list(resource, revision, depth, true));
 	}
 }
