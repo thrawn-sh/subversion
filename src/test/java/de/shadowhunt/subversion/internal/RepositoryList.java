@@ -39,7 +39,11 @@ public class RepositoryList {
 
 	private static final Resource PREFIX = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/list");
 
-	private Repository repository;
+	private final Repository repository;
+
+	public RepositoryList(final Repository repository) {
+		this.repository = repository;
+	}
 
 	private String createMessage(final Resource resource, final Revision revision, final Depth depth) {
 		return resource + ": @" + revision + " with depth: " + depth;
@@ -57,7 +61,7 @@ public class RepositoryList {
 	@Test(expected = SubversionException.class)
 	public void test00_NonExisitingRevision() {
 		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
-		final Revision revision = Revision.create(10000000); // there should not be a such high revision
+		final Revision revision = Revision.create(Integer.MAX_VALUE); // there should not be a such high revision
 
 		repository.list(resource, revision, Depth.EMPTY, true);
 		Assert.fail("list must not complete");

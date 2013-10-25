@@ -63,7 +63,7 @@ public class RepositoryInfo {
 	@Test(expected = SubversionException.class)
 	public void test00_NonExisitingRevision() throws Exception {
 		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
-		final Revision revision = Revision.create(10000000); // there should not be a such high revision
+		final Revision revision = Revision.create(Integer.MAX_VALUE); // there should not be a such high revision
 
 		repository.info(resource, revision, true);
 		Assert.fail("info must not complete");

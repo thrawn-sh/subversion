@@ -35,7 +35,7 @@ public class RepositoryLog {
 	public void test00_NonExisitingEndRevision() throws Exception {
 		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
 		final Revision start = Revision.INITIAL;
-		final Revision end = Revision.create(10000000); // there should not be a such high revision
+		final Revision end = Revision.create(Integer.MAX_VALUE); // there should not be a such high revision
 		final int limit = UNLIMITED;
 
 		repository.log(resource, start, end, limit);
@@ -56,7 +56,7 @@ public class RepositoryLog {
 	@Test(expected = SubversionException.class)
 	public void test00_NonExisitingStartRevision() throws Exception {
 		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
-		final Revision start = Revision.create(10000000); // there should not be a such high revision
+		final Revision start = Revision.create(Integer.MAX_VALUE); // there should not be a such high revision
 		final Revision end = Revision.HEAD;
 		final int limit = UNLIMITED;
 
