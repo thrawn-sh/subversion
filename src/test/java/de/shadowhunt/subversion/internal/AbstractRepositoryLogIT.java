@@ -15,7 +15,7 @@ import de.shadowhunt.subversion.SubversionException;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class RepositoryLog {
+public abstract class AbstractRepositoryLogIT {
 
 	private static final Resource PREFIX = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/log");
 
@@ -23,7 +23,7 @@ public class RepositoryLog {
 
 	public static final int UNLIMITED = 0;
 
-	protected RepositoryLog(final Repository repository) {
+	protected AbstractRepositoryLogIT(final Repository repository) {
 		this.repository = repository;
 	}
 

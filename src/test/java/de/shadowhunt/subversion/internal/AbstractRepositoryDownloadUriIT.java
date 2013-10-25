@@ -34,13 +34,13 @@ import de.shadowhunt.subversion.internal.util.URIUtils;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class RepositoryDownloadURI {
+public abstract class AbstractRepositoryDownloadUriIT {
 
 	private static final Resource PREFIX = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/download");
 
 	private final Repository repository;
 
-	protected RepositoryDownloadURI(final Repository repository) {
+	protected AbstractRepositoryDownloadUriIT(final Repository repository) {
 		this.repository = repository;
 	}
 

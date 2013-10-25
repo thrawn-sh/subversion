@@ -26,7 +26,6 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import de.shadowhunt.Main;
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Repository;
@@ -36,17 +35,13 @@ import de.shadowhunt.subversion.SubversionException;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class RepositoryList {
+public abstract class AbstractRepositoryListIT {
 
 	private static final Resource PREFIX = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/list");
 
 	private final Repository repository;
 
-	public RepositoryList() {
-		this(Main.create());
-	}
-
-	protected RepositoryList(final Repository repository) {
+	protected AbstractRepositoryListIT(final Repository repository) {
 		this.repository = repository;
 	}
 
