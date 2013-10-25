@@ -73,7 +73,7 @@ public final class LogImpl implements Log {
 			}
 
 			if ("creator-displayname".equals(name)) {
-				current.setUser(getText());
+				current.setAuthor(getText());
 				return;
 			}
 
@@ -136,13 +136,13 @@ public final class LogImpl implements Log {
 		}
 	}
 
+	private String author;
+
 	private Date date;
 
 	private String message = "";
 
 	private Revision revision;
-
-	private String user;
 
 	LogImpl() {
 		// prevent direct instantiation
@@ -160,6 +160,13 @@ public final class LogImpl implements Log {
 			return false;
 		}
 		final LogImpl other = (LogImpl) obj;
+		if (author == null) {
+			if (other.author != null) {
+				return false;
+			}
+		} else if (!author.equals(other.author)) {
+			return false;
+		}
 		if (date == null) {
 			if (other.date != null) {
 				return false;
@@ -179,13 +186,6 @@ public final class LogImpl implements Log {
 				return false;
 			}
 		} else if (!revision.equals(other.revision)) {
-			return false;
-		}
-		if (user == null) {
-			if (other.user != null) {
-				return false;
-			}
-		} else if (!user.equals(other.user)) {
 			return false;
 		}
 		return true;
@@ -222,23 +222,23 @@ public final class LogImpl implements Log {
 	}
 
 	/**
-	 * Returns the name of the user that committed changes to the repository
+	 * Returns the name of the author that committed changes to the repository
 	 *
-	 * @return the name of the user that committed changes to the repository
+	 * @return the name of the author that committed changes to the repository
 	 */
 	@Override
-	public String getUser() {
-		return user;
+	public String getAuthor() {
+		return author;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = (prime * result) + ((author == null) ? 0 : author.hashCode());
 		result = (prime * result) + ((date == null) ? 0 : date.hashCode());
 		result = (prime * result) + ((message == null) ? 0 : message.hashCode());
 		result = (prime * result) + ((revision == null) ? 0 : revision.hashCode());
-		result = (prime * result) + ((user == null) ? 0 : user.hashCode());
 		return result;
 	}
 
@@ -254,21 +254,21 @@ public final class LogImpl implements Log {
 		this.revision = revision;
 	}
 
-	void setUser(final String user) {
-		this.user = user;
+	void setAuthor(final String author) {
+		this.author = author;
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("Log [date=");
+		builder.append("Log [author=");
+		builder.append(author);
+		builder.append(", date=");
 		builder.append(date);
 		builder.append(", message=");
 		builder.append(message);
 		builder.append(", revision=");
 		builder.append(revision);
-		builder.append(", user=");
-		builder.append(user);
 		builder.append("]");
 		return builder.toString();
 	}

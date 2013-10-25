@@ -72,7 +72,7 @@ public class LogLoader extends BaseLoader {
 			}
 
 			if ("author".equals(name)) {
-				current.setUser(getText());
+				current.setAuthor(getText());
 				return;
 			}
 
