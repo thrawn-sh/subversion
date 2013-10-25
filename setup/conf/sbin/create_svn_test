@@ -158,6 +158,11 @@ for i in dump svn; do
 	sha1sum "${zip_file}" > "${zip_file}.sha1"
 done
 
+mv dump.zip* /var/www/
+mv svn.zip*  /var/www/
+
+mv svn                     /var/www/svn/test
+chown -R www-data:www-data /var/www/svn/test
+
 ### cleanup {{{1
-#rm -rf "${TMP_DIR}"
-echo "${TMP_DIR}"
+rm -rf "${TMP_DIR}"
