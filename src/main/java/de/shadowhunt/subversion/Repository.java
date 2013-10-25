@@ -22,6 +22,7 @@ package de.shadowhunt.subversion;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -119,7 +120,7 @@ public interface Repository {
 	 *
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
 	 * @param revision the {@link Revision} of the resource to retrieve
-	 * @return {@link de.shadowhunt.subversion.internal.InfoImpl} for the resource
+	 * @return {@link Info} for the resource
 	 */
 	Info info(Resource resource, Revision revision);
 
@@ -129,9 +130,9 @@ public interface Repository {
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
 	 * @param revision the {@link Revision} of the resource to retrieve
 	 * @param depth whether to retrieve only for the given resource, its children or only part of its children depending on the value of {@link Depth}
-	 * @return {@link List} of {@link de.shadowhunt.subversion.internal.InfoImpl} for the resource and its child resources (depending on depth parameter)
+	 * @return {@link Set} of {@link Info} for the resource and its child resources (depending on depth parameter)
 	 */
-	List<Info> list(Resource resource, Revision revision, Depth depth);
+	Set<Info> list(Resource resource, Revision revision, Depth depth);
 
 	/**
 	 * Mark the expected revision of the resource as locked
@@ -149,7 +150,7 @@ public interface Repository {
 	 * @param endRevision the last {@link Revision} of the resource to retrieve (including)
 	 * @param limit maximal number of {@link Log} entries, if the value is lower or equal to {@code 0} all entries will be returned
 	 *
-	 * @return ordered (early to latest) {@link List} of {@link de.shadowhunt.subversion.internal.LogImpl} for the revisions between startRevision and endRevision of the resource
+	 * @return ordered (early to latest) {@link List} of {@link Log} for the revisions between startRevision and endRevision of the resource
 	 */
 	List<Log> log(Resource resource, Revision startRevision, Revision endRevision, int limit);
 

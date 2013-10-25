@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,9 +21,9 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.InputStream;
 import java.net.URI;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
@@ -34,8 +34,8 @@ import de.shadowhunt.subversion.Log;
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
-import de.shadowhunt.subversion.ResourceProperty.Type;
 import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.internal.util.URIUtils;
 
@@ -106,34 +106,30 @@ public abstract class AbstractRepository implements Repository {
 
 	@Override
 	public void deleteProperties(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
-		final ResourceProperty[] withoutBASE = ResourceProperty.filterOutByType(Type.BASE, properties);
-		final ResourceProperty[] withoutDAV = ResourceProperty.filterOutByType(Type.DAV, withoutBASE);
-
-		if (withoutDAV.length == 0) {
-			return;
-		}
-
 		final Info info = info(resource, Revision.HEAD);
 
 		final Resource r = config.getWorkingResource(transaction).append(resource);
-		final PropertiesDeleteOperation operation = new PropertiesDeleteOperation(repository, r, info.getLockToken(), withoutDAV);
+		final PropertiesDeleteOperation operation = new PropertiesDeleteOperation(repository, r, info.getLockToken(), properties);
 		operation.execute(client, context);
 	}
 
 	@Override
 	public InputStream download(final Resource resource, final Revision revision) {
-		final DownloadOperation operation = new DownloadOperation(repository, resolve(resource, revision, true));
+		final Resource resolved = resolve(resource, revision, true);
+		final DownloadOperation operation = new DownloadOperation(repository, resolved);
 		return operation.execute(client, context);
 	}
 
 	@Override
 	public URI downloadURI(final Resource resource, final Revision revision) {
-		return URIUtils.createURI(repository, resolve(resource, revision, true));
+		final Resource resolved = resolve(resource, revision, true);
+		return URIUtils.createURI(repository, resolved);
 	}
 
 	@Override
 	public boolean exists(final Resource resource, final Revision revision) {
-		final ExistsOperation operation = new ExistsOperation(repository, resolve(resource, revision, false));
+		final Resource resolved = resolve(resource, revision, false);
+		final ExistsOperation operation = new ExistsOperation(repository, resolved);
 		return operation.execute(client, context);
 	}
 
@@ -152,35 +148,31 @@ public abstract class AbstractRepository implements Repository {
 
 	@Override
 	public Info info(final Resource resource, final Revision revision) {
-		final InfoOperation operation = new InfoOperation(repository, resolve(resource, revision, true), Depth.EMPTY);
-		return operation.execute(client, context);
-	}
-
-	protected List<Info> list(final Resource prefix, final Resource resource, final Depth depth) {
-		final Resource r = prefix.append(resource);
-
-		final ListOperation operation = new ListOperation(repository, r, depth);
+		final Resource resolved = resolve(resource, revision, true);
+		final InfoOperation operation = new InfoOperation(repository, resolved, Depth.EMPTY);
 		return operation.execute(client, context);
 	}
 
 	@Override
-	public List<Info> list(final Resource resource, final Revision revision, final Depth depth) {
-		final Revision concreteRevision = getConcreteRevision(revision);
-		final Resource prefix = config.getVersionedResource(concreteRevision);
-		return list(prefix, resource, depth);
+	public Set<Info> list(final Resource resource, final Revision revision, final Depth depth) {
+		if (Depth.INFINITY == depth) {
+			final Set<Info> result = new TreeSet<Info>(Info.RESOURCE_COMPARATOR);
+			listRecursively(resource, revision, result);
+			return result;
+		}
+		final Resource resolved = resolve(resource, revision, true);
+		final ListOperation operation = new ListOperation(repository, resolved, depth);
+		return operation.execute(client, context);
 	}
 
-	protected void listRecursive(final Resource prefix, final Collection<Info> todo, final Set<Info> done) {
-		for (final Info info : todo) {
-			if (done.contains(info)) {
+	private void listRecursively(final Resource resource, final Revision revision, final Set<Info> result) {
+		for (final Info info : list(resource, revision, Depth.IMMEDIATES)) {
+			if (!result.add(info)) {
 				continue;
 			}
 
-			done.add(info);
 			if (info.isDirectory()) {
-				final Resource resource = prefix.append(info.getResource());
-				final List<Info> children = list(prefix, resource, Depth.IMMEDIATES);
-				listRecursive(prefix, children, done);
+				listRecursively(info.getResource(), revision, result);
 			}
 		}
 	}
@@ -196,13 +188,13 @@ public abstract class AbstractRepository implements Repository {
 		final Revision concreteStartRevision = getConcreteRevision(startRevision);
 		final Revision concreteEndRevision = getConcreteRevision(endRevision);
 
-		final Resource resolvedResource;
+		final Resource resolved;
 		if (concreteStartRevision.compareTo(concreteEndRevision) > 0) {
-			resolvedResource = resolve(resource, concreteStartRevision, true);
+			resolved = resolve(resource, concreteStartRevision, true);
 		} else {
-			resolvedResource = resolve(resource, concreteEndRevision, true);
+			resolved = resolve(resource, concreteEndRevision, true);
 		}
-		final LogOperation operation = new LogOperation(repository, resolvedResource, concreteStartRevision, concreteEndRevision, limit);
+		final LogOperation operation = new LogOperation(repository, resolved, concreteStartRevision, concreteEndRevision, limit);
 		return operation.execute(client, context);
 	}
 
@@ -214,7 +206,11 @@ public abstract class AbstractRepository implements Repository {
 
 	protected Resource resolve(final Resource resource, final Revision revision, final boolean resolve) {
 		if (Revision.HEAD.equals(revision)) {
-			return resource;
+			final ExistsOperation operation = new ExistsOperation(repository, resource);
+			if (operation.execute(client, context)) {
+				return resource;
+			}
+			throw new SubversionException("TODO"); // FIXME
 		}
 
 		final Resource expectedResource = config.getVersionedResource(revision).append(resource);
@@ -243,16 +239,9 @@ public abstract class AbstractRepository implements Repository {
 
 	@Override
 	public void setProperties(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
-		final ResourceProperty[] withoutBASE = ResourceProperty.filterOutByType(Type.BASE, properties);
-		final ResourceProperty[] withoutDAV = ResourceProperty.filterOutByType(Type.DAV, withoutBASE);
-
-		if (withoutDAV.length == 0) {
-			return;
-		}
-
 		final Info info = info(resource, Revision.HEAD);
 		final Resource r = config.getWorkingResource(transaction).append(resource);
-		final PropertiesSetOperation operation = new PropertiesSetOperation(repository, r, info.getLockToken(), withoutDAV);
+		final PropertiesSetOperation operation = new PropertiesSetOperation(repository, r, info.getLockToken(), properties);
 		operation.execute(client, context);
 	}
 

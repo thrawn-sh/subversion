@@ -34,9 +34,7 @@ public final class ResourceProperty {
 	 * {@link ResourceProperty} can have various types, depending of the context they are used
 	 */
 	public enum Type {
-		BASE(""),
 		CUSTOM("C:"),
-		DAV("V:"),
 		SVN("S:");
 
 		private final String prefix;
@@ -62,6 +60,21 @@ public final class ResourceProperty {
 
 		@Override
 		public int compare(final ResourceProperty rp1, final ResourceProperty rp2) {
+			return rp1.getName().compareTo(rp2.getName());
+		}
+	};
+
+	/**
+	 * {@link Comparator} that compares {@link ResourceProperty} by their type and name
+	 */
+	public static final Comparator<ResourceProperty> TYPE_NAME_COMPARATOR = new Comparator<ResourceProperty>() {
+
+		@Override
+		public int compare(final ResourceProperty rp1, final ResourceProperty rp2) {
+			final int result = rp1.getType().compareTo(rp2.getType());
+			if (result != 0) {
+				return result;
+			}
 			return rp1.getName().compareTo(rp2.getName());
 		}
 	};

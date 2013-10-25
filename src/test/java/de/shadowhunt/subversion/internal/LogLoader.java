@@ -107,7 +107,7 @@ public class LogLoader extends BaseLoader {
 		}
 	}
 
-	private static final String SUFFIX = ".log";
+	public static final String SUFFIX = ".log";
 
 	public static List<Log> load(final Resource resource, final Revision start, final Revision end, final int limit) throws Exception {
 		final Revision high;

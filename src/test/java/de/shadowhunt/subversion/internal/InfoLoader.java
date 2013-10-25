@@ -35,7 +35,7 @@ import de.shadowhunt.subversion.Revision;
 
 public class InfoLoader extends BaseLoader {
 
-	private static final String SUFFIX = ".info";
+	public static final String SUFFIX = ".info";
 
 	static class InfoHandler extends BasicHandler {
 
@@ -73,7 +73,7 @@ public class InfoLoader extends BaseLoader {
 		}
 	}
 
-	public static Info load(final Resource resource, final Revision revision, final boolean withCustomProperties) throws Exception {
+	public static Info load(final Resource resource, final Revision revision) throws Exception {
 		final File infoFile = new File(ROOT, resolve(revision) + resource.getValue() + SUFFIX);
 
 		final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
@@ -94,7 +94,7 @@ public class InfoLoader extends BaseLoader {
 			}
 		}
 
-		info.setProperties(ResourcePropertyLoader.load(resource, revision, withCustomProperties));
+		info.setProperties(ResourcePropertyLoader.load(resource, revision));
 		return info;
 	}
 }

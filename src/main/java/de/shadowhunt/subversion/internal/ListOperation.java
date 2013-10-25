@@ -21,7 +21,7 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.InputStream;
 import java.net.URI;
-import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -35,7 +35,7 @@ import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.internal.util.URIUtils;
 
-public class ListOperation extends AbstractOperation<List<Info>> {
+public class ListOperation extends AbstractOperation<Set<Info>> {
 
 	protected final Depth depth;
 
@@ -61,13 +61,13 @@ public class ListOperation extends AbstractOperation<List<Info>> {
 	}
 
 	@Override
-	protected List<Info> processResponse(final HttpResponse response) {
+	protected Set<Info> processResponse(final HttpResponse response) {
 		check(response, HttpStatus.SC_MULTI_STATUS);
 
 		final InputStream in = getContent(response);
 		try {
 			@SuppressWarnings({ "rawtypes", "unchecked" })
-			final List<Info> info = ((List) InfoImpl.readList(in, (Depth.FILES != depth)));
+			final Set<Info> info = ((Set) InfoImpl.readList(in));
 			return info;
 		} finally {
 			IOUtils.closeQuietly(in);

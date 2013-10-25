@@ -20,9 +20,11 @@
 package de.shadowhunt.subversion.internal;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -48,20 +50,13 @@ public final class InfoImpl implements Info {
 
 		private InfoImpl current = null;
 
-		private final boolean includeDirectories;
-
-		private final List<InfoImpl> infos = new ArrayList<InfoImpl>();
+		private final SortedSet<InfoImpl> infos = new TreeSet<InfoImpl>(Info.RESOURCE_COMPARATOR);
 
 		private boolean locktoken = false;
 
-		private List<ResourceProperty> properties;
+		private Set<ResourceProperty> properties;
 
 		private boolean resourceType = false;
-
-		SubversionInfoHandler(final boolean includeDirectories) {
-			super();
-			this.includeDirectories = includeDirectories;
-		}
 
 		@Override
 		public void endElement(final String uri, final String localName, final String qName) {
@@ -87,12 +82,6 @@ public final class InfoImpl implements Info {
 			}
 
 			if (resourceType && "collection".equals(name)) {
-				if (!includeDirectories) {
-					// we don't want to include directories in our result list
-					current = null;
-					return;
-				}
-
 				current.setDirectory(true);
 				resourceType = false;
 				return;
@@ -128,10 +117,16 @@ public final class InfoImpl implements Info {
 			if ("C".equals(namespace)) {
 				final ResourceProperty property = new ResourceProperty(Type.CUSTOM, name, getText());
 				properties.add(property);
+				return;
+			}
+			if ("S".equals(namespace)) {
+				final ResourceProperty property = new ResourceProperty(Type.SVN, name, getText());
+				properties.add(property);
+				return;
 			}
 		}
 
-		List<InfoImpl> getInfos() {
+		SortedSet<InfoImpl> getInfos() {
 			return infos;
 		}
 
@@ -150,7 +145,7 @@ public final class InfoImpl implements Info {
 				current = new InfoImpl();
 				locktoken = false;
 				resourceType = false;
-				properties = new ArrayList<ResourceProperty>();
+				properties = new TreeSet<ResourceProperty>(ResourceProperty.TYPE_NAME_COMPARATOR);
 				return;
 			}
 
@@ -176,25 +171,24 @@ public final class InfoImpl implements Info {
 	 * @return {@link InfoImpl} for the resource
 	 */
 	public static InfoImpl read(final InputStream in) {
-		final List<InfoImpl> infos = readList(in, true);
+		final SortedSet<InfoImpl> infos = readList(in);
 		if (infos.isEmpty()) {
 			throw new SubversionException("could not find any SubversionInfo in input");
 		}
-		return infos.get(0);
+		return infos.first();
 	}
 
 	/**
 	 * Reads a {@link List} of status information for a single revision of various resources from the given {@link InputStream}
 	 *
 	 * @param in {@link InputStream} from which the status information is read (Note: will not be closed)
-	 * @param includeDirectories whether directory resources shall be included in the result
 	 *
 	 * @return {@link InfoImpl} for the resources
 	 */
-	public static List<InfoImpl> readList(final InputStream in, final boolean includeDirectories) {
+	public static SortedSet<InfoImpl> readList(final InputStream in) {
 		try {
 			final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
-			final SubversionInfoHandler handler = new SubversionInfoHandler(includeDirectories);
+			final SubversionInfoHandler handler = new SubversionInfoHandler();
 
 			saxParser.parse(in, handler);
 			return handler.getInfos();

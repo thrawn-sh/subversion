@@ -20,8 +20,8 @@
 package de.shadowhunt.subversion.internal;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.xml.parsers.SAXParser;
 
@@ -44,11 +44,11 @@ public class ResourcePropertyLoader extends BaseLoader {
 			throw new IllegalArgumentException("prefix " + prefix + " not supported");
 		}
 
-		private final List<ResourceProperty> properties = new ArrayList<ResourceProperty>();
+		private final Set<ResourceProperty> properties = new TreeSet<ResourceProperty>(ResourceProperty.TYPE_NAME_COMPARATOR);
 
 		private String propertyName;
 
-		private ResourceProperty.Type propertyType;
+		private Type propertyType;
 
 		@Override
 		public void endElement(final String uri, final String localName, final String qName) throws SAXException {
@@ -59,7 +59,7 @@ public class ResourcePropertyLoader extends BaseLoader {
 			}
 		}
 
-		List<ResourceProperty> getResourceProperties() {
+		Set<ResourceProperty> getResourceProperties() {
 			return properties;
 		}
 
@@ -72,26 +72,28 @@ public class ResourcePropertyLoader extends BaseLoader {
 			if ("property".equals(name)) {
 				final String value = attributes.getValue("name");
 				final int split = value.indexOf(':');
-				propertyType = convert(value.substring(0, split));
-				propertyName = value.substring(split + 1);
+				if (split >= 0) {
+					propertyType = convert(value.substring(0, split));
+					propertyName = value.substring(split + 1);
+				} else {
+					propertyType = Type.CUSTOM;
+					propertyName = value;
+				}
 				return;
 			}
 		}
 	}
 
-	private static final String SUFFIX = ".proplist";
+	public static final String SUFFIX = ".proplist";
 
-	public static ResourceProperty[] load(final Resource resource, final Revision revision, final boolean withCustomProperties) throws Exception {
+	public static ResourceProperty[] load(final Resource resource, final Revision revision) throws Exception {
 		final File file = new File(ROOT, resolve(revision) + resource.getValue() + SUFFIX);
 
 		final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
 		final ResourcePropertyHandler handler = new ResourcePropertyHandler();
 
 		saxParser.parse(file, handler);
-		final List<ResourceProperty> list = handler.getResourceProperties();
-		if (!withCustomProperties) {
-			return ResourceProperty.filterOutByType(Type.CUSTOM, list.toArray(new ResourceProperty[list.size()]));
-		}
-		return list.toArray(new ResourceProperty[list.size()]);
+		final Set<ResourceProperty> properties = handler.getResourceProperties();
+		return properties.toArray(new ResourceProperty[properties.size()]);
 	}
 }
