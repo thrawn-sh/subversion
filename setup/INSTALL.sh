@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # install necesarry components
-aptitude install apache2-mpm-worker libapache2-svn libapache2-mod-auth-ntlm-winbind subversion rsync
+aptitude install apache2-mpm-worker libapache2-svn libapache2-mod-auth-ntlm-winbind subversion rsync zip libxml2-utils
 
 # copy config
 rsync -acHv --no-p --no-o --no-g conf/* /
