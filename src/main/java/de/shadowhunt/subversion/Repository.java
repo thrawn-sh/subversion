@@ -69,7 +69,7 @@ public interface Repository {
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
 	 * @param parents whether to create missing parents folders or not
 	 */
-	void createFolder(Transaction transaction, Resource resource, boolean parents);
+	void mkdir(Transaction transaction, Resource resource, boolean parents);
 
 	/**
 	 * Create a new {@link Transaction} to make modifications within

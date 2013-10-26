@@ -86,15 +86,19 @@ public abstract class AbstractRepository implements Repository {
 			throw new IllegalArgumentException("content can not be null");
 		}
 
-		final Resource infoResource;
-		if (exists(resource, Revision.HEAD)) {
-			infoResource = resource;
-		} else {
-			infoResource = createFolder0(config.getWorkingResource(transaction).append(resource.getParent()), true);
+		if (parents) {
+			mkdir(transaction, resource.getParent(), parents);
 		}
-		final Info info = info(infoResource, Revision.HEAD);
-		final Resource r = config.getWorkingResource(transaction).append(resource);
-		final UploadOperation operation = new UploadOperation(repository, r, info.getLockToken(), content);
+
+		//		final Resource infoResource;
+		//		if (exists(resource, Revision.HEAD)) {
+		//			infoResource = resource;
+		//		} else {
+		//			infoResource = createFolder0(config.getWorkingResource(transaction).append(resource.getParent()), true);
+		//		}
+		//		final Info info = info(resource, Revision.HEAD);
+		final Resource uploadResource = config.getWorkingResource(transaction).append(resource);
+		final UploadOperation operation = new UploadOperation(repository, uploadResource, null, content); // FIXME locktoken
 		operation.execute(client, context);
 	}
 
@@ -113,7 +117,7 @@ public abstract class AbstractRepository implements Repository {
 	}
 
 	@Override
-	public void createFolder(final Transaction transaction, final Resource resource, final boolean parent) {
+	public void mkdir(final Transaction transaction, final Resource resource, final boolean parent) {
 		validateTransaction(transaction);
 
 		if (exists(resource, Revision.HEAD)) {
@@ -261,7 +265,7 @@ public abstract class AbstractRepository implements Repository {
 	protected Resource resolve(final Resource resource, final Revision revision, final boolean resolve) {
 		if (Revision.HEAD.equals(revision)) {
 			final ExistsOperation operation = new ExistsOperation(repository, resource);
-			if (operation.execute(client, context)) {
+			if (!resolve || (operation.execute(client, context))) {
 				return resource;
 			}
 			throw new SubversionException(resource.getValue());
