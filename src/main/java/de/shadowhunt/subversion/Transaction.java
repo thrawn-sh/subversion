@@ -27,7 +27,7 @@ public final class Transaction {
 
 	private final UUID repositoryId;
 
-	private boolean active;
+	private boolean active = true;
 
 	public Transaction(final UUID repositoryId, final String id) {
 		this.id = id;
