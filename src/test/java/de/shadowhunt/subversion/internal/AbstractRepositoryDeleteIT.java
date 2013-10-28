@@ -59,7 +59,7 @@ public class AbstractRepositoryDeleteIT {
 		}
 	}
 
-	@Test(expected = SubversionException.class)
+	@Test
 	public void test00_rollback() throws Exception {
 		final Resource resource = prefix.append(Resource.create("rollback.txt"));
 		AbstractRepositoryAddIT.file(repository, resource, "test", true);
@@ -100,7 +100,7 @@ public class AbstractRepositoryDeleteIT {
 	@Test
 	public void test01_deleteFolder() throws Exception {
 		final Resource resource = prefix.append(Resource.create("folder"));
-		AbstractRepositoryMkdirIT.mkdir(repository, resource);
+		AbstractRepositoryMkdirIT.mkdir(repository, resource, false);
 
 		final Transaction transaction = repository.createTransaction();
 		try {
@@ -119,13 +119,13 @@ public class AbstractRepositoryDeleteIT {
 	@Test
 	public void test01_deleteFolderWithContent() throws Exception {
 		final Resource root = prefix.append(Resource.create("folder_with_content"));
-		AbstractRepositoryMkdirIT.mkdir(repository, root);
+		AbstractRepositoryMkdirIT.mkdir(repository, root, false);
 
 		final Resource file = root.append(Resource.create("file.txt"));
 		AbstractRepositoryAddIT.file(repository, file, "test", true);
 
 		final Resource subFolder = root.append(Resource.create("sub"));
-		AbstractRepositoryMkdirIT.mkdir(repository, subFolder);
+		AbstractRepositoryMkdirIT.mkdir(repository, subFolder, false);
 
 		final Transaction transaction = repository.createTransaction();
 		try {

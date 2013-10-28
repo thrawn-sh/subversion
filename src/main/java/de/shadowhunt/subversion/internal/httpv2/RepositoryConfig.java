@@ -43,7 +43,7 @@ public class RepositoryConfig implements de.shadowhunt.subversion.internal.Repos
 
 	@Override
 	public de.shadowhunt.subversion.Repository create(final URI repository, final HttpClient client, final HttpContext context) {
-		return new de.shadowhunt.subversion.internal.httpv2.Repository(repository, this, client, context);
+		return new Repository(repository, this, client, context);
 	}
 
 	@Override

@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,26 +22,26 @@ package de.shadowhunt.subversion.internal.httpv1;
 import java.net.URI;
 import java.util.UUID;
 
+import de.shadowhunt.http.client.methods.DavTemplateRequest;
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.Transaction;
+import de.shadowhunt.subversion.internal.AbstractOperation;
+import de.shadowhunt.subversion.internal.TransactionImpl;
+import de.shadowhunt.subversion.internal.util.URIUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.util.EntityUtils;
 
-import de.shadowhunt.http.client.methods.DavTemplateRequest;
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.Transaction;
-import de.shadowhunt.subversion.internal.AbstractOperation;
-import de.shadowhunt.subversion.internal.util.URIUtils;
-
 public class CreateTransactionOperation extends AbstractOperation<Transaction> {
 
-	private final UUID repositoryId;
+	private final Repository instance;
 
 	private final UUID transactionId = UUID.randomUUID();
 
-	public CreateTransactionOperation(final URI repository, final UUID repositoryId) {
+	public CreateTransactionOperation(final URI repository, final Repository instance) {
 		super(repository);
-		this.repositoryId = repositoryId;
+		this.instance = instance;
 	}
 
 	@Override
@@ -54,6 +54,6 @@ public class CreateTransactionOperation extends AbstractOperation<Transaction> {
 	protected Transaction processResponse(final HttpResponse response) {
 		check(response, HttpStatus.SC_CREATED);
 		EntityUtils.consumeQuietly(response.getEntity());
-		return new Transaction(repositoryId, transactionId.toString());
+		return new TransactionImpl(instance, transactionId.toString());
 	}
 }

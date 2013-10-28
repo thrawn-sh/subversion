@@ -20,7 +20,7 @@ import de.shadowhunt.subversion.Transaction;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AbstractRepositoryPropertiesSetIT {
 
-	public static void setProperties(final Repository repository, final Resource resource, final ResourceProperty... properties) {
+	public static void setProperties(final Repository repository, final Resource resource, final ResourceProperty... properties) throws Exception {
 		final Transaction transaction = repository.createTransaction();
 		try {
 			Assert.assertTrue("transaction must be active", transaction.isActive());

@@ -21,21 +21,21 @@ package de.shadowhunt.subversion.internal.httpv1;
 
 import java.net.URI;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.protocol.HttpContext;
-
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
-import de.shadowhunt.subversion.internal.AbstractRepository;
+import de.shadowhunt.subversion.internal.AbstractBasicRepository;
 import de.shadowhunt.subversion.internal.CommitMessageOperation;
 import de.shadowhunt.subversion.internal.MergeOperation;
+import de.shadowhunt.subversion.internal.RepositoryCache;
 import de.shadowhunt.subversion.internal.RepositoryConfig;
+import org.apache.http.client.HttpClient;
+import org.apache.http.protocol.HttpContext;
 
 /**
  * {@link Repository} supports subversion servers of version 1.6.X
  */
-public class Repository extends AbstractRepository {
+public class Repository extends AbstractBasicRepository {
 
 	protected static final String PREFIX_VCC = "/vcc/default";
 
@@ -49,7 +49,8 @@ public class Repository extends AbstractRepository {
 	public void commit(final Transaction transaction, final String message) {
 		validateTransaction(transaction);
 
-		final Revision concreteRevision = getConcreteRevision(Revision.HEAD);
+		final RepositoryCache cache = fromTransaction(transaction);
+		final Revision concreteRevision = cache.getConcreteRevision(Revision.HEAD);
 		final Resource messageResource = config.getCommitMessageResource(transaction).append(Resource.create(concreteRevision.toString()));
 		final CommitMessageOperation cmo = new CommitMessageOperation(repository, messageResource, message);
 		cmo.execute(client, context);
@@ -62,7 +63,7 @@ public class Repository extends AbstractRepository {
 
 	@Override
 	public Transaction createTransaction() {
-		final CreateTransactionOperation cto = new CreateTransactionOperation(repository, repositoryId);
+		final CreateTransactionOperation cto = new CreateTransactionOperation(repository, this);
 		final Transaction transaction = cto.execute(client, context);
 
 		// transaction resource must be explicitly registered

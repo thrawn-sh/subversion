@@ -21,13 +21,13 @@ package de.shadowhunt.subversion.internal.httpv2;
 
 import java.net.URI;
 
+import de.shadowhunt.subversion.internal.AbstractBasicRepository;
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
-import de.shadowhunt.subversion.internal.AbstractRepository;
 import de.shadowhunt.subversion.internal.CommitMessageOperation;
 import de.shadowhunt.subversion.internal.MergeOperation;
 import de.shadowhunt.subversion.internal.RepositoryConfig;
@@ -35,7 +35,7 @@ import de.shadowhunt.subversion.internal.RepositoryConfig;
 /**
  * {@link Repository} supports subversion servers of version 1.7.X
  */
-public class Repository extends AbstractRepository {
+public class Repository extends AbstractBasicRepository {
 
 	public Repository(final URI repository, final RepositoryConfig config, final HttpClient client, final HttpContext context) {
 		super(repository, config, client, context);
@@ -57,7 +57,7 @@ public class Repository extends AbstractRepository {
 
 	@Override
 	public Transaction createTransaction() {
-		final CreateTransactionOperation cto = new CreateTransactionOperation(repository, repositoryId);
+		final CreateTransactionOperation cto = new CreateTransactionOperation(repository, this);
 		return cto.execute(client, context);
 	}
 

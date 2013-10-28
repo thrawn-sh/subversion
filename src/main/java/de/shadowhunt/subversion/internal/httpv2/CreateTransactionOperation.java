@@ -20,8 +20,12 @@
 package de.shadowhunt.subversion.internal.httpv2;
 
 import java.net.URI;
-import java.util.UUID;
 
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.Transaction;
+import de.shadowhunt.subversion.internal.AbstractOperation;
+import de.shadowhunt.subversion.internal.TransactionImpl;
+import de.shadowhunt.subversion.internal.util.URIUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -30,11 +34,6 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
-
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.Transaction;
-import de.shadowhunt.subversion.internal.AbstractOperation;
-import de.shadowhunt.subversion.internal.util.URIUtils;
 
 public class CreateTransactionOperation extends AbstractOperation<Transaction> {
 
@@ -47,11 +46,11 @@ public class CreateTransactionOperation extends AbstractOperation<Transaction> {
 		entity = new StringEntity("( create-txn )", contentType);
 	}
 
-	private final UUID repositoryId;
+	private final Repository instance;
 
-	public CreateTransactionOperation(final URI repository, final UUID repositoryId) {
+	public CreateTransactionOperation(final URI repository, final Repository instance) {
 		super(repository);
-		this.repositoryId = repositoryId;
+		this.instance = instance;
 	}
 
 	@Override
@@ -67,7 +66,7 @@ public class CreateTransactionOperation extends AbstractOperation<Transaction> {
 		check(response, HttpStatus.SC_CREATED);
 		final String transactionId = response.getFirstHeader(HEADER_NAME).getValue();
 		EntityUtils.consumeQuietly(response.getEntity());
-		return new Transaction(repositoryId, transactionId);
+		return new TransactionImpl(instance, transactionId);
 	}
 
 }

@@ -21,70 +21,13 @@ package de.shadowhunt.subversion;
 
 import java.util.UUID;
 
-public final class Transaction {
+public interface Transaction {
 
-	private boolean active = true;
+	String getId();
 
-	private final String id;
+	boolean isActive();
 
-	private final UUID repositoryId;
+	UUID getRepositoryId();
 
-	public Transaction(final UUID repositoryId, final String id) {
-		this.id = id;
-		this.repositoryId = repositoryId;
-	}
-
-	@Override
-	public boolean equals(final Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (!(o instanceof Transaction)) {
-			return false;
-		}
-
-		final Transaction that = (Transaction) o;
-
-		if (!id.equals(that.id)) {
-			return false;
-		}
-		if (!repositoryId.equals(that.repositoryId)) {
-			return false;
-		}
-
-		return true;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public UUID getRepositoryId() {
-		return repositoryId;
-	}
-
-	@Override
-	public int hashCode() {
-		int result = id.hashCode();
-		result = (31 * result) + repositoryId.hashCode();
-		return result;
-	}
-
-	public void invalidate() {
-		active = false;
-	}
-
-	public boolean isActive() {
-		return active;
-	}
-
-	@Override
-	public String toString() {
-		final StringBuilder sb = new StringBuilder("Transaction [");
-		sb.append("id=").append(id);
-		sb.append(", repositoryId=").append(repositoryId);
-		sb.append(", active=").append(active);
-		sb.append(']');
-		return sb.toString();
-	}
+	void invalidate();
 }

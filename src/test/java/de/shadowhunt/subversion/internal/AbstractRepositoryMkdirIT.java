@@ -17,12 +17,12 @@ import de.shadowhunt.subversion.Transaction;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AbstractRepositoryMkdirIT {
 
-	public static void mkdir(final Repository repository, final Resource resource) {
+	public static void mkdir(final Repository repository, final Resource resource, final boolean parents) throws Exception {
 		final Transaction transaction = repository.createTransaction();
 		try {
 			Assert.assertTrue("transaction must be active", transaction.isActive());
 
-			repository.mkdir(transaction, resource, true);
+			repository.mkdir(transaction, resource, parents);
 			Assert.assertTrue("transaction must be active", transaction.isActive());
 			repository.commit(transaction, "mkdir " + resource);
 			Assert.assertFalse("transaction must be not active", transaction.isActive());
@@ -93,31 +93,38 @@ public class AbstractRepositoryMkdirIT {
 
 	@Test
 	public void test01_mkdirBase() throws Exception {
-		mkdir(repository, prefix);
+		mkdir(repository, prefix, true);
 	}
 
 	@Test(expected = SubversionException.class)
-	public void test02_mkdirExisitingFile() throws Exception {
-		final Resource resource = prefix.append(Resource.create("exisiting.txt"));
+	public void test02_mkdirExistingFile() throws Exception {
+		final Resource resource = prefix.append(Resource.create("existing.txt"));
 
 		AbstractRepositoryAddIT.file(repository, resource, "test", true);
-		mkdir(repository, resource);
+		mkdir(repository, resource, false);
 		Assert.fail("mkdir must not complete");
 	}
 
-	@Test(expected = SubversionException.class)
-	public void test02_mkdirExisitingFolder() throws Exception {
+	@Test
+	public void test02_mkdirExistingFolder() throws Exception {
 		final Resource resource = prefix.append(Resource.create("existing"));
 
-		mkdir(repository, resource);
-		mkdir(repository, resource);
-		Assert.fail("mkdir must not complete");
+		mkdir(repository, resource, true);
+		mkdir(repository, resource, false);
 	}
 
 	@Test
 	public void test02_mkdirFolders() throws Exception {
 		final Resource resource = prefix.append(Resource.create("a/b/c"));
 
-		mkdir(repository, resource);
+		mkdir(repository, resource, true);
+	}
+
+	@Test(expected = SubversionException.class)
+	public void test02_mkdirFoldersWithoutParents() throws Exception {
+		final Resource resource = prefix.append(Resource.create("b/c"));
+
+		mkdir(repository, resource, false);
+		Assert.fail("mkdir must not complete");
 	}
 }
