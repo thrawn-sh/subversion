@@ -25,6 +25,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.util.EntityUtils;
 
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.internal.util.URIUtils;
@@ -49,6 +50,7 @@ public class ExistsOperation extends AbstractOperation<Boolean> {
 		check(response, /* found */HttpStatus.SC_OK, /* not found */HttpStatus.SC_NOT_FOUND);
 
 		final int statusCode = getStatusCode(response);
+		EntityUtils.consumeQuietly(response.getEntity());
 		return (statusCode == HttpStatus.SC_OK);
 	}
 

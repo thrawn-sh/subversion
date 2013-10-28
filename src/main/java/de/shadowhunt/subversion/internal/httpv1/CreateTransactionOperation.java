@@ -52,11 +52,8 @@ public class CreateTransactionOperation extends AbstractOperation<Transaction> {
 
 	@Override
 	protected Transaction processResponse(final HttpResponse response) {
-		try {
-			check(response, HttpStatus.SC_CREATED);
-		} finally {
-			EntityUtils.consumeQuietly(response.getEntity());
-		}
+		check(response, HttpStatus.SC_CREATED);
+		EntityUtils.consumeQuietly(response.getEntity());
 		return new Transaction(repositoryId, transactionId.toString());
 	}
 }

@@ -24,6 +24,7 @@ import java.net.URI;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.util.EntityUtils;
 
 import de.shadowhunt.http.client.methods.DavTemplateRequest;
 import de.shadowhunt.subversion.Resource;
@@ -48,6 +49,7 @@ public class CreateFolderOperation extends AbstractOperation<Boolean> {
 	protected Boolean processResponse(final HttpResponse response) {
 		check(response, /* created */HttpStatus.SC_CREATED, /* existed */HttpStatus.SC_METHOD_NOT_ALLOWED);
 		final int status = getStatusCode(response);
+		EntityUtils.consumeQuietly(response.getEntity());
 		return (status == HttpStatus.SC_CREATED);
 	}
 
