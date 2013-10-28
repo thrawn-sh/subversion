@@ -18,7 +18,11 @@ import de.shadowhunt.subversion.Transaction;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AbstractRepositoryAddIT {
 
-	public static void file(final Repository repository, final Resource resource, final String content) {
+	public static void file(final Repository repository, final Resource resource, final String content, final boolean initial) {
+		if (!initial) {
+			Assert.assertTrue(resource + " must not exist", repository.exists(resource, Revision.HEAD));
+		}
+
 		final Transaction transaction = repository.createTransaction();
 		try {
 			Assert.assertTrue("transaction must be active", transaction.isActive());
@@ -53,7 +57,7 @@ public class AbstractRepositoryAddIT {
 		try {
 			Assert.assertTrue("transaction must be active", transaction.isActive());
 			transaction.invalidate();
-			Assert.assertFalse("transaction must not be valid", transaction.isActive());
+			Assert.assertFalse("transaction must not be active", transaction.isActive());
 			repository.add(transaction, resource, false, Helper.getInputStream("test"));
 			Assert.fail("must not complete");
 		} catch (final Exception e) {
@@ -88,7 +92,7 @@ public class AbstractRepositoryAddIT {
 			repository.add(transaction, resource, false, Helper.getInputStream("test"));
 			Assert.assertTrue("transaction must be active", transaction.isActive());
 			repository.rollback(transaction);
-			Assert.assertFalse("transaction must not be valid", transaction.isActive());
+			Assert.assertFalse("transaction must not be active", transaction.isActive());
 		} catch (final Exception e) {
 			repository.rollback(transaction);
 			throw e;
@@ -99,14 +103,14 @@ public class AbstractRepositoryAddIT {
 	public void test01_addFile() throws Exception {
 		final Resource resource = prefix.append(Resource.create("file.txt"));
 
-		file(repository, resource, "test");
+		file(repository, resource, "test", true);
 	}
 
 	@Test
 	public void test02_updateFile() throws Exception {
 		final Resource resource = prefix.append(Resource.create("update.txt"));
 
-		file(repository, resource, "A");
-		file(repository, resource, "B");
+		file(repository, resource, "A", true);
+		file(repository, resource, "B", false);
 	}
 }

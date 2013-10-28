@@ -57,7 +57,7 @@ public class AbstractRepositoryPropertiesSetIT {
 		try {
 			Assert.assertTrue("transaction must be active", transaction.isActive());
 			transaction.invalidate();
-			Assert.assertFalse("transaction must not be valid", transaction.isActive());
+			Assert.assertFalse("transaction must not be active", transaction.isActive());
 			repository.propertiesSet(transaction, resource, property);
 			Assert.fail("must not complete");
 		} catch (final Exception e) {
@@ -94,7 +94,7 @@ public class AbstractRepositoryPropertiesSetIT {
 			repository.propertiesSet(transaction, resource, property);
 			Assert.assertTrue("transaction must be active", transaction.isActive());
 			repository.rollback(transaction);
-			Assert.assertFalse("transaction must not be valid", transaction.isActive());
+			Assert.assertFalse("transaction must not be active", transaction.isActive());
 		} catch (final Exception e) {
 			repository.rollback(transaction);
 			throw e;
@@ -106,7 +106,7 @@ public class AbstractRepositoryPropertiesSetIT {
 		final Resource resource = prefix.append(Resource.create("file.txt"));
 		final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "test");
 
-		AbstractRepositoryAddIT.file(repository, resource, "test");
+		AbstractRepositoryAddIT.file(repository, resource, "test", true);
 		setProperties(repository, resource, property);
 	}
 
@@ -114,7 +114,7 @@ public class AbstractRepositoryPropertiesSetIT {
 	public void test02_overrideProperties() throws Exception {
 		final Resource resource = prefix.append(Resource.create("update.txt"));
 
-		AbstractRepositoryAddIT.file(repository, resource, "test");
+		AbstractRepositoryAddIT.file(repository, resource, "test", true);
 		{
 			final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "A");
 			setProperties(repository, resource, property);

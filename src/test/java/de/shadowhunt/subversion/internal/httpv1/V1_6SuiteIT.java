@@ -16,12 +16,13 @@ import org.junit.runners.Suite.SuiteClasses;
 		// transactions
 		V1_6RepositoryTransaction.class, //
 		// single modifications
-		V1_6RepositoryMkdir.class, // uses transactions
+		V1_6RepositoryMkdir.class, // uses transactions + (add)
 		V1_6RepositoryAdd.class, // uses transactions + mkdir
+		V1_6RepositoryDelete.class, // uses transactions + add + mkdir
 		V1_6RepositoryLocking.class, // uses add
 		V1_6RepositoryPropertiesSet.class, // uses transactions + add
 		V1_6RepositoryPropertiesDelete.class, // uses transactions + add + propertiesSet
-// multiple modifications
+		// multiple modifications
 })
 public class V1_6SuiteIT {
 	// no code, just a placeholder class

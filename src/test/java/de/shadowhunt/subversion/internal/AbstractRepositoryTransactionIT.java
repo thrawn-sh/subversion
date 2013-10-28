@@ -21,10 +21,10 @@ public abstract class AbstractRepositoryTransactionIT {
 	}
 
 	@Test(expected = SubversionException.class)
-	public void test00_commitInvalidTransaction() throws Exception {
+	public void test00_commitInactiveTransaction() throws Exception {
 		final Transaction transaction = new Transaction(UUID.randomUUID(), "1");
 		repository.commit(transaction, "empty commit");
-		Assert.fail("commit of invalid transaction");
+		Assert.fail("commit of inactive transaction");
 	}
 
 	@Test
@@ -36,10 +36,10 @@ public abstract class AbstractRepositoryTransactionIT {
 	}
 
 	@Test(expected = SubversionException.class)
-	public void test00_rollbackInvalidTransaction() throws Exception {
+	public void test00_rollbackInactiveTransaction() throws Exception {
 		final Transaction transaction = new Transaction(UUID.randomUUID(), "1");
 		repository.rollback(transaction);
-		Assert.fail("rollback of invalid transaction");
+		Assert.fail("rollback of inactive transaction");
 	}
 
 	@Test(expected = SubversionException.class)

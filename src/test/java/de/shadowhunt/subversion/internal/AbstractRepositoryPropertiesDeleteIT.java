@@ -57,7 +57,7 @@ public class AbstractRepositoryPropertiesDeleteIT {
 			repository.propertiesDelete(transaction, resource, property);
 			Assert.assertTrue("transaction must be active", transaction.isActive());
 			repository.rollback(transaction);
-			Assert.assertFalse("transaction must not be valid", transaction.isActive());
+			Assert.assertFalse("transaction must not be active", transaction.isActive());
 		} catch (final Exception e) {
 			repository.rollback(transaction);
 			throw e;
@@ -73,7 +73,7 @@ public class AbstractRepositoryPropertiesDeleteIT {
 		try {
 			Assert.assertTrue("transaction must be active", transaction.isActive());
 			transaction.invalidate();
-			Assert.assertFalse("transaction must not be valid", transaction.isActive());
+			Assert.assertFalse("transaction must not be active", transaction.isActive());
 			repository.propertiesDelete(transaction, resource, property);
 			Assert.fail("must not complete");
 		} catch (final Exception e) {
@@ -87,7 +87,7 @@ public class AbstractRepositoryPropertiesDeleteIT {
 		final Resource resource = prefix.append(Resource.create("file.txt"));
 		final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "test");
 
-		AbstractRepositoryAddIT.file(repository, resource, "test");
+		AbstractRepositoryAddIT.file(repository, resource, "test", true);
 		AbstractRepositoryPropertiesSetIT.setProperties(repository, resource, property);
 
 		{ // delete properties
@@ -97,7 +97,7 @@ public class AbstractRepositoryPropertiesDeleteIT {
 				repository.propertiesDelete(transaction, resource, property);
 				Assert.assertTrue("transaction must be active", transaction.isActive());
 				repository.commit(transaction, "delete " + resource);
-				Assert.assertFalse("transaction must not be valid", transaction.isActive());
+				Assert.assertFalse("transaction must not be active", transaction.isActive());
 			} catch (final Exception e) {
 				repository.rollback(transaction);
 				throw e;
@@ -116,7 +116,7 @@ public class AbstractRepositoryPropertiesDeleteIT {
 		final Resource resource = prefix.append(Resource.create("no_properties.txt"));
 		final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "test");
 
-		AbstractRepositoryAddIT.file(repository, resource, "test");
+		AbstractRepositoryAddIT.file(repository, resource, "test", true);
 
 		{ // delete properties
 			final Transaction transaction = repository.createTransaction();
@@ -125,7 +125,7 @@ public class AbstractRepositoryPropertiesDeleteIT {
 				repository.propertiesDelete(transaction, resource, property);
 				Assert.assertTrue("transaction must be active", transaction.isActive());
 				repository.commit(transaction, "delete " + resource);
-				Assert.assertFalse("transaction must not be valid", transaction.isActive());
+				Assert.assertFalse("transaction must not be active", transaction.isActive());
 			} catch (final Exception e) {
 				repository.rollback(transaction);
 				throw e;

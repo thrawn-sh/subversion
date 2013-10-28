@@ -17,6 +17,21 @@ import de.shadowhunt.subversion.Transaction;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AbstractRepositoryMkdirIT {
 
+	public static void mkdir(final Repository repository, final Resource resource) {
+		final Transaction transaction = repository.createTransaction();
+		try {
+			Assert.assertTrue("transaction must be active", transaction.isActive());
+
+			repository.mkdir(transaction, resource, true);
+			Assert.assertTrue("transaction must be active", transaction.isActive());
+			repository.commit(transaction, "mkdir " + resource);
+			Assert.assertFalse("transaction must be not active", transaction.isActive());
+		} catch (final Exception e) {
+			repository.rollback(transaction);
+			throw e;
+		}
+	}
+
 	private final Resource prefix;
 
 	private final Repository repository;
@@ -78,52 +93,29 @@ public class AbstractRepositoryMkdirIT {
 
 	@Test
 	public void test01_mkdirBase() throws Exception {
-		final Transaction transaction = repository.createTransaction();
-		try {
-			Assert.assertTrue("transaction must be active", transaction.isActive());
-			final Resource resource = prefix;
+		mkdir(repository, prefix);
+	}
 
-			repository.mkdir(transaction, resource, false);
-			Assert.assertTrue("transaction must be active", transaction.isActive());
-			repository.commit(transaction, "mkdir " + resource);
-			Assert.assertFalse("transaction must be not active", transaction.isActive());
-		} catch (final Exception e) {
-			repository.rollback(transaction);
-			throw e;
-		}
+	@Test
+	public void test02_mkdirExisitingFile() throws Exception {
+		final Resource resource = prefix.append(Resource.create("exisiting.txt"));
+
+		AbstractRepositoryAddIT.file(repository, resource, "test", true);
+		mkdir(repository, resource);
+	}
+
+	@Test
+	public void test02_mkdirExisitingFolder() throws Exception {
+		final Resource resource = prefix.append(Resource.create("existing"));
+
+		mkdir(repository, resource);
+		mkdir(repository, resource);
 	}
 
 	@Test
 	public void test02_mkdirFolders() throws Exception {
-		final Transaction transaction = repository.createTransaction();
-		try {
-			Assert.assertTrue("transaction must be active", transaction.isActive());
-			final Resource resource = prefix.append(Resource.create("a/b/c"));
+		final Resource resource = prefix.append(Resource.create("a/b/c"));
 
-			repository.mkdir(transaction, resource, true);
-			Assert.assertTrue("transaction must be active", transaction.isActive());
-			repository.commit(transaction, "mkdir " + resource);
-			Assert.assertFalse("transaction must be not active", transaction.isActive());
-		} catch (final Exception e) {
-			repository.rollback(transaction);
-			throw e;
-		}
-	}
-
-	@Test
-	public void test02_mkdirExisitingBase() throws Exception {
-		final Transaction transaction = repository.createTransaction();
-		try {
-			Assert.assertTrue("transaction must be active", transaction.isActive());
-			final Resource resource = prefix;
-
-			repository.mkdir(transaction, resource, true);
-			Assert.assertTrue("transaction must be active", transaction.isActive());
-			repository.commit(transaction, "mkdir " + resource);
-			Assert.assertFalse("transaction must be not active", transaction.isActive());
-		} catch (final Exception e) {
-			repository.rollback(transaction);
-			throw e;
-		}
+		mkdir(repository, resource);
 	}
 }
