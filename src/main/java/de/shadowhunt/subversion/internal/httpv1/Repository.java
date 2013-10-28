@@ -41,21 +41,28 @@ public class Repository extends AbstractRepository {
 		super(repository, config, client, context);
 	}
 
+	@Override
+	protected void registerResource(final Transaction transaction, final Resource resource) {
+		final Resource resource = config.getPrefix().append(Resource.create(PREFIX_VCC));
+		final Resource transactionResource = config.getTransactionResource(transaction);
+		final CheckoutOperation co = new CheckoutOperation(repository, resource, transactionResource);
+		co.execute(client, context);
+	}
+
 	protected static final String PREFIX_VCC = "/vcc/default";
 
 	protected static final String PREFIX_VER = "/ver/";
-
-	protected void checkout(final Transaction transaction) {
-		final CheckoutOperation co = new CheckoutOperation(repository, config.getPrefix().append(Resource.create(PREFIX_VCC)), config.getTransactionResource(transaction));
-		co.execute(client, context);
-	}
 
 	@Override
 	public Transaction createTransaction() {
 		final CreateTransactionOperation cto = new CreateTransactionOperation(repository, repositoryId);
 		final Transaction transaction = cto.execute(client, context);
 
-		// FIXME checkout request
+		// transaction resource must be explicitly registered
+		final Resource resource = config.getPrefix().append(Resource.create(PREFIX_VCC));
+		final Resource transactionResource = config.getTransactionResource(transaction);
+		final CheckoutOperation co = new CheckoutOperation(repository, resource, transactionResource);
+		co.execute(client, context);
 
 		return transaction;
 	}

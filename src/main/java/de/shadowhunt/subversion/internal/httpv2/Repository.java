@@ -41,6 +41,11 @@ public class Repository extends AbstractRepository {
 	}
 
 	@Override
+	protected void registerResource(final Transaction transaction, final Resource resource) {
+		// NOTHING TODO
+	}
+
+	@Override
 	public Transaction createTransaction() {
 		final CreateTransactionOperation cto = new CreateTransactionOperation(repository, repositoryId);
 		return cto.execute(client, context);

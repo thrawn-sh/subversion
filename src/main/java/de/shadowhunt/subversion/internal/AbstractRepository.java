@@ -102,6 +102,8 @@ public abstract class AbstractRepository implements Repository {
 		operation.execute(client, context);
 	}
 
+	protected abstract void registerResource(Transaction transaction, Resource resource);
+
 	@Override
 	public void copy(final Transaction transaction, final Resource srcResource, final Revision srcRevision, final Resource targetResource, final boolean parents) {
 		validateTransaction(transaction);
