@@ -49,7 +49,8 @@ public class Repository extends AbstractRepository {
 	public void commit(final Transaction transaction, final String message) {
 		validateTransaction(transaction);
 
-		final Resource messageResource = config.getCommitMessageResource(transaction);
+		final Revision concreteRevision = getConcreteRevision(Revision.HEAD);
+		final Resource messageResource = config.getCommitMessageResource(transaction).append(Resource.create(concreteRevision.toString()));
 		final CommitMessageOperation cmo = new CommitMessageOperation(repository, messageResource, message);
 		cmo.execute(client, context);
 
@@ -73,17 +74,11 @@ public class Repository extends AbstractRepository {
 		return transaction;
 	}
 
-	protected void prepareContentUpload(final Resource resource, final Transaction transaction, final Revision revision) {
-		final CheckoutOperation co = new CheckoutOperation(repository, config.getPrefix().append(Resource.create(PREFIX_VER
-				+ revision)).append(resource), config.getTransactionResource(transaction));
-		co.execute(client, context);
-	}
-
 	@Override
-	protected void registerResource(final Transaction transaction, final Resource resource) {
-		final Resource r = config.getPrefix().append(Resource.create(PREFIX_VCC));
+	protected void registerResource(final Transaction transaction, final Resource resource, final Revision revision) {
+		final Resource existingResource = config.getPrefix().append(Resource.create(PREFIX_VER + revision)).append(resource);
 		final Resource transactionResource = config.getTransactionResource(transaction);
-		final CheckoutOperation co = new CheckoutOperation(repository, r, transactionResource);
+		final CheckoutOperation co = new CheckoutOperation(repository, existingResource, transactionResource);
 		co.execute(client, context);
 	}
 }

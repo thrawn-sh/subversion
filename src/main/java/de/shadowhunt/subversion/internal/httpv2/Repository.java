@@ -25,6 +25,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 
 import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.internal.AbstractRepository;
 import de.shadowhunt.subversion.internal.CommitMessageOperation;
@@ -61,7 +62,7 @@ public class Repository extends AbstractRepository {
 	}
 
 	@Override
-	protected void registerResource(final Transaction transaction, final Resource resource) {
-		// NOTHING TODO
+	protected void registerResource(final Transaction transaction, final Resource resource, final Revision revision) {
+		// nothing to to
 	}
 }

@@ -96,7 +96,7 @@ public abstract class AbstractRepository implements Repository {
 	public void copy(final Transaction transaction, final Resource srcResource, final Revision srcRevision, final Resource targetResource, final boolean parents) {
 		validateTransaction(transaction);
 
-		createFolder0(config.getWorkingResource(transaction).append(targetResource.getParent()), true);
+		createFolder0(transaction, config.getWorkingResource(transaction).append(targetResource.getParent()), srcRevision, true);
 
 		final Info info = info(srcResource, srcRevision);
 		final Resource s = config.getVersionedResource(info.getRevision()).append(info.getResource());
@@ -106,19 +106,21 @@ public abstract class AbstractRepository implements Repository {
 		operation.execute(client, context);
 	}
 
-	protected Resource createFolder0(final Resource resource, final boolean parent) {
+	protected Resource createFolder0(final Transaction transaction, final Resource resource, final Revision revision, final boolean parent) {
 		Resource result = null;
 		if (parent) {
 			if (Resource.ROOT.equals(resource)) {
 				return null;
 			}
 
-			result = createFolder0(resource.getParent(), parent);
+			result = createFolder0(transaction, resource.getParent(), revision, parent);
 		}
 
-		final CreateFolderOperation operation = new CreateFolderOperation(repository, resource);
+		final Resource folder = config.getWorkingResource(transaction).append(resource);
+		final CreateFolderOperation operation = new CreateFolderOperation(repository, folder);
 		final boolean created = operation.execute(client, context);
 		if (!created) {
+			registerResource(transaction, resource, revision);
 			result = resource;
 		}
 		return result;
@@ -129,17 +131,6 @@ public abstract class AbstractRepository implements Repository {
 		validateTransaction(transaction);
 
 		final DeleteOperation operation = new DeleteOperation(repository, config.getWorkingResource(transaction).append(resource));
-		operation.execute(client, context);
-	}
-
-	@Override
-	public void propertiesDelete(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
-		validateTransaction(transaction);
-
-		final Info info = info(resource, Revision.HEAD);
-
-		final Resource r = config.getWorkingResource(transaction).append(resource);
-		final PropertiesDeleteOperation operation = new PropertiesDeleteOperation(repository, r, info.getLockToken(), properties);
 		operation.execute(client, context);
 	}
 
@@ -241,7 +232,8 @@ public abstract class AbstractRepository implements Repository {
 			return;
 		}
 
-		createFolder0(config.getWorkingResource(transaction).append(resource), parent);
+		final Revision revision = getConcreteRevision(Revision.HEAD);
+		createFolder0(transaction, resource, revision, parent);
 	}
 
 	@Override
@@ -252,7 +244,28 @@ public abstract class AbstractRepository implements Repository {
 		delete(transaction, srcResource);
 	}
 
-	protected abstract void registerResource(Transaction transaction, Resource resource);
+	@Override
+	public void propertiesDelete(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
+		validateTransaction(transaction);
+
+		final Info info = info(resource, Revision.HEAD);
+
+		final Resource r = config.getWorkingResource(transaction).append(resource);
+		final PropertiesDeleteOperation operation = new PropertiesDeleteOperation(repository, r, info.getLockToken(), properties);
+		operation.execute(client, context);
+	}
+
+	@Override
+	public void propertiesSet(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
+		validateTransaction(transaction);
+
+		final Info info = info(resource, Revision.HEAD);
+		final Resource r = config.getWorkingResource(transaction).append(resource);
+		final PropertiesSetOperation operation = new PropertiesSetOperation(repository, r, info.getLockToken(), properties);
+		operation.execute(client, context);
+	}
+
+	protected abstract void registerResource(Transaction transaction, Resource resource, Revision revision);
 
 	protected Resource resolve(final Resource resource, final Revision revision, final boolean resolve) {
 		if (Revision.HEAD.equals(revision)) {
@@ -291,16 +304,6 @@ public abstract class AbstractRepository implements Repository {
 		} finally {
 			transaction.invalidate();
 		}
-	}
-
-	@Override
-	public void propertiesSet(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
-		validateTransaction(transaction);
-
-		final Info info = info(resource, Revision.HEAD);
-		final Resource r = config.getWorkingResource(transaction).append(resource);
-		final PropertiesSetOperation operation = new PropertiesSetOperation(repository, r, info.getLockToken(), properties);
-		operation.execute(client, context);
 	}
 
 	@Override
