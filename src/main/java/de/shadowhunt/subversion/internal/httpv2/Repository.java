@@ -41,17 +41,6 @@ public class Repository extends AbstractRepository {
 	}
 
 	@Override
-	protected void registerResource(final Transaction transaction, final Resource resource) {
-		// NOTHING TODO
-	}
-
-	@Override
-	public Transaction createTransaction() {
-		final CreateTransactionOperation cto = new CreateTransactionOperation(repository, repositoryId);
-		return cto.execute(client, context);
-	}
-
-	@Override
 	public void commit(final Transaction transaction, final String message) {
 		validateTransaction(transaction);
 
@@ -63,5 +52,16 @@ public class Repository extends AbstractRepository {
 		final MergeOperation mo = new MergeOperation(repository, mergeResource, null); // FIXME locktoken
 		mo.execute(client, context);
 		transaction.invalidate(); // only invalidte after successfull commit to allow rollback
+	}
+
+	@Override
+	public Transaction createTransaction() {
+		final CreateTransactionOperation cto = new CreateTransactionOperation(repository, repositoryId);
+		return cto.execute(client, context);
+	}
+
+	@Override
+	protected void registerResource(final Transaction transaction, final Resource resource) {
+		// NOTHING TODO
 	}
 }

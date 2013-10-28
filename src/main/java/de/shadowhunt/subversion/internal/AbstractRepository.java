@@ -51,16 +51,6 @@ public abstract class AbstractRepository implements Repository {
 		return info.getRepositoryId();
 	}
 
-	protected void validateTransaction(final Transaction transaction) {
-		final UUID transactionRepositoryId = transaction.getRepositoryId();
-		if (!repositoryId.equals(transactionRepositoryId)) {
-			throw new SubversionException("TODO"); // FIXME
-		}
-		if (!transaction.isActive()) {
-			throw new SubversionException("TODO"); // FIXME
-		}
-	}
-
 	public final HttpClient client;
 
 	protected final RepositoryConfig config;
@@ -102,8 +92,6 @@ public abstract class AbstractRepository implements Repository {
 		operation.execute(client, context);
 	}
 
-	protected abstract void registerResource(Transaction transaction, Resource resource);
-
 	@Override
 	public void copy(final Transaction transaction, final Resource srcResource, final Revision srcRevision, final Resource targetResource, final boolean parents) {
 		validateTransaction(transaction);
@@ -116,17 +104,6 @@ public abstract class AbstractRepository implements Repository {
 
 		final CopyOperation operation = new CopyOperation(repository, s, t);
 		operation.execute(client, context);
-	}
-
-	@Override
-	public void mkdir(final Transaction transaction, final Resource resource, final boolean parent) {
-		validateTransaction(transaction);
-
-		if (exists(resource, Revision.HEAD)) {
-			return;
-		}
-
-		createFolder0(config.getWorkingResource(transaction).append(resource), parent);
 	}
 
 	protected Resource createFolder0(final Resource resource, final boolean parent) {
@@ -257,12 +234,25 @@ public abstract class AbstractRepository implements Repository {
 	}
 
 	@Override
+	public void mkdir(final Transaction transaction, final Resource resource, final boolean parent) {
+		validateTransaction(transaction);
+
+		if (exists(resource, Revision.HEAD)) {
+			return;
+		}
+
+		createFolder0(config.getWorkingResource(transaction).append(resource), parent);
+	}
+
+	@Override
 	public void move(final Transaction transaction, final Resource srcResource, final Resource targetResource, final boolean parents) {
 		validateTransaction(transaction);
 
 		copy(transaction, srcResource, Revision.HEAD, targetResource, parents);
 		delete(transaction, srcResource);
 	}
+
+	protected abstract void registerResource(Transaction transaction, Resource resource);
 
 	protected Resource resolve(final Resource resource, final Revision revision, final boolean resolve) {
 		if (Revision.HEAD.equals(revision)) {
@@ -322,5 +312,15 @@ public abstract class AbstractRepository implements Repository {
 		}
 		final UnlockOperation operation = new UnlockOperation(repository, resource, lockToken, force);
 		operation.execute(client, context);
+	}
+
+	protected void validateTransaction(final Transaction transaction) {
+		final UUID transactionRepositoryId = transaction.getRepositoryId();
+		if (!repositoryId.equals(transactionRepositoryId)) {
+			throw new SubversionException("TODO"); // FIXME
+		}
+		if (!transaction.isActive()) {
+			throw new SubversionException("TODO"); // FIXME
+		}
 	}
 }

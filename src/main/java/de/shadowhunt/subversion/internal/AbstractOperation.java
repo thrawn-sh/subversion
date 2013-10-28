@@ -42,6 +42,20 @@ public abstract class AbstractOperation<T> implements Operation<T> {
 
 	protected static final String XML_PREAMBLE = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
 
+	protected static final void check(final HttpResponse response, final int... expectedStatusCodes) {
+		final int statusCode = getStatusCode(response);
+
+		if (isExpected(statusCode, expectedStatusCodes)) {
+			return;
+		}
+
+		// FIXME throw more detailed exceptions
+
+		EntityUtils.consumeQuietly(response.getEntity()); // in case of unexpected status code we consume everything
+		throw new SubversionException("status code is: " + statusCode + ", expected was: "
+				+ Arrays.toString(expectedStatusCodes));
+	}
+
 	protected static final InputStream getContent(final HttpResponse response) {
 		final HttpEntity entity = response.getEntity();
 		if (entity == null) {
@@ -53,6 +67,20 @@ public abstract class AbstractOperation<T> implements Operation<T> {
 		} catch (final Exception e) {
 			throw new SubversionException("could not retrieve content stream", e);
 		}
+	}
+
+	protected static final int getStatusCode(final HttpResponse response) {
+		final StatusLine statusLine = response.getStatusLine();
+		return (statusLine == null) ? 0 : statusLine.getStatusCode();
+	}
+
+	protected static final boolean isExpected(final int statusCode, final int... expectedStatusCodes) {
+		for (final int expectedStatusCode : expectedStatusCodes) {
+			if (expectedStatusCode == statusCode) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	protected final URI repository;
@@ -93,32 +121,4 @@ public abstract class AbstractOperation<T> implements Operation<T> {
 	}
 
 	protected abstract T processResponse(final HttpResponse response);
-
-	protected static final int getStatusCode(final HttpResponse response) {
-		final StatusLine statusLine = response.getStatusLine();
-		return (statusLine == null) ? 0 : statusLine.getStatusCode();
-	}
-
-	protected static final boolean isExpected(final int statusCode, final int... expectedStatusCodes) {
-		for (final int expectedStatusCode : expectedStatusCodes) {
-			if (expectedStatusCode == statusCode) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	protected static final void check(final HttpResponse response, final int... expectedStatusCodes) {
-		final int statusCode = getStatusCode(response);
-
-		if (isExpected(statusCode, expectedStatusCodes)) {
-			return;
-		}
-
-		// FIXME throw more detailed exceptions
-
-		EntityUtils.consumeQuietly(response.getEntity()); // in case of unexpected status code we consume everything
-		throw new SubversionException("status code is: " + statusCode + ", expected was: "
-				+ Arrays.toString(expectedStatusCodes));
-	}
 }

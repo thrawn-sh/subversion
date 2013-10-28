@@ -43,6 +43,11 @@ public class RepositoryConfig implements de.shadowhunt.subversion.internal.Repos
 	}
 
 	@Override
+	public Repository create(final URI repository, final HttpClient client, final HttpContext context) {
+		return new de.shadowhunt.subversion.internal.httpv1.Repository(repository, this, client, context);
+	}
+
+	@Override
 	public Resource getCommitMessageResource(final Transaction transaction) {
 		final Resource suffix = Resource.create("/wbl/" + transaction.getId());
 		return prefix.append(suffix);
@@ -74,11 +79,6 @@ public class RepositoryConfig implements de.shadowhunt.subversion.internal.Repos
 	public Resource getWorkingResource(final Transaction transaction) {
 		final Resource suffix = Resource.create("/wrk/" + transaction.getId());
 		return prefix.append(suffix);
-	}
-
-	@Override
-	public Repository create(final URI repository, final HttpClient client, final HttpContext context) {
-		return new de.shadowhunt.subversion.internal.httpv1.Repository(repository, this, client, context);
 	}
 
 }

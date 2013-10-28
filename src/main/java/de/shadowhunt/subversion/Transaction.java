@@ -23,25 +23,15 @@ import java.util.UUID;
 
 public final class Transaction {
 
+	private boolean active = true;
+
 	private final String id;
 
 	private final UUID repositoryId;
 
-	private boolean active = true;
-
 	public Transaction(final UUID repositoryId, final String id) {
 		this.id = id;
 		this.repositoryId = repositoryId;
-	}
-
-	@Override
-	public String toString() {
-		final StringBuilder sb = new StringBuilder("Transaction [");
-		sb.append("id=").append(id);
-		sb.append(", repositoryId=").append(repositoryId);
-		sb.append(", active=").append(active);
-		sb.append(']');
-		return sb.toString();
 	}
 
 	@Override
@@ -65,13 +55,6 @@ public final class Transaction {
 		return true;
 	}
 
-	@Override
-	public int hashCode() {
-		int result = id.hashCode();
-		result = 31 * result + repositoryId.hashCode();
-		return result;
-	}
-
 	public String getId() {
 		return id;
 	}
@@ -80,11 +63,28 @@ public final class Transaction {
 		return repositoryId;
 	}
 
-	public boolean isActive() {
-		return active;
+	@Override
+	public int hashCode() {
+		int result = id.hashCode();
+		result = 31 * result + repositoryId.hashCode();
+		return result;
 	}
 
 	public void invalidate() {
 		active = false;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder("Transaction [");
+		sb.append("id=").append(id);
+		sb.append(", repositoryId=").append(repositoryId);
+		sb.append(", active=").append(active);
+		sb.append(']');
+		return sb.toString();
 	}
 }

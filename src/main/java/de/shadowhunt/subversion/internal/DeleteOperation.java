@@ -39,13 +39,13 @@ public class DeleteOperation extends AbstractVoidOperation {
 	}
 
 	@Override
-	protected HttpUriRequest createRequest() {
-		final URI uri = URIUtils.createURI(repository, resource);
-		return new HttpDelete(uri);
+	protected void checkResponse(final HttpResponse response) {
+		check(response, HttpStatus.SC_NO_CONTENT);
 	}
 
 	@Override
-	protected void checkResponse(final HttpResponse response) {
-		check(response, HttpStatus.SC_NO_CONTENT);
+	protected HttpUriRequest createRequest() {
+		final URI uri = URIUtils.createURI(repository, resource);
+		return new HttpDelete(uri);
 	}
 }

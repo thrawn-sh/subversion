@@ -37,8 +37,6 @@ public interface Info {
 		}
 	};
 
-	ResourceProperty[] getProperties();
-
 	@CheckForNull
 	String getLockOwner();
 
@@ -47,6 +45,8 @@ public interface Info {
 
 	@CheckForNull
 	String getMd5();
+
+	ResourceProperty[] getProperties();
 
 	UUID getRepositoryId();
 

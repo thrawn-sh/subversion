@@ -37,34 +37,12 @@ import de.shadowhunt.subversion.internal.RepositoryConfig;
  */
 public class Repository extends AbstractRepository {
 
-	public Repository(final URI repository, final RepositoryConfig config, final HttpClient client, final HttpContext context) {
-		super(repository, config, client, context);
-	}
-
-	@Override
-	protected void registerResource(final Transaction transaction, final Resource resource) {
-		final Resource resource = config.getPrefix().append(Resource.create(PREFIX_VCC));
-		final Resource transactionResource = config.getTransactionResource(transaction);
-		final CheckoutOperation co = new CheckoutOperation(repository, resource, transactionResource);
-		co.execute(client, context);
-	}
-
 	protected static final String PREFIX_VCC = "/vcc/default";
 
 	protected static final String PREFIX_VER = "/ver/";
 
-	@Override
-	public Transaction createTransaction() {
-		final CreateTransactionOperation cto = new CreateTransactionOperation(repository, repositoryId);
-		final Transaction transaction = cto.execute(client, context);
-
-		// transaction resource must be explicitly registered
-		final Resource resource = config.getPrefix().append(Resource.create(PREFIX_VCC));
-		final Resource transactionResource = config.getTransactionResource(transaction);
-		final CheckoutOperation co = new CheckoutOperation(repository, resource, transactionResource);
-		co.execute(client, context);
-
-		return transaction;
+	public Repository(final URI repository, final RepositoryConfig config, final HttpClient client, final HttpContext context) {
+		super(repository, config, client, context);
 	}
 
 	@Override
@@ -81,8 +59,30 @@ public class Repository extends AbstractRepository {
 		transaction.invalidate(); // only invalidte after successfull commit to allow rollback
 	}
 
+	@Override
+	public Transaction createTransaction() {
+		final CreateTransactionOperation cto = new CreateTransactionOperation(repository, repositoryId);
+		final Transaction transaction = cto.execute(client, context);
+
+		// transaction resource must be explicitly registered
+		final Resource resource = config.getPrefix().append(Resource.create(PREFIX_VCC));
+		final Resource transactionResource = config.getTransactionResource(transaction);
+		final CheckoutOperation co = new CheckoutOperation(repository, resource, transactionResource);
+		co.execute(client, context);
+
+		return transaction;
+	}
+
 	protected void prepareContentUpload(final Resource resource, final Transaction transaction, final Revision revision) {
 		final CheckoutOperation co = new CheckoutOperation(repository, config.getPrefix().append(Resource.create(PREFIX_VER + revision)).append(resource), config.getTransactionResource(transaction));
+		co.execute(client, context);
+	}
+
+	@Override
+	protected void registerResource(final Transaction transaction, final Resource resource) {
+		final Resource r = config.getPrefix().append(Resource.create(PREFIX_VCC));
+		final Resource transactionResource = config.getTransactionResource(transaction);
+		final CheckoutOperation co = new CheckoutOperation(repository, r, transactionResource);
 		co.execute(client, context);
 	}
 }

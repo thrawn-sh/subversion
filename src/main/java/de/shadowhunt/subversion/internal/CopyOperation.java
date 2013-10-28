@@ -41,6 +41,11 @@ public class CopyOperation extends AbstractVoidOperation {
 	}
 
 	@Override
+	protected void checkResponse(final HttpResponse response) {
+		check(response, HttpStatus.SC_CREATED);
+	}
+
+	@Override
 	protected HttpUriRequest createRequest() {
 		final URI sourceUri = URIUtils.createURI(repository, source);
 		final URI targetUri = URIUtils.createURI(repository, target);
@@ -49,10 +54,5 @@ public class CopyOperation extends AbstractVoidOperation {
 		request.addHeader("Depth", Depth.INFINITY.value);
 		request.addHeader("Override", "T");
 		return request;
-	}
-
-	@Override
-	protected void checkResponse(final HttpResponse response) {
-		check(response, HttpStatus.SC_CREATED);
 	}
 }

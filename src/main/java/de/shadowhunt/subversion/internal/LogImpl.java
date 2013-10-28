@@ -192,6 +192,16 @@ public final class LogImpl implements Log {
 	}
 
 	/**
+	 * Returns the name of the author that committed changes to the repository
+	 *
+	 * @return the name of the author that committed changes to the repository
+	 */
+	@Override
+	public String getAuthor() {
+		return author;
+	}
+
+	/**
 	 * Returns the time of the commit
 	 *
 	 * @return the time of the commit
@@ -221,16 +231,6 @@ public final class LogImpl implements Log {
 		return revision;
 	}
 
-	/**
-	 * Returns the name of the author that committed changes to the repository
-	 *
-	 * @return the name of the author that committed changes to the repository
-	 */
-	@Override
-	public String getAuthor() {
-		return author;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -240,6 +240,10 @@ public final class LogImpl implements Log {
 		result = (prime * result) + ((message == null) ? 0 : message.hashCode());
 		result = (prime * result) + ((revision == null) ? 0 : revision.hashCode());
 		return result;
+	}
+
+	void setAuthor(final String author) {
+		this.author = author;
 	}
 
 	void setDate(final Date date) {
@@ -252,10 +256,6 @@ public final class LogImpl implements Log {
 
 	void setRevision(final Revision revision) {
 		this.revision = revision;
-	}
-
-	void setAuthor(final String author) {
-		this.author = author;
 	}
 
 	@Override

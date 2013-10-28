@@ -50,6 +50,11 @@ public class PropertiesSetOperation extends AbstractVoidOperation {
 	}
 
 	@Override
+	protected void checkResponse(final HttpResponse response) {
+		check(response, HttpStatus.SC_MULTI_STATUS);
+	}
+
+	@Override
 	protected HttpUriRequest createRequest() {
 		final URI uri = URIUtils.createURI(repository, resource);
 		final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH", uri);
@@ -77,11 +82,6 @@ public class PropertiesSetOperation extends AbstractVoidOperation {
 		sb.append("</prop></set></propertyupdate>");
 		request.setEntity(new StringEntity(sb.toString(), CONTENT_TYPE_XML));
 		return request;
-	}
-
-	@Override
-	protected void checkResponse(final HttpResponse response) {
-		check(response, HttpStatus.SC_MULTI_STATUS);
 	}
 
 }

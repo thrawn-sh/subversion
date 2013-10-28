@@ -63,15 +63,6 @@ public interface Repository {
 	void copy(Transaction transaction, Resource srcResource, Revision srcRevision, Resource targetResource, boolean parents);
 
 	/**
-	 * Create a folder with all necessary parents folders
-	 *
-	 * @param transaction the current running {@link Transaction}
-	 * @param resource the {@link Resource} of the resource (relative to the repository root)
-	 * @param parents whether to create missing parents folders or not
-	 */
-	void mkdir(Transaction transaction, Resource resource, boolean parents);
-
-	/**
 	 * Create a new {@link Transaction} to make modifications within
 	 *
 	 * @return the new {@link Transaction}
@@ -167,6 +158,15 @@ public interface Repository {
 	 * @return ordered (early to latest) {@link List} of {@link Log} for the revisions between startRevision and endRevision of the resource
 	 */
 	List<Log> log(Resource resource, Revision startRevision, Revision endRevision, int limit);
+
+	/**
+	 * Create a folder with all necessary parents folders
+	 *
+	 * @param transaction the current running {@link Transaction}
+	 * @param resource the {@link Resource} of the resource (relative to the repository root)
+	 * @param parents whether to create missing parents folders or not
+	 */
+	void mkdir(Transaction transaction, Resource resource, boolean parents);
 
 	/**
 	 * Recursively move a resource (latest revision)

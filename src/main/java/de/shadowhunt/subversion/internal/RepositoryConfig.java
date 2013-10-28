@@ -34,6 +34,8 @@ public interface RepositoryConfig {
 
 	static Resource DEFAULT_PREFIX = Resource.create("/!svn");
 
+	Repository create(URI repository, HttpClient client, HttpContext context);
+
 	Resource getCommitMessageResource(Transaction transaction);
 
 	Resource getPrefix();
@@ -45,6 +47,4 @@ public interface RepositoryConfig {
 	Resource getVersionedResource(Revision revision);
 
 	Resource getWorkingResource(Transaction transaction);
-
-	Repository create(URI repository, HttpClient client, HttpContext context);
 }

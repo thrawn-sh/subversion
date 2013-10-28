@@ -35,11 +35,11 @@ import de.shadowhunt.subversion.internal.util.URIUtils;
 
 public class ResolveOperation extends AbstractOperation<Resource> {
 
+	protected final RepositoryConfig config;
+
 	protected final Resource resource;
 
 	protected final Revision revision, expected;
-
-	protected final RepositoryConfig config;
 
 	public ResolveOperation(final URI repository, final Resource resource, final Revision revision, final Revision expected, RepositoryConfig config) {
 		super(repository);

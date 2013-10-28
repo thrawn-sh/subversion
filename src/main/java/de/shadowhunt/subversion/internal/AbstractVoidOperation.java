@@ -30,6 +30,8 @@ public abstract class AbstractVoidOperation extends AbstractOperation<Void> {
 		super(repository);
 	}
 
+	protected abstract void checkResponse(final HttpResponse response);
+
 	@Override
 	protected final Void processResponse(final HttpResponse response) {
 		try {
@@ -39,7 +41,5 @@ public abstract class AbstractVoidOperation extends AbstractOperation<Void> {
 		}
 		return null;
 	}
-
-	protected abstract void checkResponse(final HttpResponse response);
 
 }

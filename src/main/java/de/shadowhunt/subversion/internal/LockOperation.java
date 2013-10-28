@@ -43,6 +43,11 @@ public class LockOperation extends AbstractVoidOperation {
 	}
 
 	@Override
+	protected void checkResponse(final HttpResponse response) {
+		check(response, HttpStatus.SC_OK);
+	}
+
+	@Override
 	protected HttpUriRequest createRequest() {
 		final URI uri = URIUtils.createURI(repository, resource);
 		final DavTemplateRequest request = new DavTemplateRequest("LOCK", uri);
@@ -55,11 +60,6 @@ public class LockOperation extends AbstractVoidOperation {
 
 		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
 		return request;
-	}
-
-	@Override
-	protected void checkResponse(final HttpResponse response) {
-		check(response, HttpStatus.SC_OK);
 	}
 
 }

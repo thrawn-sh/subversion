@@ -46,6 +46,11 @@ public class MergeOperation extends AbstractVoidOperation {
 	}
 
 	@Override
+	protected void checkResponse(final HttpResponse response) {
+		check(response, HttpStatus.SC_OK);
+	}
+
+	@Override
 	protected HttpUriRequest createRequest() {
 		final URI uri = URIUtils.createURI(repository, resource);
 		final DavTemplateRequest request = new DavTemplateRequest("MERGE", uri);
@@ -67,11 +72,6 @@ public class MergeOperation extends AbstractVoidOperation {
 		body.append("</merge>");
 		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
 		return request;
-	}
-
-	@Override
-	protected void checkResponse(final HttpResponse response) {
-		check(response, HttpStatus.SC_OK);
 	}
 
 }

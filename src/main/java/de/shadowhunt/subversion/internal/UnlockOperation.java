@@ -45,6 +45,11 @@ public class UnlockOperation extends AbstractVoidOperation {
 	}
 
 	@Override
+	protected void checkResponse(final HttpResponse response) {
+		check(response, HttpStatus.SC_NO_CONTENT);
+	}
+
+	@Override
 	protected HttpUriRequest createRequest() {
 		final URI uri = URIUtils.createURI(repository, resource);
 		final DavTemplateRequest request = new DavTemplateRequest("UNLOCK", uri);
@@ -53,10 +58,5 @@ public class UnlockOperation extends AbstractVoidOperation {
 			request.addHeader("X-SVN-Options", "lock-break");
 		}
 		return request;
-	}
-
-	@Override
-	protected void checkResponse(final HttpResponse response) {
-		check(response, HttpStatus.SC_NO_CONTENT);
 	}
 }

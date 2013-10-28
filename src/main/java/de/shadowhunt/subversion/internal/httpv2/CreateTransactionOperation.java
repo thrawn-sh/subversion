@@ -40,12 +40,12 @@ public class CreateTransactionOperation extends AbstractOperation<Transaction> {
 
 	private static final String HEADER_NAME = "SVN-Txn-Name";
 
-	private final UUID repositoryId;
-
 	static {
 		final ContentType contentType = ContentType.create("application/vnd.svn-skel");
 		entity = new StringEntity("( create-txn )", contentType);
 	}
+
+	private final UUID repositoryId;
 
 	public CreateTransactionOperation(final URI repository, final UUID repositoryId) {
 		super(repository);

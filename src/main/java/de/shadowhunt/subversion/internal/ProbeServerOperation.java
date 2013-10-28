@@ -35,6 +35,15 @@ import de.shadowhunt.subversion.Version;
 
 public class ProbeServerOperation extends AbstractOperation<RepositoryConfig> {
 
+	protected static Version determineVersion(final HttpResponse response) {
+		for (final Header header : response.getAllHeaders()) {
+			if (header.getName().startsWith("SVN")) {
+				return Version.HTTPv2;
+			}
+		}
+		return Version.HTTPv1;
+	}
+
 	public ProbeServerOperation(final URI repository) {
 		super(repository);
 	}
@@ -48,15 +57,6 @@ public class ProbeServerOperation extends AbstractOperation<RepositoryConfig> {
 		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
 
 		return request;
-	}
-
-	protected static Version determineVersion(final HttpResponse response) {
-		for (final Header header : response.getAllHeaders()) {
-			if (header.getName().startsWith("SVN")) {
-				return Version.HTTPv2;
-			}
-		}
-		return Version.HTTPv1;
 	}
 
 	@Override
