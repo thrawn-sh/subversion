@@ -30,8 +30,9 @@ public abstract class AbstractRepositoryTransactionIT {
 	@Test
 	public void test00_rollback() throws Exception {
 		final Transaction transaction = repository.createTransaction();
+		Assert.assertTrue("transaction must be active", transaction.isActive());
 		repository.rollback(transaction);
-		Assert.assertFalse("transaction is ended", transaction.isActive());
+		Assert.assertFalse("transaction must be inactive", transaction.isActive());
 	}
 
 	@Test(expected = SubversionException.class)
@@ -44,6 +45,7 @@ public abstract class AbstractRepositoryTransactionIT {
 	@Test(expected = SubversionException.class)
 	public void test01_commit() throws Exception {
 		final Transaction transaction = repository.createTransaction();
+		Assert.assertTrue("transaction must be active", transaction.isActive());
 		repository.commit(transaction, "empty commit");
 		Assert.fail("commit empty transaction");
 	}

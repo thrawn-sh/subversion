@@ -44,7 +44,7 @@ public abstract class AbstractRepositoryExistsIT {
 		return resource + ": @" + revision;
 	}
 
-	@Test(expected = SubversionException.class)
+	@Test
 	public void test00_NonExisitingResource() throws Exception {
 		final Resource resource = PREFIX.append(Resource.create("/non_existing.txt"));
 		final Revision revision = Revision.HEAD;

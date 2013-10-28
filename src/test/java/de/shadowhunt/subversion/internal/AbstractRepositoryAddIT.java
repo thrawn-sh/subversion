@@ -28,7 +28,7 @@ public class AbstractRepositoryAddIT {
 
 	@Test(expected = SubversionException.class)
 	public void test00_addNoParents() throws Exception {
-		Assert.assertTrue(prefix + " does already exist", repository.exists(prefix, Revision.HEAD));
+		Assert.assertFalse(prefix + " does already exist", repository.exists(prefix, Revision.HEAD));
 		final Resource resource = prefix.append(Resource.create("no_parents.txt"));
 
 		final Transaction transaction = repository.createTransaction();
