@@ -19,11 +19,11 @@
  */
 package de.shadowhunt.subversion.internal.httpv1;
 
-import de.shadowhunt.subversion.internal.AbstractRepositoryDownloadUriIT;
+import de.shadowhunt.subversion.internal.AbstractRepositoryListIT;
 
-public class V1_6RepositoryDownloadUriIT extends AbstractRepositoryDownloadUriIT {
+public class V1_6RepositoryList extends AbstractRepositoryListIT {
 
-	public V1_6RepositoryDownloadUriIT() {
-		super(Helper.getRepository());
+	public V1_6RepositoryList() {
+		super(V1_6Helper.getRepository());
 	}
 }

@@ -19,11 +19,11 @@
  */
 package de.shadowhunt.subversion.internal.httpv1;
 
-import de.shadowhunt.subversion.internal.AbstractRepositoryInfoIT;
+import de.shadowhunt.subversion.internal.AbstractRepositoryLogIT;
 
-public class V1_6RepositoryInfoIT extends AbstractRepositoryInfoIT {
+public class V1_6RepositoryLog extends AbstractRepositoryLogIT {
 
-	public V1_6RepositoryInfoIT() {
-		super(Helper.getRepository());
+	public V1_6RepositoryLog() {
+		super(V1_6Helper.getRepository());
 	}
 }

@@ -14,7 +14,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
-final class Helper {
+final class V1_6Helper {
 
 	private static final String USERNAME = "svnuser";
 

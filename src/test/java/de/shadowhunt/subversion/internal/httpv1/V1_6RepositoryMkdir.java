@@ -19,11 +19,11 @@
  */
 package de.shadowhunt.subversion.internal.httpv1;
 
-import de.shadowhunt.subversion.internal.AbstractRepositoryExistsIT;
+import de.shadowhunt.subversion.internal.AbstractRepositoryMkdirIT;
 
-public class V1_6RepositoryExistsIT extends AbstractRepositoryExistsIT {
+public class V1_6RepositoryMkdir extends AbstractRepositoryMkdirIT {
 
-	public V1_6RepositoryExistsIT() {
-		super(Helper.getRepository());
+	public V1_6RepositoryMkdir() {
+		super(V1_6Helper.getRepository(), V1_6Helper.getTestId());
 	}
 }
