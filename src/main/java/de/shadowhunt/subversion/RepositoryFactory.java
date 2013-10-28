@@ -34,6 +34,7 @@ import de.shadowhunt.subversion.internal.RepositoryConfig;
  */
 @ThreadSafe
 public final class RepositoryFactory {
+
 	/**
 	 * Create a new {@link Repository} for given {@link URI} and {@link Version}
 	 *

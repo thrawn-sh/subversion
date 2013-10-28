@@ -35,7 +35,7 @@ public final class Transaction {
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(final Object o) {
 		if (this == o) {
 			return true;
 		}
@@ -43,7 +43,7 @@ public final class Transaction {
 			return false;
 		}
 
-		Transaction that = (Transaction) o;
+		final Transaction that = (Transaction) o;
 
 		if (!id.equals(that.id)) {
 			return false;
@@ -66,7 +66,7 @@ public final class Transaction {
 	@Override
 	public int hashCode() {
 		int result = id.hashCode();
-		result = 31 * result + repositoryId.hashCode();
+		result = (31 * result) + repositoryId.hashCode();
 		return result;
 	}
 
