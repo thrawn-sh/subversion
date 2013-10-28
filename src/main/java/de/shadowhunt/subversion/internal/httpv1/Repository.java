@@ -56,7 +56,7 @@ public class Repository extends AbstractRepository {
 		final Resource mergeResource = config.getTransactionResource(transaction);
 		final MergeOperation mo = new MergeOperation(repository, mergeResource, null); // FIXME locktoken
 		mo.execute(client, context);
-		transaction.invalidate(); // only invalidte after successfull commit to allow rollback
+		transaction.invalidate(); // only invalidate after successful commit to allow rollback
 	}
 
 	@Override
@@ -74,7 +74,8 @@ public class Repository extends AbstractRepository {
 	}
 
 	protected void prepareContentUpload(final Resource resource, final Transaction transaction, final Revision revision) {
-		final CheckoutOperation co = new CheckoutOperation(repository, config.getPrefix().append(Resource.create(PREFIX_VER + revision)).append(resource), config.getTransactionResource(transaction));
+		final CheckoutOperation co = new CheckoutOperation(repository, config.getPrefix().append(Resource.create(PREFIX_VER
+				+ revision)).append(resource), config.getTransactionResource(transaction));
 		co.execute(client, context);
 	}
 
