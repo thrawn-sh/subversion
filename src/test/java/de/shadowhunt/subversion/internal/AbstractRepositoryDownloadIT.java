@@ -21,15 +21,16 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.InputStream;
 
-import de.shadowhunt.subversion.Repository;
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.Revision;
-import de.shadowhunt.subversion.SubversionException;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+
+import de.shadowhunt.subversion.Repository;
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.SubversionException;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -37,7 +38,7 @@ public abstract class AbstractRepositoryDownloadIT {
 
 	private static final Resource PREFIX = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/download");
 
-	private static void assertEquals(final String message, final InputStream expected, final InputStream actual) throws Exception {
+	public static void assertEquals(final String message, final InputStream expected, final InputStream actual) throws Exception {
 		try {
 			Assert.assertEquals(message, IOUtils.toString(expected), IOUtils.toString(actual));
 		} finally {

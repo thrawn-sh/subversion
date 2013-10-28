@@ -82,9 +82,28 @@ public abstract class AbstractRepositoryLockingIT {
 		}
 	}
 
-	@Test
-	public void test01_lock() throws Exception {
-		final Resource resource = prefix.append(Resource.create("/lock.txt"));
+	@Test(expected = SubversionException.class)
+	public void test01_relockWithoutForce() throws Exception {
+		final Resource resource = prefix.append(Resource.create("/relock_without.txt"));
+
+		AbstractRepositoryAddIT.file(repositoryA, resource, "test", true);
+		final Info before = repositoryA.info(resource, Revision.HEAD);
+		Assert.assertFalse(resource + " must not be locked", before.isLocked());
+
+		try {
+			repositoryA.lock(resource, true);
+			final Info after = repositoryA.info(resource, Revision.HEAD);
+			Assert.assertTrue(resource + " must be locked", after.isLocked());
+			repositoryA.lock(resource, false);
+			Assert.fail("relock without steal must fail");
+		} finally {
+			repositoryA.unlock(resource, false);
+		}
+	}
+
+	@Test(expected = SubversionException.class)
+	public void test01_relockWithForce() throws Exception {
+		final Resource resource = prefix.append(Resource.create("/relock_with.txt"));
 
 		AbstractRepositoryAddIT.file(repositoryA, resource, "test", true);
 		final Info before = repositoryA.info(resource, Revision.HEAD);
@@ -94,9 +113,11 @@ public abstract class AbstractRepositoryLockingIT {
 			repositoryA.lock(resource, true);
 			final Info afterFirst = repositoryA.info(resource, Revision.HEAD);
 			Assert.assertTrue(resource + " must be locked", afterFirst.isLocked());
-			repositoryA.lock(resource, false);
+			repositoryA.lock(resource, true);
 			final Info afterSecond = repositoryA.info(resource, Revision.HEAD);
 			Assert.assertTrue(resource + " must be locked", afterSecond.isLocked());
+			Assert.assertEquals("owner must not change", afterFirst.getLockOwner(), afterSecond.getLockOwner());
+			Assert.assertNotEquals("token must change", afterFirst.getLockToken(), afterSecond.getLockToken());
 		} finally {
 			repositoryA.unlock(resource, false);
 		}

@@ -18,7 +18,7 @@ import de.shadowhunt.subversion.Transaction;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AbstractRepositoryAddIT {
 
-	public static void file(final Repository repository, final Resource resource, final String content, final boolean initial) {
+	public static void file(final Repository repository, final Resource resource, final String content, final boolean initial) throws Exception {
 		if (!initial) {
 			Assert.assertTrue(resource + " must not exist", repository.exists(resource, Revision.HEAD));
 		}
@@ -37,7 +37,7 @@ public class AbstractRepositoryAddIT {
 
 		final InputStream expected = Helper.getInputStream(content);
 		final InputStream actual = repository.download(resource, Revision.HEAD);
-		Assert.assertEquals("content must match", expected, actual);
+		AbstractRepositoryDownloadIT.assertEquals("content must match", expected, actual);
 	}
 
 	private final Resource prefix;

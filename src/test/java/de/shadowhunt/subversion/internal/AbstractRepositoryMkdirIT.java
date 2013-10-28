@@ -96,20 +96,22 @@ public class AbstractRepositoryMkdirIT {
 		mkdir(repository, prefix);
 	}
 
-	@Test
+	@Test(expected = SubversionException.class)
 	public void test02_mkdirExisitingFile() throws Exception {
 		final Resource resource = prefix.append(Resource.create("exisiting.txt"));
 
 		AbstractRepositoryAddIT.file(repository, resource, "test", true);
 		mkdir(repository, resource);
+		Assert.fail("mkdir must not complete");
 	}
 
-	@Test
+	@Test(expected = SubversionException.class)
 	public void test02_mkdirExisitingFolder() throws Exception {
 		final Resource resource = prefix.append(Resource.create("existing"));
 
 		mkdir(repository, resource);
 		mkdir(repository, resource);
+		Assert.fail("mkdir must not complete");
 	}
 
 	@Test

@@ -120,9 +120,9 @@ public class AbstractRepositoryPropertiesSetIT {
 			setProperties(repository, resource, property);
 		}
 		{
-			final ResourceProperty exisitingProperty = new ResourceProperty(Type.CUSTOM, "test", "B");
 			final ResourceProperty newProperty = new ResourceProperty(Type.CUSTOM, "new", "new");
-			setProperties(repository, resource, exisitingProperty, newProperty);
+			final ResourceProperty exisitingProperty = new ResourceProperty(Type.CUSTOM, "test", "B");
+			setProperties(repository, resource, newProperty, exisitingProperty);
 		}
 	}
 }
