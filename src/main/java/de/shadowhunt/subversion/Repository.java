@@ -78,15 +78,6 @@ public interface Repository {
 	void delete(Transaction transaction, Resource resource);
 
 	/**
-	 * Remove the given properties form the resource
-	 *
-	 * @param transaction the current running {@link Transaction}
-	 * @param resource the {@link Resource} of the resource (relative to the repository root)
-	 * @param properties {@link ResourceProperty} to remove
-	 */
-	void deleteProperties(Transaction transaction, Resource resource, ResourceProperty... properties);
-
-	/**
 	 * Download the resource
 	 *
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
@@ -179,11 +170,13 @@ public interface Repository {
 	void move(Transaction transaction, Resource srcResource, Resource targetResource, boolean parents);
 
 	/**
-	 * Abort the current running {@link Transaction} and revert all modifications
+	 * Remove the given properties form the resource
 	 *
 	 * @param transaction the current running {@link Transaction}
+	 * @param resource the {@link Resource} of the resource (relative to the repository root)
+	 * @param properties {@link ResourceProperty} to remove
 	 */
-	void rollback(Transaction transaction);
+	void propertiesDelete(Transaction transaction, Resource resource, ResourceProperty... properties);
 
 	/**
 	 * Set the given properties for the resource (new properties will be added, existing properties will be overridden)
@@ -192,7 +185,14 @@ public interface Repository {
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
 	 * @param properties {@link ResourceProperty} to add or override
 	 */
-	void setProperties(Transaction transaction, Resource resource, ResourceProperty... properties);
+	void propertiesSet(Transaction transaction, Resource resource, ResourceProperty... properties);
+
+	/**
+	 * Abort the current running {@link Transaction} and revert all modifications
+	 *
+	 * @param transaction the current running {@link Transaction}
+	 */
+	void rollback(Transaction transaction);
 
 	/**
 	 * Remove the lock on the expected revision of the resource

@@ -133,7 +133,7 @@ public abstract class AbstractRepository implements Repository {
 	}
 
 	@Override
-	public void deleteProperties(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
+	public void propertiesDelete(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
 		validateTransaction(transaction);
 
 		final Info info = info(resource, Revision.HEAD);
@@ -294,7 +294,7 @@ public abstract class AbstractRepository implements Repository {
 	}
 
 	@Override
-	public void setProperties(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
+	public void propertiesSet(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
 		validateTransaction(transaction);
 
 		final Info info = info(resource, Revision.HEAD);
