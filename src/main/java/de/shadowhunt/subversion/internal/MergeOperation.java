@@ -29,7 +29,6 @@ import org.apache.http.entity.StringEntity;
 
 import de.shadowhunt.http.client.methods.DavTemplateRequest;
 import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.internal.util.URIUtils;
 
 public class MergeOperation extends AbstractVoidOperation {
 
@@ -52,13 +51,12 @@ public class MergeOperation extends AbstractVoidOperation {
 
 	@Override
 	protected HttpUriRequest createRequest() {
-		final URI uri = URIUtils.createURI(repository, resource);
-		final DavTemplateRequest request = new DavTemplateRequest("MERGE", uri);
+		final DavTemplateRequest request = new DavTemplateRequest("MERGE", repository);
 		request.addHeader("X-SVN-Options", "release-locks");
 
 		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
 		body.append("<merge xmlns=\"DAV:\"><source><href>");
-		body.append(StringEscapeUtils.escapeXml(resource.getValue()));
+		body.append(StringEscapeUtils.escapeXml(repository.getPath() + resource.getValue()));
 		body.append("</href></source><no-auto-merge/><no-checkout/><prop><checked-in/><version-name/><resourcetype/><creationdate/><creator-displayname/></prop>");
 		if (lock != null) {
 			body.append("<S:lock-token-list xmlns:S=\"svn:\"><S:lock><S:lock-path>");
