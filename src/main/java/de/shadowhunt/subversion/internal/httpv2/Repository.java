@@ -45,6 +45,12 @@ public class Repository extends AbstractBasicRepository {
 	public void commit(final Transaction transaction, final String message) {
 		validateTransaction(transaction);
 
+		if (transaction.isChangeSetEmpty()) {
+			// empty change set => nothing to commit, release resources
+			rollback(transaction);
+			return;
+		}
+
 		final Resource messageResource = config.getCommitMessageResource(transaction);
 		final CommitMessageOperation cmo = new CommitMessageOperation(repository, messageResource, message);
 		cmo.execute(client, context);

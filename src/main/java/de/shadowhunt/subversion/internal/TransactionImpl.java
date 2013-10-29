@@ -94,6 +94,7 @@ public final class TransactionImpl extends RepositoryCache implements Transactio
 		return changeSet.isEmpty();
 	}
 
+	@Override
 	public void register(final Resource resource, final Status status) {
 		final Status old = changeSet.put(resource, status);
 		if (old != null) {

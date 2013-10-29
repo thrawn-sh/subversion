@@ -55,4 +55,6 @@ public interface Transaction {
 	boolean isActive();
 
 	boolean isChangeSetEmpty();
+
+	void register(Resource resource, Status status);
 }

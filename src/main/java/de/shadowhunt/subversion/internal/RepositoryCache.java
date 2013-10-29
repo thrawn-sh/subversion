@@ -15,7 +15,7 @@ public class RepositoryCache {
 		private final Resource resource;
 		private final Revision revision;
 
-		private Key(final Resource resource, final Revision revision) {
+		Key(final Resource resource, final Revision revision) {
 			this.resource = resource;
 			this.revision = revision;
 		}
@@ -68,17 +68,18 @@ public class RepositoryCache {
 		return get(resource, revision) != null;
 	}
 
-	public final Info get(final Resource resource, Revision revision) {
+	public final Info get(final Resource resource, final Revision revision) {
+		Revision concreteRevision = revision;
 		if (Revision.HEAD.equals(revision)) {
-			revision = getConcreteRevision(revision);
+			concreteRevision = getConcreteRevision(revision);
 		}
-		return cache.get(new Key(resource, revision));
+		return cache.get(new Key(resource, concreteRevision));
 	}
 
 	public final Revision getConcreteRevision(final Revision revision) {
 		if (Revision.HEAD.equals(revision)) {
 			if (headRevision == null) {
-				final Resource resolved = repository.resolve(this, Resource.ROOT, revision, false);
+				final Resource resolved = repository.resolve(this, Resource.ROOT, revision, false, true);
 				final InfoOperation operation = new InfoOperation(repository.getBaseUri(), resolved, Depth.EMPTY);
 				final Info info = operation.execute(repository.client, repository.context);
 				headRevision = info.getRevision();

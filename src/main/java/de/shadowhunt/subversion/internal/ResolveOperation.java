@@ -27,6 +27,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.util.EntityUtils;
 
 import de.shadowhunt.http.client.methods.DavTemplateRequest;
 import de.shadowhunt.subversion.Resource;
@@ -37,16 +38,19 @@ public class ResolveOperation extends AbstractOperation<Resource> {
 
 	protected final RepositoryConfig config;
 
+	protected final boolean reportNonExisitingResources;
+
 	protected final Resource resource;
 
 	protected final Revision revision, expected;
 
-	public ResolveOperation(final URI repository, final Resource resource, final Revision revision, final Revision expected, final RepositoryConfig config) {
+	public ResolveOperation(final URI repository, final Resource resource, final Revision revision, final Revision expected, final RepositoryConfig config, final boolean reportNonExisitingResources) {
 		super(repository);
 		this.resource = resource;
 		this.revision = revision;
 		this.expected = expected;
 		this.config = config;
+		this.reportNonExisitingResources = reportNonExisitingResources;
 	}
 
 	@Override
@@ -67,7 +71,16 @@ public class ResolveOperation extends AbstractOperation<Resource> {
 
 	@Override
 	protected Resource processResponse(final HttpResponse response) {
-		check(response, HttpStatus.SC_OK);
+		if (reportNonExisitingResources) {
+			check(response, HttpStatus.SC_OK);
+		} else {
+			check(response, HttpStatus.SC_OK, HttpStatus.SC_NOT_FOUND);
+			final int statusCode = getStatusCode(response);
+			if (statusCode == HttpStatus.SC_NOT_FOUND) {
+				EntityUtils.consumeQuietly(response.getEntity());
+				return null;
+			}
+		}
 
 		final InputStream in = getContent(response);
 		try {

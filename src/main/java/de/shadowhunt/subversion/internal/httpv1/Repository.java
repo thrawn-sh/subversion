@@ -50,6 +50,12 @@ public class Repository extends AbstractBasicRepository {
 	public void commit(final Transaction transaction, final String message) {
 		validateTransaction(transaction);
 
+		if (transaction.isChangeSetEmpty()) {
+			// empty change set => nothing to commit, release resources
+			rollback(transaction);
+			return;
+		}
+
 		final RepositoryCache cache = fromTransaction(transaction);
 		final Revision concreteRevision = cache.getConcreteRevision(Revision.HEAD);
 		final Resource messageResource = config.getCommitMessageResource(transaction).append(Resource.create(concreteRevision.toString()));
