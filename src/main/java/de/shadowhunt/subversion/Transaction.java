@@ -57,4 +57,5 @@ public interface Transaction {
 	boolean isChangeSetEmpty();
 
 	void register(Resource resource, Status status);
+
 }

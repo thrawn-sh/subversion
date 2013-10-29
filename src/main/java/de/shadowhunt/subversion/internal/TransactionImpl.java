@@ -82,6 +82,7 @@ public final class TransactionImpl extends RepositoryCache implements Transactio
 	@Override
 	public void invalidate() {
 		active = false;
+		changeSet.clear();
 	}
 
 	@Override
@@ -113,5 +114,10 @@ public final class TransactionImpl extends RepositoryCache implements Transactio
 		sb.append(", active=").append(active);
 		sb.append(']');
 		return sb.toString();
+	}
+
+	@Override
+	public Status status(final Resource resource) {
+		return changeSet.get(resource);
 	}
 }

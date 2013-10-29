@@ -7,6 +7,7 @@ import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.Transaction.Status;
 
 public class RepositoryCache {
 
@@ -102,5 +103,10 @@ public class RepositoryCache {
 		for (final Info info : collection) {
 			put(info);
 		}
+	}
+
+	public Status status(@SuppressWarnings("unused") final Resource resource) {
+		// no transaction => no "hidden" resources
+		return null;
 	}
 }
