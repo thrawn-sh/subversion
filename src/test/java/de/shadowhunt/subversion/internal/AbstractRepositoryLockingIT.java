@@ -83,25 +83,6 @@ public abstract class AbstractRepositoryLockingIT {
 	}
 
 	@Test(expected = SubversionException.class)
-	public void test01_relockWithoutForce() throws Exception {
-		final Resource resource = prefix.append(Resource.create("/relock_without.txt"));
-
-		AbstractRepositoryAddIT.file(repositoryA, resource, "test", true);
-		final Info before = repositoryA.info(resource, Revision.HEAD);
-		Assert.assertFalse(resource + " must not be locked", before.isLocked());
-
-		try {
-			repositoryA.lock(resource, true);
-			final Info after = repositoryA.info(resource, Revision.HEAD);
-			Assert.assertTrue(resource + " must be locked", after.isLocked());
-			repositoryA.lock(resource, false);
-			Assert.fail("relock without steal must fail");
-		} finally {
-			repositoryA.unlock(resource, false);
-		}
-	}
-
-	@Test(expected = SubversionException.class)
 	public void test01_relockWithForce() throws Exception {
 		final Resource resource = prefix.append(Resource.create("/relock_with.txt"));
 
@@ -118,6 +99,25 @@ public abstract class AbstractRepositoryLockingIT {
 			Assert.assertTrue(resource + " must be locked", afterSecond.isLocked());
 			Assert.assertEquals("owner must not change", afterFirst.getLockOwner(), afterSecond.getLockOwner());
 			Assert.assertNotEquals("token must change", afterFirst.getLockToken(), afterSecond.getLockToken());
+		} finally {
+			repositoryA.unlock(resource, false);
+		}
+	}
+
+	@Test(expected = SubversionException.class)
+	public void test01_relockWithoutForce() throws Exception {
+		final Resource resource = prefix.append(Resource.create("/relock_without.txt"));
+
+		AbstractRepositoryAddIT.file(repositoryA, resource, "test", true);
+		final Info before = repositoryA.info(resource, Revision.HEAD);
+		Assert.assertFalse(resource + " must not be locked", before.isLocked());
+
+		try {
+			repositoryA.lock(resource, true);
+			final Info after = repositoryA.info(resource, Revision.HEAD);
+			Assert.assertTrue(resource + " must be locked", after.isLocked());
+			repositoryA.lock(resource, false);
+			Assert.fail("relock without steal must fail");
 		} finally {
 			repositoryA.unlock(resource, false);
 		}

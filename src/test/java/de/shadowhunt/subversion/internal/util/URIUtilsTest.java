@@ -22,9 +22,10 @@ package de.shadowhunt.subversion.internal.util;
 import java.lang.reflect.Field;
 import java.net.URI;
 
-import de.shadowhunt.subversion.Resource;
 import org.junit.Assert;
 import org.junit.Test;
+
+import de.shadowhunt.subversion.Resource;
 
 public class URIUtilsTest {
 

@@ -21,6 +21,9 @@ package de.shadowhunt.subversion.internal.httpv1;
 
 import java.net.URI;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.protocol.HttpContext;
+
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
@@ -29,8 +32,6 @@ import de.shadowhunt.subversion.internal.CommitMessageOperation;
 import de.shadowhunt.subversion.internal.MergeOperation;
 import de.shadowhunt.subversion.internal.RepositoryCache;
 import de.shadowhunt.subversion.internal.RepositoryConfig;
-import org.apache.http.client.HttpClient;
-import org.apache.http.protocol.HttpContext;
 
 /**
  * {@link Repository} supports subversion servers of version 1.6.X

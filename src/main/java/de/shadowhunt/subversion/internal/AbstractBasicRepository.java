@@ -26,6 +26,9 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.protocol.HttpContext;
+
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Log;
@@ -36,13 +39,17 @@ import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.internal.util.URIUtils;
-import org.apache.http.client.HttpClient;
-import org.apache.http.protocol.HttpContext;
 
 /**
  * Base for all {@link de.shadowhunt.subversion.Repository}
  */
 public abstract class AbstractBasicRepository implements Repository {
+
+	private static UUID determineRepositoryId(final URI repository, final HttpClient client, final HttpContext context) {
+		final InfoOperation operation = new InfoOperation(repository, Resource.ROOT, Depth.EMPTY);
+		final Info info = operation.execute(client, context);
+		return info.getRepositoryId();
+	}
 
 	public final HttpClient client;
 
@@ -61,12 +68,6 @@ public abstract class AbstractBasicRepository implements Repository {
 		this.context = context;
 
 		repositoryId = determineRepositoryId(repository, client, context);
-	}
-
-	private static UUID determineRepositoryId(final URI repository, final HttpClient client, final HttpContext context) {
-		final InfoOperation operation = new InfoOperation(repository, Resource.ROOT, Depth.EMPTY);
-		final Info info = operation.execute(client, context);
-		return info.getRepositoryId();
 	}
 
 	@Override
@@ -125,7 +126,7 @@ public abstract class AbstractBasicRepository implements Repository {
 			final RepositoryCache cache = fromTransaction(transaction);
 			final Info info = info0(cache, resource, revision, true);
 			if (info.isFile()) {
-				throw new SubversionException("can't create directory, file with same name already exists: "  + resource);
+				throw new SubversionException("can't create directory, file with same name already exists: " + resource);
 			}
 			registerResource(transaction, resource, revision);
 			result = resource;
@@ -141,10 +142,20 @@ public abstract class AbstractBasicRepository implements Repository {
 		operation.execute(client, context);
 	}
 
+	@Override
+	public final InputStream download(final Resource resource, final Revision revision) {
+		return download0(new RepositoryCache(this), resource, revision);
+	}
+
 	public InputStream download0(final RepositoryCache cache, final Resource resource, final Revision revision) {
 		final Resource resolved = resolve(cache, resource, revision, true);
 		final DownloadOperation operation = new DownloadOperation(repository, resolved);
 		return operation.execute(client, context);
+	}
+
+	@Override
+	public final URI downloadURI(final Resource resource, final Revision revision) {
+		return downloadURI0(new RepositoryCache(this), resource, revision);
 	}
 
 	public URI downloadURI0(final RepositoryCache cache, final Resource resource, final Revision revision) {
@@ -152,10 +163,23 @@ public abstract class AbstractBasicRepository implements Repository {
 		return URIUtils.createURI(repository, resolved);
 	}
 
+	@Override
+	public final boolean exists(final Resource resource, final Revision revision) {
+		return exists0(new RepositoryCache(this), resource, revision);
+	}
+
 	public boolean exists0(final RepositoryCache cache, final Resource resource, final Revision revision) {
 		final Resource resolved = resolve(cache, resource, revision, false);
 		final ExistsOperation operation = new ExistsOperation(repository, resolved);
 		return operation.execute(client, context);
+	}
+
+	protected RepositoryCache fromTransaction(final Transaction transaction) {
+		if (transaction instanceof TransactionImpl) {
+			return (TransactionImpl) transaction;
+		}
+
+		throw new IllegalArgumentException(); // FIXME
 	}
 
 	@Override
@@ -168,6 +192,11 @@ public abstract class AbstractBasicRepository implements Repository {
 		return repositoryId;
 	}
 
+	@Override
+	public final Info info(final Resource resource, final Revision revision) {
+		return info0(new RepositoryCache(this), resource, revision, true);
+	}
+
 	public Info info0(final RepositoryCache cache, final Resource resource, final Revision revision, final boolean resolve) {
 		Info info = cache.get(resource, revision);
 		if (info != null) {
@@ -178,6 +207,11 @@ public abstract class AbstractBasicRepository implements Repository {
 		info = operation.execute(client, context);
 		cache.put(info);
 		return info;
+	}
+
+	@Override
+	public final Set<Info> list(final Resource resource, final Revision revision, final Depth depth) {
+		return list0(new RepositoryCache(this), resource, revision, depth);
 	}
 
 	public Set<Info> list0(final RepositoryCache cache, final Resource resource, final Revision revision, final Depth depth) {
@@ -203,6 +237,17 @@ public abstract class AbstractBasicRepository implements Repository {
 				listRecursively(cache, info.getResource(), revision, result);
 			}
 		}
+	}
+
+	@Override
+	public final void lock(final Resource resource, final boolean steal) {
+		final LockOperation operation = new LockOperation(repository, resource, steal);
+		operation.execute(client, context);
+	}
+
+	@Override
+	public final List<Log> log(final Resource resource, final Revision startRevision, final Revision endRevision, final int limit) {
+		return log0(new RepositoryCache(this), resource, startRevision, endRevision, limit);
 	}
 
 	public List<Log> log0(final RepositoryCache cache, final Resource resource, final Revision startRevision, final Revision endRevision, final int limit) {
@@ -259,55 +304,6 @@ public abstract class AbstractBasicRepository implements Repository {
 
 	protected abstract void registerResource(Transaction transaction, Resource resource, Revision revision);
 
-	@Override
-	public final InputStream download(Resource resource, Revision revision) {
-		return download0(new RepositoryCache(this), resource, revision);
-	}
-
-	@Override
-	public final URI downloadURI(Resource resource, Revision revision) {
-		return downloadURI0(new RepositoryCache(this), resource, revision);
-	}
-
-	@Override
-	public final boolean exists(Resource resource, Revision revision) {
-		return exists0(new RepositoryCache(this), resource, revision);
-	}
-
-	@Override
-	public final Info info(Resource resource, Revision revision) {
-		return info0(new RepositoryCache(this), resource, revision, true);
-	}
-
-	@Override
-	public final Set<Info> list(Resource resource, Revision revision, Depth depth) {
-		return list0(new RepositoryCache(this), resource, revision, depth);
-	}
-
-	@Override
-	public final void lock(Resource resource, boolean steal) {
-		final LockOperation operation = new LockOperation(repository, resource, steal);
-		operation.execute(client, context);
-	}
-
-	@Override
-	public final List<Log> log(Resource resource, Revision startRevision, Revision endRevision, int limit) {
-		return log0(new RepositoryCache(this), resource, startRevision, endRevision, limit);
-	}
-
-	@Override
-	public final void unlock(Resource resource, boolean force) {
-		unlock0(new RepositoryCache(this), resource, force);
-	}
-
-	protected RepositoryCache fromTransaction(Transaction transaction) {
-		if (transaction instanceof TransactionImpl) {
-			return (TransactionImpl) transaction;
-		}
-
-		throw new IllegalArgumentException(); // FIXME
-	}
-
 	protected Resource resolve(final RepositoryCache cache, final Resource resource, final Revision revision, final boolean resolve) {
 		if (Revision.HEAD.equals(revision)) {
 			final ExistsOperation operation = new ExistsOperation(repository, resource);
@@ -345,6 +341,11 @@ public abstract class AbstractBasicRepository implements Repository {
 		} finally {
 			transaction.invalidate();
 		}
+	}
+
+	@Override
+	public final void unlock(final Resource resource, final boolean force) {
+		unlock0(new RepositoryCache(this), resource, force);
 	}
 
 	protected void unlock0(final RepositoryCache cache, final Resource resource, final boolean force) {

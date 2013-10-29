@@ -17,19 +17,15 @@ import de.shadowhunt.subversion.RepositoryFactory;
 
 final class V1_6Helper {
 
-	private static final String USERNAME = "svnuser";
-
 	private static final String PASSWORD = "svnpass";
+
+	private static Repository repository;
 
 	private static final URI REPOSITORY_URI = URI.create("http://10.155.50.102/svn-basic/test");
 
 	private static final UUID TEST_ID = UUID.randomUUID();
 
-	private static Repository repository;
-
-	static UUID getTestId() {
-		return TEST_ID;
-	}
+	private static final String USERNAME = "svnuser";
 
 	static Repository getRepository() {
 		if (repository == null) {
@@ -61,5 +57,9 @@ final class V1_6Helper {
 
 		}
 		return repository;
+	}
+
+	static UUID getTestId() {
+		return TEST_ID;
 	}
 }

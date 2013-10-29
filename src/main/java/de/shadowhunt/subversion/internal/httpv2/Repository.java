@@ -21,13 +21,13 @@ package de.shadowhunt.subversion.internal.httpv2;
 
 import java.net.URI;
 
-import de.shadowhunt.subversion.internal.AbstractBasicRepository;
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
+import de.shadowhunt.subversion.internal.AbstractBasicRepository;
 import de.shadowhunt.subversion.internal.CommitMessageOperation;
 import de.shadowhunt.subversion.internal.MergeOperation;
 import de.shadowhunt.subversion.internal.RepositoryConfig;

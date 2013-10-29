@@ -30,19 +30,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+
 import javax.xml.parsers.SAXParser;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 
 import de.shadowhunt.subversion.Log;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 
 public final class LogLoader extends BaseLoader {
-
-	private LogLoader() {
-		// prevent instantiation
-	}
 
 	static class LogHandler extends BasicHandler {
 
@@ -149,5 +147,9 @@ public final class LogLoader extends BaseLoader {
 			return logs.subList(0, limit);
 		}
 		return logs;
+	}
+
+	private LogLoader() {
+		// prevent instantiation
 	}
 }

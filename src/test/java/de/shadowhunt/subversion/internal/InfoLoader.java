@@ -22,23 +22,19 @@ package de.shadowhunt.subversion.internal;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.UUID;
+
 import javax.xml.parsers.SAXParser;
 
-import de.shadowhunt.subversion.Info;
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.Revision;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+import de.shadowhunt.subversion.Info;
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.Revision;
+
 public final class InfoLoader extends BaseLoader {
-
-	private InfoLoader() {
-		// prevent instantiation
-	}
-
-	public static final String SUFFIX = ".info";
 
 	static class InfoHandler extends BasicHandler {
 
@@ -76,6 +72,8 @@ public final class InfoLoader extends BaseLoader {
 		}
 	}
 
+	public static final String SUFFIX = ".info";
+
 	public static Info load(final Resource resource, final Revision revision) throws Exception {
 		final File infoFile = new File(ROOT, resolve(revision) + resource.getValue() + SUFFIX);
 
@@ -99,5 +97,9 @@ public final class InfoLoader extends BaseLoader {
 
 		info.setProperties(ResourcePropertyLoader.load(resource, revision));
 		return info;
+	}
+
+	private InfoLoader() {
+		// prevent instantiation
 	}
 }

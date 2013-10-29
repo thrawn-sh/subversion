@@ -25,9 +25,9 @@ import de.shadowhunt.subversion.Revision;
 
 abstract class BaseLoader {
 
-	protected static final File ROOT = new File("src/test/resources/dump");
-
 	protected static Revision resolvedHeadRevision;
+
+	protected static final File ROOT = new File("src/test/resources/dump");
 
 	protected static Revision resolve(final Revision revision) {
 		if (Revision.HEAD.equals(revision)) {

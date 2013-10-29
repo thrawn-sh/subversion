@@ -1,12 +1,13 @@
 package de.shadowhunt.subversion.internal;
 
-import de.shadowhunt.subversion.Repository;
-import de.shadowhunt.subversion.SubversionException;
-import de.shadowhunt.subversion.Transaction;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+
+import de.shadowhunt.subversion.Repository;
+import de.shadowhunt.subversion.SubversionException;
+import de.shadowhunt.subversion.Transaction;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -18,12 +19,12 @@ public abstract class AbstractRepositoryTransactionIT {
 		this.repository = repository;
 	}
 
-//	@Test(expected = SubversionException.class) // FIXME
-//	public void test00_commitInactiveTransaction() throws Exception {
-//		final Transaction transaction = new TransactionImpl(UUID.randomUUID(), "1");
-//		repository.commit(transaction, "empty commit");
-//		Assert.fail("commit of inactive transaction");
-//	}
+	//	@Test(expected = SubversionException.class) // FIXME
+	//	public void test00_commitInactiveTransaction() throws Exception {
+	//		final Transaction transaction = new TransactionImpl(UUID.randomUUID(), "1");
+	//		repository.commit(transaction, "empty commit");
+	//		Assert.fail("commit of inactive transaction");
+	//	}
 
 	@Test
 	public void test00_rollback() throws Exception {
@@ -33,12 +34,12 @@ public abstract class AbstractRepositoryTransactionIT {
 		Assert.assertFalse("transaction must be inactive", transaction.isActive());
 	}
 
-//	@Test(expected = SubversionException.class) // FIXME
-//	public void test00_rollbackInactiveTransaction() throws Exception {
-//		final Transaction transaction = new TransactionImpl(UUID.randomUUID(), "1");
-//		repository.rollback(transaction);
-//		Assert.fail("rollback of inactive transaction");
-//	}
+	//	@Test(expected = SubversionException.class) // FIXME
+	//	public void test00_rollbackInactiveTransaction() throws Exception {
+	//		final Transaction transaction = new TransactionImpl(UUID.randomUUID(), "1");
+	//		repository.rollback(transaction);
+	//		Assert.fail("rollback of inactive transaction");
+	//	}
 
 	@Test(expected = SubversionException.class)
 	public void test01_commit() throws Exception {

@@ -10,27 +10,18 @@ import de.shadowhunt.subversion.Revision;
 
 public class RepositoryCache {
 
-	private final HashMap<Key, Info> cache = new HashMap<Key, Info>();
-
-	protected final AbstractBasicRepository repository;
-
-	public RepositoryCache(AbstractBasicRepository repository) {
-		this.repository = repository;
-	}
-
-	private Revision headRevision = null;
-
 	private static final class Key {
+
 		private final Resource resource;
 		private final Revision revision;
 
-		private Key(Resource resource, Revision revision) {
+		private Key(final Resource resource, final Revision revision) {
 			this.resource = resource;
 			this.revision = revision;
 		}
 
 		@Override
-		public boolean equals(Object o) {
+		public boolean equals(final Object o) {
 			if (this == o) {
 				return true;
 			}
@@ -38,7 +29,7 @@ public class RepositoryCache {
 				return false;
 			}
 
-			Key key = (Key) o;
+			final Key key = (Key) o;
 
 			if (!resource.equals(key.resource)) {
 				return false;
@@ -53,22 +44,28 @@ public class RepositoryCache {
 		@Override
 		public int hashCode() {
 			int result = resource.hashCode();
-			result = 31 * result + revision.hashCode();
+			result = (31 * result) + revision.hashCode();
 			return result;
-		}
-
-		private Resource getResource() {
-
-			return resource;
-		}
-
-		private Revision getRevision() {
-			return revision;
 		}
 	}
 
-	public final  boolean isEmpty() {
-		return cache.isEmpty();
+	private final HashMap<Key, Info> cache = new HashMap<Key, Info>();
+
+	private Revision headRevision = null;
+
+	protected final AbstractBasicRepository repository;
+
+	public RepositoryCache(final AbstractBasicRepository repository) {
+		this.repository = repository;
+	}
+
+	public final void clear() {
+		cache.clear();
+		headRevision = null;
+	}
+
+	public final boolean contains(final Resource resource, final Revision revision) {
+		return get(resource, revision) != null;
 	}
 
 	public final Info get(final Resource resource, Revision revision) {
@@ -78,8 +75,22 @@ public class RepositoryCache {
 		return cache.get(new Key(resource, revision));
 	}
 
-	public final boolean contains(Resource resource, Revision revision) {
-		return get(resource, revision) != null;
+	public final Revision getConcreteRevision(final Revision revision) {
+		if (Revision.HEAD.equals(revision)) {
+			if (headRevision == null) {
+				final Resource resolved = repository.resolve(this, Resource.ROOT, revision, false);
+				final InfoOperation operation = new InfoOperation(repository.getBaseUri(), resolved, Depth.EMPTY);
+				final Info info = operation.execute(repository.client, repository.context);
+				headRevision = info.getRevision();
+				put(info);
+			}
+			return headRevision;
+		}
+		return revision;
+	}
+
+	public final boolean isEmpty() {
+		return cache.isEmpty();
 	}
 
 	public final void put(final Info info) {
@@ -90,24 +101,5 @@ public class RepositoryCache {
 		for (final Info info : collection) {
 			put(info);
 		}
-	}
-
-	public final void clear() {
-		cache.clear();
-		headRevision = null;
-	}
-
-	public final Revision getConcreteRevision(final Revision revision) {
-		if (Revision.HEAD.equals(revision)) {
-			if (headRevision == null) {
-				final Resource resolved = repository.resolve(this, Resource.ROOT, revision, false);
-				final InfoOperation operation = new InfoOperation(repository.getBaseUri(), resolved, Depth.EMPTY);
-				Info info = operation.execute(repository.client, repository.context);
-				headRevision = info.getRevision();
-				put(info);
-			}
-			return headRevision;
-		}
-		return revision;
 	}
 }

@@ -22,7 +22,7 @@ import org.junit.runners.Suite.SuiteClasses;
 		V1_6RepositoryLocking.class, // uses add
 		V1_6RepositoryPropertiesSet.class, // uses transactions + add
 		V1_6RepositoryPropertiesDelete.class, // uses transactions + add + propertiesSet
-		// multiple modifications
+// multiple modifications
 })
 public class V1_6SuiteIT {
 	// no code, just a placeholder class

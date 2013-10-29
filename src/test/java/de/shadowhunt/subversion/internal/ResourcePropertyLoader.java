@@ -22,20 +22,18 @@ package de.shadowhunt.subversion.internal;
 import java.io.File;
 import java.util.Set;
 import java.util.TreeSet;
+
 import javax.xml.parsers.SAXParser;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.ResourceProperty.Type;
 import de.shadowhunt.subversion.Revision;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 
 public final class ResourcePropertyLoader extends BaseLoader {
-
-	private ResourcePropertyLoader() {
-		// prevent instantiation
-	}
 
 	static class ResourcePropertyHandler extends BasicHandler {
 
@@ -97,5 +95,9 @@ public final class ResourcePropertyLoader extends BaseLoader {
 		saxParser.parse(file, handler);
 		final Set<ResourceProperty> properties = handler.getResourceProperties();
 		return properties.toArray(new ResourceProperty[properties.size()]);
+	}
+
+	private ResourcePropertyLoader() {
+		// prevent instantiation
 	}
 }

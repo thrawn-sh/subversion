@@ -25,9 +25,9 @@ public interface Transaction {
 
 	String getId();
 
-	boolean isActive();
-
 	UUID getRepositoryId();
 
 	void invalidate();
+
+	boolean isActive();
 }

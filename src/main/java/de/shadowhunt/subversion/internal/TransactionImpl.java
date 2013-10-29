@@ -29,7 +29,7 @@ public final class TransactionImpl extends RepositoryCache implements Transactio
 
 	private final String id;
 
-	public TransactionImpl(AbstractBasicRepository repository, final String id) {
+	public TransactionImpl(final AbstractBasicRepository repository, final String id) {
 		super(repository);
 		this.id = id;
 	}
@@ -74,6 +74,7 @@ public final class TransactionImpl extends RepositoryCache implements Transactio
 		active = false;
 	}
 
+	@Override
 	public boolean isActive() {
 		return active;
 	}

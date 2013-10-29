@@ -41,7 +41,7 @@ public class ResolveOperation extends AbstractOperation<Resource> {
 
 	protected final Revision revision, expected;
 
-	public ResolveOperation(final URI repository, final Resource resource, final Revision revision, final Revision expected, RepositoryConfig config) {
+	public ResolveOperation(final URI repository, final Resource resource, final Revision revision, final Revision expected, final RepositoryConfig config) {
 		super(repository);
 		this.resource = resource;
 		this.revision = revision;

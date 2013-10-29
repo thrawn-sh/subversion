@@ -30,6 +30,24 @@ public class AbstractRepositoryPropertiesDeleteIT {
 	}
 
 	@Test(expected = SubversionException.class)
+	public void test00_invalid() throws Exception {
+		final Resource resource = prefix.append(Resource.create("invalid.txt"));
+		final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "test");
+
+		final Transaction transaction = repository.createTransaction();
+		try {
+			Assert.assertTrue("transaction must be active", transaction.isActive());
+			transaction.invalidate();
+			Assert.assertFalse("transaction must not be active", transaction.isActive());
+			repository.propertiesDelete(transaction, resource, property);
+			Assert.fail("must not complete");
+		} catch (final Exception e) {
+			repository.rollback(transaction);
+			throw e;
+		}
+	}
+
+	@Test(expected = SubversionException.class)
 	public void test00_NonExisitingResource() throws Exception {
 		final Resource resource = prefix.append(Resource.create("non_existing.txt"));
 		final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "test");
@@ -58,24 +76,6 @@ public class AbstractRepositoryPropertiesDeleteIT {
 			Assert.assertTrue("transaction must be active", transaction.isActive());
 			repository.rollback(transaction);
 			Assert.assertFalse("transaction must not be active", transaction.isActive());
-		} catch (final Exception e) {
-			repository.rollback(transaction);
-			throw e;
-		}
-	}
-
-	@Test(expected = SubversionException.class)
-	public void test00_invalid() throws Exception {
-		final Resource resource = prefix.append(Resource.create("invalid.txt"));
-		final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "test");
-
-		final Transaction transaction = repository.createTransaction();
-		try {
-			Assert.assertTrue("transaction must be active", transaction.isActive());
-			transaction.invalidate();
-			Assert.assertFalse("transaction must not be active", transaction.isActive());
-			repository.propertiesDelete(transaction, resource, property);
-			Assert.fail("must not complete");
 		} catch (final Exception e) {
 			repository.rollback(transaction);
 			throw e;
