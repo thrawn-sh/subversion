@@ -82,7 +82,7 @@ public abstract class AbstractRepositoryLockingIT {
 		}
 	}
 
-	@Test(expected = SubversionException.class)
+	@Test
 	public void test01_relockWithForce() throws Exception {
 		final Resource resource = prefix.append(Resource.create("/relock_with.txt"));
 
