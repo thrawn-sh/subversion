@@ -24,6 +24,6 @@ import de.shadowhunt.subversion.internal.AbstractRepositoryAddIT;
 public class V1_6RepositoryAdd extends AbstractRepositoryAddIT {
 
 	public V1_6RepositoryAdd() {
-		super(V1_6Helper.getRepository(), V1_6Helper.getTestId());
+		super(V1_6Helper.getRepositoryA(), V1_6Helper.getTestId());
 	}
 }

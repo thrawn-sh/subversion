@@ -24,6 +24,6 @@ import de.shadowhunt.subversion.internal.AbstractRepositoryInfoIT;
 public class V1_6RepositoryInfo extends AbstractRepositoryInfoIT {
 
 	public V1_6RepositoryInfo() {
-		super(V1_6Helper.getRepository());
+		super(V1_6Helper.getRepositoryA());
 	}
 }

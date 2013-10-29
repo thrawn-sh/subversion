@@ -24,6 +24,6 @@ import de.shadowhunt.subversion.internal.AbstractRepositoryDeleteIT;
 public class V1_6RepositoryDelete extends AbstractRepositoryDeleteIT {
 
 	public V1_6RepositoryDelete() {
-		super(V1_6Helper.getRepository(), V1_6Helper.getTestId());
+		super(V1_6Helper.getRepositoryA(), V1_6Helper.getTestId());
 	}
 }

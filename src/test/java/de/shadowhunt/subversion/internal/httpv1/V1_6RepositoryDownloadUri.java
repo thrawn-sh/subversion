@@ -24,6 +24,6 @@ import de.shadowhunt.subversion.internal.AbstractRepositoryDownloadUriIT;
 public class V1_6RepositoryDownloadUri extends AbstractRepositoryDownloadUriIT {
 
 	public V1_6RepositoryDownloadUri() {
-		super(V1_6Helper.getRepository());
+		super(V1_6Helper.getRepositoryA());
 	}
 }

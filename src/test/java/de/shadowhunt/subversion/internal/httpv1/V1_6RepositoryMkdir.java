@@ -24,6 +24,6 @@ import de.shadowhunt.subversion.internal.AbstractRepositoryMkdirIT;
 public class V1_6RepositoryMkdir extends AbstractRepositoryMkdirIT {
 
 	public V1_6RepositoryMkdir() {
-		super(V1_6Helper.getRepository(), V1_6Helper.getTestId());
+		super(V1_6Helper.getRepositoryA(), V1_6Helper.getTestId());
 	}
 }

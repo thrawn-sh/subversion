@@ -24,6 +24,6 @@ import de.shadowhunt.subversion.internal.AbstractRepositoryTransactionIT;
 public class V1_6RepositoryTransaction extends AbstractRepositoryTransactionIT {
 
 	public V1_6RepositoryTransaction() {
-		super(V1_6Helper.getRepository());
+		super(V1_6Helper.getRepositoryA());
 	}
 }

@@ -24,6 +24,6 @@ import de.shadowhunt.subversion.internal.AbstractRepositoryLogIT;
 public class V1_6RepositoryLog extends AbstractRepositoryLogIT {
 
 	public V1_6RepositoryLog() {
-		super(V1_6Helper.getRepository());
+		super(V1_6Helper.getRepositoryA());
 	}
 }

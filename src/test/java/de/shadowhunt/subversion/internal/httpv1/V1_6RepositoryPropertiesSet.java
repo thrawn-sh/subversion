@@ -24,6 +24,6 @@ import de.shadowhunt.subversion.internal.AbstractRepositoryPropertiesSetIT;
 public class V1_6RepositoryPropertiesSet extends AbstractRepositoryPropertiesSetIT {
 
 	public V1_6RepositoryPropertiesSet() {
-		super(V1_6Helper.getRepository(), V1_6Helper.getTestId());
+		super(V1_6Helper.getRepositoryA(), V1_6Helper.getTestId());
 	}
 }

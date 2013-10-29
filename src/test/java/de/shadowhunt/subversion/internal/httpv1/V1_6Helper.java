@@ -19,44 +19,46 @@ final class V1_6Helper {
 
 	private static final String PASSWORD = "svnpass";
 
-	private static Repository repository;
+	private static Repository repositoryA, repositoryB;
 
 	private static final URI REPOSITORY_URI = URI.create("http://10.155.50.102/svn-basic/test");
 
 	private static final UUID TEST_ID = UUID.randomUUID();
 
-	private static final String USERNAME = "svnuser";
+	private static final String USERNAME_A = "svnuser";
 
-	static Repository getRepository() {
-		if (repository == null) {
+	private static final String USERNAME_B = "svnuser2";
+
+	static Repository getRepositoryA() {
+		if (repositoryA == null) {
 			final DefaultHttpClient client = new DefaultHttpClient();
 			final HttpContext context = new BasicHttpContext();
 
 			final CredentialsProvider cp = new BasicCredentialsProvider();
-			final Credentials credentials = new UsernamePasswordCredentials(USERNAME, PASSWORD);
+			final Credentials credentials = new UsernamePasswordCredentials(USERNAME_A, PASSWORD);
 			cp.setCredentials(AuthScope.ANY, credentials);
 			client.setCredentialsProvider(cp);
 
-			repository = RepositoryFactory.createRepository(REPOSITORY_URI, client, context);
+			repositoryA = RepositoryFactory.createRepository(REPOSITORY_URI, client, context);
 
 		}
-		return repository;
+		return repositoryA;
 	}
 
-	static Repository getRepositoryWithDifferentCredentials() {
-		if (repository == null) {
+	static Repository getRepositoryB() {
+		if (repositoryB == null) {
 			final DefaultHttpClient client = new DefaultHttpClient();
 			final HttpContext context = new BasicHttpContext();
 
 			final CredentialsProvider cp = new BasicCredentialsProvider();
-			final Credentials credentials = new UsernamePasswordCredentials(USERNAME, PASSWORD);
+			final Credentials credentials = new UsernamePasswordCredentials(USERNAME_B, PASSWORD);
 			cp.setCredentials(AuthScope.ANY, credentials);
 			client.setCredentialsProvider(cp);
 
-			repository = RepositoryFactory.createRepository(REPOSITORY_URI, client, context);
+			repositoryB = RepositoryFactory.createRepository(REPOSITORY_URI, client, context);
 
 		}
-		return repository;
+		return repositoryB;
 	}
 
 	static UUID getTestId() {

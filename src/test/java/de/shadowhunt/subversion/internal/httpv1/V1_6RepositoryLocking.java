@@ -24,6 +24,6 @@ import de.shadowhunt.subversion.internal.AbstractRepositoryLockingIT;
 public class V1_6RepositoryLocking extends AbstractRepositoryLockingIT {
 
 	public V1_6RepositoryLocking() {
-		super(V1_6Helper.getRepository(), V1_6Helper.getRepositoryWithDifferentCredentials(), V1_6Helper.getTestId());
+		super(V1_6Helper.getRepositoryA(), V1_6Helper.getRepositoryB(), V1_6Helper.getTestId());
 	}
 }

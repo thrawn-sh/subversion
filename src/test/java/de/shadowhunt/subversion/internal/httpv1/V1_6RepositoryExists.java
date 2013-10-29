@@ -24,6 +24,6 @@ import de.shadowhunt.subversion.internal.AbstractRepositoryExistsIT;
 public class V1_6RepositoryExists extends AbstractRepositoryExistsIT {
 
 	public V1_6RepositoryExists() {
-		super(V1_6Helper.getRepository());
+		super(V1_6Helper.getRepositoryA());
 	}
 }
