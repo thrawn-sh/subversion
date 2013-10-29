@@ -167,6 +167,24 @@ public abstract class AbstractBasicRepository implements Repository {
 	}
 
 	public boolean exists0(final RepositoryCache cache, final Resource resource, final Revision revision) {
+		// check change set for non commit changes
+		if (Revision.HEAD.equals(revision)) {
+			final Status status = cache.status(resource);
+			if ((status == Status.ADDED) || (status == Status.MODIFIED)) {
+				return true;
+			}
+			if (status == Status.DELETED) {
+				return false;
+			}
+		}
+
+		// check cache for entries
+		final Info info = cache.get(resource, revision);
+		if (info != null) {
+			return true;
+		}
+
+		// ask the server
 		final Resource resolved = resolve(cache, resource, revision, false, true);
 		final ExistsOperation operation = new ExistsOperation(repository, resolved);
 		return operation.execute(client, context);
