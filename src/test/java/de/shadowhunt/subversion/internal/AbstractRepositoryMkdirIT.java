@@ -24,6 +24,7 @@ public class AbstractRepositoryMkdirIT {
 
 			repository.mkdir(transaction, resource, parents);
 			Assert.assertTrue("transaction must be active", transaction.isActive());
+			Assert.assertTrue("changeset must contain: " + resource, transaction.getChangeSet().containsKey(resource));
 			repository.commit(transaction, "mkdir " + resource);
 			Assert.assertFalse("transaction must be not active", transaction.isActive());
 		} catch (final Exception e) {
@@ -83,6 +84,7 @@ public class AbstractRepositoryMkdirIT {
 			Assert.assertTrue("transaction must be active", transaction.isActive());
 			repository.mkdir(transaction, resource, false);
 			Assert.assertTrue("transaction must be active", transaction.isActive());
+			Assert.assertTrue("changeset must contain: " + resource, transaction.getChangeSet().containsKey(resource));
 			repository.rollback(transaction);
 			Assert.assertFalse("transaction must not be active", transaction.isActive());
 		} catch (final Exception e) {

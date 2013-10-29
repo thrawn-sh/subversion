@@ -19,9 +19,11 @@ import org.junit.runners.Suite.SuiteClasses;
 		V1_6RepositoryMkdir.class, // uses transactions + (add)
 		V1_6RepositoryAdd.class, // uses transactions + mkdir
 		V1_6RepositoryDelete.class, // uses transactions + add + mkdir
-		V1_6RepositoryLocking.class, // uses add
+		V1_6RepositoryCopy.class, // uses transactions + add + mkdir
+		V1_6RepositoryMove.class, // uses transactions + add + mkdir + delete
 		V1_6RepositoryPropertiesSet.class, // uses transactions + add
 		V1_6RepositoryPropertiesDelete.class, // uses transactions + add + propertiesSet
+		V1_6RepositoryLocking.class, // uses add + copy + move
 // multiple modifications
 })
 public class V1_6SuiteIT {

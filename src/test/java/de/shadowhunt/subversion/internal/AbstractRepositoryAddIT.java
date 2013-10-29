@@ -28,6 +28,7 @@ public class AbstractRepositoryAddIT {
 			Assert.assertTrue("transaction must be active", transaction.isActive());
 			repository.add(transaction, resource, true, Helper.getInputStream(content));
 			Assert.assertTrue("transaction must be active", transaction.isActive());
+			Assert.assertTrue("changeset must contain: " + resource, transaction.getChangeSet().containsKey(resource));
 			repository.commit(transaction, "add " + resource);
 			Assert.assertFalse("transaction must not be active", transaction.isActive());
 		} catch (final Exception e) {
@@ -91,6 +92,7 @@ public class AbstractRepositoryAddIT {
 			Assert.assertTrue("transaction must be active", transaction.isActive());
 			repository.add(transaction, resource, false, Helper.getInputStream("test"));
 			Assert.assertTrue("transaction must be active", transaction.isActive());
+			Assert.assertTrue("changeset must contain: " + resource, transaction.getChangeSet().containsKey(resource));
 			repository.rollback(transaction);
 			Assert.assertFalse("transaction must not be active", transaction.isActive());
 		} catch (final Exception e) {
