@@ -242,15 +242,8 @@ public abstract class AbstractRepositoryLockingIT {
 			throw e;
 		}
 
-		try {
-			final Info beforeUnlock = repositoryA.info(target, Revision.HEAD);
-			Assert.assertTrue(target + " must be locked", beforeUnlock.isLocked());
-			repositoryA.unlock(target, false);
-			final Info afterUnlock = repositoryA.info(target, Revision.HEAD);
-			Assert.assertFalse(target + " must not be locked", afterUnlock.isLocked());
-		} finally {
-			repositoryA.unlock(target, false);
-		}
+		final Info after = repositoryA.info(target, Revision.HEAD);
+		Assert.assertFalse(target + " must not be locked", after.isLocked());
 	}
 
 	@Test
@@ -279,14 +272,7 @@ public abstract class AbstractRepositoryLockingIT {
 			throw e;
 		}
 
-		try {
-			final Info beforeUnlock = repositoryA.info(target, Revision.HEAD);
-			Assert.assertTrue(target + " must be locked", beforeUnlock.isLocked());
-			repositoryA.unlock(target, false);
-			final Info afterUnlock = repositoryA.info(target, Revision.HEAD);
-			Assert.assertFalse(target + " must not be locked", afterUnlock.isLocked());
-		} finally {
-			repositoryA.unlock(target, false);
-		}
+		final Info after = repositoryA.info(target, Revision.HEAD);
+		Assert.assertFalse(target + " must not be locked", after.isLocked());
 	}
 }
