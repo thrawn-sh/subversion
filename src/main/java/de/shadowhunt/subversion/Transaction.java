@@ -27,6 +27,7 @@ public interface Transaction {
 	public static enum Status {
 		ADDED("A", 2),
 		DELETED("D", 3),
+		EXISTED("", -1),
 		MODIFIED("M", 1);
 
 		private final String abbreviation;

@@ -27,6 +27,7 @@ import org.apache.http.protocol.HttpContext;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
+import de.shadowhunt.subversion.Transaction.Status;
 import de.shadowhunt.subversion.internal.AbstractBasicRepository;
 import de.shadowhunt.subversion.internal.CommitMessageOperation;
 import de.shadowhunt.subversion.internal.MergeOperation;
@@ -84,9 +85,16 @@ public class Repository extends AbstractBasicRepository {
 
 	@Override
 	protected void registerResource(final Transaction transaction, final Resource resource, final Revision revision) {
-		final Resource existingResource = config.getPrefix().append(Resource.create(PREFIX_VER + revision)).append(resource);
+		final RepositoryCache cache = fromTransaction(transaction);
+		if (cache.status(resource) != null) {
+			return;
+		}
+
+		final Revision concreteRevision = cache.getConcreteRevision(revision);
+		final Resource existingResource = config.getPrefix().append(Resource.create(PREFIX_VER + concreteRevision)).append(resource);
 		final Resource transactionResource = config.getTransactionResource(transaction);
 		final CheckoutOperation co = new CheckoutOperation(repository, existingResource, transactionResource);
 		co.execute(client, context);
+		transaction.register(resource, Status.EXISTED);
 	}
 }
