@@ -98,7 +98,7 @@ public abstract class AbstractBasicRepository implements Repository {
 	public void copy(final Transaction transaction, final Resource srcResource, final Revision srcRevision, final Resource targetResource, final boolean parents) {
 		validateTransaction(transaction);
 
-		createFolder(transaction, config.getWorkingResource(transaction).append(targetResource.getParent()), srcRevision, true);
+		createFolder(transaction, targetResource.getParent(), srcRevision, parents);
 
 		final RepositoryCache cache = fromTransaction(transaction);
 		final Info info = info0(cache, srcResource, srcRevision, true, true);
