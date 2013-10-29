@@ -44,12 +44,19 @@ import de.shadowhunt.subversion.internal.util.URIUtils;
 /**
  * Base for all {@link de.shadowhunt.subversion.Repository}
  */
-public abstract class AbstractBasicRepository implements Repository {
+public abstract class AbstractBaseRepository implements Repository {
 
 	private static UUID determineRepositoryId(final URI repository, final HttpClient client, final HttpContext context) {
 		final InfoOperation operation = new InfoOperation(repository, Resource.ROOT, Depth.EMPTY);
 		final Info info = operation.execute(client, context);
 		return info.getRepositoryId();
+	}
+
+	protected static RepositoryCache fromTransaction(final Transaction transaction) {
+		if (transaction instanceof RepositoryCache) {
+			return (RepositoryCache) transaction;
+		}
+		throw new IllegalArgumentException("can't convert " + transaction + " to a repository cache");
 	}
 
 	public final HttpClient client;
@@ -62,7 +69,7 @@ public abstract class AbstractBasicRepository implements Repository {
 
 	protected final UUID repositoryId;
 
-	protected AbstractBasicRepository(final URI repository, final RepositoryConfig config, final HttpClient client, final HttpContext context) {
+	protected AbstractBaseRepository(final URI repository, final RepositoryConfig config, final HttpClient client, final HttpContext context) {
 		this.repository = URIUtils.createURI(repository);
 		this.config = config;
 		this.client = client;
@@ -81,13 +88,6 @@ public abstract class AbstractBasicRepository implements Repository {
 			mkdir(transaction, resource.getParent(), parents);
 		}
 
-		//		final Resource infoResource;
-		//		if (exists(resource, Revision.HEAD)) {
-		//			infoResource = resource;
-		//		} else {
-		//			infoResource = createFolder0(config.getWorkingResource(transaction).append(resource.getParent()), true);
-		//		}
-		//		final Info info = info(resource, Revision.HEAD);
 		final Resource uploadResource = config.getWorkingResource(transaction).append(resource);
 		final UploadOperation operation = new UploadOperation(repository, uploadResource, null, content); // FIXME locktoken
 		operation.execute(client, context);
@@ -190,14 +190,6 @@ public abstract class AbstractBasicRepository implements Repository {
 		return operation.execute(client, context);
 	}
 
-	protected RepositoryCache fromTransaction(final Transaction transaction) {
-		if (transaction instanceof TransactionImpl) {
-			return (TransactionImpl) transaction;
-		}
-
-		throw new IllegalArgumentException(); // FIXME
-	}
-
 	@Override
 	public final URI getBaseUri() {
 		return URIUtils.createURI(repository);
@@ -238,7 +230,7 @@ public abstract class AbstractBasicRepository implements Repository {
 	public Set<Info> list0(final RepositoryCache cache, final Resource resource, final Revision revision, final Depth depth) {
 		if (Depth.INFINITY == depth) {
 			final Set<Info> result = new TreeSet<Info>(Info.RESOURCE_COMPARATOR);
-			listRecursively(cache, resource, revision, result);
+			listRecursively0(cache, resource, revision, result);
 			return result;
 		}
 		final Resource resolved = resolve(cache, resource, revision, true, true);
@@ -248,14 +240,14 @@ public abstract class AbstractBasicRepository implements Repository {
 		return infoSet;
 	}
 
-	private void listRecursively(final RepositoryCache cache, final Resource resource, final Revision revision, final Set<Info> result) {
+	private void listRecursively0(final RepositoryCache cache, final Resource resource, final Revision revision, final Set<Info> result) {
 		for (final Info info : list0(cache, resource, revision, Depth.IMMEDIATES)) {
 			if (!result.add(info)) {
 				continue;
 			}
 
 			if (info.isDirectory()) {
-				listRecursively(cache, info.getResource(), revision, result);
+				listRecursively0(cache, info.getResource(), revision, result);
 			}
 		}
 	}
@@ -306,7 +298,8 @@ public abstract class AbstractBasicRepository implements Repository {
 	public void propertiesDelete(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
 		validateTransaction(transaction);
 
-		final Info info = info(resource, Revision.HEAD);
+		final RepositoryCache cache = fromTransaction(transaction);
+		final Info info = info0(cache, resource, Revision.HEAD, true, true);
 
 		final Resource r = config.getWorkingResource(transaction).append(resource);
 		final PropertiesDeleteOperation operation = new PropertiesDeleteOperation(repository, r, info.getLockToken(), properties);
@@ -318,7 +311,8 @@ public abstract class AbstractBasicRepository implements Repository {
 	public void propertiesSet(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
 		validateTransaction(transaction);
 
-		final Info info = info(resource, Revision.HEAD);
+		final RepositoryCache cache = fromTransaction(transaction);
+		final Info info = info0(cache, resource, Revision.HEAD, true, true);
 		final Resource r = config.getWorkingResource(transaction).append(resource);
 		final PropertiesSetOperation operation = new PropertiesSetOperation(repository, r, info.getLockToken(), properties);
 		operation.execute(client, context);

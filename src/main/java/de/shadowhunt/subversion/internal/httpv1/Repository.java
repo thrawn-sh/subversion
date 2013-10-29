@@ -28,7 +28,7 @@ import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.Transaction.Status;
-import de.shadowhunt.subversion.internal.AbstractBasicRepository;
+import de.shadowhunt.subversion.internal.AbstractBaseRepository;
 import de.shadowhunt.subversion.internal.CommitMessageOperation;
 import de.shadowhunt.subversion.internal.MergeOperation;
 import de.shadowhunt.subversion.internal.RepositoryCache;
@@ -37,7 +37,7 @@ import de.shadowhunt.subversion.internal.RepositoryConfig;
 /**
  * {@link Repository} supports subversion servers of version 1.6.X
  */
-public class Repository extends AbstractBasicRepository {
+public class Repository extends AbstractBaseRepository {
 
 	protected static final String PREFIX_VCC = "/vcc/default";
 

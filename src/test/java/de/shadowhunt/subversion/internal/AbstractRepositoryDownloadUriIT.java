@@ -81,7 +81,7 @@ public abstract class AbstractRepositoryDownloadUriIT {
 		final Resource resource = PREFIX.append(Resource.create("/file_delete.txt"));
 		final Revision revision = Revision.create(22);
 
-		final AbstractBasicRepository ar = (AbstractBasicRepository) repository;
+		final AbstractBaseRepository ar = (AbstractBaseRepository) repository;
 		final URI expected = URIUtils.createURI(repository.getBaseUri(), ar.config.getVersionedResource(revision), resource);
 		final String message = createMessage(resource, revision);
 		Assert.assertEquals(message, expected, repository.downloadURI(resource, revision));
@@ -92,7 +92,7 @@ public abstract class AbstractRepositoryDownloadUriIT {
 		final Resource resource = PREFIX.append(Resource.create("/file_copy.txt"));
 		final Revision revision = Revision.create(25);
 
-		final AbstractBasicRepository ar = (AbstractBasicRepository) repository;
+		final AbstractBaseRepository ar = (AbstractBaseRepository) repository;
 		final URI expected = URIUtils.createURI(repository.getBaseUri(), ar.config.getVersionedResource(revision), resource);
 		final String message = createMessage(resource, revision);
 		Assert.assertEquals(message, expected, repository.downloadURI(resource, revision));
@@ -103,7 +103,7 @@ public abstract class AbstractRepositoryDownloadUriIT {
 		final Resource resource = PREFIX.append(Resource.create("/file_move.txt"));
 		final Revision revision = Revision.create(27);
 
-		final AbstractBasicRepository ar = (AbstractBasicRepository) repository;
+		final AbstractBaseRepository ar = (AbstractBaseRepository) repository;
 		final URI expected = URIUtils.createURI(repository.getBaseUri(), ar.config.getVersionedResource(revision), resource);
 		final String message = createMessage(resource, revision);
 		Assert.assertEquals(message, expected, repository.downloadURI(resource, revision));

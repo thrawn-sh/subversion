@@ -14,6 +14,7 @@ public class RepositoryCache {
 	private static final class Key {
 
 		private final Resource resource;
+
 		private final Revision revision;
 
 		Key(final Resource resource, final Revision revision) {
@@ -54,9 +55,9 @@ public class RepositoryCache {
 
 	private Revision headRevision = null;
 
-	protected final AbstractBasicRepository repository;
+	protected final AbstractBaseRepository repository;
 
-	public RepositoryCache(final AbstractBasicRepository repository) {
+	public RepositoryCache(final AbstractBaseRepository repository) {
 		this.repository = repository;
 	}
 

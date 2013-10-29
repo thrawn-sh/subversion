@@ -34,7 +34,7 @@ public final class TransactionImpl extends RepositoryCache implements Transactio
 
 	private final String id;
 
-	public TransactionImpl(final AbstractBasicRepository repository, final String id) {
+	public TransactionImpl(final AbstractBaseRepository repository, final String id) {
 		super(repository);
 		this.id = id;
 	}

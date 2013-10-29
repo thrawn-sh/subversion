@@ -68,10 +68,11 @@ public final class InfoImpl implements Info {
 			}
 
 			if ("response".equals(name)) {
-				current.setProperties(properties.toArray(new ResourceProperty[properties.size()]));
+				if (current.getResource() != null) {
+					current.setProperties(properties.toArray(new ResourceProperty[properties.size()]));
+					infos.add(current);
+				}
 				properties = null;
-
-				infos.add(current);
 				current = null;
 				return;
 			}

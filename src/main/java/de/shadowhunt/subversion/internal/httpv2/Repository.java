@@ -27,7 +27,7 @@ import org.apache.http.protocol.HttpContext;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
-import de.shadowhunt.subversion.internal.AbstractBasicRepository;
+import de.shadowhunt.subversion.internal.AbstractBaseRepository;
 import de.shadowhunt.subversion.internal.CommitMessageOperation;
 import de.shadowhunt.subversion.internal.MergeOperation;
 import de.shadowhunt.subversion.internal.RepositoryConfig;
@@ -35,7 +35,7 @@ import de.shadowhunt.subversion.internal.RepositoryConfig;
 /**
  * {@link Repository} supports subversion servers of version 1.7.X
  */
-public class Repository extends AbstractBasicRepository {
+public class Repository extends AbstractBaseRepository {
 
 	public Repository(final URI repository, final RepositoryConfig config, final HttpClient client, final HttpContext context) {
 		super(repository, config, client, context);
