@@ -69,6 +69,7 @@ public class RepositoryConfig implements de.shadowhunt.subversion.internal.Repos
 
 	@Override
 	public Resource getVersionedResource(final Revision revision) {
+		assert (!Revision.HEAD.equals(revision)) : "must not be HEAD revision";
 		final Resource suffix = Resource.create("/rvr/" + revision);
 		return prefix.append(suffix);
 	}
