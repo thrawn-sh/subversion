@@ -218,12 +218,15 @@ public abstract class AbstractBasicRepository implements Repository {
 		if (info != null) {
 			return info;
 		}
+
 		final Resource resolved = resolve(cache, resource, revision, resolve, report);
 		if (resolved == null) {
 			return null; // resource does not exists
 		}
+
 		final InfoOperation operation = new InfoOperation(repository, resolved, Depth.EMPTY);
 		info = operation.execute(client, context);
+		cache.put(info);
 		return info;
 	}
 
