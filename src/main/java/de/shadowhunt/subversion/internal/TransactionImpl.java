@@ -19,13 +19,18 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.UUID;
 
+import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Transaction;
 
 public final class TransactionImpl extends RepositoryCache implements Transaction {
 
 	private boolean active = true;
+
+	private final Map<Resource, Status> changeSet = new TreeMap<Resource, Status>();
 
 	private final String id;
 
@@ -53,6 +58,11 @@ public final class TransactionImpl extends RepositoryCache implements Transactio
 	}
 
 	@Override
+	public Map<Resource, Status> getChangeSet() {
+		return new TreeMap<Resource, Status>(changeSet);
+	}
+
+	@Override
 	public String getId() {
 		return id;
 	}
@@ -77,6 +87,21 @@ public final class TransactionImpl extends RepositoryCache implements Transactio
 	@Override
 	public boolean isActive() {
 		return active;
+	}
+
+	@Override
+	public boolean isChangeSetEmpty() {
+		return changeSet.isEmpty();
+	}
+
+	public void register(final Resource resource, final Status status) {
+		final Status old = changeSet.put(resource, status);
+		if (old != null) {
+			if (old.order > status.order) {
+				// previous value had higher order, and must therefore be preserved
+				changeSet.put(resource, old);
+			}
+		}
 	}
 
 	@Override

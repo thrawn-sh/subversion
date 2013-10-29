@@ -19,9 +19,32 @@
  */
 package de.shadowhunt.subversion;
 
+import java.util.Map;
 import java.util.UUID;
 
 public interface Transaction {
+
+	public static enum Status {
+		ADDED("A", 2),
+		DELETED("D", 3),
+		MODIFIED("M", 1);
+
+		private final String abbreviation;
+
+		public final int order;
+
+		private Status(final String abbreviation, final int order) {
+			this.abbreviation = abbreviation;
+			this.order = order;
+		}
+
+		@Override
+		public String toString() {
+			return abbreviation;
+		}
+	}
+
+	Map<Resource, Status> getChangeSet();
 
 	String getId();
 
@@ -30,4 +53,6 @@ public interface Transaction {
 	void invalidate();
 
 	boolean isActive();
+
+	boolean isChangeSetEmpty();
 }
