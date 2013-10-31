@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,9 +37,9 @@ import de.shadowhunt.subversion.internal.util.URIUtils;
 
 public class ListOperation extends AbstractOperation<Set<Info>> {
 
-	protected final Depth depth;
+	private final Depth depth;
 
-	protected final Resource resource;
+	private final Resource resource;
 
 	public ListOperation(final URI repository, final Resource resource, final Depth depth) {
 		super(repository);

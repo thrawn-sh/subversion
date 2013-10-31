@@ -42,7 +42,7 @@ public final class RepositoryFactory {
 	 *
 	 * @return a new {@link Repository} for given {@link URI} and {@link Version}
 	 */
-	public static final Repository createRepository(final URI repository, final HttpClient client, final HttpContext context) {
+	public static Repository createRepository(final URI repository, final HttpClient client, final HttpContext context) {
 		final URI cleaned = removeEndingSlash(repository);
 
 		final ProbeServerOperation operation = new ProbeServerOperation(cleaned);
@@ -50,7 +50,7 @@ public final class RepositoryFactory {
 		return config.create(cleaned, client, context);
 	}
 
-	static URI removeEndingSlash(final URI uri) {
+	private static URI removeEndingSlash(final URI uri) {
 		final String string = uri.toString();
 		final int lastChar = string.length() - 1;
 		if (string.charAt(lastChar) == '/') {

@@ -45,7 +45,7 @@ import de.shadowhunt.subversion.SubversionException;
  */
 public final class InfoImpl implements Info {
 
-	static class SubversionInfoHandler extends BasicHandler {
+	private static class SubversionInfoHandler extends BasicHandler {
 
 		private boolean checkedin = false;
 
@@ -344,24 +344,6 @@ public final class InfoImpl implements Info {
 	}
 
 	/**
-	 * Returns the value of the custom property with the given name
-	 *
-	 * @param name name of the custom property
-	 *
-	 * @return the value of the custom property or {@code null} if no custom property with the given name was found
-	 */
-	@Override
-	@CheckForNull
-	public String getResourcePropertyValue(final String name) {
-		for (final ResourceProperty property : properties) {
-			if (name.equals(property.getName())) {
-				return property.getValue();
-			}
-		}
-		return null;
-	}
-
-	/**
 	 * Returns a {@link Revision} of the resource
 	 *
 	 * @return the {@link Revision} of the resource
@@ -419,10 +401,6 @@ public final class InfoImpl implements Info {
 		this.directory = directory;
 	}
 
-	void setFile(final boolean file) {
-		directory = !file;
-	}
-
 	void setLockOwner(final String lockOwner) {
 		this.lockOwner = lockOwner;
 	}
@@ -474,7 +452,7 @@ public final class InfoImpl implements Info {
 		builder.append(resource);
 		builder.append(", revision=");
 		builder.append(revision);
-		builder.append("]");
+		builder.append(']');
 		return builder.toString();
 	}
 }

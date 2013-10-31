@@ -54,17 +54,6 @@ public final class ResourceProperty {
 	}
 
 	/**
-	 * {@link Comparator} that compares {@link ResourceProperty} by their names
-	 */
-	public static final Comparator<ResourceProperty> NAME_COMPARATOR = new Comparator<ResourceProperty>() {
-
-		@Override
-		public int compare(final ResourceProperty rp1, final ResourceProperty rp2) {
-			return rp1.getName().compareTo(rp2.getName());
-		}
-	};
-
-	/**
 	 * {@link Comparator} that compares {@link ResourceProperty} by their type and name
 	 */
 	public static final Comparator<ResourceProperty> TYPE_NAME_COMPARATOR = new Comparator<ResourceProperty>() {
@@ -190,7 +179,7 @@ public final class ResourceProperty {
 		builder.append(name);
 		builder.append(", value=");
 		builder.append(value);
-		builder.append("]");
+		builder.append(']');
 		return builder.toString();
 	}
 }

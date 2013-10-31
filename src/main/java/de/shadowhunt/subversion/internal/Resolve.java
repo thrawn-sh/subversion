@@ -78,7 +78,7 @@ public final class Resolve {
 
 	private Revision revision;
 
-	Resolve() {
+	private Resolve() {
 		// prevent direct instantiation
 	}
 
@@ -143,7 +143,7 @@ public final class Resolve {
 		builder.append(resource);
 		builder.append(", revision=");
 		builder.append(revision);
-		builder.append("]");
+		builder.append(']');
 		return builder.toString();
 	}
 }

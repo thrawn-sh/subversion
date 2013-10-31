@@ -47,7 +47,7 @@ import de.shadowhunt.subversion.internal.util.URIUtils;
 public abstract class AbstractBaseRepository implements Repository {
 
 	private static UUID determineRepositoryId(final URI repository, final HttpClient client, final HttpContext context) {
-		final InfoOperation operation = new InfoOperation(repository, Resource.ROOT, Depth.EMPTY);
+		final InfoOperation operation = new InfoOperation(repository, Resource.ROOT);
 		final Info info = operation.execute(client, context);
 		return info.getRepositoryId();
 	}
@@ -59,7 +59,7 @@ public abstract class AbstractBaseRepository implements Repository {
 		throw new IllegalArgumentException("can't convert " + transaction + " to a repository cache");
 	}
 
-	public final HttpClient client;
+	protected final HttpClient client;
 
 	protected final RepositoryConfig config;
 
@@ -67,7 +67,7 @@ public abstract class AbstractBaseRepository implements Repository {
 
 	protected final URI repository;
 
-	protected final UUID repositoryId;
+	private final UUID repositoryId;
 
 	protected AbstractBaseRepository(final URI repository, final RepositoryConfig config, final HttpClient client, final HttpContext context) {
 		this.repository = URIUtils.createURI(repository);
@@ -110,7 +110,7 @@ public abstract class AbstractBaseRepository implements Repository {
 		transaction.register(targetResource, Status.ADDED);
 	}
 
-	protected void createFolder(final Transaction transaction, final Resource resource, final Revision revision, final boolean parents) {
+	void createFolder(final Transaction transaction, final Resource resource, final Revision revision, final boolean parents) {
 		final RepositoryCache cache = fromTransaction(transaction);
 		final Info info = info0(cache, resource, revision, true, false); // null if resource does not exists
 
@@ -145,7 +145,7 @@ public abstract class AbstractBaseRepository implements Repository {
 		return download0(new RepositoryCache(this), resource, revision);
 	}
 
-	public InputStream download0(final RepositoryCache cache, final Resource resource, final Revision revision) {
+	InputStream download0(final RepositoryCache cache, final Resource resource, final Revision revision) {
 		final Resource resolved = resolve(cache, resource, revision, true, true);
 		final DownloadOperation operation = new DownloadOperation(repository, resolved);
 		return operation.execute(client, context);
@@ -156,7 +156,7 @@ public abstract class AbstractBaseRepository implements Repository {
 		return downloadURI0(new RepositoryCache(this), resource, revision);
 	}
 
-	public URI downloadURI0(final RepositoryCache cache, final Resource resource, final Revision revision) {
+	URI downloadURI0(final RepositoryCache cache, final Resource resource, final Revision revision) {
 		final Resource resolved = resolve(cache, resource, revision, true, true);
 		return URIUtils.createURI(repository, resolved);
 	}
@@ -166,7 +166,7 @@ public abstract class AbstractBaseRepository implements Repository {
 		return exists0(new RepositoryCache(this), resource, revision);
 	}
 
-	public boolean exists0(final RepositoryCache cache, final Resource resource, final Revision revision) {
+	boolean exists0(final RepositoryCache cache, final Resource resource, final Revision revision) {
 		// check change set for non commit changes
 		if (Revision.HEAD.equals(revision)) {
 			final Status status = cache.status(resource);
@@ -205,7 +205,7 @@ public abstract class AbstractBaseRepository implements Repository {
 		return info0(new RepositoryCache(this), resource, revision, true, true);
 	}
 
-	public Info info0(final RepositoryCache cache, final Resource resource, final Revision revision, final boolean resolve, final boolean report) {
+	Info info0(final RepositoryCache cache, final Resource resource, final Revision revision, final boolean resolve, final boolean report) {
 		Info info = cache.get(resource, revision);
 		if (info != null) {
 			return info;
@@ -216,7 +216,7 @@ public abstract class AbstractBaseRepository implements Repository {
 			return null; // resource does not exists
 		}
 
-		final InfoOperation operation = new InfoOperation(repository, resolved, Depth.EMPTY);
+		final InfoOperation operation = new InfoOperation(repository, resolved);
 		info = operation.execute(client, context);
 		cache.put(info);
 		return info;
@@ -227,7 +227,7 @@ public abstract class AbstractBaseRepository implements Repository {
 		return list0(new RepositoryCache(this), resource, revision, depth);
 	}
 
-	public Set<Info> list0(final RepositoryCache cache, final Resource resource, final Revision revision, final Depth depth) {
+	Set<Info> list0(final RepositoryCache cache, final Resource resource, final Revision revision, final Depth depth) {
 		if (Depth.INFINITY == depth) {
 			final Set<Info> result = new TreeSet<Info>(Info.RESOURCE_COMPARATOR);
 			listRecursively0(cache, resource, revision, result);
@@ -263,7 +263,7 @@ public abstract class AbstractBaseRepository implements Repository {
 		return log0(new RepositoryCache(this), resource, startRevision, endRevision, limit);
 	}
 
-	public List<Log> log0(final RepositoryCache cache, final Resource resource, final Revision startRevision, final Revision endRevision, final int limit) {
+	List<Log> log0(final RepositoryCache cache, final Resource resource, final Revision startRevision, final Revision endRevision, final int limit) {
 		final Revision concreteStartRevision = cache.getConcreteRevision(startRevision);
 		final Revision concreteEndRevision = cache.getConcreteRevision(endRevision);
 
@@ -321,7 +321,7 @@ public abstract class AbstractBaseRepository implements Repository {
 
 	protected abstract void registerResource(Transaction transaction, Resource resource, Revision revision);
 
-	protected Resource resolve(final RepositoryCache cache, final Resource resource, final Revision revision, final boolean resolve, final boolean report) {
+	Resource resolve(final RepositoryCache cache, final Resource resource, final Revision revision, final boolean resolve, final boolean report) {
 		if (Revision.HEAD.equals(revision)) {
 			final ExistsOperation operation = new ExistsOperation(repository, resource);
 			if (!resolve || (operation.execute(client, context))) {
@@ -365,7 +365,7 @@ public abstract class AbstractBaseRepository implements Repository {
 		unlock0(new RepositoryCache(this), resource, force);
 	}
 
-	protected void unlock0(final RepositoryCache cache, final Resource resource, final boolean force) {
+	void unlock0(final RepositoryCache cache, final Resource resource, final boolean force) {
 		final Info info = info0(cache, resource, Revision.HEAD, true, true);
 		final String lockToken = info.getLockToken();
 		if (lockToken == null) {

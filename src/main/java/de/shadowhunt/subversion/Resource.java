@@ -90,7 +90,7 @@ public final class Resource implements Comparable<Resource> {
 	 * @return the parent {@link Resource} of the {@link Resource}
 	 */
 	public Resource getParent() {
-		if (ROOT == this) {
+		if (ROOT.equals(this)) {
 			return ROOT; // parent of root is root
 		}
 		final int indexOf = value.lastIndexOf('/');
@@ -118,10 +118,6 @@ public final class Resource implements Comparable<Resource> {
 	@Override
 	public int hashCode() {
 		return value.hashCode();
-	}
-
-	public Resource prepend(final Resource resource) {
-		return new Resource(resource.value + value);
 	}
 
 	public Resource subResource(final int begin) {

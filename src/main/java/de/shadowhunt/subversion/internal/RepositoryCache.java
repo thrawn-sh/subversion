@@ -3,7 +3,6 @@ package de.shadowhunt.subversion.internal;
 import java.util.Collection;
 import java.util.HashMap;
 
-import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
@@ -55,7 +54,7 @@ public class RepositoryCache {
 
 	private Revision headRevision = null;
 
-	protected final AbstractBaseRepository repository;
+	final AbstractBaseRepository repository;
 
 	public RepositoryCache(final AbstractBaseRepository repository) {
 		this.repository = repository;
@@ -82,7 +81,7 @@ public class RepositoryCache {
 		if (Revision.HEAD.equals(revision)) {
 			if (headRevision == null) {
 				final Resource resolved = repository.resolve(this, Resource.ROOT, revision, false, true);
-				final InfoOperation operation = new InfoOperation(repository.getBaseUri(), resolved, Depth.EMPTY);
+				final InfoOperation operation = new InfoOperation(repository.getBaseUri(), resolved);
 				final Info info = operation.execute(repository.client, repository.context);
 				headRevision = info.getRevision();
 				put(info);

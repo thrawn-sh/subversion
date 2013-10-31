@@ -45,7 +45,7 @@ public final class LogImpl implements Log {
 
 	static class SubversionLogHandler extends BasicHandler {
 
-		private static TimeZone ZULU = TimeZone.getTimeZone("ZULU");
+		private static final TimeZone ZULU = TimeZone.getTimeZone("ZULU");
 
 		private LogImpl current = null;
 
@@ -269,7 +269,7 @@ public final class LogImpl implements Log {
 		builder.append(message);
 		builder.append(", revision=");
 		builder.append(revision);
-		builder.append("]");
+		builder.append(']');
 		return builder.toString();
 	}
 }

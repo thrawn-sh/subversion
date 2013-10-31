@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,23 +37,20 @@ import de.shadowhunt.subversion.internal.util.URIUtils;
 
 public class InfoOperation extends AbstractOperation<Info> {
 
-	protected static final String LOCK_OWNER_HEADER = "X-SVN-Lock-Owner";
+	private static final String LOCK_OWNER_HEADER = "X-SVN-Lock-Owner";
 
-	protected final Depth depth;
+	private final Resource resource;
 
-	protected final Resource resource;
-
-	public InfoOperation(final URI repository, final Resource resource, final Depth depth) {
+	public InfoOperation(final URI repository, final Resource resource) {
 		super(repository);
 		this.resource = resource;
-		this.depth = depth;
 	}
 
 	@Override
 	protected HttpUriRequest createRequest() {
 		final URI uri = URIUtils.createURI(repository, resource);
 		final DavTemplateRequest request = new DavTemplateRequest("PROPFIND", uri);
-		request.addHeader("Depth", depth.value);
+		request.addHeader("Depth", Depth.EMPTY.value);
 
 		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
 		body.append("<propfind xmlns=\"DAV:\"><allprop/></propfind>");

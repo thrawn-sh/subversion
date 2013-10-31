@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,15 +33,15 @@ import de.shadowhunt.subversion.internal.util.URIUtils;
 
 public class UploadOperation extends AbstractVoidOperation {
 
-	protected static final int PREFIX = 4; // /$svn/{baseline}/{id}/
+	private static final int PREFIX = 4; // /$svn/{baseline}/{id}/
 
-	protected static final long STREAM_WHOLE_CONTENT = -1L;
+	private static final long STREAM_WHOLE_CONTENT = -1L;
 
-	protected final InputStream content;
+	private final InputStream content;
 
-	protected final String lock;
+	private final String lock;
 
-	protected final Resource resource;
+	private final Resource resource;
 
 	public UploadOperation(final URI repository, final Resource resource, final String lock, final InputStream content) {
 		super(repository);
@@ -61,7 +61,7 @@ public class UploadOperation extends AbstractVoidOperation {
 		final HttpPut request = new HttpPut(uri);
 		if (lock != null) {
 			final URI lockTarget = URIUtils.createURI(repository, resource.subResource(PREFIX));
-			request.addHeader("If", "<" + lockTarget.toASCIIString() + "> (<" + lock + ">)");
+			request.addHeader("If", '<' + lockTarget.toASCIIString() + "> (<" + lock + ">)");
 		}
 
 		request.setEntity(new InputStreamEntity(content, STREAM_WHOLE_CONTENT));

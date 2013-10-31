@@ -39,9 +39,9 @@ import de.shadowhunt.subversion.internal.RepositoryConfig;
  */
 public class Repository extends AbstractBaseRepository {
 
-	protected static final String PREFIX_VCC = "/vcc/default";
+	private static final String PREFIX_VCC = "/vcc/default";
 
-	protected static final String PREFIX_VER = "/ver/";
+	private static final String PREFIX_VER = "/ver/";
 
 	public Repository(final URI repository, final RepositoryConfig config, final HttpClient client, final HttpContext context) {
 		super(repository, config, client, context);

@@ -67,7 +67,7 @@ public final class Revision implements Comparable<Revision>, Serializable {
 
 	@Override
 	public int compareTo(final Revision o) {
-		return Long.compare(version, o.version);
+		return (version < o.version) ? -1 : ((version == o.version) ? 0 : 1);
 	}
 
 	@Override

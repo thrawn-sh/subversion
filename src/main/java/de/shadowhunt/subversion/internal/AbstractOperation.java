@@ -42,7 +42,7 @@ public abstract class AbstractOperation<T> implements Operation<T> {
 
 	protected static final String XML_PREAMBLE = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
 
-	protected static final void check(final HttpResponse response, final int... expectedStatusCodes) {
+	protected static void check(final HttpResponse response, final int... expectedStatusCodes) {
 		final int statusCode = getStatusCode(response);
 
 		if (isExpected(statusCode, expectedStatusCodes)) {
@@ -56,7 +56,7 @@ public abstract class AbstractOperation<T> implements Operation<T> {
 				+ Arrays.toString(expectedStatusCodes));
 	}
 
-	protected static final InputStream getContent(final HttpResponse response) {
+	static InputStream getContent(final HttpResponse response) {
 		final HttpEntity entity = response.getEntity();
 		if (entity == null) {
 			throw new SubversionException("response without entity");
@@ -69,12 +69,12 @@ public abstract class AbstractOperation<T> implements Operation<T> {
 		}
 	}
 
-	protected static final int getStatusCode(final HttpResponse response) {
+	static int getStatusCode(final HttpResponse response) {
 		final StatusLine statusLine = response.getStatusLine();
 		return (statusLine == null) ? 0 : statusLine.getStatusCode();
 	}
 
-	protected static final boolean isExpected(final int statusCode, final int... expectedStatusCodes) {
+	private static boolean isExpected(final int statusCode, final int... expectedStatusCodes) {
 		for (final int expectedStatusCode : expectedStatusCodes) {
 			if (expectedStatusCode == statusCode) {
 				return true;
@@ -98,7 +98,7 @@ public abstract class AbstractOperation<T> implements Operation<T> {
 	 * Allowing circular redirects globally could lead to live locks on
 	 * the other hand. Therefore we clear the redirection cache explicitly.
 	 */
-	protected final void clearRedirects(final HttpContext context) {
+	final void clearRedirects(final HttpContext context) {
 		context.removeAttribute(DefaultRedirectStrategy.REDIRECT_LOCATIONS);
 	}
 
@@ -111,12 +111,12 @@ public abstract class AbstractOperation<T> implements Operation<T> {
 		return processResponse(response);
 	}
 
-	protected final HttpResponse executeRequest(final HttpUriRequest request, final HttpClient client, final HttpContext context) {
+	final HttpResponse executeRequest(final HttpUriRequest request, final HttpClient client, final HttpContext context) {
 		clearRedirects(context);
 		try {
 			return client.execute(request, context);
 		} catch (final Exception e) {
-			throw new SubversionException("could not execute request (" + request + ")", e);
+			throw new SubversionException("could not execute request (" + request + ')', e);
 		}
 	}
 
