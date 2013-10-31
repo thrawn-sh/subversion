@@ -33,7 +33,7 @@ public final class Resolve {
 
 	static class ResolveHandler extends BasicHandler {
 
-		private Resolve entry;
+		private Resolve entry = null;
 
 		public Resolve getEntry() {
 			return entry;
@@ -74,9 +74,9 @@ public final class Resolve {
 		}
 	}
 
-	private Resource resource;
+	private Resource resource = null;
 
-	private Revision revision;
+	private Revision revision = null;
 
 	private Resolve() {
 		// prevent direct instantiation

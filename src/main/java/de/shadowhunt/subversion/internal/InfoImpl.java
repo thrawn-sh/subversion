@@ -55,7 +55,7 @@ public final class InfoImpl implements Info {
 
 		private boolean locktoken = false;
 
-		private Set<ResourceProperty> properties;
+		private Set<ResourceProperty> properties = null;
 
 		private boolean resourceType = false;
 
@@ -199,22 +199,22 @@ public final class InfoImpl implements Info {
 		}
 	}
 
-	private boolean directory;
+	private boolean directory = false;
 
 	// NOTE: not part of xml response but determined by a response header
-	private String lockOwner;
+	private String lockOwner = null;
 
-	private String lockToken;
+	private String lockToken = null;
 
-	private String md5;
+	private String md5 = null;
 
 	private ResourceProperty[] properties = EMPTY;
 
-	private UUID repositoryId;
+	private UUID repositoryId = null;
 
-	private Resource resource;
+	private Resource resource = null;
 
-	private Revision revision;
+	private Revision revision = null;
 
 	InfoImpl() {
 		// prevent direct instantiation

@@ -101,7 +101,7 @@ public abstract class AbstractBaseRepository implements Repository {
 		createFolder(transaction, targetResource.getParent(), srcRevision, parents);
 
 		final RepositoryCache cache = fromTransaction(transaction);
-		final Info info = info0(cache, srcResource, srcRevision, true, true);
+		final Info info = info0(cache, srcResource, srcRevision, true);
 		final Resource s = config.getVersionedResource(info.getRevision()).append(info.getResource());
 		final Resource t = config.getWorkingResource(transaction).append(targetResource);
 
@@ -112,7 +112,7 @@ public abstract class AbstractBaseRepository implements Repository {
 
 	void createFolder(final Transaction transaction, final Resource resource, final Revision revision, final boolean parents) {
 		final RepositoryCache cache = fromTransaction(transaction);
-		final Info info = info0(cache, resource, revision, true, false); // null if resource does not exists
+		final Info info = info0(cache, resource, revision, false); // null if resource does not exists
 
 		if (parents && (info == null) && !Resource.ROOT.equals(resource)) {
 			createFolder(transaction, resource.getParent(), revision, parents);
@@ -202,16 +202,16 @@ public abstract class AbstractBaseRepository implements Repository {
 
 	@Override
 	public final Info info(final Resource resource, final Revision revision) {
-		return info0(new RepositoryCache(this), resource, revision, true, true);
+		return info0(new RepositoryCache(this), resource, revision, true);
 	}
 
-	Info info0(final RepositoryCache cache, final Resource resource, final Revision revision, final boolean resolve, final boolean report) {
+	Info info0(final RepositoryCache cache, final Resource resource, final Revision revision, final boolean report) {
 		Info info = cache.get(resource, revision);
 		if (info != null) {
 			return info;
 		}
 
-		final Resource resolved = resolve(cache, resource, revision, resolve, report);
+		final Resource resolved = resolve(cache, resource, revision, true, report);
 		if (resolved == null) {
 			return null; // resource does not exists
 		}
@@ -299,7 +299,7 @@ public abstract class AbstractBaseRepository implements Repository {
 		validateTransaction(transaction);
 
 		final RepositoryCache cache = fromTransaction(transaction);
-		final Info info = info0(cache, resource, Revision.HEAD, true, true);
+		final Info info = info0(cache, resource, Revision.HEAD, true);
 
 		final Resource r = config.getWorkingResource(transaction).append(resource);
 		final PropertiesDeleteOperation operation = new PropertiesDeleteOperation(repository, r, info.getLockToken(), properties);
@@ -312,7 +312,7 @@ public abstract class AbstractBaseRepository implements Repository {
 		validateTransaction(transaction);
 
 		final RepositoryCache cache = fromTransaction(transaction);
-		final Info info = info0(cache, resource, Revision.HEAD, true, true);
+		final Info info = info0(cache, resource, Revision.HEAD, true);
 		final Resource r = config.getWorkingResource(transaction).append(resource);
 		final PropertiesSetOperation operation = new PropertiesSetOperation(repository, r, info.getLockToken(), properties);
 		operation.execute(client, context);
@@ -366,7 +366,7 @@ public abstract class AbstractBaseRepository implements Repository {
 	}
 
 	void unlock0(final RepositoryCache cache, final Resource resource, final boolean force) {
-		final Info info = info0(cache, resource, Revision.HEAD, true, true);
+		final Info info = info0(cache, resource, Revision.HEAD, true);
 		final String lockToken = info.getLockToken();
 		if (lockToken == null) {
 			return;

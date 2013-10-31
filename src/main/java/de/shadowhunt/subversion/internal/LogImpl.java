@@ -43,7 +43,7 @@ import de.shadowhunt.subversion.SubversionException;
  */
 public final class LogImpl implements Log {
 
-	static class SubversionLogHandler extends BasicHandler {
+	private static class SubversionLogHandler extends BasicHandler {
 
 		private static final TimeZone ZULU = TimeZone.getTimeZone("ZULU");
 
@@ -136,13 +136,13 @@ public final class LogImpl implements Log {
 		}
 	}
 
-	private String author;
+	private String author = null;
 
-	private Date date;
+	private Date date = null;
 
 	private String message = "";
 
-	private Revision revision;
+	private Revision revision = null;
 
 	LogImpl() {
 		// prevent direct instantiation

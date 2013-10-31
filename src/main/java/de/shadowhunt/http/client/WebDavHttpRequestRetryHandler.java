@@ -78,6 +78,6 @@ public class WebDavHttpRequestRetryHandler extends DefaultHttpRequestRetryHandle
 	protected boolean handleAsIdempotent(final HttpRequest request) {
 		final String method = request.getRequestLine().getMethod().toUpperCase(Locale.US);
 		final Boolean b = idempotentMethods.get(method);
-		return (b != null) && b.booleanValue();
+		return (b != null) && b;
 	}
 }

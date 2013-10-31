@@ -54,7 +54,7 @@ public class RepositoryCache {
 
 	private Revision headRevision = null;
 
-	final AbstractBaseRepository repository;
+	protected final AbstractBaseRepository repository;
 
 	public RepositoryCache(final AbstractBaseRepository repository) {
 		this.repository = repository;

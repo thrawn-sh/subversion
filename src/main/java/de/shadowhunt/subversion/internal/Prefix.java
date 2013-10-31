@@ -32,9 +32,9 @@ import de.shadowhunt.subversion.Version;
 
 class Prefix {
 
-	static class PrefixHandler extends BasicHandler {
+	private static class PrefixHandler extends BasicHandler {
 
-		private Resource prefix;
+		private Resource prefix = null;
 
 		private final Version version;
 
