@@ -19,6 +19,8 @@
  */
 package de.shadowhunt.subversion;
 
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -30,6 +32,8 @@ public final class Resource implements Comparable<Resource> {
 	 * Represents the base {@link Resource} in the repository
 	 */
 	public static final Resource ROOT = new Resource("");
+
+	private static final Pattern pathPattern = Pattern.compile("/");
 
 	/**
 	 * Create a new {@link Resource} instance for the given value
@@ -44,7 +48,7 @@ public final class Resource implements Comparable<Resource> {
 		}
 
 		final StringBuilder sb = new StringBuilder();
-		for (final String segment : path.split("/")) {
+		for (final String segment : pathPattern.split(path)) {
 			if (!StringUtils.isEmpty(segment)) {
 				sb.append('/');
 				sb.append(segment);
@@ -122,7 +126,7 @@ public final class Resource implements Comparable<Resource> {
 
 	public Resource subResource(final int begin) {
 		final StringBuilder sb = new StringBuilder();
-		final String[] segments = value.split("/");
+		final String[] segments = pathPattern.split(value);
 		for (int i = begin; i < segments.length; i++) {
 			sb.append('/');
 			sb.append(segments[i]);

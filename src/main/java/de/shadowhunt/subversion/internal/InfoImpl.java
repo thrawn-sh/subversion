@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -44,6 +45,8 @@ import de.shadowhunt.subversion.SubversionException;
  * Container that holds all status information for a single revision of a resource
  */
 public final class InfoImpl implements Info {
+
+	private static final Pattern pathPattern = Pattern.compile("/");
 
 	private static class SubversionInfoHandler extends BasicHandler {
 
@@ -91,7 +94,7 @@ public final class InfoImpl implements Info {
 
 			if (checkedin && "href".equals(name)) {
 				final String text = getText();
-				final String[] parts = text.split("/");
+				final String[] parts = pathPattern.split(text);
 				final int version = Integer.parseInt(parts[3 + 2]); // prefix + $svn + bc/vrv + VERSION);
 
 				current.setRevision(Revision.create(version));

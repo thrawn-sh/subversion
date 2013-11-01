@@ -20,6 +20,7 @@
 package de.shadowhunt.subversion.internal;
 
 import java.io.InputStream;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.SAXParser;
 
@@ -31,6 +32,8 @@ import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Version;
 
 class Prefix {
+
+	private static final Pattern pathPattern = Pattern.compile("/");
 
 	private static class PrefixHandler extends BasicHandler {
 
@@ -51,7 +54,7 @@ class Prefix {
 					final String text = getText();
 					// .../${svn}/act/
 					//      ^^^^^^ <- prefix
-					final String[] segments = text.split("/");
+					final String[] segments = pathPattern.split(text);
 					prefix = Resource.create(segments[segments.length - 2]);
 					return;
 				}
