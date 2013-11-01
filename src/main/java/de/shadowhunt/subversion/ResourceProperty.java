@@ -73,6 +73,7 @@ public final class ResourceProperty {
 	 *
 	 * @param properties {@link ResourceProperty} that shall be filtered
 	 * @param type {@link Type} that all returned {@link ResourceProperty} shall belong to
+	 *
 	 * @return filtered {@link ResourceProperty} only containing {@link ResourceProperty} of the requested Type
 	 */
 	public static ResourceProperty[] filterByType(final Type type, final ResourceProperty... properties) {
@@ -91,6 +92,7 @@ public final class ResourceProperty {
 	 *
 	 * @param properties {@link ResourceProperty} that shall be filtered
 	 * @param type {@link Type} that all returned {@link ResourceProperty} shall *NOT* belong to
+	 *
 	 * @return filtered {@link ResourceProperty} only containing {@link ResourceProperty} *NOT* of the requested Type
 	 */
 	public static ResourceProperty[] filterOutByType(final Type type, final ResourceProperty... properties) {

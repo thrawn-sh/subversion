@@ -22,7 +22,7 @@ public class RepositoryCache {
 		}
 
 		@Override
-		public boolean equals(final Object o) {
+		public boolean equals(Object o) {
 			if (this == o) {
 				return true;
 			}
@@ -30,7 +30,7 @@ public class RepositoryCache {
 				return false;
 			}
 
-			final Key key = (Key) o;
+			Key key = (Key) o;
 
 			if (!resource.equals(key.resource)) {
 				return false;
@@ -45,7 +45,7 @@ public class RepositoryCache {
 		@Override
 		public int hashCode() {
 			int result = resource.hashCode();
-			result = (31 * result) + revision.hashCode();
+			result = 31 * result + revision.hashCode();
 			return result;
 		}
 	}

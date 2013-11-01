@@ -31,7 +31,7 @@ import de.shadowhunt.subversion.SubversionException;
 
 public final class Resolve {
 
-	static class ResolveHandler extends BasicHandler {
+	private static class ResolveHandler extends BasicHandler {
 
 		private Resolve entry = null;
 

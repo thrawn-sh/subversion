@@ -116,6 +116,7 @@ public interface Repository {
 	 *
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
 	 * @param revision the {@link Revision} of the resource to retrieve
+	 *
 	 * @return {@link Info} for the resource
 	 */
 	Info info(Resource resource, Revision revision);
@@ -126,6 +127,7 @@ public interface Repository {
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
 	 * @param revision the {@link Revision} of the resource to retrieve
 	 * @param depth whether to retrieve only for the given resource, its children or only part of its children depending on the value of {@link Depth}
+	 *
 	 * @return {@link Set} of {@link Info} for the resource and its child resources (depending on depth parameter)
 	 */
 	Set<Info> list(Resource resource, Revision revision, Depth depth);
