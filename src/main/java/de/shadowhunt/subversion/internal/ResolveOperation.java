@@ -38,7 +38,7 @@ public class ResolveOperation extends AbstractOperation<Resource> {
 
 	private final RepositoryConfig config;
 
-	private final boolean reportNonExisitingResources;
+	private final boolean reportNonExistingResources;
 
 	private final Resource resource;
 
@@ -46,13 +46,13 @@ public class ResolveOperation extends AbstractOperation<Resource> {
 
 	private final Revision expected;
 
-	public ResolveOperation(final URI repository, final Resource resource, final Revision revision, final Revision expected, final RepositoryConfig config, final boolean reportNonExisitingResources) {
+	public ResolveOperation(final URI repository, final Resource resource, final Revision revision, final Revision expected, final RepositoryConfig config, final boolean reportNonExistingResources) {
 		super(repository);
 		this.resource = resource;
 		this.revision = revision;
 		this.expected = expected;
 		this.config = config;
-		this.reportNonExisitingResources = reportNonExisitingResources;
+		this.reportNonExistingResources = reportNonExistingResources;
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class ResolveOperation extends AbstractOperation<Resource> {
 
 	@Override
 	protected Resource processResponse(final HttpResponse response) {
-		if (reportNonExisitingResources) {
+		if (reportNonExistingResources) {
 			check(response, HttpStatus.SC_OK);
 		} else {
 			check(response, HttpStatus.SC_OK, HttpStatus.SC_NOT_FOUND);
