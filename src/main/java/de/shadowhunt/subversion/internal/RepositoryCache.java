@@ -62,7 +62,7 @@ public class RepositoryCache {
 		this.repository = repository;
 	}
 
-	private AbstractBaseRepository repository;
+	private AbstractBaseRepository repository = null;
 
 	public RepositoryCache() {
 		// nothing to do
