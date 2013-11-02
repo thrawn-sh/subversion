@@ -29,32 +29,31 @@ import org.apache.http.util.EntityUtils;
 
 import de.shadowhunt.http.client.methods.DavTemplateRequest;
 import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.internal.AbstractOperation;
 import de.shadowhunt.subversion.internal.TransactionImpl;
 import de.shadowhunt.subversion.internal.util.URIUtils;
 
-public class CreateTransactionOperation extends AbstractOperation<Transaction> {
+public class CreateTransactionOperation extends AbstractOperation<TransactionImpl> {
 
-	private final Repository instance;
+	private final Resource resource;
 
 	private final UUID transactionId = UUID.randomUUID();
 
-	public CreateTransactionOperation(final URI repository, final Repository instance) {
+	public CreateTransactionOperation(final URI repository, final Resource resource) {
 		super(repository);
-		this.instance = instance;
+		this.resource = resource;
 	}
 
 	@Override
 	protected HttpUriRequest createRequest() {
-		final URI uri = URIUtils.createURI(repository, Resource.create("/!svn/act/" + transactionId));
+		final URI uri = URIUtils.createURI(repository, resource, Resource.create(transactionId.toString()));
 		return new DavTemplateRequest("MKACTIVITY", uri);
 	}
 
 	@Override
-	protected Transaction processResponse(final HttpResponse response) {
+	protected TransactionImpl processResponse(final HttpResponse response) {
 		check(response, HttpStatus.SC_CREATED);
 		EntityUtils.consumeQuietly(response.getEntity());
-		return new TransactionImpl(instance, transactionId.toString());
+		return new TransactionImpl(transactionId.toString());
 	}
 }

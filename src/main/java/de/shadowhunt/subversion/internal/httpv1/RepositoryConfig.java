@@ -33,6 +33,8 @@ public class RepositoryConfig implements de.shadowhunt.subversion.internal.Repos
 
 	private final Resource prefix;
 
+	private static final Resource REGISTER_TRANSACTION = Resource.create("/vcc/default");
+
 	public RepositoryConfig() {
 		this(DEFAULT_PREFIX);
 	}
@@ -53,14 +55,28 @@ public class RepositoryConfig implements de.shadowhunt.subversion.internal.Repos
 	}
 
 	@Override
-	public Resource getPrefix() {
-		return prefix;
+	public Resource getRegisterResource(final Resource resource, final Revision revision) {
+		assert (!Revision.HEAD.equals(revision)) : "must not be HEAD revision";
+		final Resource suffix = Resource.create("/ver/" + revision + '/' + resource);
+		return prefix.append(suffix);
+	}
+
+	@Override
+	public Resource getRegisterTransactionResource(final Transaction transaction) {
+		return prefix.append(REGISTER_TRANSACTION);
+	}
+
+	@Override
+	public Resource getCreateTransactionResource() {
+		return prefix.append(CREATE_TRANSACTION);
 	}
 
 	@Override
 	public Version getProtocolVersion() {
 		return Version.HTTPv1;
 	}
+
+	private static final Resource CREATE_TRANSACTION = Resource.create("act");
 
 	@Override
 	public Resource getTransactionResource(final Transaction transaction) {
@@ -69,9 +85,9 @@ public class RepositoryConfig implements de.shadowhunt.subversion.internal.Repos
 	}
 
 	@Override
-	public Resource getVersionedResource(final Revision revision) {
+	public Resource getVersionedResource(final Resource resource, final Revision revision) {
 		assert (!Revision.HEAD.equals(revision)) : "must not be HEAD revision";
-		final Resource suffix = Resource.create("/bc/" + revision);
+		final Resource suffix = Resource.create("/bc/" + revision + '/' + resource);
 		return prefix.append(suffix);
 	}
 

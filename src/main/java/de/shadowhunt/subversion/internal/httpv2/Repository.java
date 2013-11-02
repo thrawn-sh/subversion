@@ -31,6 +31,7 @@ import de.shadowhunt.subversion.internal.AbstractBaseRepository;
 import de.shadowhunt.subversion.internal.CommitMessageOperation;
 import de.shadowhunt.subversion.internal.MergeOperation;
 import de.shadowhunt.subversion.internal.RepositoryConfig;
+import de.shadowhunt.subversion.internal.TransactionImpl;
 
 /**
  * {@link Repository} supports subversion servers of version 1.7.X
@@ -63,8 +64,11 @@ public class Repository extends AbstractBaseRepository {
 
 	@Override
 	public Transaction createTransaction() {
-		final CreateTransactionOperation cto = new CreateTransactionOperation(repository, this);
-		return cto.execute(client, context);
+		final Resource resource = config.getCreateTransactionResource();
+		final CreateTransactionOperation cto = new CreateTransactionOperation(repository, resource);
+		final TransactionImpl transaction = cto.execute(client, context);
+		transaction.setRepository(this);
+		return transaction;
 	}
 
 	@Override

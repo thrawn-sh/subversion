@@ -32,7 +32,7 @@ import de.shadowhunt.subversion.Resource;
 
 public class MergeOperation extends AbstractVoidOperation {
 
-	private static final int PREFIX = 4; // /$svn/{baseline}/{id}/
+	private static final int PREFIX = 4; // /$svn/{baseline}/{id}/ FIXME
 
 	private final String lock;
 
@@ -71,5 +71,4 @@ public class MergeOperation extends AbstractVoidOperation {
 		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
 		return request;
 	}
-
 }

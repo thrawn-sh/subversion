@@ -34,8 +34,7 @@ public final class TransactionImpl extends RepositoryCache implements Transactio
 
 	private final String id;
 
-	public TransactionImpl(final AbstractBaseRepository repository, final String id) {
-		super(repository);
+	public TransactionImpl(final String id) {
 		this.id = id;
 	}
 
@@ -69,7 +68,7 @@ public final class TransactionImpl extends RepositoryCache implements Transactio
 
 	@Override
 	public UUID getRepositoryId() {
-		return repository.getRepositoryId();
+		return getRepository().getRepositoryId();
 	}
 
 	@Override

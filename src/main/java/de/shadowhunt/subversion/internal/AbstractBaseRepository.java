@@ -80,6 +80,8 @@ public abstract class AbstractBaseRepository implements Repository {
 
 	@Override
 	public void add(final Transaction transaction, final Resource resource, final boolean parents, final InputStream content) {
+		validateTransaction(transaction);
+
 		if (content == null) {
 			throw new IllegalArgumentException("content can not be null");
 		}
@@ -88,8 +90,11 @@ public abstract class AbstractBaseRepository implements Repository {
 			mkdir(transaction, resource.getParent(), parents);
 		}
 
+		final RepositoryCache cache = fromTransaction(transaction);
+		final Info info = info0(cache, resource, Revision.HEAD, false);
+		final String lockToken = (info == null) ? null : info.getLockToken();
 		final Resource uploadResource = config.getWorkingResource(transaction).append(resource);
-		final UploadOperation operation = new UploadOperation(repository, uploadResource, null, content); // FIXME locktoken
+		final UploadOperation operation = new UploadOperation(repository, uploadResource, lockToken, content);
 		operation.execute(client, context);
 		transaction.register(resource, Status.ADDED);
 	}
@@ -102,7 +107,7 @@ public abstract class AbstractBaseRepository implements Repository {
 
 		final RepositoryCache cache = fromTransaction(transaction);
 		final Info info = info0(cache, srcResource, srcRevision, true);
-		final Resource s = config.getVersionedResource(info.getRevision()).append(info.getResource());
+		final Resource s = config.getVersionedResource(info.getResource(), info.getRevision());
 		final Resource t = config.getWorkingResource(transaction).append(targetResource);
 
 		final CopyOperation operation = new CopyOperation(repository, s, t);
@@ -330,7 +335,7 @@ public abstract class AbstractBaseRepository implements Repository {
 			throw new SubversionException(resource.getValue());
 		}
 
-		final Resource expectedResource = config.getVersionedResource(revision).append(resource);
+		final Resource expectedResource = config.getVersionedResource(resource, revision);
 		if (!resolve) {
 			return expectedResource;
 		}

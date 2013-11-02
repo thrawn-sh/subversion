@@ -33,15 +33,12 @@ import de.shadowhunt.subversion.internal.CommitMessageOperation;
 import de.shadowhunt.subversion.internal.MergeOperation;
 import de.shadowhunt.subversion.internal.RepositoryCache;
 import de.shadowhunt.subversion.internal.RepositoryConfig;
+import de.shadowhunt.subversion.internal.TransactionImpl;
 
 /**
  * {@link Repository} supports subversion servers of version 1.6.X
  */
 public class Repository extends AbstractBaseRepository {
-
-	private static final String PREFIX_VCC = "/vcc/default";
-
-	private static final String PREFIX_VER = "/ver/";
 
 	public Repository(final URI repository, final RepositoryConfig config, final HttpClient client, final HttpContext context) {
 		super(repository, config, client, context);
@@ -71,14 +68,21 @@ public class Repository extends AbstractBaseRepository {
 
 	@Override
 	public Transaction createTransaction() {
-		final CreateTransactionOperation cto = new CreateTransactionOperation(repository, this);
-		final Transaction transaction = cto.execute(client, context);
+		final TransactionImpl transaction;
 
-		// transaction resource must be explicitly registered
-		final Resource resource = config.getPrefix().append(Resource.create(PREFIX_VCC));
-		final Resource transactionResource = config.getTransactionResource(transaction);
-		final CheckoutOperation co = new CheckoutOperation(repository, resource, transactionResource);
-		co.execute(client, context);
+		{ // create transaction
+			final Resource resource = config.getCreateTransactionResource();
+			final CreateTransactionOperation cto = new CreateTransactionOperation(repository, resource);
+			transaction = cto.execute(client, context);
+			transaction.setRepository(this);
+		}
+
+		{// transaction resource must be explicitly registered
+			final Resource resource = config.getRegisterTransactionResource(transaction);
+			final Resource transactionResource = config.getTransactionResource(transaction);
+			final CheckoutOperation co = new CheckoutOperation(repository, resource, transactionResource);
+			co.execute(client, context);
+		}
 
 		return transaction;
 	}
@@ -91,7 +95,7 @@ public class Repository extends AbstractBaseRepository {
 		}
 
 		final Revision concreteRevision = cache.getConcreteRevision(revision);
-		final Resource existingResource = config.getPrefix().append(Resource.create(PREFIX_VER + concreteRevision)).append(resource);
+		final Resource existingResource = config.getRegisterResource(resource, concreteRevision);
 		final Resource transactionResource = config.getTransactionResource(transaction);
 		final CheckoutOperation co = new CheckoutOperation(repository, existingResource, transactionResource);
 		co.execute(client, context);

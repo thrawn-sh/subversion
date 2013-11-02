@@ -31,43 +31,41 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 
 import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.internal.AbstractOperation;
 import de.shadowhunt.subversion.internal.TransactionImpl;
 import de.shadowhunt.subversion.internal.util.URIUtils;
 
-public class CreateTransactionOperation extends AbstractOperation<Transaction> {
+public class CreateTransactionOperation extends AbstractOperation<TransactionImpl> {
 
 	private static final HttpEntity entity;
 
 	private static final String HEADER_NAME = "SVN-Txn-Name";
+
+	private final Resource resource;
 
 	static {
 		final ContentType contentType = ContentType.create("application/vnd.svn-skel");
 		entity = new StringEntity("( create-txn )", contentType);
 	}
 
-	private final Repository instance;
-
-	public CreateTransactionOperation(final URI repository, final Repository instance) {
+	public CreateTransactionOperation(final URI repository, final Resource resource) {
 		super(repository);
-		this.instance = instance;
+		this.resource = resource;
 	}
 
 	@Override
 	protected HttpUriRequest createRequest() {
-		final URI uri = URIUtils.createURI(repository, Resource.create("/!svn/me"));
+		final URI uri = URIUtils.createURI(repository, resource);
 		final HttpPost request = new HttpPost(uri);
 		request.setEntity(entity);
 		return request;
 	}
 
 	@Override
-	protected Transaction processResponse(final HttpResponse response) {
+	protected TransactionImpl processResponse(final HttpResponse response) {
 		check(response, HttpStatus.SC_CREATED);
 		final String transactionId = response.getFirstHeader(HEADER_NAME).getValue();
 		EntityUtils.consumeQuietly(response.getEntity());
-		return new TransactionImpl(instance, transactionId);
+		return new TransactionImpl(transactionId);
 	}
-
 }

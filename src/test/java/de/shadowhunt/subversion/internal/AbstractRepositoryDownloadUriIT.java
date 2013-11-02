@@ -82,7 +82,7 @@ public abstract class AbstractRepositoryDownloadUriIT {
 		final Revision revision = Revision.create(22);
 
 		final AbstractBaseRepository ar = (AbstractBaseRepository) repository;
-		final URI expected = URIUtils.createURI(repository.getBaseUri(), ar.config.getVersionedResource(revision), resource);
+		final URI expected = URIUtils.createURI(repository.getBaseUri(), ar.config.getVersionedResource(resource, revision));
 		final String message = createMessage(resource, revision);
 		Assert.assertEquals(message, expected, repository.downloadURI(resource, revision));
 	}
@@ -93,7 +93,7 @@ public abstract class AbstractRepositoryDownloadUriIT {
 		final Revision revision = Revision.create(25);
 
 		final AbstractBaseRepository ar = (AbstractBaseRepository) repository;
-		final URI expected = URIUtils.createURI(repository.getBaseUri(), ar.config.getVersionedResource(revision), resource);
+		final URI expected = URIUtils.createURI(repository.getBaseUri(), ar.config.getVersionedResource(resource, revision));
 		final String message = createMessage(resource, revision);
 		Assert.assertEquals(message, expected, repository.downloadURI(resource, revision));
 	}
@@ -104,7 +104,7 @@ public abstract class AbstractRepositoryDownloadUriIT {
 		final Revision revision = Revision.create(27);
 
 		final AbstractBaseRepository ar = (AbstractBaseRepository) repository;
-		final URI expected = URIUtils.createURI(repository.getBaseUri(), ar.config.getVersionedResource(revision), resource);
+		final URI expected = URIUtils.createURI(repository.getBaseUri(), ar.config.getVersionedResource(resource, revision));
 		final String message = createMessage(resource, revision);
 		Assert.assertEquals(message, expected, repository.downloadURI(resource, revision));
 	}

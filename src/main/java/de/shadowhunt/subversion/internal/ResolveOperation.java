@@ -87,7 +87,7 @@ public class ResolveOperation extends AbstractOperation<Resource> {
 		final InputStream in = getContent(response);
 		try {
 			final Resolve resolve = Resolve.read(in);
-			return config.getVersionedResource(expected).append(resolve.getResource());
+			return config.getVersionedResource(resolve.getResource(), expected);
 		} finally {
 			IOUtils.closeQuietly(in);
 		}

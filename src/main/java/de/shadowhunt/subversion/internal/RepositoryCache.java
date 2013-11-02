@@ -22,7 +22,7 @@ public class RepositoryCache {
 		}
 
 		@Override
-		public boolean equals(Object o) {
+		public boolean equals(final Object o) {
 			if (this == o) {
 				return true;
 			}
@@ -30,7 +30,7 @@ public class RepositoryCache {
 				return false;
 			}
 
-			Key key = (Key) o;
+			final Key key = (Key) o;
 
 			if (!resource.equals(key.resource)) {
 				return false;
@@ -54,7 +54,19 @@ public class RepositoryCache {
 
 	private Revision headRevision = null;
 
-	protected final AbstractBaseRepository repository;
+	public AbstractBaseRepository getRepository() {
+		return repository;
+	}
+
+	public void setRepository(final AbstractBaseRepository repository) {
+		this.repository = repository;
+	}
+
+	private AbstractBaseRepository repository;
+
+	public RepositoryCache() {
+		// nothing to do
+	}
 
 	public RepositoryCache(final AbstractBaseRepository repository) {
 		this.repository = repository;
