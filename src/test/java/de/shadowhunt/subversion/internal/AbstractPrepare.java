@@ -78,11 +78,10 @@ public class AbstractPrepare {
 
 	@Test
 	public void pullCurrentDumpData() throws Exception {
-		final boolean deleted = FileUtils.deleteQuietly(base);
-		Assert.assertTrue(base + " could not be deleted", deleted);
+		FileUtils.deleteQuietly(base);
 
-		final boolean creaded = base.mkdirs();
-		Assert.assertTrue(base + " could not be created", creaded);
+		final boolean created = base.mkdirs();
+		Assert.assertTrue(base + " could not be created", created);
 
 		final File zip = new File(base, "dump.zip");
 		FileUtils.copyURLToFile(dumpUri.toURL(), zip);
