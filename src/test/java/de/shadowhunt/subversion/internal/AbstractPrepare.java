@@ -23,7 +23,7 @@ public class AbstractPrepare {
 		this.base = base;
 	}
 
-	private static void extractArchive(final File zip, final File prefix) throws Exception {
+	private static boolean extractArchive(final File zip, final File prefix) throws Exception {
 		final ZipFile zipFile = new ZipFile(zip);
 		final Enumeration<? extends ZipEntry> enu = zipFile.entries();
 		while (enu.hasMoreElements()) {
@@ -54,6 +54,7 @@ public class AbstractPrepare {
 
 		}
 		zipFile.close();
+		return true;
 	}
 
 	@Test
@@ -66,8 +67,9 @@ public class AbstractPrepare {
 
 		final File zip = new File(base, "dump.zip");
 		FileUtils.copyURLToFile(dumpUri.toURL(), zip);
-		Assert.assertTrue("could download " + zip, zip.isFile());
+		Assert.assertTrue("could not download " + zip, zip.isFile());
 
-		extractArchive(zip, base);
+		final boolean extracted = extractArchive(zip, base);
+		Assert.assertTrue("could not extact " + zip, extracted);
 	}
 }
