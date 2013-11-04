@@ -5,8 +5,7 @@ LOCAL="${TMP_DIR}/local"
 DUMP="${TMP_DIR}/dump"
 BASE="${LOCAL}/trunk/00000000-0000-0000-0000-000000000000"
 
-SVN_DIR="${TMP_DIR}/svn"
-REPO="${SVN_DIR}/test"
+REPO="${TMP_DIR}/svn"
 
 create_file() { #{{{1
 	local file="${1}"
@@ -90,14 +89,16 @@ commit() { #{{{1
 		if [ "${target}" = "${DUMP}/${version}" ]; then
 			target="${target}/ROOT"
 		fi
-		svn log                --xml "${src}" | xmllint --format - | sed "s:${SVN_DIR}::g" | sed -E "s:[0-9]{3}Z</date>:Z</date>:g" > "${target}.log"
-		svn info               --xml "${src}" | xmllint --format - | sed "s:${SVN_DIR}::g" | sed -E "s:[0-9]{3}Z</date>:Z</date>:g" > "${target}.info"
-		svn proplist --verbose --xml "${src}" | xmllint --format -                                                                  > "${target}.proplist"
+
+		local rsrc=`echo "${src}" | sed "s:^${LOCAL}:file\://${REPO}:g"`
+		svn log                --xml "${rsrc}" | xmllint --format - | sed "s:${REPO}::g" | sed -E "s:[0-9]{3}Z</date>:Z</date>:g" > "${target}.log"
+		svn info               --xml "${rsrc}" | xmllint --format - | sed "s:${REPO}::g" | sed -E "s:[0-9]{3}Z</date>:Z</date>:g" > "${target}.info"
+		svn proplist --verbose --xml "${rsrc}" | xmllint --format - | sed "s:${REPO}::g"                                          > "${target}.proplist"
 	done
 } #}}}1
 
 ### init {{{1
-mkdir -p "${SVN_DIR}" "${DUMP}"
+mkdir -p "${REPO}" "${DUMP}"
 
 svnadmin create "${REPO}"
 svn checkout --quiet "file://${REPO}" "${LOCAL}"
@@ -158,11 +159,10 @@ for i in dump svn; do
 	sha1sum "${zip_file}" > "${zip_file}.sha1"
 done
 
-mv dump.zip* /var/www/
-mv svn.zip*  /var/www/
-
-mv svn                     /var/www/svn/test
-chown -R www-data:www-data /var/www/svn/test
+chown -R www-data:www-data ${REPO}
+mv svn test
 
 ### cleanup {{{1
-rm -rf "${TMP_DIR}"
+rm -rf        /tmp/svn
+mv ${TMP_DIR} /tmp/svn
+chmod 0755    /tmp/svn
