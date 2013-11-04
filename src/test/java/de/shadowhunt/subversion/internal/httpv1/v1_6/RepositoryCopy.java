@@ -17,13 +17,13 @@
  * limitations under the License.
  * #L%
  */
-package de.shadowhunt.subversion.internal.httpv1;
+package de.shadowhunt.subversion.internal.httpv1.v1_6;
 
-import de.shadowhunt.subversion.internal.AbstractRepositoryMkdirIT;
+import de.shadowhunt.subversion.internal.AbstractRepositoryCopyIT;
 
-public class V1_6RepositoryMkdir extends AbstractRepositoryMkdirIT {
+public class RepositoryCopy extends AbstractRepositoryCopyIT {
 
-	public V1_6RepositoryMkdir() {
-		super(V1_6Helper.getRepositoryA(), V1_6Helper.getTestId());
+	public RepositoryCopy() {
+		super(Helper.getRepositoryA(), Helper.getTestId());
 	}
 }

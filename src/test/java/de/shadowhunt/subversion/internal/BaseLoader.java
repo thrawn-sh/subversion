@@ -27,9 +27,13 @@ abstract class BaseLoader {
 
 	protected static Revision resolvedHeadRevision;
 
-	protected static final File ROOT = new File("src/test/resources/dump");
+	protected final File root;
 
-	protected static Revision resolve(final Revision revision) {
+	protected BaseLoader(final File root) {
+		this.root = root;
+	}
+
+	protected Revision resolve(final Revision revision) {
 		if (Revision.HEAD.equals(revision)) {
 			synchronized (revision) {
 				if (resolvedHeadRevision == null) {
@@ -41,9 +45,9 @@ abstract class BaseLoader {
 		return revision;
 	}
 
-	private static Revision resolveHead() {
+	private Revision resolveHead() {
 		Revision revision = Revision.EMPTY;
-		for (final File child : ROOT.listFiles()) {
+		for (final File child : root.listFiles()) {
 			if (child.isDirectory()) {
 				final String name = child.getName();
 				final Revision current = Revision.create(Integer.parseInt(name));

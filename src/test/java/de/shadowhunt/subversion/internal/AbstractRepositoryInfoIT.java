@@ -19,6 +19,8 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.io.File;
+
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -43,8 +45,11 @@ public abstract class AbstractRepositoryInfoIT {
 
 	private final Repository repository;
 
-	protected AbstractRepositoryInfoIT(final Repository repository) {
+	private final InfoLoader infoLoader;
+
+	protected AbstractRepositoryInfoIT(final Repository repository, final File root) {
 		this.repository = repository;
+		infoLoader = new InfoLoader(root);
 	}
 
 	private String createMessage(final Resource resource, final Revision revision) {
@@ -74,7 +79,7 @@ public abstract class AbstractRepositoryInfoIT {
 		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
 		final Revision revision = Revision.HEAD;
 
-		final Info expected = InfoLoader.load(resource, revision);
+		final Info expected = infoLoader.load(resource, revision);
 		final String message = createMessage(resource, revision);
 		assertEquals(message, expected, repository.info(resource, revision));
 	}
@@ -84,7 +89,7 @@ public abstract class AbstractRepositoryInfoIT {
 		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
 		final Revision revision = Revision.create(48);
 
-		final Info expected = InfoLoader.load(resource, revision);
+		final Info expected = infoLoader.load(resource, revision);
 		final String message = createMessage(resource, revision);
 		assertEquals(message, expected, repository.info(resource, revision));
 	}
@@ -94,7 +99,7 @@ public abstract class AbstractRepositoryInfoIT {
 		final Resource resource = PREFIX.append(Resource.create("/folder"));
 		final Revision revision = Revision.HEAD;
 
-		final Info expected = InfoLoader.load(resource, revision);
+		final Info expected = infoLoader.load(resource, revision);
 		final String message = createMessage(resource, revision);
 		assertEquals(message, expected, repository.info(resource, revision));
 	}
@@ -104,7 +109,7 @@ public abstract class AbstractRepositoryInfoIT {
 		final Resource resource = PREFIX.append(Resource.create("/folder"));
 		final Revision revision = Revision.create(56);
 
-		final Info expected = InfoLoader.load(resource, revision);
+		final Info expected = infoLoader.load(resource, revision);
 		final String message = createMessage(resource, revision);
 		assertEquals(message, expected, repository.info(resource, revision));
 	}
@@ -114,7 +119,7 @@ public abstract class AbstractRepositoryInfoIT {
 		final Resource resource = PREFIX.append(Resource.create("/file_copy.txt"));
 		final Revision revision = Revision.create(51);
 
-		final Info expected = InfoLoader.load(resource, revision);
+		final Info expected = infoLoader.load(resource, revision);
 		final String message = createMessage(resource, revision);
 		assertEquals(message, expected, repository.info(resource, revision));
 	}
@@ -124,7 +129,7 @@ public abstract class AbstractRepositoryInfoIT {
 		final Resource resource = PREFIX.append(Resource.create("/file_move.txt"));
 		final Revision revision = Revision.create(53);
 
-		final Info expected = InfoLoader.load(resource, revision);
+		final Info expected = infoLoader.load(resource, revision);
 		final String message = createMessage(resource, revision);
 		assertEquals(message, expected, repository.info(resource, revision));
 	}
@@ -134,7 +139,7 @@ public abstract class AbstractRepositoryInfoIT {
 		final Resource resource = PREFIX.append(Resource.create("/folder_copy"));
 		final Revision revision = Revision.create(57);
 
-		final Info expected = InfoLoader.load(resource, revision);
+		final Info expected = infoLoader.load(resource, revision);
 		final String message = createMessage(resource, revision);
 		assertEquals(message, expected, repository.info(resource, revision));
 	}
@@ -144,7 +149,7 @@ public abstract class AbstractRepositoryInfoIT {
 		final Resource resource = PREFIX.append(Resource.create("/folder_move"));
 		final Revision revision = Revision.create(59);
 
-		final Info expected = InfoLoader.load(resource, revision);
+		final Info expected = infoLoader.load(resource, revision);
 		final String message = createMessage(resource, revision);
 		assertEquals(message, expected, repository.info(resource, revision));
 	}

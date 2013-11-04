@@ -30,16 +30,18 @@ public final class ListLoader extends BaseLoader {
 		}
 	};
 
-	public static Set<Info> load(final Resource resource, final Revision revision, final Depth depth) throws Exception {
-		final File root = new File(ROOT, resolve(revision) + resource.getValue());
+	private final InfoLoader infoLoader;
+
+	public Set<Info> load(final Resource resource, final Revision revision, final Depth depth) throws Exception {
+		final File base = new File(root, resolve(revision) + resource.getValue());
 
 		final Set<Info> result = new TreeSet<Info>(Info.RESOURCE_COMPARATOR);
-		result.add(InfoLoader.load(resource, revision));
+		result.add(infoLoader.load(resource, revision));
 
-		if ((depth != Depth.EMPTY) && root.isDirectory()) {
+		if ((depth != Depth.EMPTY) && base.isDirectory()) {
 			final Depth childDepth = (depth == Depth.INFINITY) ? depth : Depth.EMPTY;
 
-			for (final File child : root.listFiles(NO_META)) {
+			for (final File child : base.listFiles(NO_META)) {
 				final Resource childResource = resource.append(Resource.create(child.getName()));
 				final Set<Info> childInfo = load(childResource, revision, childDepth);
 
@@ -60,7 +62,8 @@ public final class ListLoader extends BaseLoader {
 		return result;
 	}
 
-	private ListLoader() {
-		// prevent instantiation
+	ListLoader(final File root) {
+		super(root);
+		infoLoader = new InfoLoader(root);
 	}
 }

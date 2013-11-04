@@ -19,6 +19,7 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.io.File;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
@@ -49,8 +50,11 @@ public abstract class AbstractRepositoryDownloadIT {
 
 	private final Repository repository;
 
-	protected AbstractRepositoryDownloadIT(final Repository repository) {
+	private final DownloadLoader downloadLoader;
+
+	protected AbstractRepositoryDownloadIT(final Repository repository, final File root) {
 		this.repository = repository;
+		downloadLoader = new DownloadLoader(root);
 	}
 
 	private String createMessage(final Resource resource, final Revision revision) {
@@ -80,7 +84,7 @@ public abstract class AbstractRepositoryDownloadIT {
 		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
 		final Revision revision = Revision.HEAD;
 
-		final InputStream expected = DownloadLoader.load(resource, revision);
+		final InputStream expected = downloadLoader.load(resource, revision);
 		final String message = createMessage(resource, revision);
 		assertEquals(message, expected, repository.download(resource, revision));
 	}
@@ -90,7 +94,7 @@ public abstract class AbstractRepositoryDownloadIT {
 		final Resource resource = PREFIX.append(Resource.create("/file_delete.txt"));
 		final Revision revision = Revision.create(22);
 
-		final InputStream expected = DownloadLoader.load(resource, revision);
+		final InputStream expected = downloadLoader.load(resource, revision);
 		final String message = createMessage(resource, revision);
 		assertEquals(message, expected, repository.download(resource, revision));
 	}
@@ -100,7 +104,7 @@ public abstract class AbstractRepositoryDownloadIT {
 		final Resource resource = PREFIX.append(Resource.create("/file_copy.txt"));
 		final Revision revision = Revision.create(25);
 
-		final InputStream expected = DownloadLoader.load(resource, revision);
+		final InputStream expected = downloadLoader.load(resource, revision);
 		final String message = createMessage(resource, revision);
 		assertEquals(message, expected, repository.download(resource, revision));
 	}
@@ -110,7 +114,7 @@ public abstract class AbstractRepositoryDownloadIT {
 		final Resource resource = PREFIX.append(Resource.create("/file_move.txt"));
 		final Revision revision = Revision.create(27);
 
-		final InputStream expected = DownloadLoader.load(resource, revision);
+		final InputStream expected = downloadLoader.load(resource, revision);
 		final String message = createMessage(resource, revision);
 		assertEquals(message, expected, repository.download(resource, revision));
 	}

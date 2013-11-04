@@ -19,6 +19,7 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -54,8 +55,11 @@ public abstract class AbstractRepositoryListIT {
 
 	private final Repository repository;
 
-	protected AbstractRepositoryListIT(final Repository repository) {
+	private final ListLoader listLoader;
+
+	protected AbstractRepositoryListIT(final Repository repository, final File root) {
 		this.repository = repository;
+		listLoader = new ListLoader(root);
 	}
 
 	private String createMessage(final Resource resource, final Revision revision, final Depth depth) {
@@ -86,7 +90,7 @@ public abstract class AbstractRepositoryListIT {
 		final Revision revision = Revision.HEAD;
 
 		for (final Depth depth : Depth.values()) {
-			final Set<Info> expected = ListLoader.load(resource, revision, depth);
+			final Set<Info> expected = listLoader.load(resource, revision, depth);
 			final String message = createMessage(resource, revision, depth);
 			assertEquals(message, expected, repository.list(resource, revision, depth));
 		}
@@ -98,7 +102,7 @@ public abstract class AbstractRepositoryListIT {
 		final Revision revision = Revision.create(64);
 
 		for (final Depth depth : Depth.values()) {
-			final Set<Info> expected = ListLoader.load(resource, revision, depth);
+			final Set<Info> expected = listLoader.load(resource, revision, depth);
 			final String message = createMessage(resource, revision, depth);
 			assertEquals(message, expected, repository.list(resource, revision, depth));
 		}
@@ -110,7 +114,7 @@ public abstract class AbstractRepositoryListIT {
 		final Revision revision = Revision.HEAD;
 
 		for (final Depth depth : Depth.values()) {
-			final Set<Info> expected = ListLoader.load(resource, revision, depth);
+			final Set<Info> expected = listLoader.load(resource, revision, depth);
 			final String message = createMessage(resource, revision, depth);
 			assertEquals(message, expected, repository.list(resource, revision, depth));
 		}
@@ -122,7 +126,7 @@ public abstract class AbstractRepositoryListIT {
 		final Revision revision = Revision.create(72);
 
 		for (final Depth depth : Depth.values()) {
-			final Set<Info> expected = ListLoader.load(resource, revision, depth);
+			final Set<Info> expected = listLoader.load(resource, revision, depth);
 			final String message = createMessage(resource, revision, depth);
 			assertEquals(message, expected, repository.list(resource, revision, depth));
 		}
@@ -134,7 +138,7 @@ public abstract class AbstractRepositoryListIT {
 		final Revision revision = Revision.create(67);
 
 		for (final Depth depth : Depth.values()) {
-			final Set<Info> expected = ListLoader.load(resource, revision, depth);
+			final Set<Info> expected = listLoader.load(resource, revision, depth);
 			final String message = createMessage(resource, revision, depth);
 			assertEquals(message, expected, repository.list(resource, revision, depth));
 		}
@@ -146,7 +150,7 @@ public abstract class AbstractRepositoryListIT {
 		final Revision revision = Revision.create(69);
 
 		for (final Depth depth : Depth.values()) {
-			final Set<Info> expected = ListLoader.load(resource, revision, depth);
+			final Set<Info> expected = listLoader.load(resource, revision, depth);
 			final String message = createMessage(resource, revision, depth);
 			assertEquals(message, expected, repository.list(resource, revision, depth));
 		}
@@ -158,7 +162,7 @@ public abstract class AbstractRepositoryListIT {
 		final Revision revision = Revision.create(73);
 
 		for (final Depth depth : Depth.values()) {
-			final Set<Info> expected = ListLoader.load(resource, revision, depth);
+			final Set<Info> expected = listLoader.load(resource, revision, depth);
 			final String message = createMessage(resource, revision, depth);
 			assertEquals(message, expected, repository.list(resource, revision, depth));
 		}
@@ -170,7 +174,7 @@ public abstract class AbstractRepositoryListIT {
 		final Revision revision = Revision.create(75);
 
 		for (final Depth depth : Depth.values()) {
-			final Set<Info> expected = ListLoader.load(resource, revision, depth);
+			final Set<Info> expected = listLoader.load(resource, revision, depth);
 			final String message = createMessage(resource, revision, depth);
 			assertEquals(message, expected, repository.list(resource, revision, depth));
 		}
@@ -182,7 +186,7 @@ public abstract class AbstractRepositoryListIT {
 		final Revision revision = Revision.HEAD;
 		final Depth depth = Depth.INFINITY;
 
-		final Set<Info> expected = ListLoader.load(resource, revision, depth);
+		final Set<Info> expected = listLoader.load(resource, revision, depth);
 		final String message = createMessage(resource, revision, depth);
 		assertEquals(message, expected, repository.list(resource, revision, depth));
 	}

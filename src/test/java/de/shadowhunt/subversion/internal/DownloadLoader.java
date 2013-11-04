@@ -28,11 +28,11 @@ import de.shadowhunt.subversion.Revision;
 
 public final class DownloadLoader extends BaseLoader {
 
-	public static InputStream load(final Resource resource, final Revision revision) throws Exception {
-		return new FileInputStream(new File(ROOT, resolve(revision) + resource.getValue()));
+	public InputStream load(final Resource resource, final Revision revision) throws Exception {
+		return new FileInputStream(new File(root, resolve(revision) + resource.getValue()));
 	}
 
-	private DownloadLoader() {
-		// prevent instantiation
+	DownloadLoader(final File root) {
+		super(root);
 	}
 }

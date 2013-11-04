@@ -17,13 +17,13 @@
  * limitations under the License.
  * #L%
  */
-package de.shadowhunt.subversion.internal.httpv1;
+package de.shadowhunt.subversion.internal.httpv1.v1_6;
 
-import de.shadowhunt.subversion.internal.AbstractRepositoryExistsIT;
+import de.shadowhunt.subversion.internal.AbstractRepositoryAddIT;
 
-public class V1_6RepositoryExists extends AbstractRepositoryExistsIT {
+public class RepositoryAdd extends AbstractRepositoryAddIT {
 
-	public V1_6RepositoryExists() {
-		super(V1_6Helper.getRepositoryA());
+	public RepositoryAdd() {
+		super(Helper.getRepositoryA(), Helper.getTestId());
 	}
 }

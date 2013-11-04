@@ -109,7 +109,7 @@ public final class LogLoader extends BaseLoader {
 
 	public static final String SUFFIX = ".log";
 
-	public static List<Log> load(final Resource resource, final Revision start, final Revision end, final int limit) throws Exception {
+	public List<Log> load(final Resource resource, final Revision start, final Revision end, final int limit) throws Exception {
 		final Revision high;
 		final Revision low;
 		final boolean reverse;
@@ -123,7 +123,7 @@ public final class LogLoader extends BaseLoader {
 			reverse = true;
 		}
 
-		final File file = new File(ROOT, resolve(high) + resource.getValue() + SUFFIX);
+		final File file = new File(root, resolve(high) + resource.getValue() + SUFFIX);
 
 		final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
 		final LogHandler handler = new LogHandler();
@@ -149,7 +149,7 @@ public final class LogLoader extends BaseLoader {
 		return logs;
 	}
 
-	private LogLoader() {
-		// prevent instantiation
+	LogLoader(final File root) {
+		super(root);
 	}
 }

@@ -1,5 +1,6 @@
-package de.shadowhunt.subversion.internal.httpv1;
+package de.shadowhunt.subversion.internal.httpv1.v1_6;
 
+import java.io.File;
 import java.net.URI;
 import java.util.UUID;
 
@@ -15,13 +16,15 @@ import org.apache.http.protocol.HttpContext;
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.RepositoryFactory;
 
-final class V1_6Helper {
+final class Helper {
 
 	private static final String PASSWORD = "svnpass";
 
+	private static final URI REPOSITORY_URI = URI.create("http://10.155.50.102/svn-basic/test");
+
 	private static Repository repositoryA, repositoryB;
 
-	private static final URI REPOSITORY_URI = URI.create("http://10.155.50.102/svn-basic/test");
+	private static final File ROOT = new File("src/test/resources/v1_6/dump");
 
 	private static final UUID TEST_ID = UUID.randomUUID();
 
@@ -59,6 +62,10 @@ final class V1_6Helper {
 
 		}
 		return repositoryB;
+	}
+
+	static File getRoot() {
+		return ROOT;
 	}
 
 	static UUID getTestId() {

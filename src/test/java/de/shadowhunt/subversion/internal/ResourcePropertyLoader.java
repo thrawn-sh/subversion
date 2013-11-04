@@ -86,8 +86,8 @@ public final class ResourcePropertyLoader extends BaseLoader {
 
 	public static final String SUFFIX = ".proplist";
 
-	public static ResourceProperty[] load(final Resource resource, final Revision revision) throws Exception {
-		final File file = new File(ROOT, resolve(revision) + resource.getValue() + SUFFIX);
+	public ResourceProperty[] load(final Resource resource, final Revision revision) throws Exception {
+		final File file = new File(root, resolve(revision) + resource.getValue() + SUFFIX);
 
 		final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
 		final ResourcePropertyHandler handler = new ResourcePropertyHandler();
@@ -97,7 +97,7 @@ public final class ResourcePropertyLoader extends BaseLoader {
 		return properties.toArray(new ResourceProperty[properties.size()]);
 	}
 
-	private ResourcePropertyLoader() {
-		// prevent instantiation
+	ResourcePropertyLoader(final File root) {
+		super(root);
 	}
 }

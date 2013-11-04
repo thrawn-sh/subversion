@@ -74,8 +74,8 @@ public final class InfoLoader extends BaseLoader {
 
 	public static final String SUFFIX = ".info";
 
-	public static Info load(final Resource resource, final Revision revision) throws Exception {
-		final File infoFile = new File(ROOT, resolve(revision) + resource.getValue() + SUFFIX);
+	public Info load(final Resource resource, final Revision revision) throws Exception {
+		final File infoFile = new File(root, resolve(revision) + resource.getValue() + SUFFIX);
 
 		final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
 		final InfoHandler handler = new InfoHandler();
@@ -84,7 +84,7 @@ public final class InfoLoader extends BaseLoader {
 		final InfoImpl info = handler.getInfo();
 
 		info.setResource(resource);
-		final File f = new File(ROOT, resolve(revision) + resource.getValue());
+		final File f = new File(root, resolve(revision) + resource.getValue());
 		info.setDirectory(f.isDirectory());
 		if (info.isFile()) {
 			final FileInputStream fis = new FileInputStream(f);
@@ -95,11 +95,14 @@ public final class InfoLoader extends BaseLoader {
 			}
 		}
 
-		info.setProperties(ResourcePropertyLoader.load(resource, revision));
+		info.setProperties(resourcePropertyLoader.load(resource, revision));
 		return info;
 	}
 
-	private InfoLoader() {
-		// prevent instantiation
+	private final ResourcePropertyLoader resourcePropertyLoader;
+
+	InfoLoader(final File root) {
+		super(root);
+		resourcePropertyLoader = new ResourcePropertyLoader(root);
 	}
 }
