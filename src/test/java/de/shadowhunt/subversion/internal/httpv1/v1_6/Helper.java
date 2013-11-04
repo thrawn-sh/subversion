@@ -18,19 +18,31 @@ import de.shadowhunt.subversion.RepositoryFactory;
 
 final class Helper {
 
+	private static final File BASE = new File("src/test/resources/v1_6");
+
+	private static final URI DUMP_URI = URI.create("http://10.155.50.102/dump.zip");
+
 	private static final String PASSWORD = "svnpass";
 
 	private static final URI REPOSITORY_URI = URI.create("http://10.155.50.102/svn-basic/test");
 
 	private static Repository repositoryA, repositoryB;
 
-	private static final File ROOT = new File("src/test/resources/v1_6/dump");
+	private static final File ROOT = new File(BASE, "dump");
 
 	private static final UUID TEST_ID = UUID.randomUUID();
 
 	private static final String USERNAME_A = "svnuser";
 
 	private static final String USERNAME_B = "svnuser2";
+
+	public static File getBase() {
+		return BASE;
+	}
+
+	public static URI getDumpUri() {
+		return DUMP_URI;
+	}
 
 	static Repository getRepositoryA() {
 		if (repositoryA == null) {
