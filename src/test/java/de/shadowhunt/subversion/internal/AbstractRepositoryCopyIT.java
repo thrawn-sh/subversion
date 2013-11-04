@@ -139,10 +139,6 @@ public class AbstractRepositoryCopyIT {
 
 		Assert.assertTrue(target + " must exist", repository.exists(target, Revision.HEAD));
 
-		final Info sInfo = repository.info(source, Revision.HEAD);
-		final Info tInfo = repository.info(target, Revision.HEAD);
-		Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
-
 		final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0);
 		final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0);
 		Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
@@ -194,10 +190,6 @@ public class AbstractRepositoryCopyIT {
 
 		Assert.assertTrue(target + " must exist", repository.exists(target, Revision.HEAD));
 
-		final Info sInfo = repository.info(source, Revision.HEAD);
-		final Info tInfo = repository.info(target, Revision.HEAD);
-		Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
-
 		final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0);
 		final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0);
 		Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
@@ -205,5 +197,63 @@ public class AbstractRepositoryCopyIT {
 
 		Assert.assertTrue("subfile must exist", repository.exists(target.append(subFile), Revision.HEAD));
 		Assert.assertTrue("subfolder must exist", repository.exists(target.append(subFolder), Revision.HEAD));
+	}
+
+	@Test
+	public void test03_copyFileRevision() throws Exception {
+		final Resource source = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/copy/file_delete.txt");
+		final Revision sourceRevision = Revision.create(5);
+		final Resource target = prefix.append(Resource.create("file_delete.txt"));
+
+		final Transaction transaction = repository.createTransaction();
+		try {
+			Assert.assertTrue("transaction must be active", transaction.isActive());
+			repository.copy(transaction, source, sourceRevision, target, true);
+			Assert.assertTrue("transaction must be active", transaction.isActive());
+			Assert.assertTrue("changeset must contain: " + target, transaction.getChangeSet().containsKey(target));
+			repository.commit(transaction, "copy");
+			Assert.assertFalse("transaction must not be active", transaction.isActive());
+		} catch (final Exception e) {
+			repository.rollback(transaction);
+			throw e;
+		}
+
+		Assert.assertTrue(target + " must exist", repository.exists(target, Revision.HEAD));
+
+		final Info sInfo = repository.info(source, sourceRevision);
+		final Info tInfo = repository.info(target, Revision.HEAD);
+		Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
+
+		final List<Log> sLog = repository.log(source, Revision.INITIAL, sourceRevision, 0);
+		final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0);
+		Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
+		Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
+	}
+
+	@Test
+	public void test03_copyFolderRevision() throws Exception {
+		final Resource source = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/copy/folder_delete");
+		final Revision sourceRevision = Revision.create(14);
+		final Resource target = prefix.append(Resource.create("folder_delete"));
+
+		final Transaction transaction = repository.createTransaction();
+		try {
+			Assert.assertTrue("transaction must be active", transaction.isActive());
+			repository.copy(transaction, source, sourceRevision, target, true);
+			Assert.assertTrue("transaction must be active", transaction.isActive());
+			Assert.assertTrue("changeset must contain: " + target, transaction.getChangeSet().containsKey(target));
+			repository.commit(transaction, "copy");
+			Assert.assertFalse("transaction must not be active", transaction.isActive());
+		} catch (final Exception e) {
+			repository.rollback(transaction);
+			throw e;
+		}
+
+		Assert.assertTrue(target + " must exist", repository.exists(target, Revision.HEAD));
+
+		final List<Log> sLog = repository.log(source, Revision.INITIAL, sourceRevision, 0);
+		final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0);
+		Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
+		Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
 	}
 }

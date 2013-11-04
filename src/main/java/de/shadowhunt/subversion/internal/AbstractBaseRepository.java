@@ -104,9 +104,9 @@ public abstract class AbstractBaseRepository implements Repository {
 		validateTransaction(transaction);
 
 		if (parents) {
-			createFolder(transaction, targetResource.getParent(), srcRevision, parents);
+			createFolder(transaction, targetResource.getParent(), Revision.HEAD, parents);
 		} else {
-			registerResource(transaction, targetResource.getParent(), srcRevision);
+			registerResource(transaction, targetResource.getParent(), Revision.HEAD);
 		}
 
 		final RepositoryCache cache = fromTransaction(transaction);
