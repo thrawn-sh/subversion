@@ -53,6 +53,10 @@ public final class LogImpl implements Log {
 
 		private final List<LogImpl> logs = new ArrayList<LogImpl>();
 
+		SubversionLogHandler() {
+			// make the handler visible in surrounding class
+		}
+
 		@Override
 		public void endElement(final String uri, final String localName, final String qName) throws SAXException {
 			final String name = getNameFromQName(qName);

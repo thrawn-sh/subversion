@@ -31,9 +31,9 @@ import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Version;
 
-class Prefix {
+final class Prefix {
 
-	private static final Pattern pathPattern = Pattern.compile("/");
+	static final Pattern pathPattern = Pattern.compile("/");
 
 	private static class PrefixHandler extends BasicHandler {
 
@@ -41,7 +41,7 @@ class Prefix {
 
 		private final Version version;
 
-		public PrefixHandler(final Version version) {
+		PrefixHandler(final Version version) {
 			this.version = version;
 		}
 

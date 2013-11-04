@@ -46,7 +46,7 @@ import de.shadowhunt.subversion.SubversionException;
  */
 public final class InfoImpl implements Info {
 
-	private static final Pattern pathPattern = Pattern.compile("/");
+	static final Pattern pathPattern = Pattern.compile("/");
 
 	private static class SubversionInfoHandler extends BasicHandler {
 
@@ -61,6 +61,10 @@ public final class InfoImpl implements Info {
 		private Set<ResourceProperty> properties = null;
 
 		private boolean resourceType = false;
+
+		SubversionInfoHandler() {
+			// make the handler visible in surrounding class
+		}
 
 		@Override
 		public void endElement(final String uri, final String localName, final String qName) {

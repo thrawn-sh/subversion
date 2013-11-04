@@ -29,11 +29,15 @@ import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 
-public final class Resolve {
+final class Resolve {
 
 	private static class ResolveHandler extends BasicHandler {
 
 		private Resolve entry = null;
+
+		ResolveHandler() {
+			// make the handler visible in surrounding class
+		}
 
 		public Resolve getEntry() {
 			return entry;
@@ -77,10 +81,6 @@ public final class Resolve {
 	private Resource resource = null;
 
 	private Revision revision = null;
-
-	private Resolve() {
-		// prevent direct instantiation
-	}
 
 	@Override
 	public boolean equals(final Object obj) {
