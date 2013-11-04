@@ -48,9 +48,9 @@ public abstract class AbstractRepositoryDownloadIT {
 		}
 	}
 
-	private final Repository repository;
-
 	private final DownloadLoader downloadLoader;
+
+	private final Repository repository;
 
 	protected AbstractRepositoryDownloadIT(final Repository repository, final File root) {
 		this.repository = repository;

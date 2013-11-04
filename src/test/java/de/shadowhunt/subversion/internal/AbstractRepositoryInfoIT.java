@@ -43,9 +43,9 @@ public abstract class AbstractRepositoryInfoIT {
 		Assert.assertArrayEquals(message, expected.getProperties(), actual.getProperties());
 	}
 
-	private final Repository repository;
-
 	private final InfoLoader infoLoader;
+
+	private final Repository repository;
 
 	protected AbstractRepositoryInfoIT(final Repository repository, final File root) {
 		this.repository = repository;

@@ -46,8 +46,6 @@ import de.shadowhunt.subversion.SubversionException;
  */
 public final class InfoImpl implements Info {
 
-	static final Pattern pathPattern = Pattern.compile("/");
-
 	private static class SubversionInfoHandler extends BasicHandler {
 
 		private boolean checkedin = false;
@@ -171,6 +169,8 @@ public final class InfoImpl implements Info {
 	}
 
 	private static final ResourceProperty[] EMPTY = new ResourceProperty[0];
+
+	static final Pattern pathPattern = Pattern.compile("/");
 
 	/**
 	 * Reads status information for a single revision of a resource from the given {@link InputStream}

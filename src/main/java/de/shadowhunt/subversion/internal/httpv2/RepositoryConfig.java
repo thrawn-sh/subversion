@@ -31,9 +31,9 @@ import de.shadowhunt.subversion.Version;
 
 public class RepositoryConfig implements de.shadowhunt.subversion.internal.RepositoryConfig {
 
-	private final Resource prefix;
-
 	private static final Resource CREATE_TRANSACTION = Resource.create("me");
+
+	private final Resource prefix;
 
 	public RepositoryConfig() {
 		this(DEFAULT_PREFIX);
@@ -55,8 +55,23 @@ public class RepositoryConfig implements de.shadowhunt.subversion.internal.Repos
 	}
 
 	@Override
+	public Resource getCreateTransactionResource() {
+		return prefix.append(CREATE_TRANSACTION);
+	}
+
+	@Override
 	public Version getProtocolVersion() {
 		return Version.HTTPv2;
+	}
+
+	@Override
+	public Resource getRegisterResource(final Resource resource, final Revision revision) {
+		throw new UnsupportedOperationException("getRegisterResource");
+	}
+
+	@Override
+	public Resource getRegisterTransactionResource(final Transaction transaction) {
+		throw new UnsupportedOperationException("getRegisterTransactionResource");
 	}
 
 	@Override
@@ -75,20 +90,5 @@ public class RepositoryConfig implements de.shadowhunt.subversion.internal.Repos
 	public Resource getWorkingResource(final Transaction transaction) {
 		final Resource suffix = Resource.create("/txr/" + transaction.getId());
 		return prefix.append(suffix);
-	}
-
-	@Override
-	public Resource getRegisterResource(final Resource resource, final Revision revision) {
-		throw new UnsupportedOperationException("getRegisterResource");
-	}
-
-	@Override
-	public Resource getRegisterTransactionResource(final Transaction transaction) {
-		throw new UnsupportedOperationException("getRegisterTransactionResource");
-	}
-
-	@Override
-	public Resource getCreateTransactionResource() {
-		return prefix.append(CREATE_TRANSACTION);
 	}
 }

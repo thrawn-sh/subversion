@@ -32,6 +32,11 @@ public final class ListLoader extends BaseLoader {
 
 	private final InfoLoader infoLoader;
 
+	ListLoader(final File root) {
+		super(root);
+		infoLoader = new InfoLoader(root);
+	}
+
 	public Set<Info> load(final Resource resource, final Revision revision, final Depth depth) throws Exception {
 		final File base = new File(root, resolve(revision) + resource.getValue());
 
@@ -60,10 +65,5 @@ public final class ListLoader extends BaseLoader {
 		}
 
 		return result;
-	}
-
-	ListLoader(final File root) {
-		super(root);
-		infoLoader = new InfoLoader(root);
 	}
 }

@@ -53,9 +53,9 @@ public abstract class AbstractRepositoryListIT {
 		}
 	}
 
-	private final Repository repository;
-
 	private final ListLoader listLoader;
+
+	private final Repository repository;
 
 	protected AbstractRepositoryListIT(final Repository repository, final File root) {
 		this.repository = repository;

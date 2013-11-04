@@ -74,6 +74,13 @@ public final class InfoLoader extends BaseLoader {
 
 	public static final String SUFFIX = ".info";
 
+	private final ResourcePropertyLoader resourcePropertyLoader;
+
+	InfoLoader(final File root) {
+		super(root);
+		resourcePropertyLoader = new ResourcePropertyLoader(root);
+	}
+
 	public Info load(final Resource resource, final Revision revision) throws Exception {
 		final File infoFile = new File(root, resolve(revision) + resource.getValue() + SUFFIX);
 
@@ -97,12 +104,5 @@ public final class InfoLoader extends BaseLoader {
 
 		info.setProperties(resourcePropertyLoader.load(resource, revision));
 		return info;
-	}
-
-	private final ResourcePropertyLoader resourcePropertyLoader;
-
-	InfoLoader(final File root) {
-		super(root);
-		resourcePropertyLoader = new ResourcePropertyLoader(root);
 	}
 }

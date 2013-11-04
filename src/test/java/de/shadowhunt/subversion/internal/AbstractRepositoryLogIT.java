@@ -22,9 +22,9 @@ public abstract class AbstractRepositoryLogIT {
 
 	public static final int UNLIMITED = 0;
 
-	private final Repository repository;
-
 	private final LogLoader logLoader;
+
+	private final Repository repository;
 
 	protected AbstractRepositoryLogIT(final Repository repository, final File root) {
 		this.repository = repository;

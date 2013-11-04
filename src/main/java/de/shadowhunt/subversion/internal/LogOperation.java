@@ -37,13 +37,13 @@ import de.shadowhunt.subversion.internal.util.URIUtils;
 
 public class LogOperation extends AbstractOperation<List<Log>> {
 
+	private final Revision end;
+
 	private final int limit;
 
 	private final Resource resource;
 
 	private final Revision start;
-
-	private final Revision end;
 
 	public LogOperation(final URI repository, final Resource resource, final Revision start, final Revision end, final int limit) {
 		super(repository);

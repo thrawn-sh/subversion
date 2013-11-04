@@ -45,7 +45,7 @@ public class RepositoryCache {
 		@Override
 		public int hashCode() {
 			int result = resource.hashCode();
-			result = 31 * result + revision.hashCode();
+			result = (31 * result) + revision.hashCode();
 			return result;
 		}
 	}
@@ -53,14 +53,6 @@ public class RepositoryCache {
 	private final HashMap<Key, Info> cache = new HashMap<Key, Info>();
 
 	private Revision headRevision = null;
-
-	public AbstractBaseRepository getRepository() {
-		return repository;
-	}
-
-	public void setRepository(final AbstractBaseRepository repository) {
-		this.repository = repository;
-	}
 
 	private AbstractBaseRepository repository = null;
 
@@ -103,6 +95,10 @@ public class RepositoryCache {
 		return revision;
 	}
 
+	public AbstractBaseRepository getRepository() {
+		return repository;
+	}
+
 	public final boolean isEmpty() {
 		return cache.isEmpty();
 	}
@@ -115,6 +111,10 @@ public class RepositoryCache {
 		for (final Info info : collection) {
 			put(info);
 		}
+	}
+
+	public void setRepository(final AbstractBaseRepository repository) {
+		this.repository = repository;
 	}
 
 	public Status status(@SuppressWarnings("unused") final Resource resource) {

@@ -106,6 +106,11 @@ public final class TransactionImpl extends RepositoryCache implements Transactio
 	}
 
 	@Override
+	public Status status(final Resource resource) {
+		return changeSet.get(resource);
+	}
+
+	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder("Transaction [");
 		sb.append("id=").append(id);
@@ -113,10 +118,5 @@ public final class TransactionImpl extends RepositoryCache implements Transactio
 		sb.append(", active=").append(active);
 		sb.append(']');
 		return sb.toString();
-	}
-
-	@Override
-	public Status status(final Resource resource) {
-		return changeSet.get(resource);
 	}
 }

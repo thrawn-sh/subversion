@@ -28,12 +28,12 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class Resource implements Comparable<Resource> {
 
+	private static final Pattern pathPattern = Pattern.compile("/");
+
 	/**
 	 * Represents the base {@link Resource} in the repository
 	 */
 	public static final Resource ROOT = new Resource("");
-
-	private static final Pattern pathPattern = Pattern.compile("/");
 
 	/**
 	 * Create a new {@link Resource} instance for the given value

@@ -38,13 +38,13 @@ public class ResolveOperation extends AbstractOperation<Resource> {
 
 	private final RepositoryConfig config;
 
+	private final Revision expected;
+
 	private final boolean reportNonExistingResources;
 
 	private final Resource resource;
 
 	private final Revision revision;
-
-	private final Revision expected;
 
 	public ResolveOperation(final URI repository, final Resource resource, final Revision revision, final Revision expected, final RepositoryConfig config, final boolean reportNonExistingResources) {
 		super(repository);

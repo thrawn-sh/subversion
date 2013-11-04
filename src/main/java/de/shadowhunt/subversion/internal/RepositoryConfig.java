@@ -38,17 +38,17 @@ public interface RepositoryConfig {
 
 	Resource getCommitMessageResource(Transaction transaction);
 
+	Resource getCreateTransactionResource();
+
 	Version getProtocolVersion();
+
+	Resource getRegisterResource(Resource resource, Revision revision);
+
+	Resource getRegisterTransactionResource(Transaction transaction);
 
 	Resource getTransactionResource(Transaction transaction);
 
 	Resource getVersionedResource(Resource resource, Revision revision);
 
 	Resource getWorkingResource(Transaction transaction);
-
-	Resource getRegisterResource(Resource resource, Revision revision);
-
-	Resource getRegisterTransactionResource(Transaction transaction);
-
-	Resource getCreateTransactionResource();
 }
