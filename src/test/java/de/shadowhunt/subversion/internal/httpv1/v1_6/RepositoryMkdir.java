@@ -19,9 +19,9 @@
  */
 package de.shadowhunt.subversion.internal.httpv1.v1_6;
 
-import de.shadowhunt.subversion.internal.AbstractRepositoryMkdirIT;
+import de.shadowhunt.subversion.internal.AbstractRepositoryMkdir;
 
-public class RepositoryMkdir extends AbstractRepositoryMkdirIT {
+public class RepositoryMkdir extends AbstractRepositoryMkdir {
 
 	public RepositoryMkdir() {
 		super(Helper.getRepositoryA(), Helper.getTestId());

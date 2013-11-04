@@ -34,7 +34,7 @@ import de.shadowhunt.subversion.SubversionException;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public abstract class AbstractRepositoryInfoIT {
+public abstract class AbstractRepositoryInfo {
 
 	private static final Resource PREFIX = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/info");
 
@@ -47,7 +47,7 @@ public abstract class AbstractRepositoryInfoIT {
 
 	private final Repository repository;
 
-	protected AbstractRepositoryInfoIT(final Repository repository, final File root) {
+	protected AbstractRepositoryInfo(final Repository repository, final File root) {
 		this.repository = repository;
 		infoLoader = new InfoLoader(root);
 	}

@@ -19,9 +19,9 @@
  */
 package de.shadowhunt.subversion.internal.httpv1.v1_6;
 
-import de.shadowhunt.subversion.internal.AbstractRepositoryCopyIT;
+import de.shadowhunt.subversion.internal.AbstractRepositoryCopy;
 
-public class RepositoryCopy extends AbstractRepositoryCopyIT {
+public class RepositoryCopy extends AbstractRepositoryCopy {
 
 	public RepositoryCopy() {
 		super(Helper.getRepositoryA(), Helper.getTestId());

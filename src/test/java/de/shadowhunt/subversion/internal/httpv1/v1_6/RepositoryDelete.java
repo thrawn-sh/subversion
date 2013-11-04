@@ -19,9 +19,9 @@
  */
 package de.shadowhunt.subversion.internal.httpv1.v1_6;
 
-import de.shadowhunt.subversion.internal.AbstractRepositoryDeleteIT;
+import de.shadowhunt.subversion.internal.AbstractRepositoryDelete;
 
-public class RepositoryDelete extends AbstractRepositoryDeleteIT {
+public class RepositoryDelete extends AbstractRepositoryDelete {
 
 	public RepositoryDelete() {
 		super(Helper.getRepositoryA(), Helper.getTestId());

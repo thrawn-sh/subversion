@@ -35,13 +35,13 @@ import de.shadowhunt.subversion.Transaction;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public abstract class AbstractRepositoryLockingIT {
+public abstract class AbstractRepositoryLocking {
 
 	private final Resource prefix;
 
 	private final Repository repositoryA, repositoryB;
 
-	protected AbstractRepositoryLockingIT(final Repository repositoryA, final Repository repositoryB, final UUID testId) {
+	protected AbstractRepositoryLocking(final Repository repositoryA, final Repository repositoryB, final UUID testId) {
 		prefix = Resource.create("/trunk/" + testId + "/locking");
 		this.repositoryA = repositoryA;
 		this.repositoryB = repositoryB;
@@ -67,7 +67,7 @@ public abstract class AbstractRepositoryLockingIT {
 	public void test01_file() throws Exception {
 		final Resource resource = prefix.append(Resource.create("/file.txt"));
 
-		AbstractRepositoryAddIT.file(repositoryA, resource, "test", true);
+		AbstractRepositoryAdd.file(repositoryA, resource, "test", true);
 		for (final boolean force : new boolean[] { true, false }) {
 			for (final boolean steal : new boolean[] { true, false }) {
 				final Info before = repositoryA.info(resource, Revision.HEAD);
@@ -86,7 +86,7 @@ public abstract class AbstractRepositoryLockingIT {
 	public void test01_relockWithForce() throws Exception {
 		final Resource resource = prefix.append(Resource.create("/relock_with.txt"));
 
-		AbstractRepositoryAddIT.file(repositoryA, resource, "test", true);
+		AbstractRepositoryAdd.file(repositoryA, resource, "test", true);
 		final Info before = repositoryA.info(resource, Revision.HEAD);
 		Assert.assertFalse(resource + " must not be locked", before.isLocked());
 
@@ -108,7 +108,7 @@ public abstract class AbstractRepositoryLockingIT {
 	public void test01_relockWithoutForce() throws Exception {
 		final Resource resource = prefix.append(Resource.create("/relock_without.txt"));
 
-		AbstractRepositoryAddIT.file(repositoryA, resource, "test", true);
+		AbstractRepositoryAdd.file(repositoryA, resource, "test", true);
 		final Info before = repositoryA.info(resource, Revision.HEAD);
 		Assert.assertFalse(resource + " must not be locked", before.isLocked());
 
@@ -127,7 +127,7 @@ public abstract class AbstractRepositoryLockingIT {
 	public void test01_unlock() throws Exception {
 		final Resource resource = prefix.append(Resource.create("/unlock.txt"));
 
-		AbstractRepositoryAddIT.file(repositoryA, resource, "test", true);
+		AbstractRepositoryAdd.file(repositoryA, resource, "test", true);
 		for (final boolean force : new boolean[] { true, false }) {
 			final Info before = repositoryA.info(resource, Revision.HEAD);
 			Assert.assertFalse(resource + " must not be locked", before.isLocked());
@@ -141,7 +141,7 @@ public abstract class AbstractRepositoryLockingIT {
 	public void test02_lockFail() throws Exception {
 		final Resource resource = prefix.append(Resource.create("/lock_fail.txt"));
 
-		AbstractRepositoryAddIT.file(repositoryA, resource, "test", true);
+		AbstractRepositoryAdd.file(repositoryA, resource, "test", true);
 		final Info before = repositoryA.info(resource, Revision.HEAD);
 		Assert.assertFalse(resource + " must not be locked", before.isLocked());
 
@@ -160,7 +160,7 @@ public abstract class AbstractRepositoryLockingIT {
 	public void test02_lockSteal() throws Exception {
 		final Resource resource = prefix.append(Resource.create("/lock_steal.txt"));
 
-		AbstractRepositoryAddIT.file(repositoryA, resource, "test", true);
+		AbstractRepositoryAdd.file(repositoryA, resource, "test", true);
 		final Info before = repositoryA.info(resource, Revision.HEAD);
 		Assert.assertFalse(resource + " must not be locked", before.isLocked());
 
@@ -181,7 +181,7 @@ public abstract class AbstractRepositoryLockingIT {
 	public void test02_unlockFail() throws Exception {
 		final Resource resource = prefix.append(Resource.create("/unlock_fail.txt"));
 
-		AbstractRepositoryAddIT.file(repositoryA, resource, "test", true);
+		AbstractRepositoryAdd.file(repositoryA, resource, "test", true);
 		final Info before = repositoryA.info(resource, Revision.HEAD);
 		Assert.assertFalse(resource + " must not be locked", before.isLocked());
 
@@ -200,7 +200,7 @@ public abstract class AbstractRepositoryLockingIT {
 	public void test02_unlockForce() throws Exception {
 		final Resource resource = prefix.append(Resource.create("/unlock_force.txt"));
 
-		AbstractRepositoryAddIT.file(repositoryA, resource, "test", true);
+		AbstractRepositoryAdd.file(repositoryA, resource, "test", true);
 		final Info before = repositoryA.info(resource, Revision.HEAD);
 		Assert.assertFalse(resource + " must not be locked", before.isLocked());
 
@@ -220,7 +220,7 @@ public abstract class AbstractRepositoryLockingIT {
 	public void test03_FileCopy() throws Exception {
 		final Resource source = prefix.append(Resource.create("/file_copy_source.txt"));
 
-		AbstractRepositoryAddIT.file(repositoryA, source, "test", true);
+		AbstractRepositoryAdd.file(repositoryA, source, "test", true);
 		final Info before = repositoryA.info(source, Revision.HEAD);
 		Assert.assertFalse(source + " must not be locked", before.isLocked());
 
@@ -250,7 +250,7 @@ public abstract class AbstractRepositoryLockingIT {
 	public void test03_FileMove() throws Exception {
 		final Resource source = prefix.append(Resource.create("/file_move_source.txt"));
 
-		AbstractRepositoryAddIT.file(repositoryA, source, "test", true);
+		AbstractRepositoryAdd.file(repositoryA, source, "test", true);
 		final Info before = repositoryA.info(source, Revision.HEAD);
 		Assert.assertFalse(source + " must not be locked", before.isLocked());
 

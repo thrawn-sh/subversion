@@ -19,6 +19,10 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.io.File;
+import java.io.InputStream;
+
+import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -31,27 +35,39 @@ import de.shadowhunt.subversion.SubversionException;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public abstract class AbstractRepositoryExistsIT {
+public abstract class AbstractRepositoryDownload {
 
-	private static final Resource PREFIX = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/exists");
+	private static final Resource PREFIX = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/download");
+
+	public static void assertEquals(final String message, final InputStream expected, final InputStream actual) throws Exception {
+		try {
+			Assert.assertEquals(message, IOUtils.toString(expected), IOUtils.toString(actual));
+		} finally {
+			IOUtils.closeQuietly(expected);
+			IOUtils.closeQuietly(actual);
+		}
+	}
+
+	private final DownloadLoader downloadLoader;
 
 	private final Repository repository;
 
-	protected AbstractRepositoryExistsIT(final Repository repository) {
+	protected AbstractRepositoryDownload(final Repository repository, final File root) {
 		this.repository = repository;
+		downloadLoader = new DownloadLoader(root);
 	}
 
 	private String createMessage(final Resource resource, final Revision revision) {
 		return resource + ": @" + revision;
 	}
 
-	@Test
+	@Test(expected = SubversionException.class)
 	public void test00_NonExisitingResource() throws Exception {
 		final Resource resource = PREFIX.append(Resource.create("/non_existing.txt"));
 		final Revision revision = Revision.HEAD;
 
-		final String message = createMessage(resource, revision);
-		Assert.assertFalse(message, repository.exists(resource, revision));
+		repository.download(resource, revision);
+		Assert.fail("download must not complete");
 	}
 
 	@Test(expected = SubversionException.class)
@@ -59,8 +75,8 @@ public abstract class AbstractRepositoryExistsIT {
 		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
 		final Revision revision = Revision.create(Integer.MAX_VALUE); // there should not be a such high revision
 
-		repository.exists(resource, revision);
-		Assert.fail("exists must not complete");
+		repository.download(resource, revision);
+		Assert.fail("download must not complete");
 	}
 
 	@Test
@@ -68,70 +84,38 @@ public abstract class AbstractRepositoryExistsIT {
 		final Resource resource = PREFIX.append(Resource.create("/file.txt"));
 		final Revision revision = Revision.HEAD;
 
+		final InputStream expected = downloadLoader.load(resource, revision);
 		final String message = createMessage(resource, revision);
-		Assert.assertTrue(message, repository.exists(resource, revision));
+		assertEquals(message, expected, repository.download(resource, revision));
 	}
 
 	@Test
 	public void test01_FileRevision() throws Exception {
 		final Resource resource = PREFIX.append(Resource.create("/file_delete.txt"));
-		final Revision revision = Revision.create(32);
+		final Revision revision = Revision.create(22);
 
+		final InputStream expected = downloadLoader.load(resource, revision);
 		final String message = createMessage(resource, revision);
-		Assert.assertTrue(message, repository.exists(resource, revision));
-	}
-
-	@Test
-	public void test01_FolderHead() throws Exception {
-		final Resource resource = PREFIX.append(Resource.create("/folder"));
-		final Revision revision = Revision.HEAD;
-
-		final String message = createMessage(resource, revision);
-		Assert.assertTrue(message, repository.exists(resource, revision));
-	}
-
-	@Test
-	public void test01_FolderRevision() throws Exception {
-		final Resource resource = PREFIX.append(Resource.create("/folder_delete"));
-		final Revision revision = Revision.create(39);
-
-		final String message = createMessage(resource, revision);
-		Assert.assertTrue(message, repository.exists(resource, revision));
+		assertEquals(message, expected, repository.download(resource, revision));
 	}
 
 	@Test
 	public void test02_FileCopy() throws Exception {
 		final Resource resource = PREFIX.append(Resource.create("/file_copy.txt"));
-		final Revision revision = Revision.create(35);
+		final Revision revision = Revision.create(25);
 
+		final InputStream expected = downloadLoader.load(resource, revision);
 		final String message = createMessage(resource, revision);
-		Assert.assertTrue(message, repository.exists(resource, revision));
+		assertEquals(message, expected, repository.download(resource, revision));
 	}
 
 	@Test
 	public void test02_FileMove() throws Exception {
 		final Resource resource = PREFIX.append(Resource.create("/file_move.txt"));
-		final Revision revision = Revision.create(37);
+		final Revision revision = Revision.create(27);
 
+		final InputStream expected = downloadLoader.load(resource, revision);
 		final String message = createMessage(resource, revision);
-		Assert.assertTrue(message, repository.exists(resource, revision));
-	}
-
-	@Test
-	public void test02_FolderCopy() throws Exception {
-		final Resource resource = PREFIX.append(Resource.create("/folder_copy"));
-		final Revision revision = Revision.create(41);
-
-		final String message = createMessage(resource, revision);
-		Assert.assertTrue(message, repository.exists(resource, revision));
-	}
-
-	@Test
-	public void test02_FolderMove() throws Exception {
-		final Resource resource = PREFIX.append(Resource.create("/folder_move"));
-		final Revision revision = Revision.create(43);
-
-		final String message = createMessage(resource, revision);
-		Assert.assertTrue(message, repository.exists(resource, revision));
+		assertEquals(message, expected, repository.download(resource, revision));
 	}
 }

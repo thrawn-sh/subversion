@@ -16,7 +16,7 @@ import de.shadowhunt.subversion.Transaction;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class AbstractRepositoryAddIT {
+public class AbstractRepositoryAdd {
 
 	public static void file(final Repository repository, final Resource resource, final String content, final boolean initial) throws Exception {
 		if (!initial) {
@@ -38,14 +38,14 @@ public class AbstractRepositoryAddIT {
 
 		final InputStream expected = Helper.getInputStream(content);
 		final InputStream actual = repository.download(resource, Revision.HEAD);
-		AbstractRepositoryDownloadIT.assertEquals("content must match", expected, actual);
+		AbstractRepositoryDownload.assertEquals("content must match", expected, actual);
 	}
 
 	private final Resource prefix;
 
 	private final Repository repository;
 
-	protected AbstractRepositoryAddIT(final Repository repository, final UUID testId) {
+	protected AbstractRepositoryAdd(final Repository repository, final UUID testId) {
 		prefix = Resource.create("/trunk/" + testId + "/add");
 		this.repository = repository;
 	}

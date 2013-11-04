@@ -16,7 +16,7 @@ import de.shadowhunt.subversion.SubversionException;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public abstract class AbstractRepositoryLogIT {
+public abstract class AbstractRepositoryLog {
 
 	private static final Resource PREFIX = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/log");
 
@@ -26,7 +26,7 @@ public abstract class AbstractRepositoryLogIT {
 
 	private final Repository repository;
 
-	protected AbstractRepositoryLogIT(final Repository repository, final File root) {
+	protected AbstractRepositoryLog(final Repository repository, final File root) {
 		this.repository = repository;
 		logLoader = new LogLoader(root);
 	}

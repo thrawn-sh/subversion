@@ -18,7 +18,7 @@ import de.shadowhunt.subversion.Transaction;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class AbstractRepositoryPropertiesSetIT {
+public class AbstractRepositoryPropertiesSet {
 
 	public static void setProperties(final Repository repository, final Resource resource, final ResourceProperty... properties) throws Exception {
 		final Transaction transaction = repository.createTransaction();
@@ -43,7 +43,7 @@ public class AbstractRepositoryPropertiesSetIT {
 
 	private final Repository repository;
 
-	protected AbstractRepositoryPropertiesSetIT(final Repository repository, final UUID testId) {
+	protected AbstractRepositoryPropertiesSet(final Repository repository, final UUID testId) {
 		prefix = Resource.create("/trunk/" + testId + "/propset");
 		this.repository = repository;
 	}
@@ -106,7 +106,7 @@ public class AbstractRepositoryPropertiesSetIT {
 		final Resource resource = prefix.append(Resource.create("file.txt"));
 		final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "test");
 
-		AbstractRepositoryAddIT.file(repository, resource, "test", true);
+		AbstractRepositoryAdd.file(repository, resource, "test", true);
 		setProperties(repository, resource, property);
 	}
 
@@ -114,7 +114,7 @@ public class AbstractRepositoryPropertiesSetIT {
 	public void test02_overrideProperties() throws Exception {
 		final Resource resource = prefix.append(Resource.create("update.txt"));
 
-		AbstractRepositoryAddIT.file(repository, resource, "test", true);
+		AbstractRepositoryAdd.file(repository, resource, "test", true);
 		{
 			final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "A");
 			setProperties(repository, resource, property);

@@ -19,9 +19,9 @@
  */
 package de.shadowhunt.subversion.internal.httpv1.v1_6;
 
-import de.shadowhunt.subversion.internal.AbstractRepositoryInfoIT;
+import de.shadowhunt.subversion.internal.AbstractRepositoryInfo;
 
-public class RepositoryInfo extends AbstractRepositoryInfoIT {
+public class RepositoryInfo extends AbstractRepositoryInfo {
 
 	public RepositoryInfo() {
 		super(Helper.getRepositoryA(), Helper.getRoot());

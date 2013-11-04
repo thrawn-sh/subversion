@@ -19,9 +19,9 @@
  */
 package de.shadowhunt.subversion.internal.httpv1.v1_6;
 
-import de.shadowhunt.subversion.internal.AbstractRepositoryLockingIT;
+import de.shadowhunt.subversion.internal.AbstractRepositoryLocking;
 
-public class RepositoryLocking extends AbstractRepositoryLockingIT {
+public class RepositoryLocking extends AbstractRepositoryLocking {
 
 	public RepositoryLocking() {
 		super(Helper.getRepositoryA(), Helper.getRepositoryB(), Helper.getTestId());

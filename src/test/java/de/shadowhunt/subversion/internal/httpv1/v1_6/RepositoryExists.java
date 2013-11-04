@@ -19,9 +19,9 @@
  */
 package de.shadowhunt.subversion.internal.httpv1.v1_6;
 
-import de.shadowhunt.subversion.internal.AbstractRepositoryExistsIT;
+import de.shadowhunt.subversion.internal.AbstractRepositoryExists;
 
-public class RepositoryExists extends AbstractRepositoryExistsIT {
+public class RepositoryExists extends AbstractRepositoryExists {
 
 	public RepositoryExists() {
 		super(Helper.getRepositoryA());

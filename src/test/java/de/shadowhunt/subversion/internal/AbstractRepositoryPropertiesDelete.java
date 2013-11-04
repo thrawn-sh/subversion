@@ -18,13 +18,13 @@ import de.shadowhunt.subversion.Transaction;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class AbstractRepositoryPropertiesDeleteIT {
+public class AbstractRepositoryPropertiesDelete {
 
 	private final Resource prefix;
 
 	private final Repository repository;
 
-	protected AbstractRepositoryPropertiesDeleteIT(final Repository repository, final UUID testId) {
+	protected AbstractRepositoryPropertiesDelete(final Repository repository, final UUID testId) {
 		prefix = Resource.create("/trunk/" + testId + "/propdel");
 		this.repository = repository;
 	}
@@ -87,8 +87,8 @@ public class AbstractRepositoryPropertiesDeleteIT {
 		final Resource resource = prefix.append(Resource.create("file.txt"));
 		final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "test");
 
-		AbstractRepositoryAddIT.file(repository, resource, "test", true);
-		AbstractRepositoryPropertiesSetIT.setProperties(repository, resource, property);
+		AbstractRepositoryAdd.file(repository, resource, "test", true);
+		AbstractRepositoryPropertiesSet.setProperties(repository, resource, property);
 
 		{ // delete properties
 			final Transaction transaction = repository.createTransaction();
@@ -116,7 +116,7 @@ public class AbstractRepositoryPropertiesDeleteIT {
 		final Resource resource = prefix.append(Resource.create("no_properties.txt"));
 		final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "test");
 
-		AbstractRepositoryAddIT.file(repository, resource, "test", true);
+		AbstractRepositoryAdd.file(repository, resource, "test", true);
 
 		{ // delete properties
 			final Transaction transaction = repository.createTransaction();

@@ -19,9 +19,9 @@
  */
 package de.shadowhunt.subversion.internal.httpv1.v1_6;
 
-import de.shadowhunt.subversion.internal.AbstractRepositoryPropertiesSetIT;
+import de.shadowhunt.subversion.internal.AbstractRepositoryPropertiesSet;
 
-public class RepositoryPropertiesSet extends AbstractRepositoryPropertiesSetIT {
+public class RepositoryPropertiesSet extends AbstractRepositoryPropertiesSet {
 
 	public RepositoryPropertiesSet() {
 		super(Helper.getRepositoryA(), Helper.getTestId());

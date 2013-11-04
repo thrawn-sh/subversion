@@ -15,13 +15,13 @@ import de.shadowhunt.subversion.Transaction;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class AbstractRepositoryDeleteIT {
+public class AbstractRepositoryDelete {
 
 	private final Resource prefix;
 
 	private final Repository repository;
 
-	protected AbstractRepositoryDeleteIT(final Repository repository, final UUID testId) {
+	protected AbstractRepositoryDelete(final Repository repository, final UUID testId) {
 		prefix = Resource.create("/trunk/" + testId + "/delete");
 		this.repository = repository;
 	}
@@ -62,7 +62,7 @@ public class AbstractRepositoryDeleteIT {
 	@Test
 	public void test00_rollback() throws Exception {
 		final Resource resource = prefix.append(Resource.create("rollback.txt"));
-		AbstractRepositoryAddIT.file(repository, resource, "test", true);
+		AbstractRepositoryAdd.file(repository, resource, "test", true);
 
 		final Transaction transaction = repository.createTransaction();
 		try {
@@ -81,7 +81,7 @@ public class AbstractRepositoryDeleteIT {
 	@Test
 	public void test01_deleteFile() throws Exception {
 		final Resource resource = prefix.append(Resource.create("file.txt"));
-		AbstractRepositoryAddIT.file(repository, resource, "test", true);
+		AbstractRepositoryAdd.file(repository, resource, "test", true);
 
 		final Transaction transaction = repository.createTransaction();
 		try {
@@ -100,7 +100,7 @@ public class AbstractRepositoryDeleteIT {
 	@Test
 	public void test01_deleteFolder() throws Exception {
 		final Resource resource = prefix.append(Resource.create("folder"));
-		AbstractRepositoryMkdirIT.mkdir(repository, resource, false);
+		AbstractRepositoryMkdir.mkdir(repository, resource, false);
 
 		final Transaction transaction = repository.createTransaction();
 		try {
@@ -119,13 +119,13 @@ public class AbstractRepositoryDeleteIT {
 	@Test
 	public void test01_deleteFolderWithContent() throws Exception {
 		final Resource root = prefix.append(Resource.create("folder_with_content"));
-		AbstractRepositoryMkdirIT.mkdir(repository, root, false);
+		AbstractRepositoryMkdir.mkdir(repository, root, false);
 
 		final Resource file = root.append(Resource.create("file.txt"));
-		AbstractRepositoryAddIT.file(repository, file, "test", true);
+		AbstractRepositoryAdd.file(repository, file, "test", true);
 
 		final Resource subFolder = root.append(Resource.create("sub"));
-		AbstractRepositoryMkdirIT.mkdir(repository, subFolder, false);
+		AbstractRepositoryMkdir.mkdir(repository, subFolder, false);
 
 		final Transaction transaction = repository.createTransaction();
 		try {

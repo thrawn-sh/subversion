@@ -15,7 +15,7 @@ import de.shadowhunt.subversion.Transaction;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class AbstractRepositoryMkdirIT {
+public class AbstractRepositoryMkdir {
 
 	public static void mkdir(final Repository repository, final Resource resource, final boolean parents) throws Exception {
 		final Transaction transaction = repository.createTransaction();
@@ -37,7 +37,7 @@ public class AbstractRepositoryMkdirIT {
 
 	private final Repository repository;
 
-	protected AbstractRepositoryMkdirIT(final Repository repository, final UUID testId) {
+	protected AbstractRepositoryMkdir(final Repository repository, final UUID testId) {
 		prefix = Resource.create("/trunk/" + testId + "/mkdir");
 		this.repository = repository;
 	}
@@ -102,7 +102,7 @@ public class AbstractRepositoryMkdirIT {
 	public void test02_mkdirExistingFile() throws Exception {
 		final Resource resource = prefix.append(Resource.create("existing.txt"));
 
-		AbstractRepositoryAddIT.file(repository, resource, "test", true);
+		AbstractRepositoryAdd.file(repository, resource, "test", true);
 		mkdir(repository, resource, false);
 		Assert.fail("mkdir must not complete");
 	}

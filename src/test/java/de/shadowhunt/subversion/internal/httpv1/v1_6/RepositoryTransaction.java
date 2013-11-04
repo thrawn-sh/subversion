@@ -19,9 +19,9 @@
  */
 package de.shadowhunt.subversion.internal.httpv1.v1_6;
 
-import de.shadowhunt.subversion.internal.AbstractRepositoryTransactionIT;
+import de.shadowhunt.subversion.internal.AbstractRepositoryTransaction;
 
-public class RepositoryTransaction extends AbstractRepositoryTransactionIT {
+public class RepositoryTransaction extends AbstractRepositoryTransaction {
 
 	public RepositoryTransaction() {
 		super(Helper.getRepositoryA());

@@ -14,11 +14,11 @@ import de.shadowhunt.subversion.Transaction;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public abstract class AbstractRepositoryTransactionIT {
+public abstract class AbstractRepositoryTransaction {
 
 	private final Repository repository;
 
-	protected AbstractRepositoryTransactionIT(final Repository repository) {
+	protected AbstractRepositoryTransaction(final Repository repository) {
 		this.repository = repository;
 	}
 
@@ -54,6 +54,6 @@ public abstract class AbstractRepositoryTransactionIT {
 		repository.commit(transaction, "empty commit");
 		Assert.assertFalse("transaction must be inactive", transaction.isActive());
 		final Info after = repository.info(Resource.ROOT, Revision.HEAD);
-		AbstractRepositoryInfoIT.assertEquals("emptry commit", before, after);
+		AbstractRepositoryInfo.assertEquals("emptry commit", before, after);
 	}
 }

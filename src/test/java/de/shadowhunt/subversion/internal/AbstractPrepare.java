@@ -12,13 +12,13 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class AbstractPrepareIT {
+public class AbstractPrepare {
 
 	private final File base;
 
 	private final URI dumpUri;
 
-	protected AbstractPrepareIT(final URI dumpUri, final File base) {
+	protected AbstractPrepare(final URI dumpUri, final File base) {
 		this.dumpUri = dumpUri;
 		this.base = base;
 	}
