@@ -20,6 +20,7 @@
 package de.shadowhunt.subversion.internal;
 
 import java.net.URI;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.HttpResponse;
@@ -28,20 +29,19 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 
 import de.shadowhunt.http.client.methods.DavTemplateRequest;
+import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 
 public class MergeOperation extends AbstractVoidOperation {
 
-	private static final int PREFIX = 4; // /$svn/{baseline}/{id}/ FIXME
-
-	private final String lock;
+	private final Set<Info> infos;
 
 	private final Resource resource;
 
-	public MergeOperation(final URI repository, final Resource resource, final String lock) {
+	public MergeOperation(final URI repository, final Resource resource, final Set<Info> infos) {
 		super(repository);
 		this.resource = resource;
-		this.lock = lock;
+		this.infos = infos;
 	}
 
 	@Override
@@ -58,14 +58,20 @@ public class MergeOperation extends AbstractVoidOperation {
 		body.append("<merge xmlns=\"DAV:\"><source><href>");
 		body.append(StringEscapeUtils.escapeXml(repository.getPath() + resource.getValue()));
 		body.append("</href></source><no-auto-merge/><no-checkout/><prop><checked-in/><version-name/><resourcetype/><creationdate/><creator-displayname/></prop>");
-		if (lock != null) {
-			body.append("<S:lock-token-list xmlns:S=\"svn:\"><S:lock><S:lock-path>");
-			final Resource plain = resource.subResource(PREFIX);
-			body.append(StringEscapeUtils.escapeXml(plain.getValueWithoutLeadingSeparator()));
-			body.append("</S:lock-path>");
-			body.append("<S:lock-token>");
-			body.append(lock);
-			body.append("</S:lock-token></S:lock></S:lock-token-list>");
+		if (!infos.isEmpty()) {
+			body.append("<S:lock-token-list xmlns:S=\"svn:\">");
+			for (final Info info : infos) {
+				final String lockToken = info.getLockToken();
+				assert (lockToken != null) : "must not be null";
+				body.append("<S:lock><S:lock-path>");
+				final Resource plain = info.getResource();
+				body.append(StringEscapeUtils.escapeXml(plain.getValueWithoutLeadingSeparator()));
+				body.append("</S:lock-path>");
+				body.append("<S:lock-token>");
+				body.append(lockToken);
+				body.append("</S:lock-token></S:lock>");
+			}
+			body.append("</S:lock-token-list>");
 		}
 		body.append("</merge>");
 		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));

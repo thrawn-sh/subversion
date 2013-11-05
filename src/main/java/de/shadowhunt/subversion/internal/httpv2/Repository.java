@@ -20,10 +20,12 @@
 package de.shadowhunt.subversion.internal.httpv2;
 
 import java.net.URI;
+import java.util.Set;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 
+import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
@@ -57,8 +59,9 @@ public class Repository extends AbstractBaseRepository {
 		final CommitMessageOperation cmo = new CommitMessageOperation(repository, messageResource, message);
 		cmo.execute(client, context);
 
+		final Set<Info> lockTokenInfos = getInfosWithLockTokens(transaction);
 		final Resource mergeResource = config.getTransactionResource(transaction);
-		final MergeOperation mo = new MergeOperation(repository, mergeResource, null); // FIXME locktoken
+		final MergeOperation mo = new MergeOperation(repository, mergeResource, lockTokenInfos);
 		mo.execute(client, context);
 		transaction.invalidate(); // only invalidate after successful commit to allow rollback
 	}

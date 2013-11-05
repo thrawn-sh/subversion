@@ -21,6 +21,7 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -97,7 +98,12 @@ public abstract class AbstractBaseRepository implements Repository {
 		final Resource uploadResource = config.getWorkingResource(transaction).append(resource);
 		final UploadOperation operation = new UploadOperation(repository, uploadResource, lockToken, content);
 		operation.execute(client, context);
-		transaction.register(resource, Status.ADDED);
+		if (info == null) {
+			transaction.register(resource, Status.ADDED);
+		} else {
+			// file existed already
+			transaction.register(resource, Status.MODIFIED);
+		}
 	}
 
 	@Override
@@ -137,7 +143,10 @@ public abstract class AbstractBaseRepository implements Repository {
 			if (info.isFile()) {
 				throw new SubversionException("can't create directory, file with same name already exists: " + resource);
 			}
-			registerResource(transaction, resource, revision);
+			final Status status = transaction.getChangeSet().get(resource);
+			if (status == null) {
+				registerResource(transaction, resource, revision);
+			}
 		}
 
 		Resource current = resource.getParent();
@@ -211,6 +220,29 @@ public abstract class AbstractBaseRepository implements Repository {
 	@Override
 	public final URI getBaseUri() {
 		return URIUtils.createURI(repository);
+	}
+
+	protected Set<Info> getInfosWithLockTokens(final Transaction transaction) {
+		final Map<Resource, Status> changeSet = transaction.getChangeSet();
+		if (changeSet.isEmpty()) {
+			return Collections.emptySet();
+		}
+
+		final RepositoryCache repositoryCache = fromTransaction(transaction);
+		final Set<Info> infos = new TreeSet<Info>(Info.RESOURCE_COMPARATOR);
+		for (final Map.Entry<Resource, Status> entry : changeSet.entrySet()) {
+			final Status status = entry.getValue();
+			if ((Status.EXISTS == status) || (Status.ADDED == status)) {
+				continue;
+			}
+
+			final Resource resource = entry.getKey();
+			final Info info = info0(repositoryCache, resource, Revision.HEAD, false, false);
+			if (info.isLocked()) {
+				infos.add(info);
+			}
+		}
+		return infos;
 	}
 
 	@Override
