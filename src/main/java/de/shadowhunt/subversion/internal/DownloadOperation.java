@@ -46,8 +46,12 @@ public class DownloadOperation extends AbstractOperation<InputStream> {
 	}
 
 	@Override
+	protected boolean isExpectedStatusCode(final int statusCode) {
+		return HttpStatus.SC_OK == statusCode;
+	}
+
+	@Override
 	protected InputStream processResponse(final HttpResponse response) {
-		check(response, HttpStatus.SC_OK);
 		return getContent(response);
 	}
 

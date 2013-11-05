@@ -62,8 +62,12 @@ public class CreateTransactionOperation extends AbstractOperation<TransactionImp
 	}
 
 	@Override
+	protected boolean isExpectedStatusCode(final int statusCode) {
+		return HttpStatus.SC_CREATED == statusCode;
+	}
+
+	@Override
 	protected TransactionImpl processResponse(final HttpResponse response) {
-		check(response, HttpStatus.SC_CREATED);
 		final String transactionId = response.getFirstHeader(HEADER_NAME).getValue();
 		EntityUtils.consumeQuietly(response.getEntity());
 		return new TransactionImpl(transactionId);

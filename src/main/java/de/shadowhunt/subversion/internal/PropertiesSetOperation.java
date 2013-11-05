@@ -22,7 +22,6 @@ package de.shadowhunt.subversion.internal;
 import java.net.URI;
 
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
@@ -46,11 +45,6 @@ public class PropertiesSetOperation extends AbstractVoidOperation {
 		this.resource = resource;
 		this.info = info;
 		this.properties = properties;
-	}
-
-	@Override
-	protected void checkResponse(final HttpResponse response) {
-		check(response, HttpStatus.SC_MULTI_STATUS);
 	}
 
 	@Override
@@ -81,6 +75,11 @@ public class PropertiesSetOperation extends AbstractVoidOperation {
 		sb.append("</prop></set></propertyupdate>");
 		request.setEntity(new StringEntity(sb.toString(), CONTENT_TYPE_XML));
 		return request;
+	}
+
+	@Override
+	protected boolean isExpectedStatusCode(final int statusCode) {
+		return HttpStatus.SC_MULTI_STATUS == statusCode;
 	}
 
 }

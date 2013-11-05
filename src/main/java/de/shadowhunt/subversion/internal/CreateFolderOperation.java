@@ -46,8 +46,14 @@ public class CreateFolderOperation extends AbstractOperation<Boolean> {
 	}
 
 	@Override
+	protected boolean isExpectedStatusCode(final int statusCode) {
+		// created: HttpStatus.SC_CREATED
+		// existed: HttpStatus.SC_METHOD_NOT_ALLOWED
+		return (HttpStatus.SC_CREATED == statusCode) || (HttpStatus.SC_METHOD_NOT_ALLOWED == statusCode);
+	}
+
+	@Override
 	protected Boolean processResponse(final HttpResponse response) {
-		check(response, /* created */HttpStatus.SC_CREATED, /* existed */HttpStatus.SC_METHOD_NOT_ALLOWED);
 		final int status = getStatusCode(response);
 		EntityUtils.consumeQuietly(response.getEntity());
 		return (status == HttpStatus.SC_CREATED);

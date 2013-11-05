@@ -23,7 +23,6 @@ import java.net.URI;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
@@ -42,11 +41,6 @@ public class MergeOperation extends AbstractVoidOperation {
 		super(repository);
 		this.resource = resource;
 		this.infos = infos;
-	}
-
-	@Override
-	protected void checkResponse(final HttpResponse response) {
-		check(response, HttpStatus.SC_OK);
 	}
 
 	@Override
@@ -76,5 +70,10 @@ public class MergeOperation extends AbstractVoidOperation {
 		body.append("</merge>");
 		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
 		return request;
+	}
+
+	@Override
+	protected boolean isExpectedStatusCode(final int statusCode) {
+		return HttpStatus.SC_OK == statusCode;
 	}
 }

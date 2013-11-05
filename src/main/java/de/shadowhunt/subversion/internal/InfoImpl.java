@@ -182,7 +182,7 @@ public final class InfoImpl implements Info {
 	public static InfoImpl read(final InputStream in) {
 		final SortedSet<InfoImpl> infos = readList(in);
 		if (infos.isEmpty()) {
-			throw new SubversionException("could not find any SubversionInfo in input");
+			throw new SubversionException("Invalid server response: expected content is missing");
 		}
 		return infos.first();
 	}

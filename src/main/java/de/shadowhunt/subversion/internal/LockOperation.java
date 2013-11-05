@@ -21,7 +21,6 @@ package de.shadowhunt.subversion.internal;
 
 import java.net.URI;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
@@ -43,11 +42,6 @@ public class LockOperation extends AbstractVoidOperation {
 	}
 
 	@Override
-	protected void checkResponse(final HttpResponse response) {
-		check(response, HttpStatus.SC_OK);
-	}
-
-	@Override
 	protected HttpUriRequest createRequest() {
 		final URI uri = URIUtils.createURI(repository, resource);
 		final DavTemplateRequest request = new DavTemplateRequest("LOCK", uri);
@@ -60,6 +54,11 @@ public class LockOperation extends AbstractVoidOperation {
 
 		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
 		return request;
+	}
+
+	@Override
+	protected boolean isExpectedStatusCode(final int statusCode) {
+		return HttpStatus.SC_OK == statusCode;
 	}
 
 }

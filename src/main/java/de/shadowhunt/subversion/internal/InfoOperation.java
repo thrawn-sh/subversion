@@ -60,9 +60,12 @@ public class InfoOperation extends AbstractOperation<Info> {
 	}
 
 	@Override
-	protected Info processResponse(final HttpResponse response) {
-		check(response, HttpStatus.SC_MULTI_STATUS);
+	protected boolean isExpectedStatusCode(final int statusCode) {
+		return HttpStatus.SC_MULTI_STATUS == statusCode;
+	}
 
+	@Override
+	protected Info processResponse(final HttpResponse response) {
 		final InputStream in = getContent(response);
 		try {
 			final InfoImpl info = InfoImpl.read(in);

@@ -21,7 +21,6 @@ package de.shadowhunt.subversion.internal;
 
 import java.net.URI;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
@@ -48,11 +47,6 @@ public class PropertiesDeleteOperation extends AbstractVoidOperation {
 	}
 
 	@Override
-	protected void checkResponse(final HttpResponse response) {
-		check(response, HttpStatus.SC_MULTI_STATUS);
-	}
-
-	@Override
 	protected HttpUriRequest createRequest() {
 		final URI uri = URIUtils.createURI(repository, resource);
 		final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH", uri);
@@ -73,6 +67,11 @@ public class PropertiesDeleteOperation extends AbstractVoidOperation {
 		sb.append("</prop></remove></propertyupdate>");
 		request.setEntity(new StringEntity(sb.toString(), CONTENT_TYPE_XML));
 		return request;
+	}
+
+	@Override
+	protected boolean isExpectedStatusCode(final int statusCode) {
+		return HttpStatus.SC_MULTI_STATUS == statusCode;
 	}
 
 }

@@ -61,9 +61,12 @@ public class ListOperation extends AbstractOperation<Set<Info>> {
 	}
 
 	@Override
-	protected Set<Info> processResponse(final HttpResponse response) {
-		check(response, HttpStatus.SC_MULTI_STATUS);
+	protected boolean isExpectedStatusCode(final int statusCode) {
+		return HttpStatus.SC_MULTI_STATUS == statusCode;
+	}
 
+	@Override
+	protected Set<Info> processResponse(final HttpResponse response) {
 		final InputStream in = getContent(response);
 		try {
 			@SuppressWarnings({ "rawtypes", "unchecked" })

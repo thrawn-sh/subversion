@@ -22,7 +22,6 @@ package de.shadowhunt.subversion.internal;
 import java.net.URI;
 
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
@@ -44,11 +43,6 @@ public class CommitMessageOperation extends AbstractVoidOperation {
 	}
 
 	@Override
-	protected void checkResponse(final HttpResponse response) {
-		check(response, HttpStatus.SC_MULTI_STATUS);
-	}
-
-	@Override
 	protected HttpUriRequest createRequest() {
 		final URI uri = URIUtils.createURI(repository, resource);
 		final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH", uri);
@@ -60,6 +54,11 @@ public class CommitMessageOperation extends AbstractVoidOperation {
 
 		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
 		return request;
+	}
+
+	@Override
+	protected boolean isExpectedStatusCode(final int statusCode) {
+		return HttpStatus.SC_MULTI_STATUS == statusCode;
 	}
 
 }

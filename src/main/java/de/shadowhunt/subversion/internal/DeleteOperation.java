@@ -21,7 +21,6 @@ package de.shadowhunt.subversion.internal;
 
 import java.net.URI;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -43,11 +42,6 @@ public class DeleteOperation extends AbstractVoidOperation {
 	}
 
 	@Override
-	protected void checkResponse(final HttpResponse response) {
-		check(response, HttpStatus.SC_NO_CONTENT);
-	}
-
-	@Override
 	protected HttpUriRequest createRequest() {
 		final URI uri = URIUtils.createURI(repository, resource);
 		final HttpUriRequest request = new HttpDelete(uri);
@@ -56,5 +50,10 @@ public class DeleteOperation extends AbstractVoidOperation {
 			request.addHeader("If", '<' + lockTarget.toASCIIString() + "> (<" + info.getLockToken() + ">)");
 		}
 		return request;
+	}
+
+	@Override
+	protected boolean isExpectedStatusCode(final int statusCode) {
+		return HttpStatus.SC_NO_CONTENT == statusCode;
 	}
 }

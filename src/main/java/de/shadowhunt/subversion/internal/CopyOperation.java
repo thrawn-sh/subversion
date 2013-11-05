@@ -21,7 +21,6 @@ package de.shadowhunt.subversion.internal;
 
 import java.net.URI;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 
@@ -47,11 +46,6 @@ public class CopyOperation extends AbstractVoidOperation {
 	}
 
 	@Override
-	protected void checkResponse(final HttpResponse response) {
-		check(response, HttpStatus.SC_CREATED, HttpStatus.SC_NO_CONTENT);
-	}
-
-	@Override
 	protected HttpUriRequest createRequest() {
 		final URI sourceUri = URIUtils.createURI(repository, source);
 		final URI targetUri = URIUtils.createURI(repository, target);
@@ -64,5 +58,10 @@ public class CopyOperation extends AbstractVoidOperation {
 			request.addHeader("If", '<' + lockTarget.toASCIIString() + "> (<" + info.getLockToken() + ">)");
 		}
 		return request;
+	}
+
+	@Override
+	protected boolean isExpectedStatusCode(final int statusCode) {
+		return (HttpStatus.SC_CREATED == statusCode) || (HttpStatus.SC_NO_CONTENT == statusCode);
 	}
 }

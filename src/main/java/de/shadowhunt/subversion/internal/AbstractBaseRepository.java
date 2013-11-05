@@ -146,7 +146,7 @@ public abstract class AbstractBaseRepository implements Repository {
 			transaction.register(resource, Status.ADDED);
 		} else {
 			if (info.isFile()) {
-				throw new SubversionException("can't create directory, file with same name already exists: " + resource);
+				throw new SubversionException("file with same name as directory already exists: " + resource);
 			}
 			final Status status = transaction.getChangeSet().get(resource);
 			if (status == null) {
@@ -389,7 +389,7 @@ public abstract class AbstractBaseRepository implements Repository {
 				return resource;
 			}
 			if (report) {
-				throw new SubversionException("TODO"); // FIXME
+				throw new SubversionException("Can't resolve: " + resource + "@" + Revision.HEAD);
 			}
 			return null;
 		}
@@ -442,10 +442,10 @@ public abstract class AbstractBaseRepository implements Repository {
 	protected void validateTransaction(final Transaction transaction) {
 		final UUID transactionRepositoryId = transaction.getRepositoryId();
 		if (!repositoryId.equals(transactionRepositoryId)) {
-			throw new SubversionException("TODO"); // FIXME
+			throw new SubversionException("Transaction invalid: does not belong to this repository");
 		}
 		if (!transaction.isActive()) {
-			throw new SubversionException("TODO"); // FIXME
+			throw new SubversionException("Transaction invalid: has already been commited or rolledback");
 		}
 	}
 }

@@ -21,10 +21,10 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.InputStream;
 import java.net.URI;
-import java.util.Arrays;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -42,30 +42,16 @@ public abstract class AbstractOperation<T> implements Operation<T> {
 
 	protected static final String XML_PREAMBLE = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
 
-	protected static void check(final HttpResponse response, final int... expectedStatusCodes) {
-		final int statusCode = getStatusCode(response);
-
-		if (isExpected(statusCode, expectedStatusCodes)) {
-			return;
-		}
-
-		// FIXME throw more detailed exceptions
-
-		EntityUtils.consumeQuietly(response.getEntity()); // in case of unexpected status code we consume everything
-		throw new SubversionException("status code is: " + statusCode + ", expected was: "
-				+ Arrays.toString(expectedStatusCodes));
-	}
-
 	static InputStream getContent(final HttpResponse response) {
 		final HttpEntity entity = response.getEntity();
 		if (entity == null) {
-			throw new SubversionException("response without entity");
+			throw new SubversionException("Invalid server response: entity is missing");
 		}
 
 		try {
 			return entity.getContent();
 		} catch (final Exception e) {
-			throw new SubversionException("could not retrieve content stream", e);
+			throw new SubversionException("Invalid server response: content stream is missing", e);
 		}
 	}
 
@@ -74,19 +60,35 @@ public abstract class AbstractOperation<T> implements Operation<T> {
 		return (statusLine == null) ? 0 : statusLine.getStatusCode();
 	}
 
-	private static boolean isExpected(final int statusCode, final int... expectedStatusCodes) {
-		for (final int expectedStatusCode : expectedStatusCodes) {
-			if (expectedStatusCode == statusCode) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	protected final URI repository;
 
 	protected AbstractOperation(final URI repository) {
 		this.repository = repository;
+	}
+
+	protected void check(final HttpResponse response, final URI requestUri) {
+		final int statusCode = getStatusCode(response);
+
+		if (isExpectedStatusCode(statusCode)) {
+			return;
+		}
+
+		final String message;
+		switch (statusCode) {
+			case HttpStatus.SC_FORBIDDEN:
+				message = "Insuffient permissions to executor operation on url:" + requestUri;
+				break;
+			case HttpStatus.SC_NOT_FOUND:
+				message = "Requested url: " + requestUri + " could not be found";
+				break;
+			default:
+				message = "Unexpected status code: " + statusCode;
+		}
+
+		// in case of unexpected status code we consume everything
+		EntityUtils.consumeQuietly(response.getEntity());
+
+		throw new SubversionException(message);
 	}
 
 	/**
@@ -108,6 +110,7 @@ public abstract class AbstractOperation<T> implements Operation<T> {
 	public T execute(final HttpClient client, final HttpContext context) {
 		final HttpUriRequest request = createRequest();
 		final HttpResponse response = executeRequest(request, client, context);
+		check(response, request.getURI());
 		return processResponse(response);
 	}
 
@@ -119,6 +122,8 @@ public abstract class AbstractOperation<T> implements Operation<T> {
 			throw new SubversionException("could not execute request (" + request + ')', e);
 		}
 	}
+
+	protected abstract boolean isExpectedStatusCode(final int statusCode);
 
 	protected abstract T processResponse(final HttpResponse response);
 }

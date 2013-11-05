@@ -72,11 +72,14 @@ public class ResolveOperation extends AbstractOperation<Resource> {
 	}
 
 	@Override
+	protected boolean isExpectedStatusCode(final int statusCode) {
+		return (HttpStatus.SC_OK == statusCode)
+				|| (!reportNonExistingResources && (HttpStatus.SC_NOT_FOUND == statusCode));
+	}
+
+	@Override
 	protected Resource processResponse(final HttpResponse response) {
-		if (reportNonExistingResources) {
-			check(response, HttpStatus.SC_OK);
-		} else {
-			check(response, HttpStatus.SC_OK, HttpStatus.SC_NOT_FOUND);
+		if (!reportNonExistingResources) {
 			final int statusCode = getStatusCode(response);
 			if (statusCode == HttpStatus.SC_NOT_FOUND) {
 				EntityUtils.consumeQuietly(response.getEntity());

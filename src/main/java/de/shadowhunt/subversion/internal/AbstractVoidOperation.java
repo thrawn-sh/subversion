@@ -30,15 +30,9 @@ public abstract class AbstractVoidOperation extends AbstractOperation<Void> {
 		super(repository);
 	}
 
-	protected abstract void checkResponse(final HttpResponse response);
-
 	@Override
 	protected final Void processResponse(final HttpResponse response) {
-		try {
-			checkResponse(response);
-		} finally {
-			EntityUtils.consumeQuietly(response.getEntity());
-		}
+		EntityUtils.consumeQuietly(response.getEntity());
 		return null;
 	}
 

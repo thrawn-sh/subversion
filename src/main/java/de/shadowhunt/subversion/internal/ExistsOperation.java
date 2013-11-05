@@ -46,9 +46,12 @@ public class ExistsOperation extends AbstractOperation<Boolean> {
 	}
 
 	@Override
-	protected Boolean processResponse(final HttpResponse response) {
-		check(response, /* found */HttpStatus.SC_OK, /* not found */HttpStatus.SC_NOT_FOUND);
+	protected boolean isExpectedStatusCode(final int statusCode) {
+		return (HttpStatus.SC_OK == statusCode) || (HttpStatus.SC_NOT_FOUND == statusCode);
+	}
 
+	@Override
+	protected Boolean processResponse(final HttpResponse response) {
 		final int statusCode = getStatusCode(response);
 		EntityUtils.consumeQuietly(response.getEntity());
 		return (statusCode == HttpStatus.SC_OK);

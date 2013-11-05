@@ -60,9 +60,12 @@ public class ProbeServerOperation extends AbstractOperation<RepositoryConfig> {
 	}
 
 	@Override
-	protected RepositoryConfig processResponse(final HttpResponse response) {
-		check(response, HttpStatus.SC_OK);
+	protected boolean isExpectedStatusCode(final int statusCode) {
+		return HttpStatus.SC_OK == statusCode;
+	}
 
+	@Override
+	protected RepositoryConfig processResponse(final HttpResponse response) {
 		final Version version = determineVersion(response);
 		final Resource prefix;
 		final InputStream in = getContent(response);
