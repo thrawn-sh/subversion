@@ -44,7 +44,7 @@ public final class RepositoryFactory {
 	 *
 	 * @return a new {@link Repository} for given {@link URI}
 	 */
-	public static Repository createRepository(final URI repository, final HttpClient client, final HttpContext context) {
+	public static Repository createRepository(final URI repository, final HttpClient client, final HttpContext context) throws SubversionException {
 		final URI cleaned = removeEndingSlash(repository);
 
 		final ProbeServerOperation operation = new ProbeServerOperation(cleaned);
