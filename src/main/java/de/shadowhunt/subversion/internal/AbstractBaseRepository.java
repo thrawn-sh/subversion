@@ -94,9 +94,8 @@ public abstract class AbstractBaseRepository implements Repository {
 
 		final RepositoryCache cache = fromTransaction(transaction);
 		final Info info = info0(cache, resource, Revision.HEAD, true, false);
-		final String lockToken = (info == null) ? null : info.getLockToken();
 		final Resource uploadResource = config.getWorkingResource(transaction).append(resource);
-		final UploadOperation operation = new UploadOperation(repository, uploadResource, lockToken, content);
+		final UploadOperation operation = new UploadOperation(repository, uploadResource, info, content);
 		operation.execute(client, context);
 		if (info == null) {
 			transaction.register(resource, Status.ADDED);
@@ -107,7 +106,7 @@ public abstract class AbstractBaseRepository implements Repository {
 	}
 
 	@Override
-	public void copy(final Transaction transaction, final Resource srcResource, final Revision srcRevision, final Resource targetResource, final boolean parents) {
+	public void copy(final Transaction transaction, final Resource sourceResource, final Revision sourceRevision, final Resource targetResource, final boolean parents) {
 		validateTransaction(transaction);
 
 		if (parents) {
@@ -117,13 +116,19 @@ public abstract class AbstractBaseRepository implements Repository {
 		}
 
 		final RepositoryCache cache = fromTransaction(transaction);
-		final Info info = info0(cache, srcResource, srcRevision, true, true);
-		final Resource s = config.getVersionedResource(info.getResource(), info.getRevision());
-		final Resource t = config.getWorkingResource(transaction).append(targetResource);
+		final Info soruceInfo = info0(cache, sourceResource, sourceRevision, true, true);
+		final Info targetInfo = info0(cache, targetResource, Revision.HEAD, true, false);
+		final Resource source = config.getVersionedResource(soruceInfo.getResource(), soruceInfo.getRevision());
+		final Resource target = config.getWorkingResource(transaction).append(targetResource);
 
-		final CopyOperation operation = new CopyOperation(repository, s, t);
+		final CopyOperation operation = new CopyOperation(repository, source, target, targetInfo);
 		operation.execute(client, context);
-		transaction.register(targetResource, Status.ADDED);
+
+		if (targetInfo == null) {
+			transaction.register(targetResource, Status.ADDED);
+		} else {
+			transaction.register(targetResource, Status.MODIFIED);
+		}
 	}
 
 	void createFolder(final Transaction transaction, final Resource resource, final Revision revision, final boolean parents) {
@@ -162,7 +167,10 @@ public abstract class AbstractBaseRepository implements Repository {
 	public void delete(final Transaction transaction, final Resource resource) {
 		validateTransaction(transaction);
 
-		final DeleteOperation operation = new DeleteOperation(repository, config.getWorkingResource(transaction).append(resource));
+		final RepositoryCache cache = fromTransaction(transaction);
+		final Info info = info0(cache, resource, Revision.HEAD, true, true);
+
+		final DeleteOperation operation = new DeleteOperation(repository, config.getWorkingResource(transaction).append(resource), info);
 		operation.execute(client, context);
 		transaction.register(resource, Status.DELETED);
 	}
@@ -348,11 +356,12 @@ public abstract class AbstractBaseRepository implements Repository {
 	public void propertiesDelete(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
 		validateTransaction(transaction);
 
+		// there can only be a lock token if the file is already in the repository
 		final RepositoryCache cache = fromTransaction(transaction);
-		final Info info = info0(cache, resource, Revision.HEAD, true, true);
+		final Info info = info0(cache, resource, Revision.HEAD, true, false);
 
 		final Resource r = config.getWorkingResource(transaction).append(resource);
-		final PropertiesDeleteOperation operation = new PropertiesDeleteOperation(repository, r, info.getLockToken(), properties);
+		final PropertiesDeleteOperation operation = new PropertiesDeleteOperation(repository, r, info, properties);
 		operation.execute(client, context);
 		transaction.register(resource, Status.MODIFIED);
 	}
@@ -362,9 +371,11 @@ public abstract class AbstractBaseRepository implements Repository {
 		validateTransaction(transaction);
 
 		// there can only be a lock token if the file is already in the repository
-		final String lockTocken = retrieveLockToken(transaction, resource);
+		final RepositoryCache cache = fromTransaction(transaction);
+		final Info info = info0(cache, resource, Revision.HEAD, true, false);
+
 		final Resource r = config.getWorkingResource(transaction).append(resource);
-		final PropertiesSetOperation operation = new PropertiesSetOperation(repository, r, lockTocken, properties);
+		final PropertiesSetOperation operation = new PropertiesSetOperation(repository, r, info, properties);
 		operation.execute(client, context);
 		transaction.register(resource, Status.MODIFIED);
 	}
@@ -400,23 +411,13 @@ public abstract class AbstractBaseRepository implements Repository {
 		return operation.execute(client, context);
 	}
 
-	private String retrieveLockToken(final Transaction transaction, final Resource resource) {
-		final Map<Resource, Status> changeSet = transaction.getChangeSet();
-		if (Status.ADDED != changeSet.get(resource)) {
-			final RepositoryCache cache = fromTransaction(transaction);
-			final Info info = info0(cache, resource, Revision.HEAD, true, true);
-			return info.getLockToken();
-		}
-		return null;
-	}
-
 	@Override
 	public void rollback(final Transaction transaction) {
 		validateTransaction(transaction);
 
 		try {
 			final Resource resource = config.getTransactionResource(transaction);
-			final DeleteOperation operation = new DeleteOperation(repository, resource);
+			final DeleteOperation operation = new DeleteOperation(repository, resource, null);
 			operation.execute(client, context);
 		} finally {
 			transaction.invalidate();

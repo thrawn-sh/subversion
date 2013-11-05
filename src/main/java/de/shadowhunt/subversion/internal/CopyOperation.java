@@ -27,24 +27,28 @@ import org.apache.http.client.methods.HttpUriRequest;
 
 import de.shadowhunt.http.client.methods.DavTemplateRequest;
 import de.shadowhunt.subversion.Depth;
+import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.internal.util.URIUtils;
 
 public class CopyOperation extends AbstractVoidOperation {
 
+	private final Info info;
+
 	private final Resource source;
 
 	private final Resource target;
 
-	public CopyOperation(final URI repository, final Resource source, final Resource target) {
+	public CopyOperation(final URI repository, final Resource source, final Resource target, final Info info) {
 		super(repository);
 		this.source = source;
 		this.target = target;
+		this.info = info;
 	}
 
 	@Override
 	protected void checkResponse(final HttpResponse response) {
-		check(response, HttpStatus.SC_CREATED);
+		check(response, HttpStatus.SC_CREATED, HttpStatus.SC_NO_CONTENT);
 	}
 
 	@Override
@@ -55,6 +59,10 @@ public class CopyOperation extends AbstractVoidOperation {
 		request.addHeader("Destination", targetUri.toASCIIString());
 		request.addHeader("Depth", Depth.INFINITY.value);
 		request.addHeader("Override", "T");
+		if ((info != null) && info.isLocked()) {
+			final URI lockTarget = URIUtils.createURI(repository, info.getResource());
+			request.addHeader("If", '<' + lockTarget.toASCIIString() + "> (<" + info.getLockToken() + ">)");
+		}
 		return request;
 	}
 }

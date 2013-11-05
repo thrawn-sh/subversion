@@ -26,16 +26,20 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpUriRequest;
 
+import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.internal.util.URIUtils;
 
 public class DeleteOperation extends AbstractVoidOperation {
 
+	private final Info info;
+
 	private final Resource resource;
 
-	public DeleteOperation(final URI repository, final Resource resource) {
+	public DeleteOperation(final URI repository, final Resource resource, final Info info) {
 		super(repository);
 		this.resource = resource;
+		this.info = info;
 	}
 
 	@Override
@@ -46,6 +50,11 @@ public class DeleteOperation extends AbstractVoidOperation {
 	@Override
 	protected HttpUriRequest createRequest() {
 		final URI uri = URIUtils.createURI(repository, resource);
-		return new HttpDelete(uri);
+		final HttpUriRequest request = new HttpDelete(uri);
+		if ((info != null) && info.isLocked()) {
+			final URI lockTarget = URIUtils.createURI(repository, info.getResource());
+			request.addHeader("If", '<' + lockTarget.toASCIIString() + "> (<" + info.getLockToken() + ">)");
+		}
+		return request;
 	}
 }

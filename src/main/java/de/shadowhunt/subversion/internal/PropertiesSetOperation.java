@@ -28,24 +28,23 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 
 import de.shadowhunt.http.client.methods.DavTemplateRequest;
+import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.internal.util.URIUtils;
 
 public class PropertiesSetOperation extends AbstractVoidOperation {
 
-	private static final int PREFIX = 4; // /$svn/{baseline}/{id}/
-
-	private final String lock;
+	private final Info info;
 
 	private final ResourceProperty[] properties;
 
 	private final Resource resource;
 
-	public PropertiesSetOperation(final URI repository, final Resource resource, final String lock, final ResourceProperty[] properties) {
+	public PropertiesSetOperation(final URI repository, final Resource resource, final Info info, final ResourceProperty[] properties) {
 		super(repository);
 		this.resource = resource;
-		this.lock = lock;
+		this.info = info;
 		this.properties = properties;
 	}
 
@@ -59,9 +58,9 @@ public class PropertiesSetOperation extends AbstractVoidOperation {
 		final URI uri = URIUtils.createURI(repository, resource);
 		final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH", uri);
 
-		if (lock != null) {
-			final URI lockTarget = URIUtils.createURI(repository, resource.subResource(PREFIX));
-			request.addHeader("If", '<' + lockTarget.toASCIIString() + "> (<" + lock + ">)");
+		if ((info != null) && info.isLocked()) {
+			final URI lockTarget = URIUtils.createURI(repository, info.getResource());
+			request.addHeader("If", '<' + lockTarget.toASCIIString() + "> (<" + info.getLockToken() + ">)");
 		}
 
 		final StringBuilder sb = new StringBuilder(XML_PREAMBLE);
