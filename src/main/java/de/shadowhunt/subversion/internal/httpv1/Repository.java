@@ -99,6 +99,6 @@ public class Repository extends AbstractBaseRepository {
 		final Resource transactionResource = config.getTransactionResource(transaction);
 		final CheckoutOperation co = new CheckoutOperation(repository, existingResource, transactionResource);
 		co.execute(client, context);
-		transaction.register(resource, Status.EXISTED);
+		transaction.register(resource, Status.EXISTS);
 	}
 }

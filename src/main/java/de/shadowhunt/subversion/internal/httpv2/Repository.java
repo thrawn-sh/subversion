@@ -74,6 +74,6 @@ public class Repository extends AbstractBaseRepository {
 
 	@Override
 	protected void registerResource(final Transaction transaction, final Resource resource, final Revision revision) {
-		transaction.register(resource, Status.EXISTED);
+		transaction.register(resource, Status.EXISTS);
 	}
 }
