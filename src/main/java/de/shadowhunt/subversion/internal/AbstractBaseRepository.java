@@ -168,7 +168,7 @@ public abstract class AbstractBaseRepository implements Repository {
 		validateTransaction(transaction);
 
 		final RepositoryCache cache = fromTransaction(transaction);
-		final Info info = info0(cache, resource, Revision.HEAD, true, true);
+		final Info info = info0(cache, resource, Revision.HEAD, true, false);
 
 		final DeleteOperation operation = new DeleteOperation(repository, config.getWorkingResource(transaction).append(resource), info);
 		operation.execute(client, context);
