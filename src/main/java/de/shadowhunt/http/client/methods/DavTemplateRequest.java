@@ -34,6 +34,7 @@ public final class DavTemplateRequest extends HttpEntityEnclosingRequestBase {
 	 * Create a new {@link DavTemplateRequest}
 	 *
 	 * @param method HTTP method name
+	 * @param uri full qualified {@link URI} this {@link DavTemplateRequest} is directed to
 	 */
 	public DavTemplateRequest(final String method, final URI uri) {
 		this.method = method;

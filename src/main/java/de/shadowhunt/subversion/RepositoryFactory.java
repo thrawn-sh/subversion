@@ -38,9 +38,11 @@ public final class RepositoryFactory {
 	/**
 	 * Create a new {@link Repository} for given {@link URI} and {@link Version}
 	 *
-	 * @param repository {@link URI} to the root of the repository (e.g: http://repository.example.net/svn/test_repo), only http and https scheme are supported
+	 * @param repository {@link URI} to the root of the repository (e.g: http://repository.example.net/svn/test_repo)
+	 * @param client {@link HttpClient} that will handle all requests for this repository
+	 * @param context {@link HttpContext} that will be used by all requests to this repository
 	 *
-	 * @return a new {@link Repository} for given {@link URI} and {@link Version}
+	 * @return a new {@link Repository} for given {@link URI}
 	 */
 	public static Repository createRepository(final URI repository, final HttpClient client, final HttpContext context) {
 		final URI cleaned = removeEndingSlash(repository);
