@@ -91,18 +91,36 @@ public final class TransactionImpl extends RepositoryCache implements Transactio
 
 	@Override
 	public boolean isChangeSetEmpty() {
-		return changeSet.isEmpty();
+		if (changeSet.isEmpty()) {
+			return true;
+		}
+		for (final Status status : changeSet.values()) {
+			if (status != Status.EXISTS) {
+				return false;
+			}
+		}
+		// no modifications to repository
+		return true;
 	}
 
 	@Override
-	public void register(final Resource resource, final Status status) {
+	public boolean register(final Resource resource, final Status status) {
 		final Status old = changeSet.put(resource, status);
 		if (old != null) {
+			// if we delete an newly added resource, we remove completely
+			// remove the resource from the changeset
+			if ((Status.ADDED == old) && (Status.DELETED == status)) {
+				changeSet.remove(resource);
+				return true;
+			}
+
+			// previous value had higher order, and must therefore be preserved
 			if (old.order > status.order) {
-				// previous value had higher order, and must therefore be preserved
 				changeSet.put(resource, old);
+				return false;
 			}
 		}
+		return true;
 	}
 
 	@Override

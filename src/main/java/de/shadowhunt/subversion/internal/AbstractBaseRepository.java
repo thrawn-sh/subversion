@@ -22,6 +22,7 @@ package de.shadowhunt.subversion.internal;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -137,6 +138,14 @@ public abstract class AbstractBaseRepository implements Repository {
 				throw new SubversionException("can't create directory, file with same name already exists: " + resource);
 			}
 			registerResource(transaction, resource, revision);
+		}
+
+		Resource current = resource.getParent();
+		while (!Resource.ROOT.equals(current)) {
+			if (!transaction.register(current, Status.EXISTS)) {
+				break;
+			}
+			current = current.getParent();
 		}
 	}
 
@@ -320,10 +329,10 @@ public abstract class AbstractBaseRepository implements Repository {
 	public void propertiesSet(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
 		validateTransaction(transaction);
 
-		final RepositoryCache cache = fromTransaction(transaction);
-		final Info info = info0(cache, resource, Revision.HEAD, true, true);
+		// there can only be a lock token if the file is already in the repository
+		final String lockTocken = retrieveLockToken(transaction, resource);
 		final Resource r = config.getWorkingResource(transaction).append(resource);
-		final PropertiesSetOperation operation = new PropertiesSetOperation(repository, r, info.getLockToken(), properties);
+		final PropertiesSetOperation operation = new PropertiesSetOperation(repository, r, lockTocken, properties);
 		operation.execute(client, context);
 		transaction.register(resource, Status.MODIFIED);
 	}
@@ -357,6 +366,16 @@ public abstract class AbstractBaseRepository implements Repository {
 		final Revision head = cache.getConcreteRevision(Revision.HEAD);
 		final ResolveOperation operation = new ResolveOperation(repository, resource, head, revision, config, report);
 		return operation.execute(client, context);
+	}
+
+	private String retrieveLockToken(final Transaction transaction, final Resource resource) {
+		final Map<Resource, Status> changeSet = transaction.getChangeSet();
+		if (Status.ADDED != changeSet.get(resource)) {
+			final RepositoryCache cache = fromTransaction(transaction);
+			final Info info = info0(cache, resource, Revision.HEAD, true, true);
+			return info.getLockToken();
+		}
+		return null;
 	}
 
 	@Override
