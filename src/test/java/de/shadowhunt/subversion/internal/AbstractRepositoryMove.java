@@ -34,6 +34,7 @@ import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction;
+import de.shadowhunt.subversion.Transaction.Status;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -91,7 +92,7 @@ public class AbstractRepositoryMove {
 		final Resource target = prefix.append(Resource.create("file_move.txt"));
 
 		AbstractRepositoryAdd.file(repository, source, "A", true);
-		AbstractRepositoryAdd.file(repository, source, "B", true);
+		AbstractRepositoryAdd.file(repository, source, "B", false);
 
 		final Info sInfo = repository.info(source, Revision.HEAD);
 		final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0);
@@ -230,5 +231,77 @@ public class AbstractRepositoryMove {
 
 		Assert.assertTrue("subfile must exist", repository.exists(target.append(subFile), Revision.HEAD));
 		Assert.assertTrue("subfolder must exist", repository.exists(target.append(subFolder), Revision.HEAD));
+	}
+
+	@Test
+	public void test04_moveFileToExisiting() throws Exception {
+		final Resource source = prefix.append(Resource.create("file_existing_source.txt"));
+		final Resource target = prefix.append(Resource.create("file_existing_target.txt"));
+
+		AbstractRepositoryAdd.file(repository, source, "source", true);
+		AbstractRepositoryAdd.file(repository, target, "target", true);
+
+		final Info sInfo = repository.info(source, Revision.HEAD);
+		final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0);
+
+		final Transaction transaction = repository.createTransaction();
+		try {
+			Assert.assertTrue("transaction must be active", transaction.isActive());
+			repository.move(transaction, source, target, true);
+			Assert.assertTrue("transaction must be active", transaction.isActive());
+			Assert.assertEquals("changeset must contain: " + target, Status.MODIFIED, transaction.getChangeSet().get(target));
+			AbstractRepositoryMkdir.assertParentsMapped(target.getParent(), transaction);
+			repository.commit(transaction, "copy");
+			Assert.assertFalse("transaction must not be active", transaction.isActive());
+		} catch (final Exception e) {
+			repository.rollback(transaction);
+			throw e;
+		}
+
+		Assert.assertFalse(source + " must not exist", repository.exists(source, Revision.HEAD));
+		Assert.assertTrue(target + " must exist", repository.exists(target, Revision.HEAD));
+
+		final Info tInfo = repository.info(target, Revision.HEAD);
+		Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
+
+		final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0);
+		Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
+		Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
+	}
+
+	@Test
+	public void test04_moveFolderToExisiting() throws Exception {
+		final Resource source = prefix.append(Resource.create("folder_exisitng_source"));
+		final Resource target = prefix.append(Resource.create("folder_exisitng_target"));
+
+		AbstractRepositoryMkdir.mkdir(repository, source, true);
+		AbstractRepositoryMkdir.mkdir(repository, target, true);
+
+		final Info sInfo = repository.info(source, Revision.HEAD);
+		final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0);
+
+		final Transaction transaction = repository.createTransaction();
+		try {
+			Assert.assertTrue("transaction must be active", transaction.isActive());
+			repository.move(transaction, source, target, true);
+			Assert.assertTrue("transaction must be active", transaction.isActive());
+			Assert.assertEquals("changeset must contain: " + target, Status.MODIFIED, transaction.getChangeSet().get(target));
+			AbstractRepositoryMkdir.assertParentsMapped(target.getParent(), transaction);
+			repository.commit(transaction, "copy");
+			Assert.assertFalse("transaction must not be active", transaction.isActive());
+		} catch (final Exception e) {
+			repository.rollback(transaction);
+			throw e;
+		}
+
+		Assert.assertFalse(source + " must not exist", repository.exists(source, Revision.HEAD));
+		Assert.assertTrue(target + " must exist", repository.exists(target, Revision.HEAD));
+
+		final Info tInfo = repository.info(target, Revision.HEAD);
+		Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
+
+		final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0);
+		Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
+		Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
 	}
 }

@@ -33,15 +33,6 @@ import org.junit.Test;
 
 public class AbstractPrepare {
 
-	private final File base;
-
-	private final URI dumpUri;
-
-	protected AbstractPrepare(final URI dumpUri, final File base) {
-		this.dumpUri = dumpUri;
-		this.base = base;
-	}
-
 	private static boolean extractArchive(final File zip, final File prefix) throws Exception {
 		final ZipFile zipFile = new ZipFile(zip);
 		final Enumeration<? extends ZipEntry> enu = zipFile.entries();
@@ -74,6 +65,15 @@ public class AbstractPrepare {
 		}
 		zipFile.close();
 		return true;
+	}
+
+	private final File base;
+
+	private final URI dumpUri;
+
+	protected AbstractPrepare(final URI dumpUri, final File base) {
+		this.dumpUri = dumpUri;
+		this.base = base;
 	}
 
 	@Test

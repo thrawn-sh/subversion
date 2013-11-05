@@ -19,6 +19,7 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.util.Map;
 import java.util.UUID;
 
 import org.junit.Assert;
@@ -31,10 +32,21 @@ import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction;
+import de.shadowhunt.subversion.Transaction.Status;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AbstractRepositoryMkdir {
+
+	public static void assertParentsMapped(final Resource resource, final Transaction transaction) {
+		final Map<Resource, Status> changeSet = transaction.getChangeSet();
+
+		Resource current = resource;
+		while (!Resource.ROOT.equals(current)) {
+			Assert.assertEquals(current + " must be mapped", Status.EXISTS, changeSet.get(current));
+			current = current.getParent();
+		}
+	}
 
 	public static void mkdir(final Repository repository, final Resource resource, final boolean parents) throws Exception {
 		final Transaction transaction = repository.createTransaction();
@@ -43,7 +55,6 @@ public class AbstractRepositoryMkdir {
 
 			repository.mkdir(transaction, resource, parents);
 			Assert.assertTrue("transaction must be active", transaction.isActive());
-			Assert.assertTrue("changeset must contain: " + resource, transaction.getChangeSet().containsKey(resource));
 			repository.commit(transaction, "mkdir " + resource);
 			Assert.assertFalse("transaction must be not active", transaction.isActive());
 		} catch (final Exception e) {
@@ -103,7 +114,8 @@ public class AbstractRepositoryMkdir {
 			Assert.assertTrue("transaction must be active", transaction.isActive());
 			repository.mkdir(transaction, resource, false);
 			Assert.assertTrue("transaction must be active", transaction.isActive());
-			Assert.assertTrue("changeset must contain: " + resource, transaction.getChangeSet().containsKey(resource));
+			Assert.assertEquals("changeset must contain: " + resource, Status.ADDED, transaction.getChangeSet().get(resource));
+			assertParentsMapped(resource.getParent(), transaction);
 			repository.rollback(transaction);
 			Assert.assertFalse("transaction must not be active", transaction.isActive());
 		} catch (final Exception e) {

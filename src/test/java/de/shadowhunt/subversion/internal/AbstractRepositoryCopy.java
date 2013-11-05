@@ -34,6 +34,7 @@ import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction;
+import de.shadowhunt.subversion.Transaction.Status;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -76,7 +77,7 @@ public class AbstractRepositoryCopy {
 			Assert.assertTrue("transaction must be active", transaction.isActive());
 			repository.copy(transaction, source, Revision.HEAD, target, true);
 			Assert.assertTrue("transaction must be active", transaction.isActive());
-			Assert.assertTrue("changeset must contain: " + target, transaction.getChangeSet().containsKey(target));
+			Assert.assertEquals("changeset must contain: " + target, Status.ADDED, transaction.getChangeSet().get(target));
 			repository.rollback(transaction);
 			Assert.assertFalse("transaction must not be active", transaction.isActive());
 		} catch (final Exception e) {
@@ -91,14 +92,15 @@ public class AbstractRepositoryCopy {
 		final Resource target = prefix.append(Resource.create("file_copy.txt"));
 
 		AbstractRepositoryAdd.file(repository, source, "A", true);
-		AbstractRepositoryAdd.file(repository, source, "B", true);
+		AbstractRepositoryAdd.file(repository, source, "B", false);
 
 		final Transaction transaction = repository.createTransaction();
 		try {
 			Assert.assertTrue("transaction must be active", transaction.isActive());
 			repository.copy(transaction, source, Revision.HEAD, target, true);
 			Assert.assertTrue("transaction must be active", transaction.isActive());
-			Assert.assertTrue("changeset must contain: " + target, transaction.getChangeSet().containsKey(target));
+			Assert.assertEquals("changeset must contain: " + target, Status.ADDED, transaction.getChangeSet().get(target));
+			AbstractRepositoryMkdir.assertParentsMapped(target.getParent(), transaction);
 			repository.commit(transaction, "copy");
 			Assert.assertFalse("transaction must not be active", transaction.isActive());
 		} catch (final Exception e) {
@@ -148,7 +150,8 @@ public class AbstractRepositoryCopy {
 			Assert.assertTrue("transaction must be active", transaction.isActive());
 			repository.copy(transaction, source, Revision.HEAD, target, true);
 			Assert.assertTrue("transaction must be active", transaction.isActive());
-			Assert.assertTrue("changeset must contain: " + target, transaction.getChangeSet().containsKey(target));
+			Assert.assertEquals("changeset must contain: " + target, Status.ADDED, transaction.getChangeSet().get(target));
+			AbstractRepositoryMkdir.assertParentsMapped(target.getParent(), transaction);
 			repository.commit(transaction, "copy");
 			Assert.assertFalse("transaction must not be active", transaction.isActive());
 		} catch (final Exception e) {
@@ -199,7 +202,8 @@ public class AbstractRepositoryCopy {
 			Assert.assertTrue("transaction must be active", transaction.isActive());
 			repository.copy(transaction, source, Revision.HEAD, target, true);
 			Assert.assertTrue("transaction must be active", transaction.isActive());
-			Assert.assertTrue("changeset must contain: " + target, transaction.getChangeSet().containsKey(target));
+			Assert.assertEquals("changeset must contain: " + target, Status.ADDED, transaction.getChangeSet().get(target));
+			AbstractRepositoryMkdir.assertParentsMapped(target.getParent(), transaction);
 			repository.commit(transaction, "copy");
 			Assert.assertFalse("transaction must not be active", transaction.isActive());
 		} catch (final Exception e) {
@@ -229,7 +233,8 @@ public class AbstractRepositoryCopy {
 			Assert.assertTrue("transaction must be active", transaction.isActive());
 			repository.copy(transaction, source, sourceRevision, target, true);
 			Assert.assertTrue("transaction must be active", transaction.isActive());
-			Assert.assertTrue("changeset must contain: " + target, transaction.getChangeSet().containsKey(target));
+			Assert.assertEquals("changeset must contain: " + target, Status.ADDED, transaction.getChangeSet().get(target));
+			AbstractRepositoryMkdir.assertParentsMapped(target.getParent(), transaction);
 			repository.commit(transaction, "copy");
 			Assert.assertFalse("transaction must not be active", transaction.isActive());
 		} catch (final Exception e) {
@@ -260,7 +265,8 @@ public class AbstractRepositoryCopy {
 			Assert.assertTrue("transaction must be active", transaction.isActive());
 			repository.copy(transaction, source, sourceRevision, target, true);
 			Assert.assertTrue("transaction must be active", transaction.isActive());
-			Assert.assertTrue("changeset must contain: " + target, transaction.getChangeSet().containsKey(target));
+			Assert.assertEquals("changeset must contain: " + target, Status.ADDED, transaction.getChangeSet().get(target));
+			AbstractRepositoryMkdir.assertParentsMapped(target.getParent(), transaction);
 			repository.commit(transaction, "copy");
 			Assert.assertFalse("transaction must not be active", transaction.isActive());
 		} catch (final Exception e) {
@@ -271,6 +277,70 @@ public class AbstractRepositoryCopy {
 		Assert.assertTrue(target + " must exist", repository.exists(target, Revision.HEAD));
 
 		final List<Log> sLog = repository.log(source, Revision.INITIAL, sourceRevision, 0);
+		final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0);
+		Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
+		Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
+	}
+
+	@Test
+	public void test04_copyFileToExisiting() throws Exception {
+		final Resource source = prefix.append(Resource.create("file_exisitng_source.txt"));
+		final Resource target = prefix.append(Resource.create("file_exisitng_target.txt"));
+
+		AbstractRepositoryAdd.file(repository, source, "source", true);
+		AbstractRepositoryAdd.file(repository, target, "target", true);
+
+		final Transaction transaction = repository.createTransaction();
+		try {
+			Assert.assertTrue("transaction must be active", transaction.isActive());
+			repository.copy(transaction, source, Revision.HEAD, target, true);
+			Assert.assertTrue("transaction must be active", transaction.isActive());
+			Assert.assertEquals("changeset must contain: " + target, Status.MODIFIED, transaction.getChangeSet().get(target));
+			AbstractRepositoryMkdir.assertParentsMapped(target.getParent(), transaction);
+			repository.commit(transaction, "copy");
+			Assert.assertFalse("transaction must not be active", transaction.isActive());
+		} catch (final Exception e) {
+			repository.rollback(transaction);
+			throw e;
+		}
+
+		Assert.assertTrue(target + " must exist", repository.exists(target, Revision.HEAD));
+
+		final Info sInfo = repository.info(source, Revision.HEAD);
+		final Info tInfo = repository.info(target, Revision.HEAD);
+		Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
+
+		final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0);
+		final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0);
+		Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
+		Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
+	}
+
+	@Test
+	public void test04_copyFolderToExisiting() throws Exception {
+		final Resource source = prefix.append(Resource.create("folder_exisitng_source"));
+		final Resource target = prefix.append(Resource.create("folder_exisitng_target"));
+
+		AbstractRepositoryMkdir.mkdir(repository, source, true);
+		AbstractRepositoryMkdir.mkdir(repository, target, true);
+
+		final Transaction transaction = repository.createTransaction();
+		try {
+			Assert.assertTrue("transaction must be active", transaction.isActive());
+			repository.copy(transaction, source, Revision.HEAD, target, true);
+			Assert.assertTrue("transaction must be active", transaction.isActive());
+			Assert.assertEquals("changeset must contain: " + target, Status.MODIFIED, transaction.getChangeSet().get(target));
+			AbstractRepositoryMkdir.assertParentsMapped(target.getParent(), transaction);
+			repository.commit(transaction, "copy");
+			Assert.assertFalse("transaction must not be active", transaction.isActive());
+		} catch (final Exception e) {
+			repository.rollback(transaction);
+			throw e;
+		}
+
+		Assert.assertTrue(target + " must exist", repository.exists(target, Revision.HEAD));
+
+		final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0);
 		final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0);
 		Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
 		Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));

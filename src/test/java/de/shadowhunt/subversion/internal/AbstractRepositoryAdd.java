@@ -32,6 +32,7 @@ import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction;
+import de.shadowhunt.subversion.Transaction.Status;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -47,7 +48,9 @@ public class AbstractRepositoryAdd {
 			Assert.assertTrue("transaction must be active", transaction.isActive());
 			repository.add(transaction, resource, true, Helper.getInputStream(content));
 			Assert.assertTrue("transaction must be active", transaction.isActive());
-			Assert.assertTrue("changeset must contain: " + resource, transaction.getChangeSet().containsKey(resource));
+
+			final Status expectedStatus = (initial) ? Status.ADDED : Status.MODIFIED;
+			Assert.assertEquals("changeset must contain: " + resource, expectedStatus, transaction.getChangeSet().get(resource));
 			repository.commit(transaction, "add " + resource);
 			Assert.assertFalse("transaction must not be active", transaction.isActive());
 		} catch (final Exception e) {
@@ -111,7 +114,7 @@ public class AbstractRepositoryAdd {
 			Assert.assertTrue("transaction must be active", transaction.isActive());
 			repository.add(transaction, resource, false, Helper.getInputStream("test"));
 			Assert.assertTrue("transaction must be active", transaction.isActive());
-			Assert.assertTrue("changeset must contain: " + resource, transaction.getChangeSet().containsKey(resource));
+			Assert.assertEquals("changeset must contain: " + resource, Status.ADDED, transaction.getChangeSet().get(resource));
 			repository.rollback(transaction);
 			Assert.assertFalse("transaction must not be active", transaction.isActive());
 		} catch (final Exception e) {
