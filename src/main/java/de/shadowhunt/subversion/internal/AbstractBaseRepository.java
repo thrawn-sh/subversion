@@ -116,9 +116,9 @@ public abstract class AbstractBaseRepository implements Repository {
 		}
 
 		final RepositoryCache cache = fromTransaction(transaction);
-		final Info soruceInfo = info0(cache, sourceResource, sourceRevision, true, true);
+		final Info sourceInfo = info0(cache, sourceResource, sourceRevision, true, true);
 		final Info targetInfo = info0(cache, targetResource, Revision.HEAD, true, false);
-		final Resource source = config.getVersionedResource(soruceInfo.getResource(), soruceInfo.getRevision());
+		final Resource source = config.getVersionedResource(sourceInfo.getResource(), sourceInfo.getRevision());
 		final Resource target = config.getWorkingResource(transaction).append(targetResource);
 
 		final CopyOperation operation = new CopyOperation(repository, source, target, targetInfo);
@@ -389,7 +389,7 @@ public abstract class AbstractBaseRepository implements Repository {
 				return resource;
 			}
 			if (report) {
-				throw new SubversionException("Can't resolve: " + resource + "@" + Revision.HEAD);
+				throw new SubversionException("Can't resolve: " + resource + '@' + Revision.HEAD);
 			}
 			return null;
 		}
