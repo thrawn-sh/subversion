@@ -59,8 +59,11 @@ public class WebDavHttpRequestRetryHandler extends DefaultHttpRequestRetryHandle
 		idempotentMethods.put("HEAD", Boolean.TRUE);
 		idempotentMethods.put("OPTIONS", Boolean.TRUE);
 		idempotentMethods.put("PUT", Boolean.TRUE);
-		idempotentMethods.put("POST", Boolean.FALSE); // not idempotent FIXME in subversion context idempotent?
+		// NOTE: POST request are only used to create transactional resources in httpv2,
+		// these POST requests, don't have any state => they can be retried
+		idempotentMethods.put("POST", Boolean.TRUE);
 		idempotentMethods.put("TRACE", Boolean.TRUE);
+
 		// webdav
 		idempotentMethods.put("CHECKOUT", Boolean.TRUE);
 		idempotentMethods.put("COPY", Boolean.TRUE);
