@@ -111,6 +111,8 @@ public interface Repository {
 
 	UUID getRepositoryId();
 
+	Version getProtocolVersion();
+
 	/**
 	 * Retrieve information for the resource
 	 *
