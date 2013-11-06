@@ -20,6 +20,7 @@
 package de.shadowhunt.subversion;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -35,6 +36,12 @@ import de.shadowhunt.subversion.internal.RepositoryConfig;
 @ThreadSafe
 public final class RepositoryFactory {
 
+	private static final String DEFAULT_FRAGMENT = null;
+
+	private static final String DEFAULT_QUERY = null;
+
+	private static final String DEFAULT_USER_INFO = null;
+
 	/**
 	 * Create a new {@link Repository} for given {@link URI} and {@link Version}
 	 *
@@ -45,20 +52,21 @@ public final class RepositoryFactory {
 	 * @return a new {@link Repository} for given {@link URI}
 	 */
 	public static Repository createRepository(final URI repository, final HttpClient client, final HttpContext context) throws SubversionException {
-		final URI cleaned = removeEndingSlash(repository);
+		final URI sanatized = sanatize(repository);
 
-		final ProbeServerOperation operation = new ProbeServerOperation(cleaned);
+		final ProbeServerOperation operation = new ProbeServerOperation(sanatized);
 		final RepositoryConfig config = operation.execute(client, context);
-		return config.create(cleaned, client, context);
+		return config.create(sanatized, client, context);
 	}
 
-	private static URI removeEndingSlash(final URI uri) {
-		final String string = uri.toString();
-		final int lastChar = string.length() - 1;
-		if (string.charAt(lastChar) == '/') {
-			return URI.create(string.substring(0, lastChar));
+	private static URI sanatize(final URI uri) {
+		final Resource path = Resource.create(uri.getPath());
+
+		try {
+			return new URI(uri.getScheme(), DEFAULT_USER_INFO, uri.getHost(), uri.getPort(), path.getValue(), DEFAULT_QUERY, DEFAULT_FRAGMENT);
+		} catch (final URISyntaxException e) {
+			throw new IllegalArgumentException(e.getMessage(), e);
 		}
-		return uri;
 	}
 
 	private RepositoryFactory() {
