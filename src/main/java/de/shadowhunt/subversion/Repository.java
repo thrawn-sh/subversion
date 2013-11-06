@@ -34,6 +34,15 @@ import javax.annotation.concurrent.ThreadSafe;
 public interface Repository {
 
 	/**
+	 * Enum that represents the version of the subversion server
+	 */
+	public static enum ProtocolVersion {
+
+		HTTPv1,
+		HTTPv2
+	}
+
+	/**
 	 * Upload a new revision of the resource and set properties
 	 *
 	 * @param transaction the current running {@link Transaction}
@@ -111,7 +120,7 @@ public interface Repository {
 
 	UUID getRepositoryId();
 
-	Version getProtocolVersion();
+	ProtocolVersion getProtocolVersion();
 
 	/**
 	 * Retrieve information for the resource

@@ -58,7 +58,7 @@ public abstract class RepositoryFactory {
 	}
 
 	/**
-	 * Create a new {@link Repository} for given {@link URI} and {@link Version}
+	 * Create a new {@link Repository} for given {@link URI} and {@link ProtocolVersion}
 	 *
 	 * @param repository {@link URI} to the root of the repository (e.g: http://repository.example.net/svn/test_repo)
 	 * @param client {@link HttpClient} that will handle all requests for this repository

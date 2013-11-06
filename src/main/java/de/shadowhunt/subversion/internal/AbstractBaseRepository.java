@@ -41,7 +41,6 @@ import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.Transaction.Status;
-import de.shadowhunt.subversion.Version;
 import de.shadowhunt.subversion.internal.util.URIUtils;
 
 /**
@@ -252,11 +251,6 @@ public abstract class AbstractBaseRepository implements Repository {
 			}
 		}
 		return infos;
-	}
-
-	@Override
-	public Version getProtocolVersion() {
-		return config.getProtocolVersion();
 	}
 
 	@Override

@@ -91,6 +91,11 @@ public class Repository extends AbstractBaseRepository {
 	}
 
 	@Override
+	public ProtocolVersion getProtocolVersion() {
+		return ProtocolVersion.HTTPv1;
+	}
+
+	@Override
 	protected void registerResource(final Transaction transaction, final Resource resource, final Revision revision) {
 		final RepositoryCache cache = fromTransaction(transaction);
 		if (cache.status(resource) != null) {

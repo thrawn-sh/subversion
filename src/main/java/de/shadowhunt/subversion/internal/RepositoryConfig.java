@@ -28,7 +28,6 @@ import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
-import de.shadowhunt.subversion.Version;
 
 public interface RepositoryConfig {
 
@@ -39,8 +38,6 @@ public interface RepositoryConfig {
 	Resource getCommitMessageResource(Transaction transaction);
 
 	Resource getCreateTransactionResource();
-
-	Version getProtocolVersion();
 
 	Resource getRegisterResource(Resource resource, Revision revision);
 

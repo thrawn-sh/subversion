@@ -30,18 +30,18 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 
 import de.shadowhunt.http.client.methods.DavTemplateRequest;
+import de.shadowhunt.subversion.Repository.ProtocolVersion;
 import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.Version;
 
 public class ProbeServerOperation extends AbstractOperation<RepositoryConfig> {
 
-	private static Version determineVersion(final HttpResponse response) {
+	private static ProtocolVersion determineVersion(final HttpResponse response) {
 		for (final Header header : response.getAllHeaders()) {
 			if (header.getName().startsWith("SVN")) {
-				return Version.HTTPv2;
+				return ProtocolVersion.HTTPv2;
 			}
 		}
-		return Version.HTTPv1;
+		return ProtocolVersion.HTTPv1;
 	}
 
 	public ProbeServerOperation(final URI repository) {
@@ -66,7 +66,7 @@ public class ProbeServerOperation extends AbstractOperation<RepositoryConfig> {
 
 	@Override
 	protected RepositoryConfig processResponse(final HttpResponse response) {
-		final Version version = determineVersion(response);
+		final ProtocolVersion version = determineVersion(response);
 		final Resource prefix;
 		final InputStream in = getContent(response);
 		try {
@@ -75,7 +75,7 @@ public class ProbeServerOperation extends AbstractOperation<RepositoryConfig> {
 			IOUtils.closeQuietly(in);
 		}
 
-		if (Version.HTTPv2 == version) {
+		if (ProtocolVersion.HTTPv2 == version) {
 			return new de.shadowhunt.subversion.internal.httpv2.RepositoryConfigImpl(prefix);
 		}
 		// oldest protocol is fallback, in case we determine the wrong

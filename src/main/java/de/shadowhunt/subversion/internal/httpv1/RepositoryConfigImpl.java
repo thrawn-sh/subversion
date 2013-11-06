@@ -27,7 +27,6 @@ import org.apache.http.protocol.HttpContext;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
-import de.shadowhunt.subversion.Version;
 import de.shadowhunt.subversion.internal.RepositoryConfig;
 
 public class RepositoryConfigImpl implements RepositoryConfig {
@@ -56,11 +55,6 @@ public class RepositoryConfigImpl implements RepositoryConfig {
 	@Override
 	public Resource getCreateTransactionResource() {
 		return prefix.append(CREATE_TRANSACTION);
-	}
-
-	@Override
-	public Version getProtocolVersion() {
-		return Version.HTTPv1;
 	}
 
 	@Override

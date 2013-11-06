@@ -27,9 +27,9 @@ import javax.xml.parsers.SAXParser;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+import de.shadowhunt.subversion.Repository.ProtocolVersion;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.SubversionException;
-import de.shadowhunt.subversion.Version;
 
 final class Prefix {
 
@@ -37,9 +37,9 @@ final class Prefix {
 
 		private Resource prefix = null;
 
-		private final Version version;
+		private final ProtocolVersion version;
 
-		PrefixHandler(final Version version) {
+		PrefixHandler(final ProtocolVersion version) {
 			this.version = version;
 		}
 
@@ -47,7 +47,7 @@ final class Prefix {
 		public void endElement(final String uri, final String localName, final String qName) throws SAXException {
 			final String name = getNameFromQName(qName);
 
-			if ((Version.HTTPv1 == version) || (Version.HTTPv2 == version)) {
+			if ((ProtocolVersion.HTTPv1 == version) || (ProtocolVersion.HTTPv2 == version)) {
 				if ("href".equals(name)) {
 					final String text = getText();
 					// .../${svn}/act/
@@ -71,7 +71,7 @@ final class Prefix {
 
 	static final Pattern PATH_PATTERN = Pattern.compile("/");
 
-	public static Resource read(final InputStream in, final Version version) {
+	public static Resource read(final InputStream in, final ProtocolVersion version) {
 		try {
 			final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
 			final PrefixHandler handler = new PrefixHandler(version);
