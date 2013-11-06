@@ -32,6 +32,8 @@ import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Log;
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.ResourceProperty;
+import de.shadowhunt.subversion.ResourceProperty.Type;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction;
@@ -281,6 +283,29 @@ public abstract class AbstractRepositoryLocking {
 	}
 
 	@Test
+	public void test04_DeletePropertiesOfLocked() throws Exception {
+		final Resource resource = prefix.append(Resource.create("file_delete_properties_locked.txt"));
+		final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "A");
+
+		AbstractRepositoryAdd.file(repositoryA, resource, "resource", true);
+		AbstractRepositoryPropertiesSet.setProperties(repositoryA, resource, property);
+		repositoryA.lock(resource, false);
+
+		final Transaction transaction = repositoryA.createTransaction();
+		try {
+			repositoryA.propertiesDelete(transaction, resource, property);
+			repositoryA.commit(transaction, "update");
+		} catch (final Exception e) {
+			repositoryA.rollback(transaction);
+			throw e;
+		}
+
+		final Info info = repositoryA.info(resource, Revision.HEAD);
+		final ResourceProperty[] actual = info.getProperties();
+		Assert.assertEquals("expected number of properties", 0, actual.length);
+	}
+
+	@Test
 	public void test04_FileCopyToLocked() throws Exception {
 		final Resource source = prefix.append(Resource.create("file_copy_locked_source.txt"));
 		final Resource target = prefix.append(Resource.create("file_copy_locked_target.txt"));
@@ -395,5 +420,30 @@ public abstract class AbstractRepositoryLocking {
 		final InputStream expected = Helper.getInputStream(content);
 		final InputStream actual = repositoryA.download(resource, Revision.HEAD);
 		AbstractRepositoryDownload.assertEquals("content must match", expected, actual);
+	}
+
+	@Test
+	public void test04_SetPropertiesOfLocked() throws Exception {
+		final Resource resource = prefix.append(Resource.create("file_set_properties_locked.txt"));
+		final ResourceProperty propertyA = new ResourceProperty(Type.CUSTOM, "test", "A");
+		final ResourceProperty propertyB = new ResourceProperty(Type.CUSTOM, "test", "B");
+
+		AbstractRepositoryAdd.file(repositoryA, resource, "resource", true);
+		AbstractRepositoryPropertiesSet.setProperties(repositoryA, resource, propertyA);
+		repositoryA.lock(resource, false);
+
+		final Transaction transaction = repositoryA.createTransaction();
+		try {
+			repositoryA.propertiesSet(transaction, resource, propertyB);
+			repositoryA.commit(transaction, "update");
+		} catch (final Exception e) {
+			repositoryA.rollback(transaction);
+			throw e;
+		}
+
+		final Info info = repositoryA.info(resource, Revision.HEAD);
+		final ResourceProperty[] actual = info.getProperties();
+		Assert.assertEquals("expected number of properties", 1, actual.length);
+		Assert.assertEquals("property must match", propertyB, actual[0]);
 	}
 }
