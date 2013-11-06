@@ -39,9 +39,9 @@
 	<!-- environment information {{{1 -->
 	<scm>
 		<tag>HEAD</tag>
-		<connection>scm:git:ssh://gitolite@git.shadowhunt.de/subversion.git</connection>
-		<developerConnection>scm:git:ssh://gitolite@git.shadowhunt.de/subversion.git</developerConnection>
-		<url>https://git.shadowhunt.de/subversion.git</url>
+		<connection>scm:git:ssh://gitolite@git.shadowhunt.de/subversion</connection>
+		<developerConnection>scm:git:ssh://gitolite@git.shadowhunt.de/subversion</developerConnection>
+		<url>https://git.shadowhunt.de/subversion</url>
 	</scm>
 
 	<prerequisites>
