@@ -127,16 +127,6 @@ public final class Resource implements Comparable<Resource> {
 		return value.hashCode();
 	}
 
-	public Resource subResource(final int begin) {
-		final StringBuilder sb = new StringBuilder();
-		final String[] segments = PATH_PATTERN.split(value);
-		for (int i = begin; i < segments.length; i++) {
-			sb.append('/');
-			sb.append(segments[i]);
-		}
-		return Resource.create(sb.toString());
-	}
-
 	@Override
 	public String toString() {
 		return value;
