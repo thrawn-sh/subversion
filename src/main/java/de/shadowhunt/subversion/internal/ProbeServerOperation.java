@@ -76,10 +76,10 @@ public class ProbeServerOperation extends AbstractOperation<RepositoryConfig> {
 		}
 
 		if (Version.HTTPv2 == version) {
-			return new de.shadowhunt.subversion.internal.httpv2.RepositoryConfig(prefix);
+			return new de.shadowhunt.subversion.internal.httpv2.RepositoryConfigImpl(prefix);
 		}
 		// oldest protocol is fallback, in case we determine the wrong
 		// protocol, server could still provide backwards compatibility
-		return new de.shadowhunt.subversion.internal.httpv1.RepositoryConfig(prefix);
+		return new de.shadowhunt.subversion.internal.httpv1.RepositoryConfigImpl(prefix);
 	}
 }

@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package de.shadowhunt.subversion.internal.httpv2;
+package de.shadowhunt.subversion.internal.httpv1;
 
 import java.net.URI;
 
@@ -28,18 +28,17 @@ import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.Version;
+import de.shadowhunt.subversion.internal.RepositoryConfig;
 
-public class RepositoryConfig implements de.shadowhunt.subversion.internal.RepositoryConfig {
+public class RepositoryConfigImpl implements RepositoryConfig {
 
-	private static final Resource CREATE_TRANSACTION = Resource.create("me");
+	private static final Resource CREATE_TRANSACTION = Resource.create("act");
+
+	private static final Resource REGISTER_TRANSACTION = Resource.create("/vcc/default");
 
 	private final Resource prefix;
 
-	public RepositoryConfig() {
-		this(DEFAULT_PREFIX);
-	}
-
-	public RepositoryConfig(final Resource prefix) {
+	public RepositoryConfigImpl(final Resource prefix) {
 		this.prefix = prefix;
 	}
 
@@ -50,7 +49,7 @@ public class RepositoryConfig implements de.shadowhunt.subversion.internal.Repos
 
 	@Override
 	public Resource getCommitMessageResource(final Transaction transaction) {
-		final Resource suffix = Resource.create("/txn/" + transaction.getId());
+		final Resource suffix = Resource.create("/wbl/" + transaction.getId());
 		return prefix.append(suffix);
 	}
 
@@ -61,34 +60,38 @@ public class RepositoryConfig implements de.shadowhunt.subversion.internal.Repos
 
 	@Override
 	public Version getProtocolVersion() {
-		return Version.HTTPv2;
+		return Version.HTTPv1;
 	}
 
 	@Override
 	public Resource getRegisterResource(final Resource resource, final Revision revision) {
-		throw new UnsupportedOperationException("getRegisterResource");
+		assert (!Revision.HEAD.equals(revision)) : "must not be HEAD revision";
+		final Resource suffix = Resource.create("/ver/" + revision + '/' + resource);
+		return prefix.append(suffix);
 	}
 
 	@Override
 	public Resource getRegisterTransactionResource(final Transaction transaction) {
-		throw new UnsupportedOperationException("getRegisterTransactionResource");
+		return prefix.append(REGISTER_TRANSACTION);
 	}
 
 	@Override
 	public Resource getTransactionResource(final Transaction transaction) {
-		return getCommitMessageResource(transaction);
+		final Resource suffix = Resource.create("/act/" + transaction.getId());
+		return prefix.append(suffix);
 	}
 
 	@Override
 	public Resource getVersionedResource(final Resource resource, final Revision revision) {
 		assert (!Revision.HEAD.equals(revision)) : "must not be HEAD revision";
-		final Resource suffix = Resource.create("/rvr/" + revision + '/' + resource);
+		final Resource suffix = Resource.create("/bc/" + revision + '/' + resource);
 		return prefix.append(suffix);
 	}
 
 	@Override
 	public Resource getWorkingResource(final Transaction transaction) {
-		final Resource suffix = Resource.create("/txr/" + transaction.getId());
+		final Resource suffix = Resource.create("/wrk/" + transaction.getId());
 		return prefix.append(suffix);
 	}
+
 }
