@@ -94,7 +94,7 @@ public final class Resource implements Comparable<Resource> {
 	 * @return the parent {@link Resource} of the {@link Resource}
 	 */
 	public Resource getParent() {
-		if (this.equals(ROOT)) {
+		if (equals(ROOT)) {
 			return ROOT; // parent of root is root
 		}
 		final int indexOf = value.lastIndexOf('/');
@@ -116,7 +116,7 @@ public final class Resource implements Comparable<Resource> {
 	 * @return the {@link String} representation of the {@link Resource} without the leading slash
 	 */
 	public String getValueWithoutLeadingSeparator() {
-		if (ROOT.equals(this)) {
+		if (equals(ROOT)) {
 			return "";
 		}
 		return value.substring(1);
