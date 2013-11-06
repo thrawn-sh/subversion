@@ -21,13 +21,12 @@ package de.shadowhunt.subversion;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ServiceLoader;
 
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
-
-import de.shadowhunt.subversion.internal.RepositoryFactoryImpl;
 
 /**
  * {@link RepositoryFactory} creates a new {@link Repository}
@@ -42,7 +41,10 @@ public abstract class RepositoryFactory {
 	private static final String DEFAULT_USER_INFO = null;
 
 	public static final RepositoryFactory getInstance() {
-		return new RepositoryFactoryImpl();
+		for (final RepositoryFactory factory : ServiceLoader.load(RepositoryFactory.class)) {
+			return factory;
+		}
+		throw new SubversionException("Can not find a RepositoryFactory");
 	}
 
 	protected static URI sanitise(final URI uri) {
