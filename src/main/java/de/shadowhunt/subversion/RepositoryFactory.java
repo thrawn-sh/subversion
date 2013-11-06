@@ -45,7 +45,7 @@ public abstract class RepositoryFactory {
 		return new RepositoryFactoryImpl();
 	}
 
-	protected static URI sanatize(final URI uri) {
+	protected static URI sanitise(final URI uri) {
 		final Resource path = Resource.create(uri.getPath());
 
 		try {

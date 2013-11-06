@@ -13,10 +13,10 @@ public class RepositoryFactoryImpl extends RepositoryFactory {
 
 	@Override
 	public Repository createRepository(final URI repository, final HttpClient client, final HttpContext context) throws SubversionException {
-		final URI sanatized = sanatize(repository);
+		final URI sanitised = sanitise(repository);
 
-		final ProbeServerOperation operation = new ProbeServerOperation(sanatized);
+		final ProbeServerOperation operation = new ProbeServerOperation(sanitised);
 		final RepositoryConfig config = operation.execute(client, context);
-		return config.create(sanatized, client, context);
+		return config.create(sanitised, client, context);
 	}
 }
