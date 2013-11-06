@@ -19,7 +19,6 @@
  */
 package de.shadowhunt.subversion;
 
-import java.util.Arrays;
 import java.util.Comparator;
 
 import javax.annotation.concurrent.Immutable;
@@ -67,44 +66,6 @@ public final class ResourceProperty {
 			return rp1.getName().compareTo(rp2.getName());
 		}
 	};
-
-	/**
-	 * Filter {@link ResourceProperty} by type
-	 *
-	 * @param properties {@link ResourceProperty} that shall be filtered
-	 * @param type {@link Type} that all returned {@link ResourceProperty} shall belong to
-	 *
-	 * @return filtered {@link ResourceProperty} only containing {@link ResourceProperty} of the requested Type
-	 */
-	public static ResourceProperty[] filterByType(final Type type, final ResourceProperty... properties) {
-		final ResourceProperty[] filtered = new ResourceProperty[properties.length];
-		int index = 0;
-		for (final ResourceProperty property : properties) {
-			if ((property != null) && (type == property.type)) {
-				filtered[index++] = property;
-			}
-		}
-		return Arrays.copyOf(filtered, index);
-	}
-
-	/**
-	 * Filter {@link ResourceProperty} by type
-	 *
-	 * @param properties {@link ResourceProperty} that shall be filtered
-	 * @param type {@link Type} that all returned {@link ResourceProperty} shall *NOT* belong to
-	 *
-	 * @return filtered {@link ResourceProperty} only containing {@link ResourceProperty} *NOT* of the requested Type
-	 */
-	public static ResourceProperty[] filterOutByType(final Type type, final ResourceProperty... properties) {
-		final ResourceProperty[] filtered = new ResourceProperty[properties.length];
-		int index = 0;
-		for (final ResourceProperty property : properties) {
-			if ((property != null) && (type != property.type)) {
-				filtered[index++] = property;
-			}
-		}
-		return Arrays.copyOf(filtered, index);
-	}
 
 	private final String name;
 
