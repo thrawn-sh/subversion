@@ -33,10 +33,11 @@ import de.shadowhunt.http.client.methods.DavTemplateRequest;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.internal.util.URIUtils;
+import de.shadowhunt.subversion.internal.AbstractBaseRepository.ResourceMapper;
 
 public class ResolveOperation extends AbstractOperation<Resource> {
 
-	private final RepositoryConfig config;
+	private final ResourceMapper config;
 
 	private final Revision expected;
 
@@ -46,7 +47,7 @@ public class ResolveOperation extends AbstractOperation<Resource> {
 
 	private final Revision revision;
 
-	public ResolveOperation(final URI repository, final Resource resource, final Revision revision, final Revision expected, final RepositoryConfig config, final boolean reportNonExistingResources) {
+	public ResolveOperation(final URI repository, final Resource resource, final Revision revision, final Revision expected, final ResourceMapper config, final boolean reportNonExistingResources) {
 		super(repository);
 		this.resource = resource;
 		this.revision = revision;

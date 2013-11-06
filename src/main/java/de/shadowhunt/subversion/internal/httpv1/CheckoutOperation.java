@@ -31,7 +31,7 @@ import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.internal.AbstractVoidOperation;
 import de.shadowhunt.subversion.internal.util.URIUtils;
 
-public class CheckoutOperation extends AbstractVoidOperation {
+class CheckoutOperation extends AbstractVoidOperation {
 
 	private final Resource resource;
 

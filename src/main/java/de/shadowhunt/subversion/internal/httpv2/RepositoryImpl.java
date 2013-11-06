@@ -33,16 +33,65 @@ import de.shadowhunt.subversion.Transaction.Status;
 import de.shadowhunt.subversion.internal.AbstractBaseRepository;
 import de.shadowhunt.subversion.internal.CommitMessageOperation;
 import de.shadowhunt.subversion.internal.MergeOperation;
-import de.shadowhunt.subversion.internal.RepositoryConfig;
 import de.shadowhunt.subversion.internal.TransactionImpl;
 
 /**
- * {@link Repository} supports subversion servers of version 1.7.X
+ * {@link RepositoryImpl} supports subversion servers of version 1.7.X
  */
-public class Repository extends AbstractBaseRepository {
+class RepositoryImpl extends AbstractBaseRepository {
 
-	public Repository(final URI repository, final RepositoryConfig config, final HttpClient client, final HttpContext context) {
-		super(repository, config, client, context);
+	static class ResourceMapperImpl implements ResourceMapper {
+
+		private static final Resource CREATE_TRANSACTION = Resource.create("me");
+
+		private final Resource prefix;
+
+		public ResourceMapperImpl(final Resource prefix) {
+			this.prefix = prefix;
+		}
+
+		@Override
+		public Resource getCommitMessageResource(final Transaction transaction) {
+			final Resource suffix = Resource.create("/txn/" + transaction.getId());
+			return prefix.append(suffix);
+		}
+
+		@Override
+		public Resource getCreateTransactionResource() {
+			return prefix.append(CREATE_TRANSACTION);
+		}
+
+		@Override
+		public Resource getRegisterResource(final Resource resource, final Revision revision) {
+			throw new UnsupportedOperationException("getRegisterResource");
+		}
+
+		@Override
+		public Resource getRegisterTransactionResource(final Transaction transaction) {
+			throw new UnsupportedOperationException("getRegisterTransactionResource");
+		}
+
+		@Override
+		public Resource getTransactionResource(final Transaction transaction) {
+			return getCommitMessageResource(transaction);
+		}
+
+		@Override
+		public Resource getVersionedResource(final Resource resource, final Revision revision) {
+			assert (!Revision.HEAD.equals(revision)) : "must not be HEAD revision";
+			final Resource suffix = Resource.create("/rvr/" + revision + '/' + resource);
+			return prefix.append(suffix);
+		}
+
+		@Override
+		public Resource getWorkingResource(final Transaction transaction) {
+			final Resource suffix = Resource.create("/txr/" + transaction.getId());
+			return prefix.append(suffix);
+		}
+	}
+
+	public RepositoryImpl(final URI repository, final Resource prefix, final HttpClient client, final HttpContext context) {
+		super(repository, new ResourceMapperImpl(prefix), client, context);
 	}
 
 	@Override

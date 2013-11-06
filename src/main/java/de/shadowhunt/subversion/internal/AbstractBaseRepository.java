@@ -48,6 +48,23 @@ import de.shadowhunt.subversion.internal.util.URIUtils;
  */
 public abstract class AbstractBaseRepository implements Repository {
 
+	protected static interface ResourceMapper {
+
+		Resource getCommitMessageResource(Transaction transaction);
+
+		Resource getCreateTransactionResource();
+
+		Resource getRegisterResource(Resource resource, Revision revision);
+
+		Resource getRegisterTransactionResource(Transaction transaction);
+
+		Resource getTransactionResource(Transaction transaction);
+
+		Resource getVersionedResource(Resource resource, Revision revision);
+
+		Resource getWorkingResource(Transaction transaction);
+	}
+
 	private static UUID determineRepositoryId(final URI repository, final HttpClient client, final HttpContext context) {
 		final InfoOperation operation = new InfoOperation(repository, Resource.ROOT);
 		final Info info = operation.execute(client, context);
@@ -63,7 +80,7 @@ public abstract class AbstractBaseRepository implements Repository {
 
 	protected final HttpClient client;
 
-	protected final RepositoryConfig config;
+	protected final ResourceMapper config;
 
 	protected final HttpContext context;
 
@@ -71,7 +88,7 @@ public abstract class AbstractBaseRepository implements Repository {
 
 	private final UUID repositoryId;
 
-	protected AbstractBaseRepository(final URI repository, final RepositoryConfig config, final HttpClient client, final HttpContext context) {
+	protected AbstractBaseRepository(final URI repository, final ResourceMapper config, final HttpClient client, final HttpContext context) {
 		this.repository = URIUtils.createURI(repository);
 		this.config = config;
 		this.client = client;

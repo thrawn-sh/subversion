@@ -35,7 +35,7 @@ import de.shadowhunt.subversion.internal.AbstractOperation;
 import de.shadowhunt.subversion.internal.TransactionImpl;
 import de.shadowhunt.subversion.internal.util.URIUtils;
 
-public class CreateTransactionOperation extends AbstractOperation<TransactionImpl> {
+class CreateTransactionOperation extends AbstractOperation<TransactionImpl> {
 
 	private static final HttpEntity ENTITY;
 

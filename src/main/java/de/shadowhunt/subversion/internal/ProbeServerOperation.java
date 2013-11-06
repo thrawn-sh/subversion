@@ -21,19 +21,24 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.InputStream;
 import java.net.URI;
+import java.util.ServiceLoader;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.protocol.HttpContext;
 
 import de.shadowhunt.http.client.methods.DavTemplateRequest;
+import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Repository.ProtocolVersion;
 import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.SubversionException;
 
-public class ProbeServerOperation extends AbstractOperation<RepositoryConfig> {
+public class ProbeServerOperation extends AbstractOperation<Repository> {
 
 	private static ProtocolVersion determineVersion(final HttpResponse response) {
 		for (final Header header : response.getAllHeaders()) {
@@ -65,7 +70,17 @@ public class ProbeServerOperation extends AbstractOperation<RepositoryConfig> {
 	}
 
 	@Override
-	protected RepositoryConfig processResponse(final HttpResponse response) {
+	protected Repository processResponse(final HttpResponse response) {
+		// we need client and context to create the repository
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Repository execute(final HttpClient client, final HttpContext context) {
+		final HttpUriRequest request = createRequest();
+		final HttpResponse response = executeRequest(request, client, context);
+		check(response, request.getURI());
+
 		final ProtocolVersion version = determineVersion(response);
 		final Resource prefix;
 		final InputStream in = getContent(response);
@@ -75,11 +90,12 @@ public class ProbeServerOperation extends AbstractOperation<RepositoryConfig> {
 			IOUtils.closeQuietly(in);
 		}
 
-		if (ProtocolVersion.HTTPv2 == version) {
-			return new de.shadowhunt.subversion.internal.httpv2.RepositoryConfigImpl(prefix);
+		for (final RepositoryLocator repositoryLocator : ServiceLoader.load(RepositoryLocator.class)) {
+			if (repositoryLocator.isSupported(version)) {
+				return repositoryLocator.create(repository, prefix, client, context);
+			}
 		}
-		// oldest protocol is fallback, in case we determine the wrong
-		// protocol, server could still provide backwards compatibility
-		return new de.shadowhunt.subversion.internal.httpv1.RepositoryConfigImpl(prefix);
+
+		throw new SubversionException("Could not find suitable repository for " + repository);
 	}
 }

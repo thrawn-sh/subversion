@@ -16,7 +16,6 @@ public class RepositoryFactoryImpl extends RepositoryFactory {
 		final URI sanitised = sanitise(repository);
 
 		final ProbeServerOperation operation = new ProbeServerOperation(sanitised);
-		final RepositoryConfig config = operation.execute(client, context);
-		return config.create(sanitised, client, context);
+		return operation.execute(client, context);
 	}
 }
