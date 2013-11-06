@@ -136,7 +136,7 @@ public final class ResourceProperty {
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("SubversionProperty [type=");
+		builder.append("ResourceProperty [type=");
 		builder.append(type);
 		builder.append(", name=");
 		builder.append(name);
