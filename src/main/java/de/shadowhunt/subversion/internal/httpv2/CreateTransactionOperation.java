@@ -37,13 +37,13 @@ import de.shadowhunt.subversion.internal.util.URIUtils;
 
 public class CreateTransactionOperation extends AbstractOperation<TransactionImpl> {
 
-	private static final HttpEntity entity;
+	private static final HttpEntity ENTITY;
 
 	private static final String HEADER_NAME = "SVN-Txn-Name";
 
 	static {
 		final ContentType contentType = ContentType.create("application/vnd.svn-skel");
-		entity = new StringEntity("( create-txn )", contentType);
+		ENTITY = new StringEntity("( create-txn )", contentType);
 	}
 
 	private final Resource resource;
@@ -57,7 +57,7 @@ public class CreateTransactionOperation extends AbstractOperation<TransactionImp
 	protected HttpUriRequest createRequest() {
 		final URI uri = URIUtils.createURI(repository, resource);
 		final HttpPost request = new HttpPost(uri);
-		request.setEntity(entity);
+		request.setEntity(ENTITY);
 		return request;
 	}
 

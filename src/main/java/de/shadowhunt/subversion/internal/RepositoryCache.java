@@ -21,6 +21,7 @@ package de.shadowhunt.subversion.internal;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
@@ -69,7 +70,7 @@ public class RepositoryCache {
 		}
 	}
 
-	private final HashMap<Key, Info> cache = new HashMap<Key, Info>();
+	private final Map<Key, Info> cache = new HashMap<Key, Info>();
 
 	private Revision headRevision = null;
 

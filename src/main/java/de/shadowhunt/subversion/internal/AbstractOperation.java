@@ -33,7 +33,6 @@ import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
-import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.SubversionException;
 
 public abstract class AbstractOperation<T> implements Operation<T> {
@@ -92,7 +91,7 @@ public abstract class AbstractOperation<T> implements Operation<T> {
 	}
 
 	/**
-	 * as the {@link Resource} can not differ between files and directories
+	 * as the Resource can not differ between files and directories
 	 * each request for an directory (without ending '/') will result
 	 * in a redirect (with ending '/'), if another call to a redirected
 	 * URI occurs a CircularRedirectException is thrown, as we can't

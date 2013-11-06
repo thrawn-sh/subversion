@@ -28,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class Resource implements Comparable<Resource> {
 
-	private static final Pattern pathPattern = Pattern.compile("/");
+	private static final Pattern PATH_PATTERN = Pattern.compile("/");
 
 	/**
 	 * Represents the base {@link Resource} in the repository
@@ -48,7 +48,7 @@ public final class Resource implements Comparable<Resource> {
 		}
 
 		final StringBuilder sb = new StringBuilder();
-		for (final String segment : pathPattern.split(path)) {
+		for (final String segment : PATH_PATTERN.split(path)) {
 			if (!StringUtils.isEmpty(segment)) {
 				sb.append('/');
 				sb.append(segment);
@@ -94,7 +94,7 @@ public final class Resource implements Comparable<Resource> {
 	 * @return the parent {@link Resource} of the {@link Resource}
 	 */
 	public Resource getParent() {
-		if (ROOT.equals(this)) {
+		if (this.equals(ROOT)) {
 			return ROOT; // parent of root is root
 		}
 		final int indexOf = value.lastIndexOf('/');
@@ -129,7 +129,7 @@ public final class Resource implements Comparable<Resource> {
 
 	public Resource subResource(final int begin) {
 		final StringBuilder sb = new StringBuilder();
-		final String[] segments = pathPattern.split(value);
+		final String[] segments = PATH_PATTERN.split(value);
 		for (int i = begin; i < segments.length; i++) {
 			sb.append('/');
 			sb.append(segments[i]);

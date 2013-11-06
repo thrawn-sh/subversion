@@ -20,6 +20,7 @@
 package de.shadowhunt.subversion.internal;
 
 import java.net.URI;
+import java.util.Arrays;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -43,7 +44,7 @@ public class PropertiesDeleteOperation extends AbstractVoidOperation {
 		super(repository);
 		this.resource = resource;
 		this.info = info;
-		this.properties = properties;
+		this.properties = Arrays.copyOf(properties, properties.length);
 	}
 
 	@Override

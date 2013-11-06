@@ -70,7 +70,7 @@ public class ListOperation extends AbstractOperation<Set<Info>> {
 		final InputStream in = getContent(response);
 		try {
 			@SuppressWarnings({ "rawtypes", "unchecked" })
-			final Set<Info> info = ((Set) InfoImpl.readList(in));
+			final Set<Info> info = ((Set) InfoImpl.readAll(in));
 			return info;
 		} finally {
 			IOUtils.closeQuietly(in);

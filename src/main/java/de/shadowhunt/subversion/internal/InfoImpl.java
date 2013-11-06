@@ -21,7 +21,6 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -96,7 +95,7 @@ public final class InfoImpl implements Info {
 
 			if (checkedin && "href".equals(name)) {
 				final String text = getText();
-				final String[] parts = pathPattern.split(text);
+				final String[] parts = PATH_PATTERN.split(text);
 				final int version = Integer.parseInt(parts[3 + 2]); // prefix + $svn + bc/vrv + VERSION);
 
 				current.setRevision(Revision.create(version));
@@ -170,7 +169,7 @@ public final class InfoImpl implements Info {
 
 	private static final ResourceProperty[] EMPTY = new ResourceProperty[0];
 
-	static final Pattern pathPattern = Pattern.compile("/");
+	static final Pattern PATH_PATTERN = Pattern.compile("/");
 
 	/**
 	 * Reads status information for a single revision of a resource from the given {@link InputStream}
@@ -180,7 +179,7 @@ public final class InfoImpl implements Info {
 	 * @return {@link InfoImpl} for the resource
 	 */
 	public static InfoImpl read(final InputStream in) {
-		final SortedSet<InfoImpl> infos = readList(in);
+		final SortedSet<InfoImpl> infos = readAll(in);
 		if (infos.isEmpty()) {
 			throw new SubversionException("Invalid server response: expected content is missing");
 		}
@@ -188,13 +187,13 @@ public final class InfoImpl implements Info {
 	}
 
 	/**
-	 * Reads a {@link List} of status information for a single revision of various resources from the given {@link InputStream}
+	 * Reads a {@link SortedSet} of status information for a single revision of various resources from the given {@link InputStream}
 	 *
 	 * @param in {@link InputStream} from which the status information is read (Note: will not be closed)
 	 *
 	 * @return {@link InfoImpl} for the resources
 	 */
-	public static SortedSet<InfoImpl> readList(final InputStream in) {
+	public static SortedSet<InfoImpl> readAll(final InputStream in) {
 		try {
 			final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
 			final SubversionInfoHandler handler = new SubversionInfoHandler();

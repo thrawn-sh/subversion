@@ -52,7 +52,7 @@ final class Prefix {
 					final String text = getText();
 					// .../${svn}/act/
 					//      ^^^^^^ <- prefix
-					final String[] segments = pathPattern.split(text);
+					final String[] segments = PATH_PATTERN.split(text);
 					prefix = Resource.create(segments[segments.length - 2]);
 					return;
 				}
@@ -69,7 +69,7 @@ final class Prefix {
 		}
 	}
 
-	static final Pattern pathPattern = Pattern.compile("/");
+	static final Pattern PATH_PATTERN = Pattern.compile("/");
 
 	public static Resource read(final InputStream in, final Version version) {
 		try {
@@ -82,4 +82,9 @@ final class Prefix {
 			throw new SubversionException("could not parse input", e);
 		}
 	}
+
+	private Prefix() {
+		// prevent instantiation
+	}
+
 }
