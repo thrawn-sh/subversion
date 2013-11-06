@@ -73,7 +73,7 @@ final class Helper {
 			cp.setCredentials(AuthScope.ANY, credentials);
 			client.setCredentialsProvider(cp);
 
-			repositoryA = RepositoryFactory.createRepository(REPOSITORY_URI, client, context);
+			repositoryA = RepositoryFactory.getInstance().createRepository(REPOSITORY_URI, client, context);
 
 		}
 		return repositoryA;
@@ -89,7 +89,7 @@ final class Helper {
 			cp.setCredentials(AuthScope.ANY, credentials);
 			client.setCredentialsProvider(cp);
 
-			repositoryB = RepositoryFactory.createRepository(REPOSITORY_URI, client, context);
+			repositoryB = RepositoryFactory.getInstance().createRepository(REPOSITORY_URI, client, context);
 
 		}
 		return repositoryB;

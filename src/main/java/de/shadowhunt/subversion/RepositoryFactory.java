@@ -27,20 +27,33 @@ import javax.annotation.concurrent.ThreadSafe;
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 
-import de.shadowhunt.subversion.internal.ProbeServerOperation;
-import de.shadowhunt.subversion.internal.RepositoryConfig;
+import de.shadowhunt.subversion.internal.RepositoryFactoryImpl;
 
 /**
  * {@link RepositoryFactory} creates a new {@link Repository}
  */
 @ThreadSafe
-public final class RepositoryFactory {
+public abstract class RepositoryFactory {
 
 	private static final String DEFAULT_FRAGMENT = null;
 
 	private static final String DEFAULT_QUERY = null;
 
 	private static final String DEFAULT_USER_INFO = null;
+
+	public static final RepositoryFactory getInstance() {
+		return new RepositoryFactoryImpl();
+	}
+
+	protected static URI sanatize(final URI uri) {
+		final Resource path = Resource.create(uri.getPath());
+
+		try {
+			return new URI(uri.getScheme(), DEFAULT_USER_INFO, uri.getHost(), uri.getPort(), path.getValue(), DEFAULT_QUERY, DEFAULT_FRAGMENT);
+		} catch (final URISyntaxException e) {
+			throw new IllegalArgumentException(e.getMessage(), e);
+		}
+	}
 
 	/**
 	 * Create a new {@link Repository} for given {@link URI} and {@link Version}
@@ -51,25 +64,5 @@ public final class RepositoryFactory {
 	 *
 	 * @return a new {@link Repository} for given {@link URI}
 	 */
-	public static Repository createRepository(final URI repository, final HttpClient client, final HttpContext context) throws SubversionException {
-		final URI sanatized = sanatize(repository);
-
-		final ProbeServerOperation operation = new ProbeServerOperation(sanatized);
-		final RepositoryConfig config = operation.execute(client, context);
-		return config.create(sanatized, client, context);
-	}
-
-	private static URI sanatize(final URI uri) {
-		final Resource path = Resource.create(uri.getPath());
-
-		try {
-			return new URI(uri.getScheme(), DEFAULT_USER_INFO, uri.getHost(), uri.getPort(), path.getValue(), DEFAULT_QUERY, DEFAULT_FRAGMENT);
-		} catch (final URISyntaxException e) {
-			throw new IllegalArgumentException(e.getMessage(), e);
-		}
-	}
-
-	private RepositoryFactory() {
-		// prevent instantiation
-	}
+	public abstract Repository createRepository(final URI repository, final HttpClient client, final HttpContext context) throws SubversionException;
 }
