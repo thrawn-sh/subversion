@@ -25,6 +25,9 @@ import org.junit.runners.MethodSorters;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import de.shadowhunt.subversion.internal.httpv1.v1_6.RepositoryCombinedOperations;
+import de.shadowhunt.subversion.internal.httpv1.v1_6.RepositoryResolve;
+
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(Suite.class)
 @SuiteClasses({ Prepare.class, // pull dump.zip
@@ -46,8 +49,9 @@ import org.junit.runners.Suite.SuiteClasses;
 		RepositoryPropertiesSet.class, // uses transactions + add
 		RepositoryPropertiesDelete.class, // uses transactions + add + propertiesSet
 		RepositoryLocking.class, // uses add + copy + move
+		RepositoryResolve.class, // uses *ALL*
 		// multiple modifications
-		RepositoryCombinedOperations.class, //
+		RepositoryCombinedOperations.class, // *ALL*
 })
 public class SuiteIT {
 	// no code, just a placeholder class

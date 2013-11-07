@@ -43,8 +43,9 @@ import org.junit.runners.Suite.SuiteClasses;
 		RepositoryPropertiesSet.class, // uses transactions + add
 		RepositoryPropertiesDelete.class, // uses transactions + add + propertiesSet
 		RepositoryLocking.class, // uses add + copy + move
+		RepositoryResolve.class, // uses *ALL*
 		// multiple modifications
-		RepositoryCombinedOperations.class, //
+		RepositoryCombinedOperations.class, // *ALL*
 })
 public class SuiteIT {
 	// no code, just a placeholder class
