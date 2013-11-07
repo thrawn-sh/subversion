@@ -60,12 +60,12 @@ class RepositoryImpl extends AbstractBaseRepository {
 
 		@Override
 		public Resource getRegisterResource(final Resource resource, final Revision revision) {
-			throw new UnsupportedOperationException("getRegisterResource");
+			throw new UnsupportedOperationException("Not supported by httpv2");
 		}
 
 		@Override
 		public Resource getRegisterTransactionResource(final Transaction transaction) {
-			throw new UnsupportedOperationException("getRegisterTransactionResource");
+			throw new UnsupportedOperationException("Not supported by httpv2");
 		}
 
 		@Override

@@ -121,7 +121,7 @@ public abstract class AbstractOperation<T> implements Operation<T> {
 		try {
 			return client.execute(request, context);
 		} catch (final Exception e) {
-			throw new SubversionException("could not execute request (" + request + ')', e);
+			throw new SubversionException("Could not execute request (" + request + ')', e);
 		}
 	}
 

@@ -198,7 +198,7 @@ public final class InfoImpl implements Info {
 			saxParser.parse(in, handler);
 			return handler.getInfos();
 		} catch (final Exception e) {
-			throw new SubversionException("could not parse input", e);
+			throw new SubversionException("Invalid server response: could not parse response", e);
 		}
 	}
 

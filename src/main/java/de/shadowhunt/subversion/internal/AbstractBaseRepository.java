@@ -75,7 +75,7 @@ public abstract class AbstractBaseRepository implements Repository {
 		if (transaction instanceof RepositoryCache) {
 			return (RepositoryCache) transaction;
 		}
-		throw new IllegalArgumentException("can't convert " + transaction + " to a repository cache");
+		throw new IllegalArgumentException("Can not get repository cache for " + transaction);
 	}
 
 	protected final HttpClient client;
@@ -103,10 +103,6 @@ public abstract class AbstractBaseRepository implements Repository {
 	@Override
 	public void add(final Transaction transaction, final Resource resource, final boolean parents, final InputStream content) {
 		validateTransaction(transaction);
-
-		if (content == null) {
-			throw new IllegalArgumentException("content can not be null");
-		}
 
 		if (parents) {
 			mkdir(transaction, resource.getParent(), parents);
@@ -166,7 +162,7 @@ public abstract class AbstractBaseRepository implements Repository {
 			transaction.register(resource, Status.ADDED);
 		} else {
 			if (info.isFile()) {
-				throw new SubversionException("file with same name as directory already exists: " + resource);
+				throw new SubversionException("Can not create folder. File with same name already exists: " + resource);
 			}
 			final Status status = transaction.getChangeSet().get(resource);
 			if (status == null) {

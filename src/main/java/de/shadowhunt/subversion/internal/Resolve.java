@@ -74,7 +74,7 @@ final class Resolve {
 			saxParser.parse(in, handler);
 			return handler.getEntry();
 		} catch (final Exception e) {
-			throw new SubversionException("could not parse input", e);
+			throw new SubversionException("Invalid server response: could not parse response", e);
 		}
 	}
 

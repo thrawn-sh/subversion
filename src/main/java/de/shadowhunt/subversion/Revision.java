@@ -54,7 +54,7 @@ public final class Revision implements Comparable<Revision>, Serializable {
 	 */
 	public static Revision create(final int revision) {
 		if (revision < 1) {
-			throw new IllegalArgumentException("revision must be greater or equal than 1, was " + revision);
+			throw new IllegalArgumentException("Value must be greater or equal than 1, was " + revision);
 		}
 		return new Revision(revision);
 	}

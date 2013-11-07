@@ -82,17 +82,21 @@ public final class LogImpl implements Log {
 			}
 
 			if ("date".equals(name)) {
+				String time = getText();
+				if ('Z' != time.charAt(time.length() - 1)) {
+					throw new SAXException("Invalid server response: date is not in Zulu timezone");
+				}
+
+				final int index = time.indexOf('.');
+				if (index > 0) {
+					time = time.substring(0, index + 4); // remove nanoseconds
+				}
 				try {
 					format.setTimeZone(ZULU);
-					String time = getText();
-					final int index = time.indexOf('.');
-					if (index > 0) {
-						time = time.substring(0, index + 4); // remove nanoseconds
-					}
 					final Date date = format.parse(time);
 					current.setDate(date);
 				} catch (final ParseException e) {
-					throw new SAXException("date has unexpected format", e);
+					throw new SAXException("Invalid server response: date has unexpected format", e);
 				}
 				return;
 			}
@@ -136,7 +140,7 @@ public final class LogImpl implements Log {
 			saxParser.parse(in, handler);
 			return handler.getLogs();
 		} catch (final Exception e) {
-			throw new SubversionException("could not parse input", e);
+			throw new SubversionException("Invalid server response: could not parse response", e);
 		}
 	}
 
