@@ -35,9 +35,6 @@ import de.shadowhunt.subversion.internal.CommitMessageOperation;
 import de.shadowhunt.subversion.internal.MergeOperation;
 import de.shadowhunt.subversion.internal.TransactionImpl;
 
-/**
- * {@link RepositoryImpl} supports subversion servers of version 1.7.X
- */
 class RepositoryImpl extends AbstractBaseRepository {
 
 	static class ResourceMapperImpl implements ResourceMapper {
