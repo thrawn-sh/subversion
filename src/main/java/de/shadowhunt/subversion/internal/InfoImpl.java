@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -59,8 +58,10 @@ public final class InfoImpl implements Info {
 
 		private boolean resourceType = false;
 
-		SubversionInfoHandler() {
-			// make the handler visible in surrounding class
+		private final VersionParser parser;
+
+		SubversionInfoHandler(final VersionParser parser) {
+			this.parser = parser;
 		}
 
 		@Override
@@ -95,10 +96,8 @@ public final class InfoImpl implements Info {
 
 			if (checkedin && "href".equals(name)) {
 				final String text = getText();
-				final String[] parts = PATH_PATTERN.split(text);
-				final int version = Integer.parseInt(parts[3 + 2]); // prefix + $svn + bc/vrv + VERSION);
-
-				current.setRevision(Revision.create(version));
+				final Revision revision = parser.getRevisionFromPath(text);
+				current.setRevision(revision);
 				checkedin = false;
 				return;
 			}
@@ -169,8 +168,6 @@ public final class InfoImpl implements Info {
 
 	private static final ResourceProperty[] EMPTY = new ResourceProperty[0];
 
-	static final Pattern PATH_PATTERN = Pattern.compile("/");
-
 	/**
 	 * Reads status information for a single revision of a resource from the given {@link InputStream}
 	 *
@@ -178,8 +175,8 @@ public final class InfoImpl implements Info {
 	 *
 	 * @return {@link InfoImpl} for the resource
 	 */
-	public static InfoImpl read(final InputStream in) {
-		final SortedSet<InfoImpl> infos = readAll(in);
+	public static InfoImpl read(final InputStream in, final VersionParser parser) {
+		final SortedSet<InfoImpl> infos = readAll(in, parser);
 		if (infos.isEmpty()) {
 			throw new SubversionException("Invalid server response: expected content is missing");
 		}
@@ -193,10 +190,10 @@ public final class InfoImpl implements Info {
 	 *
 	 * @return {@link InfoImpl} for the resources
 	 */
-	public static SortedSet<InfoImpl> readAll(final InputStream in) {
+	public static SortedSet<InfoImpl> readAll(final InputStream in, final VersionParser parser) {
 		try {
 			final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
-			final SubversionInfoHandler handler = new SubversionInfoHandler();
+			final SubversionInfoHandler handler = new SubversionInfoHandler(parser);
 
 			saxParser.parse(in, handler);
 			return handler.getInfos();

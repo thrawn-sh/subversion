@@ -41,9 +41,12 @@ public class InfoOperation extends AbstractOperation<Info> {
 
 	private final Resource resource;
 
-	public InfoOperation(final URI repository, final Resource resource) {
+	private final VersionParser parser;
+
+	public InfoOperation(final URI repository, final Resource resource, final VersionParser parser) {
 		super(repository);
 		this.resource = resource;
+		this.parser = parser;
 	}
 
 	@Override
@@ -68,7 +71,7 @@ public class InfoOperation extends AbstractOperation<Info> {
 	protected Info processResponse(final HttpResponse response) {
 		final InputStream in = getContent(response);
 		try {
-			final InfoImpl info = InfoImpl.read(in);
+			final InfoImpl info = InfoImpl.read(in, parser);
 			if (info.isLocked()) {
 				final Header header = response.getFirstHeader(LOCK_OWNER_HEADER);
 				info.setLockOwner(header.getValue());

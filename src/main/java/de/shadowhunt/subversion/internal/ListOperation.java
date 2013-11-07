@@ -41,10 +41,13 @@ public class ListOperation extends AbstractOperation<Set<Info>> {
 
 	private final Resource resource;
 
-	public ListOperation(final URI repository, final Resource resource, final Depth depth) {
+	private final VersionParser parser;
+
+	public ListOperation(final URI repository, final Resource resource, final Depth depth, final VersionParser parser) {
 		super(repository);
 		this.resource = resource;
 		this.depth = depth;
+		this.parser = parser;
 	}
 
 	@Override
@@ -70,7 +73,7 @@ public class ListOperation extends AbstractOperation<Set<Info>> {
 		final InputStream in = getContent(response);
 		try {
 			@SuppressWarnings({ "rawtypes", "unchecked" })
-			final Set<Info> info = ((Set) InfoImpl.readAll(in));
+			final Set<Info> info = ((Set) InfoImpl.readAll(in, parser));
 			return info;
 		} finally {
 			IOUtils.closeQuietly(in);

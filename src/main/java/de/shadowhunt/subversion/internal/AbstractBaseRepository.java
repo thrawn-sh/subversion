@@ -65,8 +65,8 @@ public abstract class AbstractBaseRepository implements Repository {
 		Resource getWorkingResource(Transaction transaction);
 	}
 
-	private static UUID determineRepositoryId(final URI repository, final HttpClient client, final HttpContext context) {
-		final InfoOperation operation = new InfoOperation(repository, Resource.ROOT);
+	private static UUID determineRepositoryId(final URI repository, final VersionParser parser, final HttpClient client, final HttpContext context) {
+		final InfoOperation operation = new InfoOperation(repository, Resource.ROOT, parser);
 		final Info info = operation.execute(client, context);
 		return info.getRepositoryId();
 	}
@@ -88,13 +88,16 @@ public abstract class AbstractBaseRepository implements Repository {
 
 	private final UUID repositoryId;
 
+	private final VersionParser parser;
+
 	protected AbstractBaseRepository(final URI repository, final ResourceMapper config, final HttpClient client, final HttpContext context) {
 		this.repository = URIUtils.createURI(repository);
 		this.config = config;
 		this.client = client;
 		this.context = context;
 
-		repositoryId = determineRepositoryId(repository, client, context);
+		parser = new VersionParser(repository.getPath());
+		repositoryId = determineRepositoryId(repository, parser, client, context);
 	}
 
 	@Override
@@ -291,7 +294,7 @@ public abstract class AbstractBaseRepository implements Repository {
 			return null; // resource does not exists
 		}
 
-		final InfoOperation operation = new InfoOperation(repository, resolved);
+		final InfoOperation operation = new InfoOperation(repository, resolved, parser);
 		info = operation.execute(client, context);
 		cache.put(info);
 		return info;
@@ -309,7 +312,7 @@ public abstract class AbstractBaseRepository implements Repository {
 			return result;
 		}
 		final Resource resolved = resolve(cache, resource, revision, true, true);
-		final ListOperation operation = new ListOperation(repository, resolved, depth);
+		final ListOperation operation = new ListOperation(repository, resolved, depth, parser);
 		final Set<Info> infoSet = operation.execute(client, context);
 		cache.putAll(infoSet);
 		return infoSet;
@@ -464,5 +467,9 @@ public abstract class AbstractBaseRepository implements Repository {
 		if (!transaction.isActive()) {
 			throw new SubversionException("Transaction invalid: has already been commited or rolledback");
 		}
+	}
+
+	protected VersionParser getVersionParser() {
+		return parser;
 	}
 }

@@ -105,7 +105,7 @@ public class RepositoryCache {
 		if (Revision.HEAD.equals(revision)) {
 			if (headRevision == null) {
 				final Resource resolved = repository.resolve(this, Resource.ROOT, revision, false, true);
-				final InfoOperation operation = new InfoOperation(repository.getBaseUri(), resolved);
+				final InfoOperation operation = new InfoOperation(repository.getBaseUri(), resolved, repository.getVersionParser());
 				final Info info = operation.execute(repository.client, repository.context);
 				headRevision = info.getRevision();
 				put(info);
