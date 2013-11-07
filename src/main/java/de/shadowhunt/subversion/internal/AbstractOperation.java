@@ -80,6 +80,9 @@ public abstract class AbstractOperation<T> implements Operation<T> {
 			case HttpStatus.SC_NOT_FOUND:
 				message = "Requested url: " + requestUri + " could not be found";
 				break;
+			case HttpStatus.SC_LOCKED:
+				message = "Requested url: " + requestUri + " is locked by another user";
+				break;
 			default:
 				message = "Unexpected status code: " + statusCode;
 		}
