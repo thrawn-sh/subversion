@@ -22,7 +22,20 @@ package de.shadowhunt.subversion.internal;
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 
+/**
+ * General Interface for all {@link Operation} subclasses
+ *
+ * @param <T> expected return value for the {@link #execute(HttpClient, HttpContext)} method
+ */
 public interface Operation<T> {
 
+	/**
+	 * Run the {@link Operation} against the server
+	 *
+	 * @param client {@link HttpClient} to use for this {@link Operation}
+	 * @param context {@link HttpContext} to use for this {@link Operation}
+	 *
+	 * @return expected return value or {@code Void} if non is expected
+	 */
 	public T execute(HttpClient client, HttpContext context);
 }

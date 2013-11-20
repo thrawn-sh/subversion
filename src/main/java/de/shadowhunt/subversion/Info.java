@@ -24,6 +24,9 @@ import java.util.UUID;
 
 import javax.annotation.CheckForNull;
 
+/**
+ * {@link Info} holds all status information for a single {@link Revision} of a {@link Resource}
+ */
 public interface Info {
 
 	/**

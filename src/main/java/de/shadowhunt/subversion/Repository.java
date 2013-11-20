@@ -116,10 +116,25 @@ public interface Repository {
 	 */
 	boolean exists(Resource resource, Revision revision) throws SubversionException;
 
+	/**
+	 * Returns the {@link URI} to the root of this {@link Repository}
+	 *
+	 * @return the {@link URI} to the root of this {@link Repository}
+	 */
 	URI getBaseUri();
 
+	/**
+	 * Returns the {@link UUID} that identifies the {@link Repository} globally
+	 *
+	 * @return the {@link UUID} that identifies the {@link Repository} globally
+	 */
 	UUID getRepositoryId();
 
+	/**
+	 * Returns the {@link ProtocolVersion} of the server running this {@link Repository}
+	 *
+	 * @return the {@link ProtocolVersion} of the server running this {@link Repository}
+	 */
 	ProtocolVersion getProtocolVersion();
 
 	/**

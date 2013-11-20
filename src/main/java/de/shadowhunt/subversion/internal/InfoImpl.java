@@ -26,7 +26,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import javax.xml.parsers.SAXParser;
 
@@ -40,7 +39,7 @@ import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 
 /**
- * Container that holds all status information for a single revision of a resource
+ * Default implementation for {@link Info}
  */
 public final class InfoImpl implements Info {
 
@@ -289,7 +288,6 @@ public final class InfoImpl implements Info {
 	 * @return the name of the lock owner or {@code null} if the resource is not locked
 	 */
 	@Override
-	@CheckForNull
 	public String getLockOwner() {
 		return lockOwner;
 	}
@@ -300,7 +298,6 @@ public final class InfoImpl implements Info {
 	 * @return the lock-token or {@code null} if the resource is not locked
 	 */
 	@Override
-	@CheckForNull
 	public String getLockToken() {
 		return lockToken;
 	}
@@ -311,7 +308,6 @@ public final class InfoImpl implements Info {
 	 * @return the MD5 checksum of the resource or {@code null} if the resource is a directory
 	 */
 	@Override
-	@CheckForNull
 	public String getMd5() {
 		return md5;
 	}

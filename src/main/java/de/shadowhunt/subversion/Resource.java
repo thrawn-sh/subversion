@@ -64,6 +64,14 @@ public final class Resource implements Comparable<Resource> {
 		this.value = value;
 	}
 
+	/**
+	 * Appends the specified {@link Resource} to the end of this {@link Resource}
+	 *
+	 * @param resource the {@link Resource} that is appended to the end
+	 * of this {@link Resource}
+	 *
+	 * @return a {@link Resource} that represents the combination of this {@link Resource} and the specified {@link Resource}
+	 */
 	public Resource append(final Resource resource) {
 		return new Resource(value + resource.value);
 	}

@@ -40,6 +40,11 @@ public abstract class RepositoryFactory {
 
 	private static final String DEFAULT_USER_INFO = null;
 
+	/**
+	 * Create a new {@link RepositoryFactory} instance each time the method is called
+	 *
+	 * @return the new {@link RepositoryFactory} instance
+	 */
 	public static final RepositoryFactory getInstance() {
 		for (final RepositoryFactory factory : ServiceLoader.load(RepositoryFactory.class)) {
 			return factory;
@@ -58,7 +63,7 @@ public abstract class RepositoryFactory {
 	}
 
 	/**
-	 * Create a new {@link Repository} for given {@link URI} and {@link ProtocolVersion}
+	 * Create a new {@link Repository} for given {@link URI} and use the given {@link HttpClient} with the {@link HttpClient} to connect to the server
 	 *
 	 * @param repository {@link URI} to the root of the repository (e.g: http://repository.example.net/svn/test_repo)
 	 * @param client {@link HttpClient} that will handle all requests for this repository

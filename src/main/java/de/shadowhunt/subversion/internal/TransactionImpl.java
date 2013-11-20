@@ -26,6 +26,9 @@ import java.util.UUID;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Transaction;
 
+/**
+ * Default implementation for {@link Transaction}
+ */
 public final class TransactionImpl extends RepositoryCache implements Transaction {
 
 	private boolean active = true;
@@ -108,7 +111,7 @@ public final class TransactionImpl extends RepositoryCache implements Transactio
 		final Status old = changeSet.put(resource, status);
 		if (old != null) {
 			// if we delete an newly added resource, we remove completely
-			// remove the resource from the changeset
+			// remove the resource from the change set
 			if ((Status.ADDED == old) && (Status.DELETED == status)) {
 				changeSet.remove(resource);
 				return true;

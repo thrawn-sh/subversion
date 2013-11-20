@@ -32,8 +32,8 @@ import org.apache.http.util.EntityUtils;
 import de.shadowhunt.http.client.methods.DavTemplateRequest;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
-import de.shadowhunt.subversion.internal.util.URIUtils;
 import de.shadowhunt.subversion.internal.AbstractBaseRepository.ResourceMapper;
+import de.shadowhunt.subversion.internal.util.URIUtils;
 
 public class ResolveOperation extends AbstractOperation<Resource> {
 

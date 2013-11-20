@@ -73,6 +73,13 @@ public final class ResourceProperty {
 
 	private final String value;
 
+	/**
+	 * Create a new {@link ResourceProperty} with the given {@link Type}, name and value
+	 *
+	 * @param type {@link Type} of the {@link ResourceProperty}
+	 * @param name name of the {@link ResourceProperty}
+	 * @param value value of the {@link ResourceProperty}
+	 */
 	public ResourceProperty(final Type type, final String name, final String value) {
 		this.type = type;
 		this.name = name;
@@ -111,14 +118,29 @@ public final class ResourceProperty {
 		return true;
 	}
 
+	/**
+	 * Returns the name of the {@link ResourceProperty}
+	 *
+	 * @return the name of the {@link ResourceProperty}
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Returns the {@link Type} of the {@link ResourceProperty}
+	 *
+	 * @return the {@link Type} of the {@link ResourceProperty}
+	 */
 	public Type getType() {
 		return type;
 	}
 
+	/**
+	 * Returns the value of the {@link ResourceProperty}
+	 *
+	 * @return the value of the {@link ResourceProperty}
+	 */
 	public String getValue() {
 		return value;
 	}

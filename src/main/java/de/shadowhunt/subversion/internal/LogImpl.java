@@ -39,7 +39,7 @@ import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 
 /**
- * Container that holds all log information for a single revision of a resource
+ * Default implementation for {@link Log}
  */
 public final class LogImpl implements Log {
 
@@ -199,41 +199,21 @@ public final class LogImpl implements Log {
 		return true;
 	}
 
-	/**
-	 * Returns the name of the author that committed changes to the repository
-	 *
-	 * @return the name of the author that committed changes to the repository
-	 */
 	@Override
 	public String getAuthor() {
 		return author;
 	}
 
-	/**
-	 * Returns the time of the commit
-	 *
-	 * @return the time of the commit
-	 */
 	@Override
 	public Date getDate() {
 		return new Date(date.getTime());
 	}
 
-	/**
-	 * Returns the commit message
-	 *
-	 * @return the commit message or an empty {@link String} if no commit message was specified
-	 */
 	@Override
 	public String getMessage() {
 		return message;
 	}
 
-	/**
-	 * Returns the {@link Revision} that was created by the commit
-	 *
-	 * @return the {@link Revision} that was created by the commit
-	 */
 	@Override
 	public Revision getRevision() {
 		return revision;
