@@ -41,7 +41,7 @@ import de.shadowhunt.subversion.SubversionException;
 /**
  * Default implementation for {@link Log}
  */
-public final class LogImpl implements Log {
+final class LogImpl implements Log {
 
 	private static class SubversionLogHandler extends BasicHandler {
 
@@ -132,7 +132,7 @@ public final class LogImpl implements Log {
 	 *
 	 * @return {@link LogImpl} for the resource
 	 */
-	public static List<LogImpl> read(final InputStream in) {
+	static List<LogImpl> read(final InputStream in) {
 		try {
 			final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
 			final SubversionLogHandler handler = new SubversionLogHandler();

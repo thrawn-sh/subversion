@@ -44,8 +44,9 @@ public abstract class RepositoryFactory {
 	 * Create a new {@link RepositoryFactory} instance each time the method is called
 	 *
 	 * @return the new {@link RepositoryFactory} instance
+	 * @throws SubversionException if no {@link RepositoryFactory} can be created
 	 */
-	public static final RepositoryFactory getInstance() {
+	public static final RepositoryFactory getInstance() throws SubversionException {
 		for (final RepositoryFactory factory : ServiceLoader.load(RepositoryFactory.class)) {
 			return factory;
 		}
@@ -70,6 +71,7 @@ public abstract class RepositoryFactory {
 	 * @param context {@link HttpContext} that will be used by all requests to this repository
 	 *
 	 * @return a new {@link Repository} for given {@link URI}
+	 * @throws SubversionException if no {@link Repository} can be created
 	 */
 	public abstract Repository createRepository(final URI repository, final HttpClient client, final HttpContext context) throws SubversionException;
 }

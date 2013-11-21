@@ -41,7 +41,7 @@ import de.shadowhunt.subversion.SubversionException;
 /**
  * Default implementation for {@link Info}
  */
-public final class InfoImpl implements Info {
+final class InfoImpl implements Info {
 
 	private static class SubversionInfoHandler extends BasicHandler {
 
@@ -171,10 +171,11 @@ public final class InfoImpl implements Info {
 	 * Reads status information for a single revision of a resource from the given {@link InputStream}
 	 *
 	 * @param in {@link InputStream} from which the status information is read (Note: will not be closed)
+	 * @param parser {@link VersionParser} that is used to retrieve the version information from the server response
 	 *
 	 * @return {@link InfoImpl} for the resource
 	 */
-	public static InfoImpl read(final InputStream in, final VersionParser parser) {
+	static InfoImpl read(final InputStream in, final VersionParser parser) {
 		final SortedSet<InfoImpl> infos = readAll(in, parser);
 		if (infos.isEmpty()) {
 			throw new SubversionException("Invalid server response: expected content is missing");
@@ -186,10 +187,11 @@ public final class InfoImpl implements Info {
 	 * Reads a {@link SortedSet} of status information for a single revision of various resources from the given {@link InputStream}
 	 *
 	 * @param in {@link InputStream} from which the status information is read (Note: will not be closed)
+	 * @param parser {@link VersionParser} that is used to retrieve the version information from the server response
 	 *
 	 * @return {@link InfoImpl} for the resources
 	 */
-	public static SortedSet<InfoImpl> readAll(final InputStream in, final VersionParser parser) {
+	static SortedSet<InfoImpl> readAll(final InputStream in, final VersionParser parser) {
 		try {
 			final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
 			final SubversionInfoHandler handler = new SubversionInfoHandler(parser);

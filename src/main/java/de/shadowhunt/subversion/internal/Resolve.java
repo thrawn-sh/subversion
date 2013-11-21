@@ -64,9 +64,9 @@ final class Resolve {
 	 *
 	 * @param in {@link InputStream} from which the status information is read (Note: will not be closed)
 	 *
-	 * @return {@link de.shadowhunt.subversion.internal.LogImpl} for the resource
+	 * @return {@link LogImpl} for the resource
 	 */
-	public static Resolve read(final InputStream in) {
+	static Resolve read(final InputStream in) {
 		try {
 			final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
 			final ResolveHandler handler = new ResolveHandler();
