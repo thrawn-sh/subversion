@@ -38,7 +38,7 @@ import de.shadowhunt.subversion.Repository.ProtocolVersion;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.SubversionException;
 
-public class ProbeServerOperation extends AbstractOperation<Repository> {
+class ProbeServerOperation extends AbstractOperation<Repository> {
 
 	private static ProtocolVersion determineVersion(final HttpResponse response) {
 		for (final Header header : response.getAllHeaders()) {
@@ -49,7 +49,7 @@ public class ProbeServerOperation extends AbstractOperation<Repository> {
 		return ProtocolVersion.HTTPv1;
 	}
 
-	public ProbeServerOperation(final URI repository) {
+	ProbeServerOperation(final URI repository) {
 		super(repository);
 	}
 

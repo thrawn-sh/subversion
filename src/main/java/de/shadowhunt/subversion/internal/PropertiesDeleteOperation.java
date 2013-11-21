@@ -32,7 +32,7 @@ import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.internal.util.URIUtils;
 
-public class PropertiesDeleteOperation extends AbstractVoidOperation {
+class PropertiesDeleteOperation extends AbstractVoidOperation {
 
 	private final Info info;
 
@@ -40,7 +40,7 @@ public class PropertiesDeleteOperation extends AbstractVoidOperation {
 
 	private final Resource resource;
 
-	public PropertiesDeleteOperation(final URI repository, final Resource resource, final Info info, final ResourceProperty[] properties) {
+	PropertiesDeleteOperation(final URI repository, final Resource resource, final Info info, final ResourceProperty[] properties) {
 		super(repository);
 		this.resource = resource;
 		this.info = info;

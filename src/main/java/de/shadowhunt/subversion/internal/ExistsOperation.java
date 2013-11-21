@@ -30,11 +30,11 @@ import org.apache.http.util.EntityUtils;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.internal.util.URIUtils;
 
-public class ExistsOperation extends AbstractOperation<Boolean> {
+class ExistsOperation extends AbstractOperation<Boolean> {
 
 	private final Resource resource;
 
-	public ExistsOperation(final URI repository, final Resource resource) {
+	ExistsOperation(final URI repository, final Resource resource) {
 		super(repository);
 		this.resource = resource;
 	}

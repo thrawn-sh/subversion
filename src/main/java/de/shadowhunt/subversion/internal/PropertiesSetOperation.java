@@ -33,7 +33,7 @@ import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.internal.util.URIUtils;
 
-public class PropertiesSetOperation extends AbstractVoidOperation {
+class PropertiesSetOperation extends AbstractVoidOperation {
 
 	private final Info info;
 
@@ -41,7 +41,7 @@ public class PropertiesSetOperation extends AbstractVoidOperation {
 
 	private final Resource resource;
 
-	public PropertiesSetOperation(final URI repository, final Resource resource, final Info info, final ResourceProperty[] properties) {
+	PropertiesSetOperation(final URI repository, final Resource resource, final Info info, final ResourceProperty[] properties) {
 		super(repository);
 		this.resource = resource;
 		this.info = info;

@@ -31,7 +31,7 @@ import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.internal.util.URIUtils;
 
-public class UploadOperation extends AbstractVoidOperation {
+class UploadOperation extends AbstractVoidOperation {
 
 	private static final long STREAM_WHOLE_CONTENT = -1L;
 
@@ -41,7 +41,7 @@ public class UploadOperation extends AbstractVoidOperation {
 
 	private final Resource resource;
 
-	public UploadOperation(final URI repository, final Resource resource, final Info info, final InputStream content) {
+	UploadOperation(final URI repository, final Resource resource, final Info info, final InputStream content) {
 		super(repository);
 		this.resource = resource;
 		this.info = info;

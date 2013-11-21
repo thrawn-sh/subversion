@@ -48,7 +48,7 @@ class CreateTransactionOperation extends AbstractOperation<TransactionImpl> {
 
 	private final Resource resource;
 
-	public CreateTransactionOperation(final URI repository, final Resource resource) {
+	CreateTransactionOperation(final URI repository, final Resource resource) {
 		super(repository);
 		this.resource = resource;
 	}

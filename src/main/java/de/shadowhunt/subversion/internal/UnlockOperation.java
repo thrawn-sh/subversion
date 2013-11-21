@@ -28,7 +28,7 @@ import de.shadowhunt.http.client.methods.DavTemplateRequest;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.internal.util.URIUtils;
 
-public class UnlockOperation extends AbstractVoidOperation {
+class UnlockOperation extends AbstractVoidOperation {
 
 	private final boolean force;
 
@@ -36,7 +36,7 @@ public class UnlockOperation extends AbstractVoidOperation {
 
 	private final Resource resource;
 
-	public UnlockOperation(final URI repository, final Resource resource, final String lockToken, final boolean force) {
+	UnlockOperation(final URI repository, final Resource resource, final String lockToken, final boolean force) {
 		super(repository);
 		this.resource = resource;
 		this.lockToken = lockToken;

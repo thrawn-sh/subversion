@@ -35,7 +35,7 @@ import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.internal.AbstractBaseRepository.ResourceMapper;
 import de.shadowhunt.subversion.internal.util.URIUtils;
 
-public class ResolveOperation extends AbstractOperation<Resource> {
+class ResolveOperation extends AbstractOperation<Resource> {
 
 	private final ResourceMapper config;
 
@@ -47,7 +47,7 @@ public class ResolveOperation extends AbstractOperation<Resource> {
 
 	private final Revision revision;
 
-	public ResolveOperation(final URI repository, final Resource resource, final Revision revision, final Revision expected, final ResourceMapper config, final boolean reportNonExistingResources) {
+	ResolveOperation(final URI repository, final Resource resource, final Revision revision, final Revision expected, final ResourceMapper config, final boolean reportNonExistingResources) {
 		super(repository);
 		this.resource = resource;
 		this.revision = revision;

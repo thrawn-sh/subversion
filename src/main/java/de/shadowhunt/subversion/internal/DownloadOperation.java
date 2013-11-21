@@ -30,11 +30,11 @@ import org.apache.http.client.methods.HttpUriRequest;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.internal.util.URIUtils;
 
-public class DownloadOperation extends AbstractOperation<InputStream> {
+class DownloadOperation extends AbstractOperation<InputStream> {
 
 	private final Resource resource;
 
-	public DownloadOperation(final URI repository, final Resource resource) {
+	DownloadOperation(final URI repository, final Resource resource) {
 		super(repository);
 		this.resource = resource;
 	}

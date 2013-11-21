@@ -37,7 +37,7 @@ class CheckoutOperation extends AbstractVoidOperation {
 
 	private final Resource transaction;
 
-	public CheckoutOperation(final URI repository, final Resource resource, final Resource transaction) {
+	CheckoutOperation(final URI repository, final Resource resource, final Resource transaction) {
 		super(repository);
 		this.resource = resource;
 		this.transaction = transaction;

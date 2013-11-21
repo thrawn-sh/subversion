@@ -93,7 +93,7 @@ class RepositoryImpl extends AbstractBaseRepository {
 		}
 	}
 
-	public RepositoryImpl(final URI repository, final Resource prefix, final HttpClient client, final HttpContext context) {
+	RepositoryImpl(final URI repository, final Resource prefix, final HttpClient client, final HttpContext context) {
 		super(repository, new ResourceMapperImpl(prefix), client, context);
 	}
 
