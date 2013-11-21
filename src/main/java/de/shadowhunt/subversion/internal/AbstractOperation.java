@@ -75,7 +75,7 @@ public abstract class AbstractOperation<T> implements Operation<T> {
 		final String message;
 		switch (statusCode) {
 			case HttpStatus.SC_FORBIDDEN:
-				message = "Insufficient permissions to executor operation on url:" + requestUri;
+				message = "Insufficient permissions to execute operation on url:" + requestUri;
 				break;
 			case HttpStatus.SC_NOT_FOUND:
 				message = "Requested url: " + requestUri + " could not be found";
