@@ -31,12 +31,12 @@ import de.shadowhunt.subversion.internal.RepositoryLocator;
 public class RepositoryLocatorImpl implements RepositoryLocator {
 
 	@Override
-	public boolean isSupported(final Repository.ProtocolVersion version) {
-		return Repository.ProtocolVersion.HTTPv1 == version;
+	public Repository create(final URI repository, final Resource prefix, final HttpClient client, final HttpContext context) {
+		return new RepositoryImpl(repository, prefix, client, context);
 	}
 
 	@Override
-	public Repository create(final URI repository, final Resource prefix, final HttpClient client, final HttpContext context) {
-		return new RepositoryImpl(repository, prefix, client, context);
+	public boolean isSupported(final Repository.ProtocolVersion version) {
+		return Repository.ProtocolVersion.HTTPv1 == version;
 	}
 }

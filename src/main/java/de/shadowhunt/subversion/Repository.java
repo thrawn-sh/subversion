@@ -124,18 +124,18 @@ public interface Repository {
 	URI getBaseUri();
 
 	/**
-	 * Returns the {@link UUID} that identifies the {@link Repository} globally
-	 *
-	 * @return the {@link UUID} that identifies the {@link Repository} globally
-	 */
-	UUID getRepositoryId();
-
-	/**
 	 * Returns the {@link ProtocolVersion} of the server running this {@link Repository}
 	 *
 	 * @return the {@link ProtocolVersion} of the server running this {@link Repository}
 	 */
 	ProtocolVersion getProtocolVersion();
+
+	/**
+	 * Returns the {@link UUID} that identifies the {@link Repository} globally
+	 *
+	 * @return the {@link UUID} that identifies the {@link Repository} globally
+	 */
+	UUID getRepositoryId();
 
 	/**
 	 * Retrieve information for the resource

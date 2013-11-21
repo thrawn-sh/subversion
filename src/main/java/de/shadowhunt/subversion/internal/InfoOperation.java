@@ -39,9 +39,9 @@ public class InfoOperation extends AbstractOperation<Info> {
 
 	private static final String LOCK_OWNER_HEADER = "X-SVN-Lock-Owner";
 
-	private final Resource resource;
-
 	private final VersionParser parser;
+
+	private final Resource resource;
 
 	public InfoOperation(final URI repository, final Resource resource, final VersionParser parser) {
 		super(repository);

@@ -84,11 +84,11 @@ public abstract class AbstractBaseRepository implements Repository {
 
 	protected final HttpContext context;
 
+	private final VersionParser parser;
+
 	protected final URI repository;
 
 	private final UUID repositoryId;
-
-	private final VersionParser parser;
 
 	protected AbstractBaseRepository(final URI repository, final ResourceMapper config, final HttpClient client, final HttpContext context) {
 		this.repository = URIUtils.createURI(repository);
@@ -272,6 +272,10 @@ public abstract class AbstractBaseRepository implements Repository {
 	@Override
 	public final UUID getRepositoryId() {
 		return repositoryId;
+	}
+
+	protected VersionParser getVersionParser() {
+		return parser;
 	}
 
 	@Override
@@ -463,9 +467,5 @@ public abstract class AbstractBaseRepository implements Repository {
 		if (!transaction.isActive()) {
 			throw new SubversionException("Transaction invalid: has already been commited or rolledback");
 		}
-	}
-
-	protected VersionParser getVersionParser() {
-		return parser;
 	}
 }

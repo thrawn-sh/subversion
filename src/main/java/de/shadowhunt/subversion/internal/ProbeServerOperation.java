@@ -65,17 +65,6 @@ public class ProbeServerOperation extends AbstractOperation<Repository> {
 	}
 
 	@Override
-	protected boolean isExpectedStatusCode(final int statusCode) {
-		return HttpStatus.SC_OK == statusCode;
-	}
-
-	@Override
-	protected Repository processResponse(final HttpResponse response) {
-		// we need client and context to create the repository
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public Repository execute(final HttpClient client, final HttpContext context) {
 		final HttpUriRequest request = createRequest();
 		final HttpResponse response = executeRequest(request, client, context);
@@ -97,5 +86,16 @@ public class ProbeServerOperation extends AbstractOperation<Repository> {
 		}
 
 		throw new SubversionException("Could not find suitable repository for " + repository);
+	}
+
+	@Override
+	protected boolean isExpectedStatusCode(final int statusCode) {
+		return HttpStatus.SC_OK == statusCode;
+	}
+
+	@Override
+	protected Repository processResponse(final HttpResponse response) {
+		// we need client and context to create the repository
+		throw new UnsupportedOperationException();
 	}
 }

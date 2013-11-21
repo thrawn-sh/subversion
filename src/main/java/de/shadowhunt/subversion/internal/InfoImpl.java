@@ -53,11 +53,11 @@ public final class InfoImpl implements Info {
 
 		private boolean locktoken = false;
 
+		private final VersionParser parser;
+
 		private Set<ResourceProperty> properties = null;
 
 		private boolean resourceType = false;
-
-		private final VersionParser parser;
 
 		SubversionInfoHandler(final VersionParser parser) {
 			this.parser = parser;

@@ -39,9 +39,9 @@ public class ListOperation extends AbstractOperation<Set<Info>> {
 
 	private final Depth depth;
 
-	private final Resource resource;
-
 	private final VersionParser parser;
+
+	private final Resource resource;
 
 	public ListOperation(final URI repository, final Resource resource, final Depth depth, final VersionParser parser) {
 		super(repository);
