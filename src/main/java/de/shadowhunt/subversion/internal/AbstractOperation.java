@@ -36,7 +36,7 @@ import org.apache.http.util.EntityUtils;
 
 import de.shadowhunt.subversion.SubversionException;
 
-public abstract class AbstractOperation<T> implements Operation<T> {
+public abstract class AbstractOperation<T> {
 
 	protected static final ContentType CONTENT_TYPE_XML = ContentType.create("text/xml", "UTF-8");
 
@@ -130,7 +130,14 @@ public abstract class AbstractOperation<T> implements Operation<T> {
 
 	protected abstract HttpUriRequest createRequest();
 
-	@Override
+	/**
+	 * Run the {@link AbstractOperation} against the server
+	 *
+	 * @param client {@link HttpClient} to use for this {@link AbstractOperation}
+	 * @param context {@link HttpContext} to use for this {@link AbstractOperation}
+	 *
+	 * @return expected return value or {@code Void} if non is expected
+	 */
 	public T execute(final HttpClient client, final HttpContext context) {
 		final HttpUriRequest request = createRequest();
 		final HttpResponse response = executeRequest(request, client, context);
