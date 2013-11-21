@@ -32,7 +32,6 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
 
-import de.shadowhunt.http.client.methods.DavTemplateRequest;
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Repository.ProtocolVersion;
 import de.shadowhunt.subversion.Resource;

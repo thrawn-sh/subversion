@@ -27,7 +27,6 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.util.EntityUtils;
 
-import de.shadowhunt.http.client.methods.DavTemplateRequest;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.internal.AbstractOperation;
 import de.shadowhunt.subversion.internal.TransactionImpl;

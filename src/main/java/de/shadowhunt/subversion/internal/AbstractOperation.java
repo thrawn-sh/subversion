@@ -27,6 +27,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
@@ -40,6 +41,27 @@ public abstract class AbstractOperation<T> implements Operation<T> {
 	protected static final ContentType CONTENT_TYPE_XML = ContentType.create("text/xml", "UTF-8");
 
 	protected static final String XML_PREAMBLE = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
+
+	protected static final class DavTemplateRequest extends HttpEntityEnclosingRequestBase {
+
+		private final String method;
+
+		/**
+		 * Create a new {@link DavTemplateRequest}
+		 *
+		 * @param method HTTP method name
+		 * @param uri full qualified {@link URI} this {@link DavTemplateRequest} is directed to
+		 */
+		public DavTemplateRequest(final String method, final URI uri) {
+			this.method = method;
+			setURI(uri);
+		}
+
+		@Override
+		public String getMethod() {
+			return method;
+		}
+	}
 
 	static InputStream getContent(final HttpResponse response) {
 		final HttpEntity entity = response.getEntity();
