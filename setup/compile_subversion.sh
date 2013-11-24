@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -ex
 
 export CC=`which x86_64-linux-gnu-gcc`
 
