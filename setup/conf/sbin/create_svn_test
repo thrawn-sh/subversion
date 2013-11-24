@@ -175,6 +175,6 @@ chown -R www-data:www-data ${REPO}
 mv svn test
 
 ### cleanup {{{1
-rm -rf        /tmp/svn
-mv ${TMP_DIR} /tmp/svn
-chmod 0755    /tmp/svn
+rm -rf        /tmp/svn-"${VERSION}"
+mv ${TMP_DIR} /tmp/svn-"${VERSION}"
+chmod 0755    /tmp/svn-"${VERSION}"
