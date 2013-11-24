@@ -213,9 +213,9 @@ function scons() { #{{{1
 		return
 	fi
 
+	local archive="/opt/download/scons-local-${version}.tar.gz"
 	if [ ! -f "${archive}" ]; then
 		wget "http://prdownloads.sourceforge.net/scons/scons-local-${version}.tar.gz" -O "${archive}"
-	local archive="/opt/download/scons-local-${version}.tar.gz"
 	fi
 
 	cd "${directory}"
