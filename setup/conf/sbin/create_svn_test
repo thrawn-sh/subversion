@@ -1,5 +1,17 @@
 #!/bin/bash -e
 
+VERSION="${1}"; shift
+SVN="/opt/bin/svn_${VERSION}"
+if [ ! -f "${SVN}" ]; then
+	echo "${SVN} not found" 1>&2
+	exit 1;
+fi
+SVNADMIN="/opt/bin/svnadmin_${VERSION}"
+if [ ! -f "${SVNADMIN}" ]; then
+	echo "${SVNADMIN} not found" 1>&2
+	exit 1;
+fi
+
 TMP_DIR="`mktemp -d`"
 LOCAL="${TMP_DIR}/local"
 DUMP="${TMP_DIR}/dump"
@@ -14,29 +26,29 @@ create_file() { #{{{1
 	mkdir -p `dirname "${file}"`
 	local content
 	for content in A B C; do
-		echo "${content}" >                               "${file}"
-		svn add     --quiet --parents                     "${file}"
-		svn propset --quiet svn:mime-type text/plain      "${file}"
-		svn propset --quiet modifiedProperty ${content}   "${file}"
-		svn propset --quiet property${content} ${content} "${file}"
-		commit "${file} with content: ${content}"         "${file}"
+		echo "${content}" >                                        "${file}"
+		"${SVN}" add     --quiet --parents                         "${file}"
+		"${SVN}" propset --quiet svn:mime-type        text/plain   "${file}"
+		"${SVN}" propset --quiet modifiedProperty     "${content}" "${file}"
+		"${SVN}" propset --quiet "property${content}" "${content}" "${file}"
+		commit "${file} with content: ${content}"                  "${file}"
 	done
 
 	if [ "${delete}" -eq 1 ]; then
 		# copy
-		local copy=`echo ${file} | sed 's:delete:copy:g'`
-		svn copy "${file}" "${copy}"
+		local copy=`echo "${file}" | sed 's:delete:copy:g'`
+		"${SVN}" copy "${file}"            "${copy}"
 		commit "copied ${file} -> ${copy}" "${copy}"
 		# move
 		local tmp=`echo ${file} | sed 's:delete:tmp:g'`
 		local move=`echo ${file} | sed 's:delete:move:g'`
-		svn copy "${file}" "${tmp}"
+		"${SVN}" copy "${file}"           "${tmp}"
 		commit "copied ${file} -> ${tmp}" "${tmp}"
-		svn mv "${tmp}" "${move}"
+		"${SVN}" mv "${tmp}"             "${move}"
 		commit "moved ${tmp} -> ${move}" "${move}"
 		# delete
 		rm -f "${file}"
-		svn remove --quiet "${file}"
+		"${SVN}" remove --quiet  "${file}"
 		commit "deleted ${file}" "${file}"
 	fi
 } #}}}1
@@ -45,26 +57,26 @@ create_folder() { #{{{1
 	local delete="${2}"
 
 	mkdir -p "${folder}"
-	svn add     --quiet --parents                     "${folder}"
-	svn propset --quiet svn:ignore "*.bin"            "${folder}"
-	svn propset --quiet chustomProperty "test"        "${folder}"
-	commit "created ${folder}" "${folder}"
+	"${SVN}" add     --quiet --parents               "${folder}"
+	"${SVN}" propset --quiet svn:ignore      "*.bin" "${folder}"
+	"${SVN}" propset --quiet chustomProperty "test"  "${folder}"
+	commit "created ${folder}"                       "${folder}"
 
 	if [ "${delete}" -eq 1 ]; then
 		# copy
-		local copy=`echo ${folder} | sed 's:delete:copy:g'`
-		svn copy "${folder}" "${copy}"
+		local copy=`echo "${folder}" | sed 's:delete:copy:g'`
+		"${SVN}" copy "${folder}"            "${copy}"
 		commit "copied ${folder} -> ${copy}" "${copy}"
 		# move
 		local tmp=`echo ${folder} | sed 's:delete:tmp:g'`
 		local move=`echo ${folder} | sed 's:delete:move:g'`
-		svn copy "${folder}" "${tmp}"
+		"${SVN}" copy "${folder}"           "${tmp}"
 		commit "copied ${folder} -> ${tmp}" "${tmp}"
-		svn mv "${tmp}" "${move}"
+		"${SVN}" mv "${tmp}"             "${move}"
 		commit "moved ${tmp} -> ${move}" "${move}"
 		# delete
 		rm -rf "${folder}"
-		svn remove --quiet "${folder}"
+		"${SVN}" remove --quiet    "${folder}"
 		commit "deleted ${folder}" "${folder}"
 	fi
 } #}}}1
@@ -73,11 +85,11 @@ commit() { #{{{1
 	message=`echo "${message}" | sed "s:${LOCAL}::g"`
 	local resource
 	for resource in $@; do
-		svn add --parents --quiet "${resource}"
+		"${SVN}" add --parents --quiet "${resource}"
 	done
-	svn commit "${LOCAL}" --message "${message}"
+	"${SVN}" commit "${LOCAL}" --message "${message}"
 
-	local version=`svn info "file://${REPO}" | grep ^Revision: | awk '{print $2}'`
+	local version=`"${SVN}" info "file://${REPO}" | grep ^Revision: | awk '{print $2}'`
 	local src
 	for src in `find "${LOCAL}" -not -wholename "*/.svn*"`; do
 		local target=`echo "${src}" | sed "s:^${LOCAL}:${DUMP}/${version}:g"`
@@ -91,17 +103,17 @@ commit() { #{{{1
 		fi
 
 		local rsrc=`echo "${src}" | sed "s:^${LOCAL}:file\://${REPO}:g"`
-		svn log                --xml "${rsrc}" | xmllint --format - | sed "s:${REPO}::g" | sed -E "s:[0-9]{3}Z</date>:Z</date>:g" > "${target}.log"
-		svn info               --xml "${rsrc}" | xmllint --format - | sed "s:${REPO}::g" | sed -E "s:[0-9]{3}Z</date>:Z</date>:g" > "${target}.info"
-		svn proplist --verbose --xml "${rsrc}" | xmllint --format - | sed "s:${REPO}::g"                                          > "${target}.proplist"
+		"${SVN}" log                --xml "${rsrc}" | xmllint --format - | sed "s:${REPO}::g" | sed -E "s:[0-9]{3}Z</date>:Z</date>:g" > "${target}.log"
+		"${SVN}" info               --xml "${rsrc}" | xmllint --format - | sed "s:${REPO}::g" | sed -E "s:[0-9]{3}Z</date>:Z</date>:g" > "${target}.info"
+		"${SVN}" proplist --verbose --xml "${rsrc}" | xmllint --format - | sed "s:${REPO}::g"                                          > "${target}.proplist"
 	done
 } #}}}1
 
 ### init {{{1
 mkdir -p "${REPO}" "${DUMP}"
 
-svnadmin create "${REPO}"
-svn checkout --quiet "file://${REPO}" "${LOCAL}"
+"${SVNADMIN}" create "${REPO}"
+"${SVN}" checkout --quiet "file://${REPO}" "${LOCAL}"
 
 ### prepare repo {{{1
 mkdir -p "${BASE}"
@@ -143,7 +155,7 @@ mkdir -p      "${BASE}/lock"
 echo A >      "${BASE}/lock/file.txt"
 commit        "${BASE}/lock/file.txt with content: A" "${BASE}/lock/file.txt"
 echo B >      "${BASE}/lock/file.txt"
-svn lock      "${BASE}/lock/file.txt"
+"${SVN}" lock "${BASE}/lock/file.txt"
 commit        "${BASE}/lock/file.txt with content: B + lock" "${BASE}/lock/file.txt"
 
 # log {{{1
