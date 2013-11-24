@@ -208,7 +208,8 @@ function scons() { #{{{1
 
 	local maker="${prefix}/.install/scons"
 	if [ -f "${maker}" ]; then
-		echo "cons already installed in ${prefix}"
+		echo "scons already installed in ${prefix}"
+		rm -rf "${directory}"
 		return
 	fi
 
@@ -299,6 +300,7 @@ function subversion_1_0() { #{{{1
 	local maker="${prefix}/.install/subversion"
 	if [ -f "${maker}" ]; then
 		echo "subversion already installed in ${prefix}"
+		rm -rf "${directory}"
 		return
 	fi
 
@@ -342,6 +344,7 @@ function subversion_1_1() { #{{{1
 	local maker="${prefix}/.install/subversion"
 	if [ -f "${maker}" ]; then
 		echo "subversion already installed in ${prefix}"
+		rm -rf "${directory}"
 		return
 	fi
 
@@ -385,6 +388,7 @@ function subversion_1_2() { #{{{1
 	local maker="${prefix}/.install/subversion"
 	if [ -f "${maker}" ]; then
 		echo "subversion already installed in ${prefix}"
+		rm -rf "${directory}"
 		return
 	fi
 
@@ -429,6 +433,7 @@ function subversion_1_3() { #{{{1
 	local maker="${prefix}/.install/subversion"
 	if [ -f "${maker}" ]; then
 		echo "subversion already installed in ${prefix}"
+		rm -rf "${directory}"
 		return
 	fi
 
@@ -473,6 +478,7 @@ function subversion_1_4() { #{{{1
 	local maker="${prefix}/.install/subversion"
 	if [ -f "${maker}" ]; then
 		echo "subversion already installed in ${prefix}"
+		rm -rf "${directory}"
 		return
 	fi
 
@@ -517,6 +523,7 @@ function subversion_1_5() { #{{{1
 	local maker="${prefix}/.install/subversion"
 	if [ -f "${maker}" ]; then
 		echo "subversion already installed in ${prefix}"
+		rm -rf "${directory}"
 		return
 	fi
 
@@ -561,6 +568,7 @@ function subversion_1_6() { #{{{1
 	local maker="${prefix}/.install/subversion"
 	if [ -f "${maker}" ]; then
 		echo "subversion already installed in ${prefix}"
+		rm -rf "${directory}"
 		return
 	fi
 
@@ -607,6 +615,7 @@ function subversion_1_7() { #{{{1
 	local maker="${prefix}/.install/subversion"
 	if [ -f "${maker}" ]; then
 		echo "subversion already installed in ${prefix}"
+		rm -rf "${directory}"
 		return
 	fi
 
@@ -653,6 +662,7 @@ function subversion_1_8() { #{{{1
 	local maker="${prefix}/.install/subversion"
 	if [ -f "${maker}" ]; then
 		echo "subversion already installed in ${prefix}"
+		rm -rf "${directory}"
 		return
 	fi
 
