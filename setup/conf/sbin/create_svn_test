@@ -20,14 +20,14 @@ BASE="${LOCAL}/trunk/00000000-0000-0000-0000-000000000000"
 REPO="${TMP_DIR}/svn"
 
 create_file() { #{{{1
-	local file="${1}"
-	local delete="${2}"
+	local file="${1}"; shift
+	local delete="${1}"; shift
 
 	mkdir -p `dirname "${file}"`
 	local content
 	for content in A B C; do
 		echo "${content}" >                                        "${file}"
-		"${SVN}" add     --quiet --parents                         "${file}"
+		"${SVN}" add     --quiet --parents                         "${file}" || true
 		"${SVN}" propset --quiet svn:mime-type        text/plain   "${file}"
 		"${SVN}" propset --quiet modifiedProperty     "${content}" "${file}"
 		"${SVN}" propset --quiet "property${content}" "${content}" "${file}"
@@ -53,11 +53,11 @@ create_file() { #{{{1
 	fi
 } #}}}1
 create_folder() { #{{{1
-	local folder="${1}"
-	local delete="${2}"
+	local folder="${1}"; shift
+	local delete="${1}"; shift
 
 	mkdir -p "${folder}"
-	"${SVN}" add     --quiet --parents               "${folder}"
+	"${SVN}" add     --quiet --parents               "${folder}" || true
 	"${SVN}" propset --quiet svn:ignore      "*.bin" "${folder}"
 	"${SVN}" propset --quiet chustomProperty "test"  "${folder}"
 	commit "created ${folder}"                       "${folder}"
@@ -81,13 +81,13 @@ create_folder() { #{{{1
 	fi
 } #}}}1
 commit() { #{{{1
-	local message=${1}; shift
+	local message="${1}"; shift
 	message=`echo "${message}" | sed "s:${LOCAL}::g"`
 	local resource
-	for resource in $@; do
-		"${SVN}" add --parents --quiet "${resource}"
+	for resource in "${@}"; do
+		"${SVN}" add --parents --quiet "${resource}" || true
 	done
-	"${SVN}" commit "${LOCAL}" --message "${message}"
+	"${SVN}" commit --message "${message}" "${LOCAL}"
 
 	local version=`"${SVN}" info "file://${REPO}" | grep ^Revision: | awk '{print $2}'`
 	local src

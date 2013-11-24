@@ -10,4 +10,4 @@ if [ ! -d "${BASE}" ]; then
 fi
 
 export LD_LIBRARY_PATH="${BASE}/lib:${LD_LIBRARY_PATH}"
-"${BASE}/bin/${COMMAND}" $@
+"${BASE}/bin/${COMMAND}" "${@}"
