@@ -610,7 +610,7 @@ function subversion_1_7() { #{{{1
 	httpd    "${directory}" "${prefix}" 2.2.26
 	sqllite  "${directory}" "${prefix}" 3080100
 	scons    "${directory}" "${prefix}" 2.3.0
-	serf     "${prefix}" 1.3.2
+	serf     "${directory}" "${prefix}" 1.3.2
 
 	local maker="${prefix}/.install/subversion"
 	if [ -f "${maker}" ]; then
@@ -657,7 +657,7 @@ function subversion_1_8() { #{{{1
 	httpd    "${directory}" "${prefix}" 2.2.26
 	sqllite  "${directory}" "${prefix}" 3080100
 	scons    "${directory}" "${prefix}" 2.3.0
-	serf     "${prefix}" 1.3.2
+	serf     "${directory}" "${prefix}" 1.3.2
 
 	local maker="${prefix}/.install/subversion"
 	if [ -f "${maker}" ]; then
