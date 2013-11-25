@@ -693,7 +693,7 @@ function subversion_1_8() { #{{{1
 	rm -rf "${directory}"
 } #}}}1
 
-#init
+init
 
 mkdir -p "/opt/download"
 #subversion_1_0 # won't build apache modules
