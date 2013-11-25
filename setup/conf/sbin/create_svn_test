@@ -1,6 +1,10 @@
 #!/bin/bash
 
 VERSION="${1}"; shift
+if [ -z "${VERSION}" ]; then
+	echo "VERSION not set" 1>&2
+	exit 1;
+fi
 SVN="/opt/bin/svn_${VERSION}"
 if [ ! -f "${SVN}" ]; then
 	echo "${SVN} not found" 1>&2
@@ -21,6 +25,8 @@ REPO="${TMP_DIR}/svn"
 
 "${SVN}" help add 2>&1 | grep -q "\-\-parents" 2> /dev/null
 ADD_PARENTS_SUPPORTED="${?}"
+"${SVN}" help info 2>&1 | grep -q "\-\-xml" 2> /dev/null
+INFO_XML_SUPPORTED="${?}"
 "${SVN}" help proplist 2>&1 | grep -q "\-\-xml" 2> /dev/null
 PROPLIST_XML_SUPPORTED="${?}"
 
@@ -126,10 +132,19 @@ commit() { #{{{1
 		fi
 
 		local rsrc=`echo "${src}" | sed "s:^${LOCAL}:file\://${REPO}:g"`
-		"${SVN}" log                --xml "${rsrc}" | xmllint --format - | sed "s:${REPO}::g" | sed -E "s:[0-9]{3}Z</date>:Z</date>:g" > "${target}.log"
-		"${SVN}" info               --xml "${rsrc}" | xmllint --format - | sed "s:${REPO}::g" | sed -E "s:[0-9]{3}Z</date>:Z</date>:g" > "${target}.info"
-		proplist                          "${rsrc}"                                                                                      "${target}.proplist"
+		"${SVN}" log --xml "${rsrc}" | xmllint --format - | sed "s:${REPO}::g" | sed -E "s:[0-9]{3}Z</date>:Z</date>:g" > "${target}.log"
+		info               "${rsrc}"                                                                                      "${target}.info"
+		proplist           "${rsrc}"                                                                                      "${target}.proplist"
 	done
+} #}}}1
+info() { #{{{1
+	local resource="${1}"; shift
+	local output="${1}"; shift
+	if [ "${PROPLIST_XML_SUPPORTED}" -eq 0 ]; then
+		"${SVN}" info --xml "${resource}" | xmllint --format - | sed "s:${REPO}::g" | sed -E "s:[0-9]{3}Z</date>:Z</date>:g" > "${output}"
+	else
+		exit 1
+	fi
 } #}}}1
 proplist() { #{{{1
 	local resource="${1}"; shift
