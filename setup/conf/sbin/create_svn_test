@@ -152,8 +152,8 @@ proplist() { #{{{1
 	if [ "${PROPLIST_XML_SUPPORTED}" -eq 0 ]; then
 		"${SVN}" proplist --verbose --xml "${resource}" | xmllint --format - | sed "s:${REPO}::g" > "${output}"
 	else
-		echo "<?xml version=\"1.0\">" >  "${output}"
-		echo "<properties>"           >> "${output}"
+		echo "<?xml version=\"1.0\"?>" >  "${output}"
+		echo "<properties>"            >> "${output}"
 
 		local first
 		local line
@@ -165,8 +165,10 @@ proplist() { #{{{1
 			fi
 			echo "${line}" | tr -d \" | awk '{ split($0, array, " : ") } END { print "<property name=\"" array[1] "\">" array[2] "</property>" }' | sed "s:${REPO}::g" >> "${output}"
 		done
-		echo "</target>"     >> "${output}"
-		echo "</properties>" >> "${output}"
+		if [ -n "${first}" ]; then
+			echo "</target>" >> "${output}"
+		fi
+		echo "</properties>"     >> "${output}"
 	fi
 } #}}}1
 
