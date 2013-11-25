@@ -1,21 +1,15 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
 export CC=`which x86_64-linux-gnu-gcc`
 
 function init() { # {{{1
 	aptitude -r install \
-	apache2 \
 	autoconf \
 	build-essential \
-	git \
 	libexpat1-dev \
 	libxml2-dev \
-	sudo \
-	tmux \
 	uuid-dev \
-	vim \
 	wget \
-	zip \
 	zlib1g-dev
 } #}}}1
 
