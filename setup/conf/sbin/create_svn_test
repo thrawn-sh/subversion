@@ -23,13 +23,6 @@ BASE="${LOCAL}/trunk/00000000-0000-0000-0000-000000000000"
 
 REPO="${TMP_DIR}/svn"
 
-"${SVN}" help add 2>&1 | grep -q "\-\-parents" 2> /dev/null
-ADD_PARENTS_SUPPORTED="${?}"
-"${SVN}" help info 2>&1 | grep -q "\-\-xml" 2> /dev/null
-INFO_XML_SUPPORTED="${?}"
-"${SVN}" help proplist 2>&1 | grep -q "\-\-xml" 2> /dev/null
-PROPLIST_XML_SUPPORTED="${?}"
-
 create_file() { #{{{1
 	local file="${1}"; shift
 	local delete="${1}"; shift
@@ -101,16 +94,16 @@ create_folder() { #{{{1
 
 add() { #{{{1
 	local resource="${1}"; shift
-	if [ "${ADD_PARENTS_SUPPORTED}" -eq 0 ]; then
-		"${SVN}" add --non-recursive --quiet --force --parents "${resource}"
-	else
-		if [ "${LOCAL}" == "${resource}" ]; then
-			return
-		fi
-		local parent="`dirname "${resource}"`"
-		add "${parent}"
-		"${SVN}" add --non-recursive --quiet --force "${resource}"
-	fi
+	local bin="NOT_DIFINED"
+	case "${VERSION}" in
+		"1.0.0" | "1.1.0" | "1.2.0" | "1.3.0" | "1.4.0")
+			bin="/opt/bin/svn_1.5.0"
+		;;
+		*)
+			bin="${SVN}"
+		;;
+	esac
+	"${bin}" add --non-recursive --quiet --force --parents "${resource}"
 } #}}}1
 commit() { #{{{1
 	local message="${1}"; shift
@@ -140,36 +133,29 @@ commit() { #{{{1
 info() { #{{{1
 	local resource="${1}"; shift
 	local output="${1}"; shift
-	if [ "${PROPLIST_XML_SUPPORTED}" -eq 0 ]; then
-		"${SVN}" info --xml "${resource}" | xmllint --format - | sed "s:${REPO}::g" | sed -E "s:[0-9]{3}Z</date>:Z</date>:g" > "${output}"
-	else
-		exit 1
-	fi
+	local bin="NOT_DIFINED"
+	case "${VERSION}" in
+		"1.0.0" | "1.1.0" | "1.2.0")
+			bin="/opt/bin/svn_1.3.0"
+		;;
+		*)
+			bin="${SVN}"
+		;;
+	esac
+	"${bin}" info --xml "${resource}" | xmllint --format - | sed "s:${REPO}::g" | sed -E "s:[0-9]{3}Z</date>:Z</date>:g" > "${output}"
 } #}}}1
 proplist() { #{{{1
 	local resource="${1}"; shift
 	local output="${1}"; shift
-	if [ "${PROPLIST_XML_SUPPORTED}" -eq 0 ]; then
-		"${SVN}" proplist --verbose --xml "${resource}" | xmllint --format - | sed "s:${REPO}::g" > "${output}"
-	else
-		echo "<?xml version=\"1.0\"?>" >  "${output}"
-		echo "<properties>"            >> "${output}"
-
-		local first
-		local line
-		"${SVN}" proplist --verbose "${resource}" | while read line; do
-			if [ -z "${first}" ]; then
-				first="done"
-				echo "${line}" | cut -d"'" -f2 | sed "s:${REPO}::g" | awk '{print "<target path=\"" $1 "\">"}' >> "${output}"
-				continue
-			fi
-			echo "${line}" | tr -d \" | awk '{ split($0, array, " : ") } END { print "<property name=\"" array[1] "\">" array[2] "</property>" }' | sed "s:${REPO}::g" >> "${output}"
-		done
-		if [ -n "${first}" ]; then
-			echo "</target>" >> "${output}"
-		fi
-		echo "</properties>"     >> "${output}"
-	fi
+	case "${VERSION}" in
+		"1.0.0" | "1.1.0" | "1.2.0" | "1.3.0" | "1.4.0")
+			bin="/opt/bin/svn_1.5.0"
+		;;
+		*)
+			bin="${SVN}"
+		;;
+	esac
+	"${bin}" proplist --verbose --xml "${resource}" | xmllint --format - | sed "s:${REPO}::g" > "${output}"
 } #}}}1
 
 ### init {{{1
