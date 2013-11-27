@@ -230,6 +230,10 @@ done
 chown -R www-data:www-data ${REPO}
 mv svn test
 
+### create empty repository {{{1
+"${SVNADMIN}" create "${TMP_DIR}/empty"
+chown -R www-data:www-data "${TMP_DIR}/empty"
+
 ### cleanup {{{1
 rm -rf        /tmp/svn-"${VERSION}"
 mv ${TMP_DIR} /tmp/svn-"${VERSION}"
