@@ -1,14 +1,5 @@
 #! /bin/sh
 
-### BEGIN INIT INFO
-# Provides:          apache2
-# Required-Start:    $local_fs $remote_fs $network $syslog $named
-# Required-Stop:     $local_fs $remote_fs $network $syslog $named
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
-# Short-Description: Start/stop apache2 web server
-### END INIT INFO
-
 # Define LSB log_* functions.
 . /lib/lsb/init-functions
 
@@ -16,9 +7,6 @@ VERSION="`basename ${0} | cut -d_ -f2`"
 
 # path to xinit exec
 DAEMON="/opt/bin/apachectl_${VERSION}"
-
-# startup args
-DAEMON_OPTS=""
 
 # script name
 NAME="apache-svn-${VERSION}"
@@ -53,7 +41,7 @@ do_stop() {
 }
 
 do_status() {
-	status_of_proc -p "${APCHE_PID_FILE}" "${NAME}" "${DESC}" && return 0 || return $?
+	status_of_proc -p "/var/run/apache-subversion-${VERSION}.pid" "${NAME}" "${DESC}" && return 0 || return $?
 }
 
 case "${1}" in
@@ -72,7 +60,7 @@ case "${1}" in
 		do_status
 	;;
 	*)
-		log_action_msg "Usage: $SCRIPTNAME {start|stop|restart|force-reload|status}"
+		log_action_msg "Usage: ${SCRIPTNAME} {start|stop|restart|force-reload|status}"
 		exit 2
 		;;
 esac
