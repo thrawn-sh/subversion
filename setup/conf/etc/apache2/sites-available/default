@@ -1,121 +1,52 @@
 <VirtualHost *:80 *:8080>
-	ServerAdmin webmaster@localhost
+	ServerAdmin root@shadowhunt.de
 
 	DocumentRoot /var/www
+
 	<Directory />
 		Options FollowSymLinks
-		AllowOverride None
-	</Directory>
-	<Directory /var/www/>
-		Options Indexes FollowSymLinks MultiViews
 		AllowOverride None
 		Order allow,deny
 		allow from all
 	</Directory>
 
-	ErrorLog ${APACHE_LOG_DIR}/error.log
+	ProxyRequests Off
 
-	# Possible values include: debug, info, notice, warn, error, crit,
-	# alert, emerg.
-	LogLevel warn
-	CustomLog ${APACHE_LOG_DIR}/access.log combined
-
-	<Location /svn-non>
-		DAV                     svn
-		DavDepthInfinity        On
-
-		SVNParentPath           /var/www/svn
-
-		LimitXMLRequestBody     20971520
-		#DavGenericLockDB        /var/lock/httpd/DavLock.svn
-
-		Order allow,deny
-		Allow from all
+	<Location /1.0.0>
+		ProxyPass        http://localhost:010000
+		ProxyPassReverse http://localhost:010000
+	</Location>
+	<Location /1.1.0>
+		ProxyPass        http://localhost:010100
+		ProxyPassReverse http://localhost:010100
+	</Location>
+	<Location /1.2.0>
+		ProxyPass        http://localhost:010200
+		ProxyPassReverse http://localhost:010200
+	</Location>
+	<Location /1.3.0>
+		ProxyPass        http://localhost:010300
+		ProxyPassReverse http://localhost:010300
+	</Location>
+	<Location /1.4.0>
+		ProxyPass        http://localhost:010400
+		ProxyPassReverse http://localhost:010400
+	</Location>
+	<Location /1.5.0>
+		ProxyPass        http://localhost:010500
+		ProxyPassReverse http://localhost:010500
+	</Location>
+	<Location /1.5.0>
+		ProxyPass        http://localhost:010500
+		ProxyPassReverse http://localhost:010500
+	</Location>
+	<Location /1.7.0>
+		ProxyPass        http://localhost:010700
+		ProxyPassReverse http://localhost:010700
+	</Location>
+	<Location /1.8.0>
+		ProxyPass        http://localhost:010800
+		ProxyPassReverse http://localhost:010800
 	</Location>
 
-	<Location /svn-basic>
-		DAV                     svn
-		DavDepthInfinity        On
-
-		SVNParentPath           /var/www/svn
-
-		LimitXMLRequestBody     20971520
-		#DavGenericLockDB        /var/lock/httpd/DavLock.svn
-
-		AuthType                Basic
-		AuthName                "SVN Repository Basic"
-		AuthBasicProvider       file
-		AuthUserFile            /etc/apache2/passwd.basic
-
-		## restrict read access
-		<Limit GET PROPFIND OPTIONS REPORT>
-			require valid-user
-		</Limit>
-
-		## allow write access
-		<LimitExcept GET PROPFIND>
-			require valid-user
-		</LimitExcept>
-
-		Order allow,deny
-		Allow from all
-	</Location>
-
-	<Location /svn-digest>
-		DAV                     svn
-		DavDepthInfinity        On
-
-		SVNParentPath           /var/www/svn
-
-		LimitXMLRequestBody     20971520
-		#DavGenericLockDB        /var/lock/httpd/DavLock.svn
-
-		AuthType                Digest
-		AuthDigestDomain        /svn-digest/
-		AuthName                "SVN Repository Digest"
-		AuthDigestProvider      file
-		AuthUserFile            /etc/apache2/passwd.digest
-
-		## restrict read access
-		<Limit GET PROPFIND OPTIONS REPORT>
-			require valid-user
-		</Limit>
-
-		## allow write access
-		<LimitExcept GET PROPFIND>
-			require valid-user
-		</LimitExcept>
-
-		Order allow,deny
-		Allow from all
-	</Location>
-
-	<Location /svn-ntlm>
-		DAV                     svn
-		DavDepthInfinity        On
-
-		SVNParentPath           /var/www/svn
-
-		LimitXMLRequestBody     20971520
-		#DavGenericLockDB        /var/lock/httpd/DavLock.svn
-
-		AuthName                "SVN Repository NTLM"
-		NTLMAuth on
-		NTLMAuthHelper          "/usr/bin/ntlm_auth --helper-protocol=squid-2.5-ntlmssp"
-		NTLMBasicAuthoritative  off
-		AuthType NTLM
-
-		## restrict read access
-		<Limit GET PROPFIND OPTIONS REPORT>
-			require valid-user
-		</Limit>
-
-		## allow write access
-		<LimitExcept GET PROPFIND>
-			require valid-user
-		</LimitExcept>
-
-		Order allow,deny
-		Allow from all
-	</Location>
 </VirtualHost>
