@@ -36,9 +36,9 @@
 		ProxyPass        http://localhost:010500
 		ProxyPassReverse http://localhost:010500
 	</Location>
-	<Location /1.5.0>
-		ProxyPass        http://localhost:010500
-		ProxyPassReverse http://localhost:010500
+	<Location /1.6.0>
+		ProxyPass        http://localhost:010600
+		ProxyPassReverse http://localhost:010600
 	</Location>
 	<Location /1.7.0>
 		ProxyPass        http://localhost:010700
