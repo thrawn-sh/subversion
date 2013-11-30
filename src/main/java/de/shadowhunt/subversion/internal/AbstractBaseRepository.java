@@ -28,6 +28,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 
@@ -402,6 +404,7 @@ public abstract class AbstractBaseRepository implements Repository {
 
 	protected abstract void registerResource(Transaction transaction, Resource resource, Revision revision);
 
+	@CheckForNull
 	Resource resolve(final RepositoryCache cache, final Resource resource, final Revision revision, final boolean resolve, final boolean report) {
 		if (Revision.HEAD.equals(revision)) {
 			final ExistsOperation operation = new ExistsOperation(repository, resource);
