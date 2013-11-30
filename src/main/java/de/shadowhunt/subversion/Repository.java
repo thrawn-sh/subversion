@@ -34,7 +34,7 @@ import javax.annotation.concurrent.ThreadSafe;
 public interface Repository {
 
 	/**
-	 * {@ProtocolVersion} that represents the version of the subversion server
+	 * {@link ProtocolVersion} that represents the version of the subversion server
 	 */
 	public static enum ProtocolVersion {
 
