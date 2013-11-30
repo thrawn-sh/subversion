@@ -41,7 +41,7 @@ public abstract class AbstractRepositoryDownload {
 
 	public static void assertEquals(final String message, final InputStream expected, final InputStream actual) throws Exception {
 		try {
-			Assert.assertEquals(message, IOUtils.toString(expected), IOUtils.toString(actual));
+			Assert.assertEquals(message, IOUtils.toString(expected).trim(), IOUtils.toString(actual).trim());
 		} finally {
 			IOUtils.closeQuietly(expected);
 			IOUtils.closeQuietly(actual);
