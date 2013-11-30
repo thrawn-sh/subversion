@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package de.shadowhunt.subversion.internal.httpv2.v1_7;
+package de.shadowhunt.subversion.internal.httpv1.v1_4;
 
 import java.io.File;
 import java.net.URI;
@@ -37,13 +37,13 @@ import de.shadowhunt.subversion.RepositoryFactory;
 
 final class Helper {
 
-	private static final File BASE = new File("src/test/resources/v1_7");
+	private static final File BASE = new File("src/test/resources/v1_4");
 
-	private static final URI DUMP_URI = URI.create("http://subversion.vm.shadowhunt.de/1.7.0/dump.zip");
+	private static final URI DUMP_URI = URI.create("http://subversion.vm.shadowhunt.de/1.4.0/dump.zip");
 
 	private static final String PASSWORD = "svnpass";
 
-	private static final URI REPOSITORY_URI = URI.create("http://subversion.vm.shadowhunt.de/1.7.0/svn-basic/test");
+	private static final URI REPOSITORY_URI = URI.create("http://subversion.vm.shadowhunt.de/1.4.0/svn-basic/test");
 
 	private static Repository repositoryA, repositoryB;
 

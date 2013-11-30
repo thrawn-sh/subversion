@@ -39,11 +39,11 @@ final class Helper {
 
 	private static final File BASE = new File("src/test/resources/v1_6");
 
-	private static final URI DUMP_URI = URI.create("http://10.155.50.102/dump.zip");
+	private static final URI DUMP_URI = URI.create("http://subversion.vm.shadowhunt.de/1.6.0/dump.zip");
 
 	private static final String PASSWORD = "svnpass";
 
-	private static final URI REPOSITORY_URI = URI.create("http://10.155.50.102/svn-basic/test");
+	private static final URI REPOSITORY_URI = URI.create("http://subversion.vm.shadowhunt.de/1.6.0/svn-basic/test");
 
 	private static Repository repositoryA, repositoryB;
 
