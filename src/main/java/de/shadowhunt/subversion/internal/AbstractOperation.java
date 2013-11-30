@@ -106,13 +106,13 @@ public abstract class AbstractOperation<T> {
 				message = "Requested url: " + requestUri + " is locked by another user";
 				break;
 			default:
-				message = "Unexpected status code: " + statusCode;
+				message = "Unexpected server response";
 		}
 
 		// in case of unexpected status code we consume everything
 		EntityUtils.consumeQuietly(response.getEntity());
 
-		throw new SubversionException(message);
+		throw new SubversionException(message, statusCode);
 	}
 
 	/**
