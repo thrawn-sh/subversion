@@ -38,8 +38,8 @@ public interface Repository {
 	 */
 	public static enum ProtocolVersion {
 
-		HTTPv1,
-		HTTPv2
+		HTTP_V1,
+		HTTP_V2
 	}
 
 	/**

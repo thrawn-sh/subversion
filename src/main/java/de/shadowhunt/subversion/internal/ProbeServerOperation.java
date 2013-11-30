@@ -42,10 +42,10 @@ class ProbeServerOperation extends AbstractOperation<Repository> {
 	private static ProtocolVersion determineVersion(final HttpResponse response) {
 		for (final Header header : response.getAllHeaders()) {
 			if (header.getName().startsWith("SVN")) {
-				return ProtocolVersion.HTTPv2;
+				return ProtocolVersion.HTTP_V2;
 			}
 		}
-		return ProtocolVersion.HTTPv1;
+		return ProtocolVersion.HTTP_V1;
 	}
 
 	ProbeServerOperation(final URI repository) {

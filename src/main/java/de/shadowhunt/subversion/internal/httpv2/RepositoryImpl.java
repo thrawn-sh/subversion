@@ -123,7 +123,7 @@ class RepositoryImpl extends AbstractBaseRepository {
 
 	@Override
 	public ProtocolVersion getProtocolVersion() {
-		return ProtocolVersion.HTTPv2;
+		return ProtocolVersion.HTTP_V2;
 	}
 
 	@Override

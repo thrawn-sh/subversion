@@ -37,6 +37,6 @@ public class RepositoryLocatorImpl implements RepositoryLocator {
 
 	@Override
 	public boolean isSupported(final Repository.ProtocolVersion version) {
-		return Repository.ProtocolVersion.HTTPv1 == version;
+		return Repository.ProtocolVersion.HTTP_V1 == version;
 	}
 }
