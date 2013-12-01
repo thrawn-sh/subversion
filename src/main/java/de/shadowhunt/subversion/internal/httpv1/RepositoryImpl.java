@@ -22,6 +22,9 @@ package de.shadowhunt.subversion.internal.httpv1;
 import java.net.URI;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
+import org.apache.commons.lang3.Validate;
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 
@@ -98,7 +101,7 @@ class RepositoryImpl extends AbstractBaseRepository {
 	}
 
 	@Override
-	public void commit(final Transaction transaction, final String message) {
+	public void commit(final Transaction transaction, @Nullable final String message) {
 		validateTransaction(transaction);
 
 		if (transaction.isChangeSetEmpty()) {
@@ -148,6 +151,10 @@ class RepositoryImpl extends AbstractBaseRepository {
 
 	@Override
 	protected void registerResource(final Transaction transaction, final Resource resource, final Revision revision) {
+		validateTransaction(transaction);
+		Validate.notNull(resource, "resource must not be null");
+		Validate.notNull(revision, "revision must not be null");
+
 		final RepositoryCache cache = fromTransaction(transaction);
 		if (cache.status(resource) != null) {
 			return;
