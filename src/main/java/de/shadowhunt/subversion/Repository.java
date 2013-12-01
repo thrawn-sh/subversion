@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
 /**
@@ -59,10 +60,10 @@ public interface Repository {
 	 *
 	 * @param transaction the current running {@link Transaction}
 	 * @param message the commit message for the expected operation
-	 * @throws NullPointerException if any parameter is {@code null}
+	 * @throws NullPointerException if transaction is {@code null}
 	 * @throws SubversionException if an error occurs while operating on the repository
 	 */
-	void commit(Transaction transaction, String message) throws SubversionException;
+	void commit(Transaction transaction, @Nullable String message) throws SubversionException;
 
 	/**
 	 * Recursively copy a resource in the given revision
@@ -230,7 +231,8 @@ public interface Repository {
 	 * @param transaction the current running {@link Transaction}
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
 	 * @param properties {@link ResourceProperty} to remove
-	 * @throws NullPointerException if any parameter is {@code null} or contains {@code null} elements
+	 * @throws IllegalArgumentException if properties contain {@code null} elements
+	 * @throws NullPointerException if any parameter is {@code null}
 	 * @throws SubversionException if an error occurs while operating on the repository
 	 */
 	void propertiesDelete(Transaction transaction, Resource resource, ResourceProperty... properties) throws SubversionException;
@@ -241,7 +243,8 @@ public interface Repository {
 	 * @param transaction the current running {@link Transaction}
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
 	 * @param properties {@link ResourceProperty} to add or override
-	 * @throws NullPointerException if any parameter is {@code null} or contains {@code null} elements
+	 * @throws IllegalArgumentException if properties contain {@code null} elements
+	 * @throws NullPointerException if any parameter is {@code null}
 	 * @throws SubversionException if an error occurs while operating on the repository
 	 */
 	void propertiesSet(Transaction transaction, Resource resource, ResourceProperty... properties) throws SubversionException;
