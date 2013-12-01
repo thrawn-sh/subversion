@@ -24,6 +24,8 @@ import java.util.UUID;
 
 import javax.annotation.CheckForNull;
 
+import org.apache.commons.lang3.Validate;
+
 /**
  * {@link Info} holds all status information for a single {@link Revision} of a {@link Resource}
  */
@@ -36,6 +38,9 @@ public interface Info {
 
 		@Override
 		public int compare(final Info i1, final Info i2) {
+			Validate.notNull(i1, "i1 must not be null");
+			Validate.notNull(i2, "i2 must not be null");
+
 			return i1.getResource().compareTo(i2.getResource());
 		}
 	};

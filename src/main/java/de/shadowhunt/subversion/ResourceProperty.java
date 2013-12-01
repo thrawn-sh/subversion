@@ -23,6 +23,8 @@ import java.util.Comparator;
 
 import javax.annotation.concurrent.Immutable;
 
+import org.apache.commons.lang3.Validate;
+
 /**
  * {@link ResourceProperty} represents a resource property
  */
@@ -59,6 +61,9 @@ public final class ResourceProperty {
 
 		@Override
 		public int compare(final ResourceProperty rp1, final ResourceProperty rp2) {
+			Validate.notNull(rp1, "rp1 must not be null");
+			Validate.notNull(rp2, "rp2 must not be null");
+
 			final int result = rp1.getType().compareTo(rp2.getType());
 			if (result != 0) {
 				return result;
@@ -79,8 +84,13 @@ public final class ResourceProperty {
 	 * @param type {@link Type} of the {@link ResourceProperty}
 	 * @param name name of the {@link ResourceProperty}
 	 * @param value value of the {@link ResourceProperty}
+	 * @throws NullPointerException if any parameter is {@code null}
 	 */
 	public ResourceProperty(final Type type, final String name, final String value) {
+		Validate.notNull(type, "type must not be null");
+		Validate.notNull(name, "name must not be null");
+		Validate.notNull(value, "value must not be null");
+
 		this.type = type;
 		this.name = name;
 		this.value = value;

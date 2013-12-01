@@ -26,6 +26,7 @@ import java.util.ServiceLoader;
 import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.ThreadSafe;
 
+import org.apache.commons.lang3.Validate;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
@@ -73,10 +74,15 @@ public abstract class RepositoryFactory {
 	 * @param context {@link HttpContext} that will be used by all requests to this repository
 	 *
 	 * @return a new {@link Repository} for given {@link URI} or {@code null} if no {@link Repository} root can be determined
-	 * @throws SubversionException if no {@link Repository} can be created
+	 * @throws NullPointerException if any parameter is {@code null}
+	 * @throws SubversionException if an error occurs during {@link Repository} probing
 	 */
 	@CheckForNull
 	public Repository probeRepository(final URI repository, final HttpClient client, final HttpContext context) throws SubversionException {
+		Validate.notNull(repository, "repository must not be null");
+		Validate.notNull(client, "client must not be null");
+		Validate.notNull(context, "context must not be null");
+
 		Resource path = Resource.create(repository.getPath());
 		while (true) {
 			try {
@@ -109,9 +115,14 @@ public abstract class RepositoryFactory {
 	 * @param context {@link HttpContext} that will be used by all requests to this repository
 	 *
 	 * @return a new {@link Repository} for given {@link URI}
+	 * @throws NullPointerException if any parameter is {@code null}
 	 * @throws SubversionException if no {@link Repository} can be created
 	 */
 	public final Repository createRepository(final URI repository, final HttpClient client, final HttpContext context) throws SubversionException {
+		Validate.notNull(repository, "repository must not be null");
+		Validate.notNull(client, "client must not be null");
+		Validate.notNull(context, "context must not be null");
+
 		final URI saneUri = sanitise(repository, Resource.create(repository.getPath()));
 		return createRepository0(saneUri, client, context);
 	}

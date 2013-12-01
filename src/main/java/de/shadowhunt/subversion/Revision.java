@@ -21,6 +21,8 @@ package de.shadowhunt.subversion;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.Validate;
+
 /**
  * {@link Revision} defines the revision of a repository or a resource in that repository
  */
@@ -46,14 +48,14 @@ public final class Revision implements Comparable<Revision>, Serializable {
 	/**
 	 * Create a new {@link Revision} instance for the given value
 	 *
-	 * @param revision value of the {@link Revision} must be greater or equal than 1
+	 * @param revision value of the {@link Revision} must be greater or equal than {@code 1}
 	 *
 	 * @return the new {@link Revision} instance with the given value
 	 *
-	 * @throws IllegalArgumentException if revision is smaller than 1
+	 * @throws IllegalArgumentException if revision is smaller than {@code 1}
 	 */
 	public static Revision create(final int revision) {
-		if (revision < 1) {
+		if (revision < 1) { // FIXME
 			throw new IllegalArgumentException("Value must be greater or equal than 1, was " + revision);
 		}
 		return new Revision(revision);
@@ -66,8 +68,9 @@ public final class Revision implements Comparable<Revision>, Serializable {
 	}
 
 	@Override
-	public int compareTo(final Revision o) {
-		return (version < o.version) ? -1 : ((version == o.version) ? 0 : 1);
+	public int compareTo(final Revision other) {
+		Validate.notNull(other, "other must not be null");
+		return (version < other.version) ? -1 : ((version == other.version) ? 0 : 1);
 	}
 
 	@Override
