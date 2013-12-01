@@ -22,13 +22,27 @@ package de.shadowhunt.subversion.internal.util;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.apache.commons.lang3.Validate;
 import org.apache.http.client.utils.URIBuilder;
 
 import de.shadowhunt.subversion.Resource;
 
+/**
+ * Helper class to construct valid {@link URI}s
+ */
 public final class URIUtils {
 
+	/**
+	 * Combine repository {@link URI} and {@link Resource}s to a valid {@link URI}
+	 * @param repository base {@link URI}, {@link Resource}s are appended to the path of the repository
+	 * @param resources {@link Resource}s to appended to the repository {@link URI}
+	 * @return combination of repository {@link URI} and {@link Resource}s
+	 * @throws IllegalArgumentException if resources contain {@code null elements}
+	 * @throws NullPointerException if repository is {@code null}
+	 */
 	public static URI createURI(final URI repository, final Resource... resources) {
+		Validate.notNull(repository, "repository must not be null");
+		Validate.noNullElements(resources, "resource must not contain null elements");
 		try {
 			return createURI0(repository, resources);
 		} catch (final URISyntaxException e) {
