@@ -21,8 +21,10 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.InputStream;
 
+import javax.annotation.CheckForNull;
 import javax.xml.parsers.SAXParser;
 
+import org.apache.commons.lang3.Validate;
 import org.xml.sax.Attributes;
 
 import de.shadowhunt.subversion.Resource;
@@ -39,6 +41,7 @@ final class Resolve {
 			// make the handler visible in surrounding class
 		}
 
+		@CheckForNull
 		public Resolve getEntry() {
 			return entry;
 		}
@@ -67,6 +70,8 @@ final class Resolve {
 	 * @return {@link LogImpl} for the resource
 	 */
 	static Resolve read(final InputStream in) {
+		Validate.notNull(in, "in must not be null");
+
 		try {
 			final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
 			final ResolveHandler handler = new ResolveHandler();
@@ -129,10 +134,12 @@ final class Resolve {
 	}
 
 	void setResource(final Resource resource) {
+		Validate.notNull(resource, "resource must not be null");
 		this.resource = resource;
 	}
 
 	void setRevision(final Revision revision) {
+		Validate.notNull(revision, "revision must not be null");
 		this.revision = revision;
 	}
 

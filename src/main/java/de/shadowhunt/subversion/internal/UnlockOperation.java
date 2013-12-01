@@ -21,6 +21,7 @@ package de.shadowhunt.subversion.internal;
 
 import java.net.URI;
 
+import org.apache.commons.lang3.Validate;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 
@@ -37,6 +38,10 @@ class UnlockOperation extends AbstractVoidOperation {
 
 	UnlockOperation(final URI repository, final Resource resource, final String lockToken, final boolean force) {
 		super(repository);
+
+		Validate.notNull(resource, "resource must not be null");
+		Validate.notNull(lockToken, "lockToken must not be null");
+
 		this.resource = resource;
 		this.lockToken = lockToken;
 		this.force = force;

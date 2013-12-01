@@ -21,21 +21,27 @@ package de.shadowhunt.subversion.internal;
 
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.Validate;
+
 import de.shadowhunt.subversion.Revision;
 
 class VersionParser {
 
 	private static final Pattern PATH_PATTERN = Pattern.compile("/");
 
-	private final int prefix;
+	private final int prefixPathLength;
 
-	VersionParser(final String prefix) {
-		this.prefix = PATH_PATTERN.split(prefix).length;
+	VersionParser(final String prefixPath) {
+		Validate.notNull(prefixPath, "prefixPath must not be null");
+
+		this.prefixPathLength = PATH_PATTERN.split(prefixPath).length;
 	}
 
 	public Revision getRevisionFromPath(final String path) {
+		Validate.notNull(path, "path must not be null");
+
 		final String[] parts = PATH_PATTERN.split(path);
-		final int revision = Integer.parseInt(parts[prefix + 2]); // prefix + $svn + bc/vrv + VERSION);
+		final int revision = Integer.parseInt(parts[prefixPathLength + 2]); // prefixPathLength + $svn + bc/vrv + VERSION);
 		if (revision == 0) {
 			return Revision.EMPTY;
 		}

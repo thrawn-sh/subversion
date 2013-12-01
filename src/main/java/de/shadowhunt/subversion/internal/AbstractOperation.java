@@ -22,6 +22,7 @@ package de.shadowhunt.subversion.internal;
 import java.io.InputStream;
 import java.net.URI;
 
+import org.apache.commons.lang3.Validate;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -84,6 +85,8 @@ public abstract class AbstractOperation<T> {
 	protected final URI repository;
 
 	protected AbstractOperation(final URI repository) {
+		Validate.notNull(repository, "repository must not be null");
+
 		this.repository = repository;
 	}
 

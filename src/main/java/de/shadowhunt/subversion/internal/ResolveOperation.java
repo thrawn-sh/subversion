@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.net.URI;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.Validate;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -48,6 +49,12 @@ class ResolveOperation extends AbstractOperation<Resource> {
 
 	ResolveOperation(final URI repository, final Resource resource, final Revision revision, final Revision expected, final ResourceMapper config, final boolean reportNonExistingResources) {
 		super(repository);
+
+		Validate.notNull(resource, "resource must not be null");
+		Validate.notNull(revision, "revision must not be null");
+		Validate.notNull(expected, "excepted must not be null");
+		Validate.notNull(config, "config must not be null");
+
 		this.resource = resource;
 		this.revision = revision;
 		this.expected = expected;
@@ -79,6 +86,8 @@ class ResolveOperation extends AbstractOperation<Resource> {
 
 	@Override
 	protected Resource processResponse(final HttpResponse response) {
+		Validate.notNull(response, "response must not be null");
+
 		if (!reportNonExistingResources) {
 			final int statusCode = getStatusCode(response);
 			if (statusCode == HttpStatus.SC_NOT_FOUND) {

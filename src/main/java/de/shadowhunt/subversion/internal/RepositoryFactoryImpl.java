@@ -31,7 +31,7 @@ import de.shadowhunt.subversion.SubversionException;
 public class RepositoryFactoryImpl extends RepositoryFactory {
 
 	@Override
-	public Repository createRepository0(final URI saneUri, final HttpClient client, final HttpContext context) throws SubversionException {
+	protected Repository createRepository0(final URI saneUri, final HttpClient client, final HttpContext context) throws SubversionException {
 		final ProbeServerOperation operation = new ProbeServerOperation(saneUri);
 		return operation.execute(client, context);
 	}

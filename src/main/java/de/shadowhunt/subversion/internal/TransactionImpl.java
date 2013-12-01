@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 
+import org.apache.commons.lang3.Validate;
+
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Transaction;
 
@@ -38,6 +40,8 @@ public final class TransactionImpl extends RepositoryCache implements Transactio
 	private final String id;
 
 	public TransactionImpl(final String id) {
+		Validate.notNull(id, "id must not be null");
+
 		this.id = id;
 	}
 
@@ -108,6 +112,9 @@ public final class TransactionImpl extends RepositoryCache implements Transactio
 
 	@Override
 	public boolean register(final Resource resource, final Status status) {
+		Validate.notNull(resource, "resource must not be null");
+		Validate.notNull(status, "status must not be null");
+
 		final Status old = changeSet.put(resource, status);
 		if (old != null) {
 			// if we delete an newly added resource, we remove completely
@@ -128,6 +135,8 @@ public final class TransactionImpl extends RepositoryCache implements Transactio
 
 	@Override
 	public Status status(final Resource resource) {
+		Validate.notNull(resource, "resource must not be null");
+
 		return changeSet.get(resource);
 	}
 

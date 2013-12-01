@@ -21,7 +21,11 @@ package de.shadowhunt.subversion.internal;
 
 import java.net.URI;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
@@ -35,8 +39,10 @@ public class CommitMessageOperation extends AbstractVoidOperation {
 
 	private final Resource resource;
 
-	public CommitMessageOperation(final URI repository, final Resource resource, final String message) {
+	public CommitMessageOperation(final URI repository, final Resource resource, @Nullable final String message) {
 		super(repository);
+		Validate.notNull(resource, "resource must not be null");
+
 		this.resource = resource;
 		this.message = message;
 	}
@@ -48,7 +54,9 @@ public class CommitMessageOperation extends AbstractVoidOperation {
 
 		final StringBuilder body = new StringBuilder(XML_PREAMBLE);
 		body.append("<propertyupdate xmlns=\"DAV:\" xmlns:S=\"http://subversion.tigris.org/xmlns/svn/\"><set><prop><S:log>");
-		body.append(StringEscapeUtils.escapeXml(message));
+		if (StringUtils.isNotEmpty(message)) {
+			body.append(StringEscapeUtils.escapeXml(message));
+		}
 		body.append("</S:log></prop></set></propertyupdate>");
 
 		request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));

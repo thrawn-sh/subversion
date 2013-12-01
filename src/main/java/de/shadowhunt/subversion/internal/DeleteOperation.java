@@ -21,6 +21,8 @@ package de.shadowhunt.subversion.internal;
 
 import java.net.URI;
 
+import javax.annotation.Nullable;
+
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -35,7 +37,7 @@ public class DeleteOperation extends AbstractVoidOperation {
 
 	private final Resource resource;
 
-	public DeleteOperation(final URI repository, final Resource resource, final Info info) {
+	public DeleteOperation(final URI repository, final Resource resource, @Nullable final Info info) {
 		super(repository);
 		this.resource = resource;
 		this.info = info;
