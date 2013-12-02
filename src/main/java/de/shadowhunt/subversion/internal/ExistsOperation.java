@@ -28,7 +28,6 @@ import org.apache.http.util.EntityUtils;
 
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.internal.util.URIUtils;
 
 class ExistsOperation extends AbstractOperation<Boolean> {
 

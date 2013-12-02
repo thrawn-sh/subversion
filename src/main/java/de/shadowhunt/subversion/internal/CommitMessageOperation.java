@@ -25,13 +25,11 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 
 import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.internal.util.URIUtils;
 
 public class CommitMessageOperation extends AbstractVoidOperation {
 
@@ -41,8 +39,6 @@ public class CommitMessageOperation extends AbstractVoidOperation {
 
 	public CommitMessageOperation(final URI repository, final Resource resource, @Nullable final String message) {
 		super(repository);
-		Validate.notNull(resource, "resource must not be null");
-
 		this.resource = resource;
 		this.message = message;
 	}

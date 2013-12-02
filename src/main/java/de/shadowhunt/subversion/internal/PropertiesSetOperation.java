@@ -22,6 +22,8 @@ package de.shadowhunt.subversion.internal;
 import java.net.URI;
 import java.util.Arrays;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -30,7 +32,6 @@ import org.apache.http.entity.StringEntity;
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
-import de.shadowhunt.subversion.internal.util.URIUtils;
 
 class PropertiesSetOperation extends AbstractVoidOperation {
 
@@ -40,7 +41,7 @@ class PropertiesSetOperation extends AbstractVoidOperation {
 
 	private final Resource resource;
 
-	PropertiesSetOperation(final URI repository, final Resource resource, final Info info, final ResourceProperty[] properties) {
+	PropertiesSetOperation(final URI repository, final Resource resource, @Nullable final Info info, final ResourceProperty[] properties) {
 		super(repository);
 		this.resource = resource;
 		this.info = info;

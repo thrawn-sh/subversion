@@ -27,7 +27,6 @@ import org.apache.http.client.methods.HttpUriRequest;
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.internal.util.URIUtils;
 
 public class CopyOperation extends AbstractVoidOperation {
 

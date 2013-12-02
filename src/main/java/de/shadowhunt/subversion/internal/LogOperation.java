@@ -32,7 +32,6 @@ import org.apache.http.entity.StringEntity;
 import de.shadowhunt.subversion.Log;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
-import de.shadowhunt.subversion.internal.util.URIUtils;
 
 public class LogOperation extends AbstractOperation<List<Log>> {
 

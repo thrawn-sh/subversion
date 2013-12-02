@@ -21,7 +21,6 @@ package de.shadowhunt.subversion.internal.httpv2;
 
 import java.net.URI;
 
-import org.apache.commons.lang3.Validate;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -34,7 +33,7 @@ import org.apache.http.util.EntityUtils;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.internal.AbstractOperation;
 import de.shadowhunt.subversion.internal.TransactionImpl;
-import de.shadowhunt.subversion.internal.util.URIUtils;
+import de.shadowhunt.subversion.internal.URIUtils;
 
 class CreateTransactionOperation extends AbstractOperation<TransactionImpl> {
 
@@ -51,7 +50,6 @@ class CreateTransactionOperation extends AbstractOperation<TransactionImpl> {
 
 	CreateTransactionOperation(final URI repository, final Resource resource) {
 		super(repository);
-		Validate.notNull(resource, "resource must not be null");
 		this.resource = resource;
 	}
 
@@ -70,7 +68,6 @@ class CreateTransactionOperation extends AbstractOperation<TransactionImpl> {
 
 	@Override
 	protected TransactionImpl processResponse(final HttpResponse response) {
-		Validate.notNull(response, "response must not be null");
 		final String transactionId = response.getFirstHeader(HEADER_NAME).getValue();
 		EntityUtils.consumeQuietly(response.getEntity());
 		return new TransactionImpl(transactionId);

@@ -71,12 +71,12 @@ final class Prefix {
 
 	static final Pattern PATH_PATTERN = Pattern.compile("/");
 
-	static Resource read(final InputStream in, final ProtocolVersion version) {
+	static Resource read(final InputStream inputStream, final ProtocolVersion version) {
 		try {
 			final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
 			final PrefixHandler handler = new PrefixHandler(version);
 
-			saxParser.parse(in, handler);
+			saxParser.parse(inputStream, handler);
 			return handler.getPrefix();
 		} catch (final Exception e) {
 			throw new SubversionException("Invalid server response: could not parse response", e);

@@ -30,7 +30,6 @@ import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
-import de.shadowhunt.subversion.internal.util.URIUtils;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)

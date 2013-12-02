@@ -21,7 +21,6 @@ package de.shadowhunt.subversion.internal.httpv2;
 
 import java.net.URI;
 
-import org.apache.commons.lang3.Validate;
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 
@@ -34,11 +33,6 @@ public class RepositoryLocatorImpl implements RepositoryLocator {
 
 	@Override
 	public Repository create(final URI repository, final Resource prefix, final HttpClient client, final HttpContext context) {
-		Validate.notNull(repository, "repository must not be null");
-		Validate.notNull(prefix, "prefix must not be null");
-		Validate.notNull(client, "client must not be null");
-		Validate.notNull(context, "context must not be null");
-
 		return new RepositoryImpl(repository, prefix, client, context);
 	}
 

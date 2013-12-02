@@ -22,7 +22,8 @@ package de.shadowhunt.subversion.internal;
 import java.io.InputStream;
 import java.net.URI;
 
-import org.apache.commons.lang3.Validate;
+import javax.annotation.Nullable;
+
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -30,7 +31,6 @@ import org.apache.http.entity.InputStreamEntity;
 
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.internal.util.URIUtils;
 
 class UploadOperation extends AbstractVoidOperation {
 
@@ -42,13 +42,8 @@ class UploadOperation extends AbstractVoidOperation {
 
 	private final Resource resource;
 
-	UploadOperation(final URI repository, final Resource resource, final Info info, final InputStream content) {
+	UploadOperation(final URI repository, final Resource resource, @Nullable final Info info, final InputStream content) {
 		super(repository);
-
-		Validate.notNull(resource, "resource must not be null");
-		Validate.notNull(info, "info must not be null");
-		Validate.notNull(content, "content must not be null");
-
 		this.resource = resource;
 		this.info = info;
 		this.content = content;

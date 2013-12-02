@@ -22,14 +22,13 @@ package de.shadowhunt.subversion.internal.httpv1;
 import java.net.URI;
 
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.Validate;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.internal.AbstractVoidOperation;
-import de.shadowhunt.subversion.internal.util.URIUtils;
+import de.shadowhunt.subversion.internal.URIUtils;
 
 class CheckoutOperation extends AbstractVoidOperation {
 
@@ -39,8 +38,6 @@ class CheckoutOperation extends AbstractVoidOperation {
 
 	CheckoutOperation(final URI repository, final Resource resource, final Resource transaction) {
 		super(repository);
-		Validate.notNull(resource, "resource must not be null");
-		Validate.notNull(transaction, "transaction must not be null");
 		this.resource = resource;
 		this.transaction = transaction;
 	}

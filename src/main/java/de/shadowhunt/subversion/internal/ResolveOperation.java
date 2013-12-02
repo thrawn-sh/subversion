@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.net.URI;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.Validate;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -33,7 +32,6 @@ import org.apache.http.util.EntityUtils;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.internal.AbstractBaseRepository.ResourceMapper;
-import de.shadowhunt.subversion.internal.util.URIUtils;
 
 class ResolveOperation extends AbstractOperation<Resource> {
 
@@ -41,7 +39,7 @@ class ResolveOperation extends AbstractOperation<Resource> {
 
 	private final Revision expected;
 
-	private final boolean reportNonExistingResources;
+	private final boolean reportNonExistingResources; // FIXME
 
 	private final Resource resource;
 
@@ -49,12 +47,6 @@ class ResolveOperation extends AbstractOperation<Resource> {
 
 	ResolveOperation(final URI repository, final Resource resource, final Revision revision, final Revision expected, final ResourceMapper config, final boolean reportNonExistingResources) {
 		super(repository);
-
-		Validate.notNull(resource, "resource must not be null");
-		Validate.notNull(revision, "revision must not be null");
-		Validate.notNull(expected, "excepted must not be null");
-		Validate.notNull(config, "config must not be null");
-
 		this.resource = resource;
 		this.revision = revision;
 		this.expected = expected;
@@ -86,8 +78,6 @@ class ResolveOperation extends AbstractOperation<Resource> {
 
 	@Override
 	protected Resource processResponse(final HttpResponse response) {
-		Validate.notNull(response, "response must not be null");
-
 		if (!reportNonExistingResources) {
 			final int statusCode = getStatusCode(response);
 			if (statusCode == HttpStatus.SC_NOT_FOUND) {

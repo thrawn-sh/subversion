@@ -24,7 +24,6 @@ import java.io.InputStream;
 import javax.annotation.CheckForNull;
 import javax.xml.parsers.SAXParser;
 
-import org.apache.commons.lang3.Validate;
 import org.xml.sax.Attributes;
 
 import de.shadowhunt.subversion.Resource;
@@ -65,18 +64,16 @@ final class Resolve {
 	/**
 	 * Reads log information for a resource from the given {@link InputStream}
 	 *
-	 * @param in {@link InputStream} from which the status information is read (Note: will not be closed)
+	 * @param inputStream {@link InputStream} from which the status information is read (Note: will not be closed)
 	 *
 	 * @return {@link LogImpl} for the resource
 	 */
-	static Resolve read(final InputStream in) {
-		Validate.notNull(in, "in must not be null");
-
+	static Resolve read(final InputStream inputStream) {
 		try {
 			final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
 			final ResolveHandler handler = new ResolveHandler();
 
-			saxParser.parse(in, handler);
+			saxParser.parse(inputStream, handler);
 			return handler.getEntry();
 		} catch (final Exception e) {
 			throw new SubversionException("Invalid server response: could not parse response", e);
@@ -134,12 +131,10 @@ final class Resolve {
 	}
 
 	void setResource(final Resource resource) {
-		Validate.notNull(resource, "resource must not be null");
 		this.resource = resource;
 	}
 
 	void setRevision(final Revision revision) {
-		Validate.notNull(revision, "revision must not be null");
 		this.revision = revision;
 	}
 

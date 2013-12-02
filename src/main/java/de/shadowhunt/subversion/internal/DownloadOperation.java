@@ -28,7 +28,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 
 import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.internal.util.URIUtils;
 
 class DownloadOperation extends AbstractOperation<InputStream> {
 

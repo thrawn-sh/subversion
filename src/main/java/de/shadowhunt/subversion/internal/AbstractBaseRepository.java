@@ -44,7 +44,6 @@ import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.Transaction.Status;
-import de.shadowhunt.subversion.internal.util.URIUtils;
 
 /**
  * Base for all {@link de.shadowhunt.subversion.Repository}
