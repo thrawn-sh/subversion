@@ -23,10 +23,10 @@ import java.net.URI;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.util.EntityUtils;
 
+import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.internal.util.URIUtils;
 
@@ -42,19 +42,21 @@ class ExistsOperation extends AbstractOperation<Boolean> {
 	@Override
 	protected HttpUriRequest createRequest() {
 		final URI uri = URIUtils.createURI(repository, resource);
-		return new HttpHead(uri);
+		final DavTemplateRequest request =new DavTemplateRequest("PROPFIND", uri);
+		request.addHeader("Depth", Depth.EMPTY.value);
+		return request;
 	}
 
 	@Override
 	protected boolean isExpectedStatusCode(final int statusCode) {
-		return (HttpStatus.SC_OK == statusCode) || (HttpStatus.SC_NOT_FOUND == statusCode);
+		return (HttpStatus.SC_MULTI_STATUS == statusCode) || (HttpStatus.SC_NOT_FOUND == statusCode);
 	}
 
 	@Override
 	protected Boolean processResponse(final HttpResponse response) {
 		final int statusCode = getStatusCode(response);
 		EntityUtils.consumeQuietly(response.getEntity());
-		return (statusCode == HttpStatus.SC_OK);
+		return (statusCode == HttpStatus.SC_MULTI_STATUS);
 	}
 
 }
