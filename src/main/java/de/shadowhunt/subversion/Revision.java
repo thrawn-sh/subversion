@@ -74,29 +74,26 @@ public final class Revision implements Comparable<Revision>, Serializable {
 	}
 
 	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) {
+	public boolean equals(final Object o) {
+		if (this == o) {
 			return true;
 		}
-		if (obj == null) {
+		if (!(o instanceof Revision)) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
+
+		final Revision revision = (Revision) o;
+
+		if (version != revision.version) {
 			return false;
 		}
-		final Revision other = (Revision) obj;
-		if (version != other.version) {
-			return false;
-		}
+
 		return true;
 	}
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = (prime * result) + (int) (version ^ (version >>> 32));
-		return result;
+		return (int) (version ^ (version >>> 32));
 	}
 
 	@Override
