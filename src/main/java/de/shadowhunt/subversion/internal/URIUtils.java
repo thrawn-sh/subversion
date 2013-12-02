@@ -17,12 +17,11 @@
  * limitations under the License.
  * #L%
  */
-package de.shadowhunt.subversion.internal.util;
+package de.shadowhunt.subversion.internal;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.commons.lang3.Validate;
 import org.apache.http.client.utils.URIBuilder;
 
 import de.shadowhunt.subversion.Resource;
@@ -41,8 +40,6 @@ public final class URIUtils {
 	 * @throws NullPointerException if repository is {@code null}
 	 */
 	public static URI createURI(final URI repository, final Resource... resources) {
-		Validate.notNull(repository, "repository must not be null");
-		Validate.noNullElements(resources, "resource must not contain null elements");
 		try {
 			return createURI0(repository, resources);
 		} catch (final URISyntaxException e) {

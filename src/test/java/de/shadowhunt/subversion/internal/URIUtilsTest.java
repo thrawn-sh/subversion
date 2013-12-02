@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package de.shadowhunt.subversion.internal.util;
+package de.shadowhunt.subversion.internal;
 
 import java.lang.reflect.Field;
 import java.net.URI;
