@@ -33,7 +33,7 @@ import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 
-public class ListOperation extends AbstractOperation<Set<Info>> {
+class ListOperation extends AbstractOperation<Set<Info>> {
 
 	private final Depth depth;
 

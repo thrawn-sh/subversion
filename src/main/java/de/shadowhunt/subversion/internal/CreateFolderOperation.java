@@ -28,7 +28,7 @@ import org.apache.http.util.EntityUtils;
 
 import de.shadowhunt.subversion.Resource;
 
-public class CreateFolderOperation extends AbstractOperation<Boolean> {
+class CreateFolderOperation extends AbstractOperation<Boolean> {
 
 	private final Resource resource;
 

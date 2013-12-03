@@ -33,7 +33,7 @@ import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 
-public class InfoOperation extends AbstractOperation<Info> {
+class InfoOperation extends AbstractOperation<Info> {
 
 	private static final String LOCK_OWNER_HEADER = "X-SVN-Lock-Owner";
 

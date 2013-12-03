@@ -33,7 +33,7 @@ import de.shadowhunt.subversion.Log;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 
-public class LogOperation extends AbstractOperation<List<Log>> {
+class LogOperation extends AbstractOperation<List<Log>> {
 
 	private final Revision end;
 

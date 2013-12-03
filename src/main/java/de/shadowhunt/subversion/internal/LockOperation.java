@@ -27,7 +27,7 @@ import org.apache.http.entity.StringEntity;
 
 import de.shadowhunt.subversion.Resource;
 
-public class LockOperation extends AbstractVoidOperation {
+class LockOperation extends AbstractVoidOperation {
 
 	private final Resource resource;
 

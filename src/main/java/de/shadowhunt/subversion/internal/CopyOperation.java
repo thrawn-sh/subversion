@@ -28,7 +28,7 @@ import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 
-public class CopyOperation extends AbstractVoidOperation {
+class CopyOperation extends AbstractVoidOperation {
 
 	private final Info info;
 

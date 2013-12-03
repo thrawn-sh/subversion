@@ -30,7 +30,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 
-public class DeleteOperation extends AbstractVoidOperation {
+class DeleteOperation extends AbstractVoidOperation {
 
 	private final Info info;
 
