@@ -95,9 +95,9 @@ public abstract class RepositoryFactory {
 	 * @param client {@link HttpClient} that will handle all requests for this repository
 	 * @param context {@link HttpContext} that will be used by all requests to this repository
 	 *
-	 * @return a new {@link Repository} for given {@link URI} or {@code null} if no {@link Repository} root can be determined
+	 * @return a new {@link Repository} for given {@link URI}
 	 * @throws NullPointerException if any parameter is {@code null}
-	 * @throws SubversionException if an error occurs during {@link Repository} probing
+	 * @throws SubversionException if an error occurs during {@link Repository} probing and no {@link Repository} can be created
 	 */
 	@CheckForNull
 	public Repository probeRepository(final URI repository, final HttpClient client, final HttpContext context) throws SubversionException {
@@ -124,6 +124,6 @@ public abstract class RepositoryFactory {
 			path = path.getParent();
 		}
 
-		return null;
+		throw new SubversionException("Could not find repository in path: " + repository.getPath());
 	}
 }
