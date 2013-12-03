@@ -56,13 +56,35 @@ public abstract class RepositoryFactory {
 		throw new SubversionException("Can not find a RepositoryFactory");
 	}
 
-	private static URI sanitise(final URI uri, Resource path) {
+	private static URI sanitise(final URI uri, final Resource path) {
 		try {
 			return new URI(uri.getScheme(), DEFAULT_USER_INFO, uri.getHost(), uri.getPort(), path.getValue(), DEFAULT_QUERY, DEFAULT_FRAGMENT);
 		} catch (final URISyntaxException e) {
 			throw new IllegalArgumentException(e.getMessage(), e);
 		}
 	}
+
+	/**
+	 * Create a new {@link Repository} for given {@link URI} and use the given {@link HttpClient} with the {@link HttpClient} to connect to the server
+	 *
+	 * @param repository {@link URI} to the root of the repository (e.g: http://repository.example.net/svn/test_repo)
+	 * @param client {@link HttpClient} that will handle all requests for this repository
+	 * @param context {@link HttpContext} that will be used by all requests to this repository
+	 *
+	 * @return a new {@link Repository} for given {@link URI}
+	 * @throws NullPointerException if any parameter is {@code null}
+	 * @throws SubversionException if no {@link Repository} can be created
+	 */
+	public final Repository createRepository(final URI repository, final HttpClient client, final HttpContext context) throws SubversionException {
+		Validate.notNull(repository, "repository must not be null");
+		Validate.notNull(client, "client must not be null");
+		Validate.notNull(context, "context must not be null");
+
+		final URI saneUri = sanitise(repository, Resource.create(repository.getPath()));
+		return createRepository0(saneUri, client, context);
+	}
+
+	protected abstract Repository createRepository0(final URI saneUri, final HttpClient client, final HttpContext context) throws SubversionException;
 
 	/**
 	 * Create a new {@link Repository} for given {@link URI} and use the given {@link HttpClient} with the {@link HttpClient} to connect to the server.
@@ -103,27 +125,5 @@ public abstract class RepositoryFactory {
 		}
 
 		return null;
-	}
-
-	protected abstract Repository createRepository0(final URI saneUri, final HttpClient client, final HttpContext context) throws SubversionException;
-
-	/**
-	 * Create a new {@link Repository} for given {@link URI} and use the given {@link HttpClient} with the {@link HttpClient} to connect to the server
-	 *
-	 * @param repository {@link URI} to the root of the repository (e.g: http://repository.example.net/svn/test_repo)
-	 * @param client {@link HttpClient} that will handle all requests for this repository
-	 * @param context {@link HttpContext} that will be used by all requests to this repository
-	 *
-	 * @return a new {@link Repository} for given {@link URI}
-	 * @throws NullPointerException if any parameter is {@code null}
-	 * @throws SubversionException if no {@link Repository} can be created
-	 */
-	public final Repository createRepository(final URI repository, final HttpClient client, final HttpContext context) throws SubversionException {
-		Validate.notNull(repository, "repository must not be null");
-		Validate.notNull(client, "client must not be null");
-		Validate.notNull(context, "context must not be null");
-
-		final URI saneUri = sanitise(repository, Resource.create(repository.getPath()));
-		return createRepository0(saneUri, client, context);
 	}
 }

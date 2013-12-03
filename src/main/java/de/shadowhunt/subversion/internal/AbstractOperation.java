@@ -38,10 +38,6 @@ import de.shadowhunt.subversion.SubversionException;
 
 public abstract class AbstractOperation<T> {
 
-	protected static final ContentType CONTENT_TYPE_XML = ContentType.create("text/xml", "UTF-8");
-
-	protected static final String XML_PREAMBLE = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
-
 	protected static final class DavTemplateRequest extends HttpEntityEnclosingRequestBase {
 
 		private final String method;
@@ -62,6 +58,10 @@ public abstract class AbstractOperation<T> {
 			return method;
 		}
 	}
+
+	protected static final ContentType CONTENT_TYPE_XML = ContentType.create("text/xml", "UTF-8");
+
+	protected static final String XML_PREAMBLE = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
 
 	static InputStream getContent(final HttpResponse response) {
 		final HttpEntity entity = response.getEntity();

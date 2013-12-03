@@ -32,6 +32,29 @@ import org.apache.commons.lang3.Validate;
 public final class ResourceProperty {
 
 	/**
+	 * {@link ResourceProperty} can have various types, depending of the context they are used
+	 */
+	public static enum Type {
+		CUSTOM("C:"),
+		SVN("S:");
+
+		private final String prefix;
+
+		private Type(final String prefix) {
+			this.prefix = prefix;
+		}
+
+		/**
+		 * Returns the prefix of the {@link Type}
+		 *
+		 * @return the prefix of the {@link Type}
+		 */
+		public String getPrefix() {
+			return prefix;
+		}
+	}
+
+	/**
 	 * {@link Comparator} that compares {@link ResourceProperty} by their type and name
 	 */
 	public static final Comparator<ResourceProperty> TYPE_NAME_COMPARATOR = new Comparator<ResourceProperty>() {
@@ -74,6 +97,30 @@ public final class ResourceProperty {
 		this.value = value;
 	}
 
+	@Override
+	public boolean equals(final Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof ResourceProperty)) {
+			return false;
+		}
+
+		final ResourceProperty that = (ResourceProperty) o;
+
+		if (!name.equals(that.name)) {
+			return false;
+		}
+		if (type != that.type) {
+			return false;
+		}
+		if (!value.equals(that.value)) {
+			return false;
+		}
+
+		return true;
+	}
+
 	/**
 	 * Returns the name of the {@link ResourceProperty}
 	 *
@@ -102,30 +149,6 @@ public final class ResourceProperty {
 	}
 
 	@Override
-	public boolean equals(final Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (!(o instanceof ResourceProperty)) {
-			return false;
-		}
-
-		final ResourceProperty that = (ResourceProperty) o;
-
-		if (!name.equals(that.name)) {
-			return false;
-		}
-		if (type != that.type) {
-			return false;
-		}
-		if (!value.equals(that.value)) {
-			return false;
-		}
-
-		return true;
-	}
-
-	@Override
 	public int hashCode() {
 		int result = name.hashCode();
 		result = 31 * result + type.hashCode();
@@ -144,28 +167,5 @@ public final class ResourceProperty {
 		builder.append(value);
 		builder.append(']');
 		return builder.toString();
-	}
-
-	/**
-	 * {@link ResourceProperty} can have various types, depending of the context they are used
-	 */
-	public static enum Type {
-		CUSTOM("C:"),
-		SVN("S:");
-
-		private final String prefix;
-
-		private Type(final String prefix) {
-			this.prefix = prefix;
-		}
-
-		/**
-		 * Returns the prefix of the {@link Type}
-		 *
-		 * @return the prefix of the {@link Type}
-		 */
-		public String getPrefix() {
-			return prefix;
-		}
 	}
 }
