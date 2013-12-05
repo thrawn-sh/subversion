@@ -83,6 +83,14 @@
 
 	<build>
 		<defaultGoal>install</defaultGoal>
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<excludes>
+					<exclude>dump/**</exclude>
+				</excludes>
+			</testResource>
+		</testResources>
 
 		<pluginManagement><!-- {{{1 -->
 			<!-- keep list ordered by groupId and artifactId -->
