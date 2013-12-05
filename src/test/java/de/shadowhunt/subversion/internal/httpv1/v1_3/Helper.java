@@ -37,7 +37,7 @@ import de.shadowhunt.subversion.RepositoryFactory;
 
 final class Helper {
 
-	private static final File BASE = new File("src/test/resources/v1_3");
+	private static final File BASE = new File("src/test/resources/dump/v1_3");
 
 	private static final URI DUMP_URI = URI.create("http://subversion.vm.shadowhunt.de/1.3.0/dump.zip");
 
