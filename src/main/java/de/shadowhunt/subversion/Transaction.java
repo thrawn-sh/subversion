@@ -103,7 +103,9 @@ public interface Transaction {
 	 *
 	 * @param resource {@link Resource} to register to the {@link Transaction}
 	 * @param status {@link Status} of the registered {@link Resource}
+	 *
 	 * @return {@code true} if the registration modified the change set, otherwise {@code false}
+	 *
 	 * @throws NullPointerException if any parameter is {@code null}
 	 */
 	boolean register(Resource resource, Status status);

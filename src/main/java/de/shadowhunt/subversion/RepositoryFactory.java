@@ -47,6 +47,7 @@ public abstract class RepositoryFactory {
 	 * Create a new {@link RepositoryFactory} instance each time the method is called
 	 *
 	 * @return the new {@link RepositoryFactory} instance
+	 *
 	 * @throws SubversionException if no {@link RepositoryFactory} can be created
 	 */
 	public static final RepositoryFactory getInstance() throws SubversionException {
@@ -72,6 +73,7 @@ public abstract class RepositoryFactory {
 	 * @param context {@link HttpContext} that will be used by all requests to this repository
 	 *
 	 * @return a new {@link Repository} for given {@link URI}
+	 *
 	 * @throws NullPointerException if any parameter is {@code null}
 	 * @throws SubversionException if no {@link Repository} can be created
 	 */
@@ -88,7 +90,6 @@ public abstract class RepositoryFactory {
 
 	/**
 	 * Create a new {@link Repository} for given {@link URI} and use the given {@link HttpClient} with the {@link HttpClient} to connect to the server.
-	 *
 	 * <p>To find the {@link Repository} root the path is tested folder by folder till the root of the {@link Repository} root is found or no folders are left</p>
 	 *
 	 * @param repository {@link URI} to any resource of the repository (e.g: http://repository.example.net/svn/test_repo/folderA/subFolderB)
@@ -96,6 +97,7 @@ public abstract class RepositoryFactory {
 	 * @param context {@link HttpContext} that will be used by all requests to this repository
 	 *
 	 * @return a new {@link Repository} for given {@link URI}
+	 *
 	 * @throws NullPointerException if any parameter is {@code null}
 	 * @throws SubversionException if an error occurs during {@link Repository} probing and no {@link Repository} can be created
 	 */

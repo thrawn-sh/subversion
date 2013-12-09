@@ -41,7 +41,7 @@ class ExistsOperation extends AbstractOperation<Boolean> {
 	@Override
 	protected HttpUriRequest createRequest() {
 		final URI uri = URIUtils.createURI(repository, resource);
-		final DavTemplateRequest request =new DavTemplateRequest("PROPFIND", uri);
+		final DavTemplateRequest request = new DavTemplateRequest("PROPFIND", uri);
 		request.addHeader("Depth", Depth.EMPTY.value);
 		return request;
 	}

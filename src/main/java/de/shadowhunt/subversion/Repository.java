@@ -50,6 +50,7 @@ public interface Repository {
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
 	 * @param parents whether to create missing parents folders or not
 	 * @param content {@link InputStream} from which the content will be read (will be closed after transfer)
+	 *
 	 * @throws NullPointerException if any parameter is {@code null}
 	 * @throws SubversionException if an error occurs while operating on the repository
 	 */
@@ -60,6 +61,7 @@ public interface Repository {
 	 *
 	 * @param transaction the current running {@link Transaction}
 	 * @param message the commit message for the expected operation
+	 *
 	 * @throws NullPointerException if transaction is {@code null}
 	 * @throws SubversionException if an error occurs while operating on the repository
 	 */
@@ -73,6 +75,7 @@ public interface Repository {
 	 * @param srcRevision {@link Revision} of the resource to copy
 	 * @param targetResource the {@link Resource} of the target resource (relative to the repository root)
 	 * @param parents whether to create missing parents folders or not
+	 *
 	 * @throws NullPointerException if any parameter is {@code null}
 	 * @throws SubversionException if an error occurs while operating on the repository
 	 */
@@ -82,6 +85,7 @@ public interface Repository {
 	 * Create a new {@link Transaction} to make modifications within
 	 *
 	 * @return the new {@link Transaction}
+	 *
 	 * @throws SubversionException if an error occurs while operating on the repository
 	 */
 	Transaction createTransaction() throws SubversionException;
@@ -91,6 +95,7 @@ public interface Repository {
 	 *
 	 * @param transaction the current running {@link Transaction}
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
+	 *
 	 * @throws NullPointerException if any parameter is {@code null}
 	 * @throws SubversionException if an error occurs while operating on the repository
 	 */
@@ -103,6 +108,7 @@ public interface Repository {
 	 * @param revision the {@link Revision} of the resource to retrieve
 	 *
 	 * @return {@link InputStream} from which the content can be read (caller has to close the stream properly)
+	 *
 	 * @throws NullPointerException if any parameter is {@code null}
 	 * @throws SubversionException if an error occurs while operating on the repository
 	 */
@@ -115,6 +121,7 @@ public interface Repository {
 	 * @param revision the {@link Revision} of the resource to retrieve
 	 *
 	 * @return the HTTP download {@link URI} for the resource
+	 *
 	 * @throws NullPointerException if any parameter is {@code null}
 	 * @throws SubversionException if an error occurs while operating on the repository
 	 */
@@ -127,6 +134,7 @@ public interface Repository {
 	 * @param revision the {@link Revision} of the resource to retrieve
 	 *
 	 * @return {@code true} if the resource already exists in the latest revision of the repository otherwise {@code false}
+	 *
 	 * @throws NullPointerException if any parameter is {@code null}
 	 * @throws SubversionException if an error occurs while operating on the repository
 	 */
@@ -160,6 +168,7 @@ public interface Repository {
 	 * @param revision the {@link Revision} of the resource to retrieve
 	 *
 	 * @return {@link Info} for the resource
+	 *
 	 * @throws NullPointerException if any parameter is {@code null}
 	 * @throws SubversionException if an error occurs while operating on the repository
 	 */
@@ -173,6 +182,7 @@ public interface Repository {
 	 * @param depth whether to retrieve only for the given resource, its children or only part of its children depending on the value of {@link Depth}
 	 *
 	 * @return {@link Set} of {@link Info} for the resource and its child resources (depending on depth parameter)
+	 *
 	 * @throws NullPointerException if any parameter is {@code null}
 	 * @throws SubversionException if an error occurs while operating on the repository
 	 */
@@ -183,6 +193,7 @@ public interface Repository {
 	 *
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
 	 * @param steal if the resource is locked by another user {@code true} will override the lock, otherwise the operation will fail
+	 *
 	 * @throws NullPointerException if resource is {@code null}
 	 * @throws SubversionException if an error occurs while operating on the repository
 	 */
@@ -197,6 +208,7 @@ public interface Repository {
 	 * @param limit maximal number of {@link Log} entries, if the value is lower or equal to {@code 0} all entries will be returned
 	 *
 	 * @return ordered (early to latest) {@link List} of {@link Log} for the revisions between startRevision and endRevision of the resource
+	 *
 	 * @throws NullPointerException if any parameter is {@code null}
 	 * @throws SubversionException if an error occurs while operating on the repository
 	 */
@@ -208,6 +220,7 @@ public interface Repository {
 	 * @param transaction the current running {@link Transaction}
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
 	 * @param parents whether to create missing parents folders or not
+	 *
 	 * @throws NullPointerException if any parameter is {@code null}
 	 * @throws SubversionException if an error occurs while operating on the repository
 	 */
@@ -220,6 +233,7 @@ public interface Repository {
 	 * @param srcResource the {@link Resource} of the source resource (relative to the repository root)
 	 * @param targetResource the {@link Resource} of the target resource (relative to the repository root)
 	 * @param parents whether to create missing parents folders or not
+	 *
 	 * @throws NullPointerException if any parameter is {@code null}
 	 * @throws SubversionException if an error occurs while operating on the repository
 	 */
@@ -231,6 +245,7 @@ public interface Repository {
 	 * @param transaction the current running {@link Transaction}
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
 	 * @param properties {@link ResourceProperty} to remove
+	 *
 	 * @throws IllegalArgumentException if properties contain {@code null} elements
 	 * @throws NullPointerException if any parameter is {@code null}
 	 * @throws SubversionException if an error occurs while operating on the repository
@@ -243,6 +258,7 @@ public interface Repository {
 	 * @param transaction the current running {@link Transaction}
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
 	 * @param properties {@link ResourceProperty} to add or override
+	 *
 	 * @throws IllegalArgumentException if properties contain {@code null} elements
 	 * @throws NullPointerException if any parameter is {@code null}
 	 * @throws SubversionException if an error occurs while operating on the repository
@@ -253,6 +269,7 @@ public interface Repository {
 	 * Abort the current running {@link Transaction} and revert all modifications
 	 *
 	 * @param transaction the current running {@link Transaction}
+	 *
 	 * @throws NullPointerException if transaction is {@code null}
 	 * @throws SubversionException if an error occurs while operating on the repository
 	 */
@@ -263,6 +280,7 @@ public interface Repository {
 	 *
 	 * @param resource the {@link Resource} of the resource (relative to the repository root)
 	 * @param force the user that created the lock must match the user who wants to delete it, unless force is {@code true}
+	 *
 	 * @throws NullPointerException if resource is {@code null}
 	 * @throws SubversionException if an error occurs while operating on the repository
 	 */

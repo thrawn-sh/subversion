@@ -33,9 +33,12 @@ public final class URIUtils {
 
 	/**
 	 * Combine repository {@link URI} and {@link Resource}s to a valid {@link URI}
+	 *
 	 * @param repository base {@link URI}, {@link Resource}s are appended to the path of the repository
 	 * @param resources {@link Resource}s to appended to the repository {@link URI}
+	 *
 	 * @return combination of repository {@link URI} and {@link Resource}s
+	 *
 	 * @throws IllegalArgumentException if resources contain {@code null elements}
 	 * @throws NullPointerException if repository is {@code null}
 	 */

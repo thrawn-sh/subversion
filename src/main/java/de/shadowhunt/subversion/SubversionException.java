@@ -95,6 +95,7 @@ public class SubversionException extends RuntimeException {
 
 	/**
 	 * Returns the status code of the server response
+	 *
 	 * @return the status code of the server response or {@code 0} if the server was not responsible for the error
 	 */
 	public final int getHttpStatusCode() {
