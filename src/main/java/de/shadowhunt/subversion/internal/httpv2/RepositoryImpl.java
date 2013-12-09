@@ -39,7 +39,7 @@ import de.shadowhunt.subversion.internal.TransactionImpl;
 
 class RepositoryImpl extends AbstractBaseRepository {
 
-	static class ResourceMapperImpl implements ResourceMapper {
+	private static class ResourceMapperImpl implements ResourceMapper {
 
 		private static final Resource CREATE_TRANSACTION = Resource.create("me");
 

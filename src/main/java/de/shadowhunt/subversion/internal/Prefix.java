@@ -69,7 +69,7 @@ final class Prefix {
 		}
 	}
 
-	static final Pattern PATH_PATTERN = Pattern.compile("/");
+	private static final Pattern PATH_PATTERN = Pattern.compile("/");
 
 	static Resource read(final InputStream inputStream, final ProtocolVersion version) {
 		try {

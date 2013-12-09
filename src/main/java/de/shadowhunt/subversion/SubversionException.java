@@ -107,6 +107,6 @@ public class SubversionException extends RuntimeException {
 		if (httpStatusCode == 0) {
 			return super.toString();
 		}
-		return super.toString() + " [" + httpStatusCode + "]";
+		return super.toString() + " [" + httpStatusCode + ']';
 	}
 }
