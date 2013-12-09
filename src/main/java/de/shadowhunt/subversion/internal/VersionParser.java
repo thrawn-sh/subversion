@@ -36,9 +36,6 @@ class VersionParser {
 	public Revision getRevisionFromPath(final String path) {
 		final String[] parts = PATH_PATTERN.split(path);
 		final int revision = Integer.parseInt(parts[prefixPathLength + 2]); // prefixPathLength + $svn + bc/vrv + VERSION);
-		if (revision == 0) {
-			return Revision.EMPTY;
-		}
 		return Revision.create(revision);
 	}
 }

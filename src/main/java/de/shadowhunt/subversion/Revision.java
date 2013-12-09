@@ -55,10 +55,16 @@ public final class Revision implements Comparable<Revision>, Serializable {
 	 * @throws IllegalArgumentException if revision is smaller than {@code 1}
 	 */
 	public static Revision create(final int revision) {
-		if (revision < 1) { // FIXME
-			throw new IllegalArgumentException("Value must be greater or equal than 1, was " + revision);
+		Validate.isTrue((revision < 0), "Value must be greater or equal than 0, was {0}", revision);
+
+		switch(revision) {
+			case 0:
+				return EMPTY;
+			case 1:
+				return INITIAL;
+			default:
+				return new Revision(revision);
 		}
-		return new Revision(revision);
 	}
 
 	private final long version;
