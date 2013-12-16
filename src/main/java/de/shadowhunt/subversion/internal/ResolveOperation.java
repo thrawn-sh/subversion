@@ -41,19 +41,16 @@ class ResolveOperation extends AbstractOperation<Resource> {
 
 	private final Revision expected;
 
-	private final boolean reportNonExistingResources; // FIXME
-
 	private final Resource resource;
 
 	private final Revision revision;
 
-	ResolveOperation(final URI repository, final Resource resource, final Revision revision, final Revision expected, final ResourceMapper config, final boolean reportNonExistingResources) {
+	ResolveOperation(final URI repository, final Resource resource, final Revision revision, final Revision expected, final ResourceMapper config) {
 		super(repository);
 		this.resource = resource;
 		this.revision = revision;
 		this.expected = expected;
 		this.config = config;
-		this.reportNonExistingResources = reportNonExistingResources;
 	}
 
 	@Override
@@ -74,19 +71,16 @@ class ResolveOperation extends AbstractOperation<Resource> {
 
 	@Override
 	protected boolean isExpectedStatusCode(final int statusCode) {
-		return (HttpStatus.SC_OK == statusCode)
-				|| (!reportNonExistingResources && (HttpStatus.SC_NOT_FOUND == statusCode));
+		return (HttpStatus.SC_OK == statusCode) || (HttpStatus.SC_NOT_FOUND == statusCode);
 	}
 
 	@Override
 	@CheckForNull
 	protected Resource processResponse(final HttpResponse response) {
-		if (!reportNonExistingResources) {
-			final int statusCode = getStatusCode(response);
-			if (statusCode == HttpStatus.SC_NOT_FOUND) {
-				EntityUtils.consumeQuietly(response.getEntity());
-				return null;
-			}
+		final int statusCode = getStatusCode(response);
+		if (statusCode == HttpStatus.SC_NOT_FOUND) {
+			EntityUtils.consumeQuietly(response.getEntity());
+			return null;
 		}
 
 		final InputStream in = getContent(response);

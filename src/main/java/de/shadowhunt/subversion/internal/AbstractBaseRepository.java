@@ -118,7 +118,7 @@ public abstract class AbstractBaseRepository implements Repository {
 		}
 
 		final RepositoryCache cache = fromTransaction(transaction);
-		final Info info = info0(cache, resource, Revision.HEAD, true, false);
+		final Info info = info0(cache, resource, Revision.HEAD, true);
 		final Resource uploadResource = config.getWorkingResource(transaction).append(resource);
 		final UploadOperation operation = new UploadOperation(repository, uploadResource, info, content);
 		operation.execute(client, context);
@@ -144,8 +144,12 @@ public abstract class AbstractBaseRepository implements Repository {
 		}
 
 		final RepositoryCache cache = fromTransaction(transaction);
-		final Info sourceInfo = info0(cache, sourceResource, sourceRevision, true, true);
-		final Info targetInfo = info0(cache, targetResource, Revision.HEAD, true, false);
+		final Info sourceInfo = info0(cache, sourceResource, sourceRevision, true);
+		if (sourceInfo == null) {
+			throw new SubversionException("Can't resolve: " + sourceResource + '@' + sourceResource);
+		}
+
+		final Info targetInfo = info0(cache, targetResource, Revision.HEAD, true);
 		final Resource source = config.getVersionedResource(sourceInfo.getResource(), sourceInfo.getRevision());
 		final Resource target = config.getWorkingResource(transaction).append(targetResource);
 
@@ -161,7 +165,7 @@ public abstract class AbstractBaseRepository implements Repository {
 
 	private void createFolder(final Transaction transaction, final Resource resource, final Revision revision, final boolean parents) {
 		final RepositoryCache cache = fromTransaction(transaction);
-		final Info info = info0(cache, resource, revision, true, false); // null if resource does not exists
+		final Info info = info0(cache, resource, revision, true); // null if resource does not exists
 
 		if (parents && (info == null) && !Resource.ROOT.equals(resource)) {
 			createFolder(transaction, resource.getParent(), revision, parents);
@@ -197,7 +201,7 @@ public abstract class AbstractBaseRepository implements Repository {
 		Validate.notNull(resource, "resource must not be null");
 
 		final RepositoryCache cache = fromTransaction(transaction);
-		final Info info = info0(cache, resource, Revision.HEAD, true, false);
+		final Info info = info0(cache, resource, Revision.HEAD, true);
 
 		final DeleteOperation operation = new DeleteOperation(repository, config.getWorkingResource(transaction).append(resource), info);
 		operation.execute(client, context);
@@ -213,7 +217,10 @@ public abstract class AbstractBaseRepository implements Repository {
 	}
 
 	private InputStream download0(final RepositoryCache cache, final Resource resource, final Revision revision) {
-		final Resource resolved = resolve(cache, resource, revision, true, true);
+		final Resource resolved = resolve(cache, resource, revision, true);
+		if (resolved == null) {
+			throw new SubversionException("Can't resolve: " + resource + '@' + revision);
+		}
 		final DownloadOperation operation = new DownloadOperation(repository, resolved);
 		return operation.execute(client, context);
 	}
@@ -227,7 +234,10 @@ public abstract class AbstractBaseRepository implements Repository {
 	}
 
 	private URI downloadURI0(final RepositoryCache cache, final Resource resource, final Revision revision) {
-		final Resource resolved = resolve(cache, resource, revision, true, true);
+		final Resource resolved = resolve(cache, resource, revision, true);
+		if (resolved == null) {
+			throw new SubversionException("Can't resolve: " + resource + '@' + revision);
+		}
 		return URIUtils.createURI(repository, resolved);
 	}
 
@@ -257,7 +267,10 @@ public abstract class AbstractBaseRepository implements Repository {
 		}
 
 		// ask the server
-		final Resource resolved = resolve(cache, resource, revision, false, true);
+		final Resource resolved = resolve(cache, resource, revision, false);
+		if (resolved == null) {
+			throw new SubversionException("Can't resolve: " + resource + '@' + revision);
+		}
 		final ExistsOperation operation = new ExistsOperation(repository, resolved);
 		return operation.execute(client, context);
 	}
@@ -284,8 +297,8 @@ public abstract class AbstractBaseRepository implements Repository {
 			}
 
 			final Resource resource = entry.getKey();
-			final Info info = info0(repositoryCache, resource, Revision.HEAD, false, false);
-			if (info.isLocked()) {
+			final Info info = info0(repositoryCache, resource, Revision.HEAD, false);
+			if ((info != null) && info.isLocked()) {
 				infos.add(info);
 			}
 		}
@@ -305,16 +318,21 @@ public abstract class AbstractBaseRepository implements Repository {
 	public final Info info(final Resource resource, final Revision revision) {
 		Validate.notNull(resource, "resource must not be null");
 		Validate.notNull(revision, "revision must not be null");
-		return info0(new RepositoryCache(this), resource, revision, true, true);
+		Info info = info0(new RepositoryCache(this), resource, revision, true);
+		if (info == null) {
+			throw new SubversionException("Can't resolve: " + resource + '@' + revision);
+		}
+		return info;
 	}
 
-	private Info info0(final RepositoryCache cache, final Resource resource, final Revision revision, final boolean resolve, final boolean report) {
+	@CheckForNull
+	private Info info0(final RepositoryCache cache, final Resource resource, final Revision revision, final boolean resolve) {
 		Info info = cache.get(resource, revision);
 		if (info != null) {
 			return info;
 		}
 
-		final Resource resolved = resolve(cache, resource, revision, resolve, report);
+		final Resource resolved = resolve(cache, resource, revision, resolve);
 		if (resolved == null) {
 			return null; // resource does not exists
 		}
@@ -339,7 +357,10 @@ public abstract class AbstractBaseRepository implements Repository {
 			listRecursively0(cache, resource, revision, result);
 			return result;
 		}
-		final Resource resolved = resolve(cache, resource, revision, true, true);
+		final Resource resolved = resolve(cache, resource, revision, true);
+		if (resolved == null) {
+			throw new SubversionException("Can't resolve: " + resource + '@' + revision);
+		}
 		final ListOperation operation = new ListOperation(repository, resolved, depth, parser);
 		final Set<Info> infoSet = operation.execute(client, context);
 		cache.putAll(infoSet);
@@ -376,11 +397,10 @@ public abstract class AbstractBaseRepository implements Repository {
 		final Revision concreteStartRevision = cache.getConcreteRevision(startRevision);
 		final Revision concreteEndRevision = cache.getConcreteRevision(endRevision);
 
-		final Resource resolved;
-		if (concreteStartRevision.compareTo(concreteEndRevision) > 0) {
-			resolved = resolve(cache, resource, concreteStartRevision, true, true);
-		} else {
-			resolved = resolve(cache, resource, concreteEndRevision, true, true);
+		final Revision resoledRevision = (concreteStartRevision.compareTo(concreteEndRevision) > 0) ? concreteStartRevision : concreteEndRevision;
+		final Resource resolved = resolve(cache, resource, resoledRevision, true);
+		if (resolved == null) {
+			throw new SubversionException("Can't resolve: " + resource + '@' + resoledRevision);
 		}
 		final LogOperation operation = new LogOperation(repository, resolved, concreteStartRevision, concreteEndRevision, limit);
 		return operation.execute(client, context);
@@ -414,7 +434,7 @@ public abstract class AbstractBaseRepository implements Repository {
 
 		// there can only be a lock token if the file is already in the repository
 		final RepositoryCache cache = fromTransaction(transaction);
-		final Info info = info0(cache, resource, Revision.HEAD, true, false);
+		final Info info = info0(cache, resource, Revision.HEAD, true);
 
 		final Resource r = config.getWorkingResource(transaction).append(resource);
 		final PropertiesDeleteOperation operation = new PropertiesDeleteOperation(repository, r, info, properties);
@@ -430,7 +450,7 @@ public abstract class AbstractBaseRepository implements Repository {
 
 		// there can only be a lock token if the file is already in the repository
 		final RepositoryCache cache = fromTransaction(transaction);
-		final Info info = info0(cache, resource, Revision.HEAD, true, false);
+		final Info info = info0(cache, resource, Revision.HEAD, true);
 
 		final Resource r = config.getWorkingResource(transaction).append(resource);
 		final PropertiesSetOperation operation = new PropertiesSetOperation(repository, r, info, properties);
@@ -441,7 +461,7 @@ public abstract class AbstractBaseRepository implements Repository {
 	protected abstract void registerResource(Transaction transaction, Resource resource, Revision revision);
 
 	@CheckForNull
-	Resource resolve(final RepositoryCache cache, final Resource resource, final Revision revision, final boolean resolve, final boolean report) {
+	Resource resolve(final RepositoryCache cache, final Resource resource, final Revision revision, final boolean resolve) {
 		Validate.notNull(cache, "cache must not be null");
 		Validate.notNull(resource, "resource must not be null");
 		Validate.notNull(revision, "revision must not be null");
@@ -450,9 +470,6 @@ public abstract class AbstractBaseRepository implements Repository {
 			final ExistsOperation operation = new ExistsOperation(repository, resource);
 			if (!resolve || (operation.execute(client, context))) {
 				return resource;
-			}
-			if (report) {
-				throw new SubversionException("Can't resolve: " + resource + '@' + revision);
 			}
 			return null;
 		}
@@ -470,7 +487,7 @@ public abstract class AbstractBaseRepository implements Repository {
 		}
 
 		final Revision head = cache.getConcreteRevision(Revision.HEAD);
-		final ResolveOperation operation = new ResolveOperation(repository, resource, head, revision, config, report);
+		final ResolveOperation operation = new ResolveOperation(repository, resource, head, revision, config);
 		return operation.execute(client, context);
 	}
 
@@ -494,7 +511,11 @@ public abstract class AbstractBaseRepository implements Repository {
 	}
 
 	private void unlock0(final RepositoryCache cache, final Resource resource, final boolean force) {
-		final Info info = info0(cache, resource, Revision.HEAD, true, true);
+		final Info info = info0(cache, resource, Revision.HEAD, true);
+		if (info == null) {
+			throw new SubversionException("Can't resolve: " + resource + '@' + Revision.HEAD);
+		}
+
 		final String lockToken = info.getLockToken();
 		if (lockToken == null) {
 			return;

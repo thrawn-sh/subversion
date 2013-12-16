@@ -28,6 +28,7 @@ import javax.annotation.CheckForNull;
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction.Status;
 
 public class RepositoryCache {
@@ -107,7 +108,11 @@ public class RepositoryCache {
 	public final Revision getConcreteRevision(final Revision revision) {
 		if (Revision.HEAD.equals(revision)) {
 			if (headRevision == null) {
-				final Resource resolved = repository.resolve(this, Resource.ROOT, revision, false, true);
+				final Resource resolved = repository.resolve(this, Resource.ROOT, Revision.HEAD, false);
+				if (resolved == null) {
+					throw new SubversionException("Can't resolve: " + Resource.ROOT + '@' + Revision.HEAD);
+				}
+
 				final InfoOperation operation = new InfoOperation(repository.getBaseUri(), resolved, repository.getVersionParser());
 				final Info info = operation.execute(repository.client, repository.context);
 				headRevision = info.getRevision();
