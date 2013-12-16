@@ -25,9 +25,6 @@ import org.junit.runners.MethodSorters;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import de.shadowhunt.subversion.internal.httpv1.v1_6.RepositoryCombinedOperations;
-import de.shadowhunt.subversion.internal.httpv1.v1_6.RepositoryResolve;
-
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(Suite.class)
 @SuiteClasses({ Prepare.class, // pull dump.zip
