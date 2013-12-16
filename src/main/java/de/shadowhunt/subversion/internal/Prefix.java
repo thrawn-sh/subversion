@@ -22,6 +22,7 @@ package de.shadowhunt.subversion.internal;
 import java.io.InputStream;
 import java.util.regex.Pattern;
 
+import javax.annotation.CheckForNull;
 import javax.xml.parsers.SAXParser;
 
 import org.xml.sax.Attributes;
@@ -59,6 +60,7 @@ final class Prefix {
 			}
 		}
 
+		@CheckForNull
 		Resource getPrefix() {
 			return prefix;
 		}
@@ -72,15 +74,21 @@ final class Prefix {
 	private static final Pattern PATH_PATTERN = Pattern.compile("/");
 
 	static Resource read(final InputStream inputStream, final ProtocolVersion version) {
+		Resource prefix;
 		try {
 			final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
 			final PrefixHandler handler = new PrefixHandler(version);
 
 			saxParser.parse(inputStream, handler);
-			return handler.getPrefix();
+			prefix = handler.getPrefix();
 		} catch (final Exception e) {
 			throw new SubversionException("Invalid server response: could not parse response", e);
 		}
+
+		if (prefix == null) {
+			throw new SubversionException("Invalid server response: could not parse response");
+		}
+		return prefix;
 	}
 
 	private Prefix() {

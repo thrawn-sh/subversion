@@ -107,20 +107,26 @@ public class RepositoryCache {
 
 	public final Revision getConcreteRevision(final Revision revision) {
 		if (Revision.HEAD.equals(revision)) {
-			if (headRevision == null) {
-				final Resource resolved = repository.resolve(this, Resource.ROOT, Revision.HEAD, false);
-				if (resolved == null) {
-					throw new SubversionException("Can't resolve: " + Resource.ROOT + '@' + Revision.HEAD);
-				}
-
-				final InfoOperation operation = new InfoOperation(repository.getBaseUri(), resolved, repository.getVersionParser());
-				final Info info = operation.execute(repository.client, repository.context);
-				headRevision = info.getRevision();
-				put(info);
-			}
-			return headRevision;
+			return determineHeadRevision();
 		}
 		return revision;
+	}
+
+	private Revision determineHeadRevision() {
+		if (headRevision != null) {
+			return headRevision;
+		}
+
+		final Resource resolved = repository.resolve(this, Resource.ROOT, Revision.HEAD, false);
+		if (resolved == null) {
+			throw new SubversionException("Can't resolve: " + Resource.ROOT + '@' + Revision.HEAD);
+		}
+
+		final InfoOperation operation = new InfoOperation(repository.getBaseUri(), resolved, repository.getVersionParser());
+		final Info info = operation.execute(repository.client, repository.context);
+		headRevision = info.getRevision();
+		put(info);
+		return headRevision;
 	}
 
 	public AbstractBaseRepository getRepository() {

@@ -69,15 +69,21 @@ final class Resolve {
 	 * @return {@link LogImpl} for the resource
 	 */
 	static Resolve read(final InputStream inputStream) {
+		Resolve resolve;
 		try {
 			final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
 			final ResolveHandler handler = new ResolveHandler();
 
 			saxParser.parse(inputStream, handler);
-			return handler.getEntry();
+			resolve = handler.getEntry();
 		} catch (final Exception e) {
 			throw new SubversionException("Invalid server response: could not parse response", e);
 		}
+
+		if (resolve == null) {
+			throw new SubversionException("Invalid server response: could not parse response");
+		}
+		return resolve;
 	}
 
 	private Resource resource = null;
