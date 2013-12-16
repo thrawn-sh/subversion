@@ -52,7 +52,7 @@ final class Prefix {
 				if ("href".equals(name)) {
 					final String text = getText();
 					// .../${svn}/act/
-					//      ^^^^^^ <- prefix
+					//     ^^^^^^ <- prefix
 					final String[] segments = PATH_PATTERN.split(text);
 					prefix = Resource.create(segments[segments.length - 2]);
 					return;
