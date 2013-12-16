@@ -57,7 +57,7 @@ public final class Revision implements Comparable<Revision>, Serializable {
 	public static Revision create(final int revision) {
 		Validate.isTrue((revision >= 0), "Value must be greater or equal than 0, was {0}", revision);
 
-		switch(revision) {
+		switch (revision) {
 			case 0:
 				return EMPTY;
 			case 1:
