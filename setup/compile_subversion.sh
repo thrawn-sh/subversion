@@ -278,6 +278,35 @@ function sqllite() { #{{{1
 	touch "${maker}"
 } #}}}1
 
+function pcre() { #{{{1
+	local directory="${1}"; shift
+	local prefix="${1}"; shift
+	local version="${1}"; shift
+
+	local maker="${prefix}/.install/pcre"
+	if [ -f "${maker}" ]; then
+		echo "pcre already installed in ${prefix}"
+		return
+	fi
+
+	local archive="/opt/download/ocre-${version}.tar.gz"
+	if [ ! -f "${archive}" ]; then
+		wget "http://sourceforge.net/projects/pcre/files/pcre/${version}/pcre-${version}.tar.gz" -O "${archive}"
+	fi
+
+	cd "${directory}"
+	tar -xzf "${archive}"
+	cd pcre-${version}
+
+	./configure \
+		--prefix="${prefix}"
+
+	make
+	make install
+
+	touch "${maker}"
+} #}}}1
+
 function subversion_1_0() { #{{{1
 	local version="1.0.0"
 	local directory=`mktemp -d`
@@ -687,6 +716,56 @@ function subversion_1_8() { #{{{1
 	rm -rf "${directory}"
 } #}}}1
 
+function frontend() { #{{{1
+	local version="2.4.7"
+	local directory=`mktemp -d`
+	local prefix="/opt/subversion-frontend"
+	mkdir -p "${prefix}/.install"
+
+	openssl  "${directory}" "${prefix}" 1.0.1e
+	apr      "${directory}" "${prefix}" 1.5.0
+	apr-util "${directory}" "${prefix}" 1.5.3
+	pcre     "${directory}" "${prefix}" 8.33
+
+	local maker="${prefix}/.install/httpd"
+	if [ -f "${maker}" ]; then
+		echo "httpd already installed in ${prefix}"
+		return
+	fi
+
+	local archive="/opt/download/httpd-${version}.tar.gz"
+	if [ ! -f "${archive}" ]; then
+		wget "http://archive.apache.org/dist/httpd/httpd-${version}.tar.gz" -O "${archive}"
+	fi
+
+	cd "${directory}"
+	tar -xzf "${archive}"
+	cd "httpd-${version}"
+
+	./configure \
+		--enable-deflate=shared \
+		--enable-headers=shared \
+		--enable-proxy-html=shared \
+		--enable-proxy=shared \
+		--enable-rewrite=shared \
+		--enable-sed=shared \
+		--enable-so \
+		--enable-ssl=shared \
+		--enable-substitute=shared \
+		--enable-vhost-alias=shared \
+		--prefix="${prefix}" \
+		--with-apr-util="${prefix}" \
+		--with-apr="${prefix}" \
+		--with-pcre="${prefix}" \
+		--with-ssl="${prefix}"
+
+	make
+	make install
+
+	touch "${maker}"
+	rm -rf "${directory}"
+} #}}}1
+
 init
 
 mkdir -p "/opt/download"
@@ -699,3 +778,5 @@ subversion_1_5
 subversion_1_6
 subversion_1_7
 subversion_1_8
+
+frontend
