@@ -318,7 +318,7 @@ public abstract class AbstractBaseRepository implements Repository {
 	public final Info info(final Resource resource, final Revision revision) {
 		Validate.notNull(resource, "resource must not be null");
 		Validate.notNull(revision, "revision must not be null");
-		Info info = info0(new RepositoryCache(this), resource, revision, true);
+		final Info info = info0(new RepositoryCache(this), resource, revision, true);
 		if (info == null) {
 			throw new SubversionException("Can't resolve: " + resource + '@' + revision);
 		}

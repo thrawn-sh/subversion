@@ -74,7 +74,7 @@ final class Prefix {
 	private static final Pattern PATH_PATTERN = Pattern.compile("/");
 
 	static Resource read(final InputStream inputStream, final ProtocolVersion version) {
-		Resource prefix;
+		final Resource prefix;
 		try {
 			final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
 			final PrefixHandler handler = new PrefixHandler(version);

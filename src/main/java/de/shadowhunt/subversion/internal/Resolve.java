@@ -69,7 +69,7 @@ final class Resolve {
 	 * @return {@link LogImpl} for the resource
 	 */
 	static Resolve read(final InputStream inputStream) {
-		Resolve resolve;
+		final Resolve resolve;
 		try {
 			final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
 			final ResolveHandler handler = new ResolveHandler();
