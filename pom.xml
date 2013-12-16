@@ -39,9 +39,9 @@
 	<!-- environment information {{{1 -->
 	<scm>
 		<tag>HEAD</tag>
-		<connection>scm:git:ssh://gitolite@git.shadowhunt.de/subversion</connection>
-		<developerConnection>scm:git:ssh://gitolite@git.shadowhunt.de/subversion</developerConnection>
-		<url>https://git.shadowhunt.de/subversion</url>
+		<connection>scm:git:https://scm.shadowhunt.de/subversion</connection>
+		<developerConnection>scm:git:https://scm.shadowhunt.de/subversion</developerConnection>
+		<url>https://scm.shadowhunt.de/subversion</url>
 	</scm>
 
 	<prerequisites>
@@ -78,7 +78,6 @@
 		<sonar.ignorecoverage.configFile>${project.basedir}/target/coverage.ignore</sonar.ignorecoverage.configFile>
 		<sonar.ignoreviolations.configFile>${project.basedir}/target/violations.ignore</sonar.ignoreviolations.configFile>
 	</properties>
-
 
 	<build>
 		<defaultGoal>install</defaultGoal>
@@ -389,6 +388,14 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<printSummary>false</printSummary>
+					<argLine>${jacoco.agent.argLineUT}</argLine>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>buildnumber-maven-plugin</artifactId>
 				<executions>
@@ -399,14 +406,6 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<printSummary>false</printSummary>
-					<argLine>${jacoco.agent.argLineUT}</argLine>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
