@@ -224,7 +224,7 @@
 				<artifactId>package-info-maven-plugin</artifactId>
 				<configuration>
 					<annotationLines>
-						<annotationLine>@javax.annotation.CheckReturnValue(when = javax.annotation.meta.When.NEVER)</annotationLine>
+						<annotationLine>@de.shadowhunt.annotation.ReturnValuesAreNonnullByDefault</annotationLine>
 						<annotationLine>@javax.annotation.ParametersAreNonnullByDefault</annotationLine>
 					</annotationLines>
 				</configuration>
@@ -516,6 +516,11 @@
 
 	<!-- dependencies {{{1 -->
 	<dependencies>
+		<dependency>
+			<groupId>de.shadowhunt</groupId>
+			<artifactId>annotations</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>annotations</artifactId>
