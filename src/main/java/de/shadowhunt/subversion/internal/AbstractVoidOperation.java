@@ -21,6 +21,8 @@ package de.shadowhunt.subversion.internal;
 
 import java.net.URI;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 
@@ -31,6 +33,7 @@ public abstract class AbstractVoidOperation extends AbstractOperation<Void> {
 	}
 
 	@Override
+	@CheckForNull
 	protected final Void processResponse(final HttpResponse response) {
 		EntityUtils.consumeQuietly(response.getEntity());
 		return null;

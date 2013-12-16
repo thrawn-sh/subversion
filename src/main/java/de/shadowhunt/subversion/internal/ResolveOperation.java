@@ -22,6 +22,8 @@ package de.shadowhunt.subversion.internal;
 import java.io.InputStream;
 import java.net.URI;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -77,6 +79,7 @@ class ResolveOperation extends AbstractOperation<Resource> {
 	}
 
 	@Override
+	@CheckForNull
 	protected Resource processResponse(final HttpResponse response) {
 		if (!reportNonExistingResources) {
 			final int statusCode = getStatusCode(response);

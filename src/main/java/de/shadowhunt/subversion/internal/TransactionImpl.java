@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.commons.lang3.Validate;
 
 import de.shadowhunt.subversion.Resource;
@@ -134,6 +136,7 @@ public final class TransactionImpl extends RepositoryCache implements Transactio
 	}
 
 	@Override
+	@CheckForNull
 	public Status status(final Resource resource) {
 		Validate.notNull(resource, "resource must not be null");
 

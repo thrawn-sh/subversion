@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.CheckForNull;
+
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
@@ -93,6 +95,7 @@ public class RepositoryCache {
 		return get(resource, revision) != null;
 	}
 
+	@CheckForNull
 	public final Info get(final Resource resource, final Revision revision) {
 		Revision concreteRevision = revision;
 		if (Revision.HEAD.equals(revision)) {
@@ -137,6 +140,7 @@ public class RepositoryCache {
 		this.repository = repository;
 	}
 
+	@CheckForNull
 	public Status status(@SuppressWarnings("unused") final Resource resource) {
 		// no transaction => no "hidden" resources
 		return null;
