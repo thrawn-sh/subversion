@@ -1,21 +1,17 @@
-/*
- * #%L
- * Shadowhunt Subversion
- * %%
- * Copyright (C) 2013 shadowhunt
- * %%
+/**
+ * Copyright (C) 2013 shadowhunt (dev@shadowhunt.de)
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *         http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * #L%
  */
 package de.shadowhunt.subversion.internal.httpv2;
 
@@ -31,13 +27,13 @@ import de.shadowhunt.subversion.internal.RepositoryLocator;
 
 public class RepositoryLocatorImpl implements RepositoryLocator {
 
-	@Override
-	public Repository create(final URI repository, final Resource prefix, final HttpClient client, final HttpContext context) {
-		return new RepositoryImpl(repository, prefix, client, context);
-	}
+    @Override
+    public Repository create(final URI repository, final Resource prefix, final HttpClient client, final HttpContext context) {
+        return new RepositoryImpl(repository, prefix, client, context);
+    }
 
-	@Override
-	public boolean isSupported(final Repository.ProtocolVersion version) {
-		return ProtocolVersion.HTTP_V2 == version;
-	}
+    @Override
+    public boolean isSupported(final Repository.ProtocolVersion version) {
+        return ProtocolVersion.HTTP_V2 == version;
+    }
 }

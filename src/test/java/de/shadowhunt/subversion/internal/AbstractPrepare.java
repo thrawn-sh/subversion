@@ -1,21 +1,17 @@
-/*
- * #%L
- * Shadowhunt Subversion
- * %%
- * Copyright (C) 2013 shadowhunt
- * %%
+/**
+ * Copyright (C) 2013 shadowhunt (dev@shadowhunt.de)
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *         http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * #L%
  */
 package de.shadowhunt.subversion.internal;
 
@@ -33,61 +29,61 @@ import org.junit.Test;
 
 public class AbstractPrepare {
 
-	private static boolean extractArchive(final File zip, final File prefix) throws Exception {
-		final ZipFile zipFile = new ZipFile(zip);
-		final Enumeration<? extends ZipEntry> enu = zipFile.entries();
-		while (enu.hasMoreElements()) {
-			final ZipEntry zipEntry = enu.nextElement();
+    private static boolean extractArchive(final File zip, final File prefix) throws Exception {
+        final ZipFile zipFile = new ZipFile(zip);
+        final Enumeration<? extends ZipEntry> enu = zipFile.entries();
+        while (enu.hasMoreElements()) {
+            final ZipEntry zipEntry = enu.nextElement();
 
-			final String name = zipEntry.getName();
+            final String name = zipEntry.getName();
 
-			final File file = new File(prefix, name);
-			if (name.endsWith("/")) {
-				file.mkdirs();
-				continue;
-			}
+            final File file = new File(prefix, name);
+            if (name.endsWith("/")) {
+                file.mkdirs();
+                continue;
+            }
 
-			final File parent = file.getParentFile();
-			if (parent != null) {
-				parent.mkdirs();
-			}
+            final File parent = file.getParentFile();
+            if (parent != null) {
+                parent.mkdirs();
+            }
 
-			final InputStream is = zipFile.getInputStream(zipEntry);
-			final FileOutputStream fos = new FileOutputStream(file);
-			final byte[] bytes = new byte[1024];
-			int length;
-			while ((length = is.read(bytes)) >= 0) {
-				fos.write(bytes, 0, length);
-			}
-			is.close();
-			fos.close();
+            final InputStream is = zipFile.getInputStream(zipEntry);
+            final FileOutputStream fos = new FileOutputStream(file);
+            final byte[] bytes = new byte[1024];
+            int length;
+            while ((length = is.read(bytes)) >= 0) {
+                fos.write(bytes, 0, length);
+            }
+            is.close();
+            fos.close();
 
-		}
-		zipFile.close();
-		return true;
-	}
+        }
+        zipFile.close();
+        return true;
+    }
 
-	private final File base;
+    private final File base;
 
-	private final URI dumpUri;
+    private final URI dumpUri;
 
-	protected AbstractPrepare(final URI dumpUri, final File base) {
-		this.dumpUri = dumpUri;
-		this.base = base;
-	}
+    protected AbstractPrepare(final URI dumpUri, final File base) {
+        this.dumpUri = dumpUri;
+        this.base = base;
+    }
 
-	@Test
-	public void pullCurrentDumpData() throws Exception {
-		FileUtils.deleteQuietly(base);
+    @Test
+    public void pullCurrentDumpData() throws Exception {
+        FileUtils.deleteQuietly(base);
 
-		final boolean created = base.mkdirs();
-		Assert.assertTrue(base + " could not be created", created);
+        final boolean created = base.mkdirs();
+        Assert.assertTrue(base + " could not be created", created);
 
-		final File zip = new File(base, "dump.zip");
-		FileUtils.copyURLToFile(dumpUri.toURL(), zip);
-		Assert.assertTrue("could not download " + zip, zip.isFile());
+        final File zip = new File(base, "dump.zip");
+        FileUtils.copyURLToFile(dumpUri.toURL(), zip);
+        Assert.assertTrue("could not download " + zip, zip.isFile());
 
-		final boolean extracted = extractArchive(zip, base);
-		Assert.assertTrue("could not extact " + zip, extracted);
-	}
+        final boolean extracted = extractArchive(zip, base);
+        Assert.assertTrue("could not extact " + zip, extracted);
+    }
 }
