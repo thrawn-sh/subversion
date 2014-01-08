@@ -290,8 +290,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <proc>none</proc>
-                    <source>1.5</source>
-                    <target>1.5</target>
+                    <source>1.6</source>
+                    <target>1.6</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -425,13 +425,13 @@
                 <configuration>
                     <signature>
                         <groupId>org.codehaus.mojo.signature</groupId>
-                        <artifactId>java15</artifactId>
+                        <artifactId>java16</artifactId>
                         <version>1.0</version>
                     </signature>
                 </configuration>
                 <executions>
                     <execution>
-                        <phase>validate</phase>
+                        <phase>verify</phase>
                         <goals>
                             <goal>check</goal>
                         </goals>
