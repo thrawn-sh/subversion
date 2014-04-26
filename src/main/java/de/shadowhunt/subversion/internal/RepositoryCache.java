@@ -92,22 +92,6 @@ public class RepositoryCache {
         return get(resource, revision) != null;
     }
 
-    @CheckForNull
-    public final Info get(final Resource resource, final Revision revision) {
-        Revision concreteRevision = revision;
-        if (Revision.HEAD.equals(revision)) {
-            concreteRevision = getConcreteRevision(revision);
-        }
-        return cache.get(new Key(resource, concreteRevision));
-    }
-
-    public final Revision getConcreteRevision(final Revision revision) {
-        if (Revision.HEAD.equals(revision)) {
-            return determineHeadRevision();
-        }
-        return revision;
-    }
-
     private Revision determineHeadRevision() {
         if (headRevision != null) {
             return headRevision;
@@ -123,6 +107,22 @@ public class RepositoryCache {
         headRevision = info.getRevision();
         put(info);
         return headRevision;
+    }
+
+    @CheckForNull
+    public final Info get(final Resource resource, final Revision revision) {
+        Revision concreteRevision = revision;
+        if (Revision.HEAD.equals(revision)) {
+            concreteRevision = getConcreteRevision(revision);
+        }
+        return cache.get(new Key(resource, concreteRevision));
+    }
+
+    public final Revision getConcreteRevision(final Revision revision) {
+        if (Revision.HEAD.equals(revision)) {
+            return determineHeadRevision();
+        }
+        return revision;
     }
 
     public AbstractBaseRepository getRepository() {

@@ -46,6 +46,19 @@ import de.shadowhunt.subversion.Transaction.Status;
  */
 public abstract class AbstractBaseRepository implements Repository {
 
+    private static UUID determineRepositoryId(final URI repository, final VersionParser parser, final HttpClient client, final HttpContext context) {
+        final InfoOperation operation = new InfoOperation(repository, Resource.ROOT, parser);
+        final Info info = operation.execute(client, context);
+        return info.getRepositoryId();
+    }
+
+    protected static RepositoryCache fromTransaction(final Transaction transaction) {
+        if (transaction instanceof RepositoryCache) {
+            return (RepositoryCache) transaction;
+        }
+        throw new IllegalArgumentException("Can not get repository cache for " + transaction);
+    }
+
     protected static interface ResourceMapper {
 
         Resource getCommitMessageResource(Transaction transaction);
@@ -61,19 +74,6 @@ public abstract class AbstractBaseRepository implements Repository {
         Resource getVersionedResource(Resource resource, Revision revision);
 
         Resource getWorkingResource(Transaction transaction);
-    }
-
-    private static UUID determineRepositoryId(final URI repository, final VersionParser parser, final HttpClient client, final HttpContext context) {
-        final InfoOperation operation = new InfoOperation(repository, Resource.ROOT, parser);
-        final Info info = operation.execute(client, context);
-        return info.getRepositoryId();
-    }
-
-    protected static RepositoryCache fromTransaction(final Transaction transaction) {
-        if (transaction instanceof RepositoryCache) {
-            return (RepositoryCache) transaction;
-        }
-        throw new IllegalArgumentException("Can not get repository cache for " + transaction);
     }
 
     protected final HttpClient client;

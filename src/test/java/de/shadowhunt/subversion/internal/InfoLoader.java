@@ -32,6 +32,8 @@ import de.shadowhunt.subversion.Revision;
 
 public final class InfoLoader extends BaseLoader {
 
+    public static final String SUFFIX = ".info";
+
     static class InfoHandler extends BasicHandler {
 
         private InfoImpl current = new InfoImpl();
@@ -67,8 +69,6 @@ public final class InfoLoader extends BaseLoader {
             }
         }
     }
-
-    public static final String SUFFIX = ".info";
 
     private final ResourcePropertyLoader resourcePropertyLoader;
 

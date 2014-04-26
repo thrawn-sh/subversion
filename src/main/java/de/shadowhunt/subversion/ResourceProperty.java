@@ -28,6 +28,24 @@ import org.apache.commons.lang3.Validate;
 public final class ResourceProperty {
 
     /**
+     * {@link Comparator} that compares {@link ResourceProperty} by their type and name
+     */
+    public static final Comparator<ResourceProperty> TYPE_NAME_COMPARATOR = new Comparator<ResourceProperty>() {
+
+        @Override
+        public int compare(final ResourceProperty rp1, final ResourceProperty rp2) {
+            Validate.notNull(rp1, "rp1 must not be null");
+            Validate.notNull(rp2, "rp2 must not be null");
+
+            final int result = rp1.getType().compareTo(rp2.getType());
+            if (result != 0) {
+                return result;
+            }
+            return rp1.getName().compareTo(rp2.getName());
+        }
+    };
+
+    /**
      * {@link ResourceProperty} can have various types, depending of the context they are used
      */
     public static enum Type {
@@ -49,24 +67,6 @@ public final class ResourceProperty {
             return prefix;
         }
     }
-
-    /**
-     * {@link Comparator} that compares {@link ResourceProperty} by their type and name
-     */
-    public static final Comparator<ResourceProperty> TYPE_NAME_COMPARATOR = new Comparator<ResourceProperty>() {
-
-        @Override
-        public int compare(final ResourceProperty rp1, final ResourceProperty rp2) {
-            Validate.notNull(rp1, "rp1 must not be null");
-            Validate.notNull(rp2, "rp2 must not be null");
-
-            final int result = rp1.getType().compareTo(rp2.getType());
-            if (result != 0) {
-                return result;
-            }
-            return rp1.getName().compareTo(rp2.getName());
-        }
-    };
 
     private final String name;
 

@@ -38,6 +38,8 @@ import de.shadowhunt.subversion.Revision;
 
 public final class LogLoader extends BaseLoader {
 
+    public static final String SUFFIX = ".log";
+
     static class LogHandler extends BasicHandler {
 
         private static TimeZone ZULU = TimeZone.getTimeZone("ZULU");
@@ -102,8 +104,6 @@ public final class LogLoader extends BaseLoader {
             }
         }
     }
-
-    public static final String SUFFIX = ".log";
 
     LogLoader(final File root) {
         super(root);

@@ -30,6 +30,8 @@ import de.shadowhunt.subversion.SubversionException;
 
 final class Prefix {
 
+    private static final Pattern PATH_PATTERN = Pattern.compile("/");
+
     private static class PrefixHandler extends BasicHandler {
 
         private Resource prefix = null;
@@ -66,8 +68,6 @@ final class Prefix {
             clearText();
         }
     }
-
-    private static final Pattern PATH_PATTERN = Pattern.compile("/");
 
     static Resource read(final InputStream inputStream, final ProtocolVersion version) {
         final Resource prefix;

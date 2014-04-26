@@ -35,21 +35,21 @@ final class Helper {
 
     private static final File BASE = new File("src/test/resources/dump/v1_4");
 
+    private static final File ROOT = new File(BASE, "dump");
+
     private static final URI DUMP_URI = URI.create("http://subversion.vm.shadowhunt.de/1.4.0/dump.zip");
 
     private static final String PASSWORD = "svnpass";
 
     private static final URI REPOSITORY_URI = URI.create("http://subversion.vm.shadowhunt.de/1.4.0/svn-basic/test");
 
-    private static Repository repositoryA, repositoryB;
-
-    private static final File ROOT = new File(BASE, "dump");
-
     private static final UUID TEST_ID = UUID.randomUUID();
 
     private static final String USERNAME_A = "svnuser";
 
     private static final String USERNAME_B = "svnuser2";
+
+    private static Repository repositoryA, repositoryB;
 
     public static File getBase() {
         return BASE;

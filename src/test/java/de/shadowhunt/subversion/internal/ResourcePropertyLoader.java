@@ -31,6 +31,8 @@ import de.shadowhunt.subversion.Revision;
 
 public final class ResourcePropertyLoader extends BaseLoader {
 
+    public static final String SUFFIX = ".proplist";
+
     static class ResourcePropertyHandler extends BasicHandler {
 
         private static Type convert(final String prefix) {
@@ -79,8 +81,6 @@ public final class ResourcePropertyLoader extends BaseLoader {
             }
         }
     }
-
-    public static final String SUFFIX = ".proplist";
 
     ResourcePropertyLoader(final File root) {
         super(root);
