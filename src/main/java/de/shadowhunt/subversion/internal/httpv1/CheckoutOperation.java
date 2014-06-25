@@ -47,7 +47,7 @@ class CheckoutOperation extends AbstractVoidOperation {
         body.append("<checkout xmlns=\"DAV:\"><activity-set><href>");
 
         final URI transactionURI = URIUtils.createURI(repository, transaction);
-        body.append(StringEscapeUtils.escapeXml(transactionURI.toASCIIString()));
+        body.append(StringEscapeUtils.escapeXml10(transactionURI.toASCIIString()));
         body.append("</href></activity-set><apply-to-version/></checkout>");
 
         request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));

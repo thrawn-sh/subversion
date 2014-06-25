@@ -45,7 +45,7 @@ public class MergeOperation extends AbstractVoidOperation {
 
         final StringBuilder body = new StringBuilder(XML_PREAMBLE);
         body.append("<merge xmlns=\"DAV:\"><source><href>");
-        body.append(StringEscapeUtils.escapeXml(repository.getPath() + resource.getValue()));
+        body.append(StringEscapeUtils.escapeXml10(repository.getPath() + resource.getValue()));
         body.append("</href></source><no-auto-merge/><no-checkout/><prop><checked-in/><version-name/><resourcetype/><creationdate/><creator-displayname/></prop>");
         if (!infos.isEmpty()) {
             body.append("<S:lock-token-list xmlns:S=\"svn:\">");
@@ -54,7 +54,7 @@ public class MergeOperation extends AbstractVoidOperation {
                 assert (lockToken != null) : "must not be null";
                 body.append("<S:lock><S:lock-path>");
                 final Resource plain = info.getResource();
-                body.append(StringEscapeUtils.escapeXml(plain.getValueWithoutLeadingSeparator()));
+                body.append(StringEscapeUtils.escapeXml10(plain.getValueWithoutLeadingSeparator()));
                 body.append("</S:lock-path>");
                 body.append("<S:lock-token>");
                 body.append(lockToken);

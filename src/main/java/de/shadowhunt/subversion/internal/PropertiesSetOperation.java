@@ -63,7 +63,7 @@ class PropertiesSetOperation extends AbstractVoidOperation {
             sb.append(prefix);
             sb.append(name);
             sb.append('>');
-            sb.append(StringEscapeUtils.escapeXml(property.getValue()));
+            sb.append(StringEscapeUtils.escapeXml10(property.getValue()));
             sb.append("</");
             sb.append(prefix);
             sb.append(name);

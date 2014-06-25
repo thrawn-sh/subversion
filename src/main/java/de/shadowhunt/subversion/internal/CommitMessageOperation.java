@@ -47,7 +47,7 @@ public class CommitMessageOperation extends AbstractVoidOperation {
         final StringBuilder body = new StringBuilder(XML_PREAMBLE);
         body.append("<propertyupdate xmlns=\"DAV:\" xmlns:S=\"http://subversion.tigris.org/xmlns/svn/\"><set><prop><S:log>");
         if (StringUtils.isNotEmpty(message)) {
-            body.append(StringEscapeUtils.escapeXml(message));
+            body.append(StringEscapeUtils.escapeXml10(message));
         }
         body.append("</S:log></prop></set></propertyupdate>");
 
