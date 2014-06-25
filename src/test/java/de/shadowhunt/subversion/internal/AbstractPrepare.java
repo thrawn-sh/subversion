@@ -17,6 +17,7 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Enumeration;
@@ -39,13 +40,17 @@ public class AbstractPrepare {
 
             final File file = new File(prefix, name);
             if (name.endsWith("/")) {
-                file.mkdirs();
+                if (! file.mkdirs()) {
+                    throw new IOException("can not create directory structure: " + file);
+                }
                 continue;
             }
 
             final File parent = file.getParentFile();
             if (parent != null) {
-                parent.mkdirs();
+                if (! parent.mkdirs()) {
+                    throw new IOException("can not create directory structure: " + parent);
+                }
             }
 
             final InputStream is = zipFile.getInputStream(zipEntry);
