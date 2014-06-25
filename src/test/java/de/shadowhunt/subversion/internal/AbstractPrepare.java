@@ -40,7 +40,7 @@ public class AbstractPrepare {
 
             final File file = new File(prefix, name);
             if (name.endsWith("/")) {
-                if (file.isDirectory() && !file.mkdirs()) {
+                if (!file.isDirectory() && !file.mkdirs()) {
                     throw new IOException("can not create directory structure: " + file);
                 }
                 continue;
@@ -48,7 +48,7 @@ public class AbstractPrepare {
 
             final File parent = file.getParentFile();
             if (parent != null) {
-                if (parent.isDirectory() && !parent.mkdirs()) {
+                if (!parent.isDirectory() && !parent.mkdirs()) {
                     throw new IOException("can not create directory structure: " + parent);
                 }
             }
