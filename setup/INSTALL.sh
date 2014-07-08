@@ -1,19 +1,22 @@
 #!/bin/bash
 
-# install necesarry components
-aptitude install apache2 rsync ssl-cert zip libapache2-mod-proxy-html libxml2-utils
+# install necessary components
+aptitude install \
+    chkconfig \
+    libxml2-utils \
+    rsync \
+    ssl-cert \
+    zip
+
+# compile environment
+THIS=`readlink -f ${0}`
+DIR=`dirname ${THIS}`
+${DIR}/compile_subversion.sh
 
 # copy config
 rsync -acHv --no-p --no-o --no-g conf/* /
 
-# prepare repository
-/sbin/create_svn_test
-
-a2enmod  proxy_http ssl
-a2ensite default default-ssl
-
-service apache2 restart
-
+# enable autostart
 #chkconfig apache-subversion_1.0.0   on
 #chkconfig apache-subversion_1.1.0   on
 chkconfig apache-subversion_1.2.0    on
@@ -24,3 +27,9 @@ chkconfig apache-subversion_1.6.0    on
 chkconfig apache-subversion_1.7.0    on
 chkconfig apache-subversion_1.8.0    on
 chkconfig apache-subversion_frontend on
+
+# start environment
+/opt/bin/apache_all.sh start
+
+# initial create of repositories
+/etc/cron.daily/create_svn_test
