@@ -45,6 +45,8 @@ import org.junit.runners.Suite.SuiteClasses;
         RepositoryResolve.class, // uses *ALL*
         // multiple modifications
         RepositoryCombinedOperations.class, // *ALL*
+        // other
+       RepositoryFactory.class, // repository probing
 })
 public class SuiteIT {
     // no code, just a placeholder class

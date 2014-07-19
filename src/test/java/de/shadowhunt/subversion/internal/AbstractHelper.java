@@ -26,6 +26,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
@@ -37,13 +38,13 @@ import de.shadowhunt.subversion.RepositoryFactory;
 
 public abstract class AbstractHelper {
 
-    private static final String PASSWORD = "svnpass";
+    public static final String PASSWORD = "svnpass";
 
-    private static final String USERNAME_A = "svnuser";
+    public static final String USERNAME_A = "svnuser";
 
-    private static final String USERNAME_B = "svnuser2";
+    public static final String USERNAME_B = "svnuser2";
 
-    private static final Charset UTF8_CHARSET = Charset.forName("UTF-8");
+    public static final Charset UTF8_CHARSET = Charset.forName("UTF-8");
 
     public static InputStream getInputStream(final String s) {
         return new ByteArrayInputStream(s.getBytes(UTF8_CHARSET));
@@ -77,38 +78,42 @@ public abstract class AbstractHelper {
         return dumpUri;
     }
 
+    public DefaultHttpClient getHttpClient(final String username) {
+        final DefaultHttpClient client = new DefaultHttpClient();
+        final CredentialsProvider cp = new BasicCredentialsProvider();
+        final Credentials credentials = new UsernamePasswordCredentials(username, PASSWORD);
+        cp.setCredentials(AuthScope.ANY, credentials);
+        client.setCredentialsProvider(cp);
+        client.setHttpRequestRetryHandler(new WebDavHttpRequestRetryHandler());
+        return client;
+    }
+
+    public HttpContext getHttpContext() {
+        return new BasicHttpContext();
+    }
+
     public Repository getRepositoryA() {
         if (repositoryA == null) {
-            final DefaultHttpClient client = new DefaultHttpClient();
-            final HttpContext context = new BasicHttpContext();
-
-            final CredentialsProvider cp = new BasicCredentialsProvider();
-            final Credentials credentials = new UsernamePasswordCredentials(USERNAME_A, PASSWORD);
-            cp.setCredentials(AuthScope.ANY, credentials);
-            client.setCredentialsProvider(cp);
-            client.setHttpRequestRetryHandler(new WebDavHttpRequestRetryHandler());
+            final HttpContext context = getHttpContext();
+            final HttpClient client = getHttpClient(USERNAME_A);
 
             repositoryA = RepositoryFactory.getInstance().createRepository(repositoryUri, client, context);
-
         }
         return repositoryA;
     }
 
     public Repository getRepositoryB() {
         if (repositoryB == null) {
-            final DefaultHttpClient client = new DefaultHttpClient();
-            final HttpContext context = new BasicHttpContext();
-
-            final CredentialsProvider cp = new BasicCredentialsProvider();
-            final Credentials credentials = new UsernamePasswordCredentials(USERNAME_B, PASSWORD);
-            cp.setCredentials(AuthScope.ANY, credentials);
-            client.setCredentialsProvider(cp);
-            client.setHttpRequestRetryHandler(new WebDavHttpRequestRetryHandler());
+            final HttpContext context = getHttpContext();
+            final HttpClient client = getHttpClient(USERNAME_B);
 
             repositoryB = RepositoryFactory.getInstance().createRepository(repositoryUri, client, context);
-
         }
         return repositoryB;
+    }
+
+    public URI getRepositoryUri() {
+        return repositoryUri;
     }
 
     public File getRoot() {
