@@ -19,7 +19,9 @@ import de.shadowhunt.subversion.internal.AbstractRepositoryDownload;
 
 public class RepositoryDownload extends AbstractRepositoryDownload {
 
+    private static final Helper HELPER = new Helper();
+
     public RepositoryDownload() {
-        super(Helper.getRepositoryA(), Helper.getRoot());
+        super(HELPER.getRepositoryA(), HELPER.getRoot());
     }
 }

@@ -19,7 +19,9 @@ import de.shadowhunt.subversion.internal.AbstractRepositoryLocking;
 
 public class RepositoryLocking extends AbstractRepositoryLocking {
 
+    private static final Helper HELPER = new Helper();
+
     public RepositoryLocking() {
-        super(Helper.getRepositoryA(), Helper.getRepositoryB(), Helper.getTestId());
+        super(HELPER.getRepositoryA(), HELPER.getRepositoryB(), HELPER.getTestId());
     }
 }

@@ -19,7 +19,9 @@ import de.shadowhunt.subversion.internal.AbstractRepositoryCopy;
 
 public class RepositoryCopy extends AbstractRepositoryCopy {
 
+    private static final Helper HELPER = new Helper();
+
     public RepositoryCopy() {
-        super(Helper.getRepositoryA(), Helper.getTestId());
+        super(HELPER.getRepositoryA(), HELPER.getTestId());
     }
 }

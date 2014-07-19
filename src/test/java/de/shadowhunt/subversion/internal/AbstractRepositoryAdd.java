@@ -42,7 +42,7 @@ public class AbstractRepositoryAdd {
         final Transaction transaction = repository.createTransaction();
         try {
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            repository.add(transaction, resource, true, Helper.getInputStream(content));
+            repository.add(transaction, resource, true, AbstractHelper.getInputStream(content));
             Assert.assertTrue("transaction must be active", transaction.isActive());
 
             final Status expectedStatus = (initial) ? Status.ADDED : Status.MODIFIED;
@@ -54,7 +54,7 @@ public class AbstractRepositoryAdd {
             throw e;
         }
 
-        final InputStream expected = Helper.getInputStream(content);
+        final InputStream expected = AbstractHelper.getInputStream(content);
         final InputStream actual = repository.download(resource, Revision.HEAD);
         AbstractRepositoryDownload.assertEquals("content must match", expected, actual);
     }
@@ -77,7 +77,7 @@ public class AbstractRepositoryAdd {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             transaction.invalidate();
             Assert.assertFalse("transaction must not be active", transaction.isActive());
-            repository.add(transaction, resource, false, Helper.getInputStream("test"));
+            repository.add(transaction, resource, false, AbstractHelper.getInputStream("test"));
             Assert.fail("must not complete");
         } catch (final Exception e) {
             repository.rollback(transaction);
@@ -93,7 +93,7 @@ public class AbstractRepositoryAdd {
         final Transaction transaction = repository.createTransaction();
         try {
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            repository.add(transaction, resource, false, Helper.getInputStream("test"));
+            repository.add(transaction, resource, false, AbstractHelper.getInputStream("test"));
             Assert.fail("must not complete");
         } catch (final Exception e) {
             repository.rollback(transaction);
@@ -108,7 +108,7 @@ public class AbstractRepositoryAdd {
         final Transaction transaction = repository.createTransaction();
         try {
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            repository.add(transaction, resource, false, Helper.getInputStream("test"));
+            repository.add(transaction, resource, false, AbstractHelper.getInputStream("test"));
             Assert.assertTrue("transaction must be active", transaction.isActive());
             Assert.assertEquals("changeset must contain: " + resource, Status.ADDED, transaction.getChangeSet().get(resource));
             repository.rollback(transaction);

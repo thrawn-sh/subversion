@@ -19,7 +19,9 @@ import de.shadowhunt.subversion.internal.AbstractRepositoryResolve;
 
 public class RepositoryResolve extends AbstractRepositoryResolve {
 
+    private static final Helper HELPER = new Helper();
+
     public RepositoryResolve() {
-        super(Helper.getRepositoryA(), Helper.getTestId());
+        super(HELPER.getRepositoryA(), HELPER.getTestId());
     }
 }

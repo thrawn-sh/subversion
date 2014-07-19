@@ -19,7 +19,9 @@ import de.shadowhunt.subversion.internal.AbstractRepositoryMove;
 
 public class RepositoryMove extends AbstractRepositoryMove {
 
+    private static final Helper HELPER = new Helper();
+
     public RepositoryMove() {
-        super(Helper.getRepositoryA(), Helper.getTestId());
+        super(HELPER.getRepositoryA(), HELPER.getTestId());
     }
 }

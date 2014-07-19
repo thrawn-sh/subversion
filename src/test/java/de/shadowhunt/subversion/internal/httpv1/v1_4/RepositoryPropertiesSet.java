@@ -19,7 +19,9 @@ import de.shadowhunt.subversion.internal.AbstractRepositoryPropertiesSet;
 
 public class RepositoryPropertiesSet extends AbstractRepositoryPropertiesSet {
 
+    private static final Helper HELPER = new Helper();
+
     public RepositoryPropertiesSet() {
-        super(Helper.getRepositoryA(), Helper.getTestId());
+        super(HELPER.getRepositoryA(), HELPER.getTestId());
     }
 }

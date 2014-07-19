@@ -19,7 +19,9 @@ import de.shadowhunt.subversion.internal.AbstractRepositoryCombinedOperations;
 
 public class RepositoryCombinedOperations extends AbstractRepositoryCombinedOperations {
 
+    private static final Helper HELPER = new Helper();
+
     public RepositoryCombinedOperations() {
-        super(Helper.getRepositoryA(), Helper.getTestId());
+        super(HELPER.getRepositoryA(), HELPER.getTestId());
     }
 }

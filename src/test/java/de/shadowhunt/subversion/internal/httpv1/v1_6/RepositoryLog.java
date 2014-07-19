@@ -19,7 +19,9 @@ import de.shadowhunt.subversion.internal.AbstractRepositoryLog;
 
 public class RepositoryLog extends AbstractRepositoryLog {
 
+    private static final Helper HELPER = new Helper();
+
     public RepositoryLog() {
-        super(Helper.getRepositoryA(), Helper.getRoot());
+        super(HELPER.getRepositoryA(), HELPER.getRoot());
     }
 }

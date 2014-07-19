@@ -19,7 +19,9 @@ import de.shadowhunt.subversion.internal.AbstractRepositoryDownloadUri;
 
 public class RepositoryDownloadUri extends AbstractRepositoryDownloadUri {
 
+    private static final Helper HELPER = new Helper();
+
     public RepositoryDownloadUri() {
-        super(Helper.getRepositoryA());
+        super(HELPER.getRepositoryA());
     }
 }

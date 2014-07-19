@@ -406,14 +406,14 @@ public abstract class AbstractRepositoryLocking {
 
         final Transaction transaction = repositoryA.createTransaction();
         try {
-            repositoryA.add(transaction, resource, false, Helper.getInputStream(content));
+            repositoryA.add(transaction, resource, false, AbstractHelper.getInputStream(content));
             repositoryA.commit(transaction, "update");
         } catch (final Exception e) {
             repositoryA.rollback(transaction);
             throw e;
         }
 
-        final InputStream expected = Helper.getInputStream(content);
+        final InputStream expected = AbstractHelper.getInputStream(content);
         final InputStream actual = repositoryA.download(resource, Revision.HEAD);
         AbstractRepositoryDownload.assertEquals("content must match", expected, actual);
     }

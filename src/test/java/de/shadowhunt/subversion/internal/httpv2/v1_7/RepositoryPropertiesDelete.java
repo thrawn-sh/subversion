@@ -19,7 +19,9 @@ import de.shadowhunt.subversion.internal.AbstractRepositoryPropertiesDelete;
 
 public class RepositoryPropertiesDelete extends AbstractRepositoryPropertiesDelete {
 
+    private static final Helper HELPER = new Helper();
+
     public RepositoryPropertiesDelete() {
-        super(Helper.getRepositoryA(), Helper.getTestId());
+        super(HELPER.getRepositoryA(), HELPER.getTestId());
     }
 }

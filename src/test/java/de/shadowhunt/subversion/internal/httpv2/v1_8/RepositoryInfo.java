@@ -19,7 +19,9 @@ import de.shadowhunt.subversion.internal.AbstractRepositoryInfo;
 
 public class RepositoryInfo extends AbstractRepositoryInfo {
 
+    private static final Helper HELPER = new Helper();
+
     public RepositoryInfo() {
-        super(Helper.getRepositoryA(), Helper.getRoot());
+        super(HELPER.getRepositoryA(), HELPER.getRoot());
     }
 }

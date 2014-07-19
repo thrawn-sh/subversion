@@ -19,7 +19,9 @@ import de.shadowhunt.subversion.internal.AbstractRepositoryTransaction;
 
 public class RepositoryTransaction extends AbstractRepositoryTransaction {
 
+    private static final Helper HELPER = new Helper();
+
     public RepositoryTransaction() {
-        super(Helper.getRepositoryA());
+        super(HELPER.getRepositoryA());
     }
 }

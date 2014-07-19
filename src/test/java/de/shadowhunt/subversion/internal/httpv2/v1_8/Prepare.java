@@ -19,7 +19,9 @@ import de.shadowhunt.subversion.internal.AbstractPrepare;
 
 public class Prepare extends AbstractPrepare {
 
+    private static final Helper HELPER = new Helper();
+
     public Prepare() {
-        super(Helper.getDumpUri(), Helper.getBase());
+        super(HELPER.getDumpUri(), HELPER.getBase());
     }
 }
