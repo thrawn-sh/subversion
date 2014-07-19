@@ -456,6 +456,7 @@
                 <configuration>
                     <excludes>
                         <exclude>setup/**</exclude>
+                        <exclude>src/test/resources/dump/**</exclude>
                     </excludes>
                     <header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</header>
                     <properties>
