@@ -314,6 +314,7 @@ public abstract class AbstractBaseRepository implements Repository {
     public final Info info(final Resource resource, final Revision revision) {
         Validate.notNull(resource, "resource must not be null");
         Validate.notNull(revision, "revision must not be null");
+
         final Info info = info0(new RepositoryCache(this), resource, revision, true);
         if (info == null) {
             throw new SubversionException("Can't resolve: " + resource + '@' + revision);
@@ -344,6 +345,7 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.notNull(resource, "resource must not be null");
         Validate.notNull(revision, "revision must not be null");
         Validate.notNull(depth, "depth must not be null");
+
         return list0(new RepositoryCache(this), resource, revision, depth);
     }
 
@@ -353,10 +355,12 @@ public abstract class AbstractBaseRepository implements Repository {
             listRecursively0(cache, resource, revision, result);
             return result;
         }
+
         final Resource resolved = resolve(cache, resource, revision, true);
         if (resolved == null) {
             throw new SubversionException("Can't resolve: " + resource + '@' + revision);
         }
+
         final ListOperation operation = new ListOperation(repository, resolved, depth, parser);
         final Set<Info> infoSet = operation.execute(client, context);
         cache.putAll(infoSet);
@@ -378,6 +382,7 @@ public abstract class AbstractBaseRepository implements Repository {
     @Override
     public final void lock(final Resource resource, final boolean steal) {
         Validate.notNull(resource, "resource must not be null");
+
         final LockOperation operation = new LockOperation(repository, resource, steal);
         operation.execute(client, context);
     }
@@ -386,6 +391,7 @@ public abstract class AbstractBaseRepository implements Repository {
     public final List<Log> log(final Resource resource, final Revision startRevision, final Revision endRevision, final int limit) {
         Validate.notNull(resource, "resource must not be null");
         Validate.notNull(startRevision, "endRevision must not be null");
+
         return log0(new RepositoryCache(this), resource, startRevision, endRevision, limit);
     }
 

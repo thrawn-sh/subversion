@@ -28,21 +28,15 @@
 
     <body>
         <breadcrumbs>
-            <item name="Shadowhunt" href="http://dev.shadowhunt.de/" />
-            <item name="Subversion" href="http://dev.shadowhunt.de/subversion/" />
+            <item name="Shadowhunt" href="https://dev.shadowhunt.de/" />
+            <item name="Subversion" href="index.html" />
         </breadcrumbs>
 
         <menu name="Overview">
             <item name="Introduction" href="index.html" />
-            <item name="Sample Page" href="sample.html" />
+            <item name="Example" href="sample.html" />
         </menu>
 
         <menu ref="reports" />
     </body>
-
-    <custom>
-        <fluidoSkin>
-            <sourceLineNumbersEnabled>true</sourceLineNumbersEnabled>
-        </fluidoSkin>
-    </custom>
 </project>

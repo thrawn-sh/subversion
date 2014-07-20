@@ -19,7 +19,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ServiceLoader;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.apache.commons.lang3.Validate;
@@ -97,7 +96,6 @@ public abstract class RepositoryFactory {
      * @throws NullPointerException if any parameter is {@code null}
      * @throws SubversionException if an error occurs during {@link Repository} probing and no {@link Repository} can be created
      */
-    @CheckForNull
     public Repository probeRepository(final URI repository, final HttpClient client, final HttpContext context) throws SubversionException {
         Validate.notNull(repository, "repository must not be null");
         Validate.notNull(client, "client must not be null");
