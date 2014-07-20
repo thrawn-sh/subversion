@@ -29,6 +29,8 @@ import javax.annotation.CheckForNull;
 import org.apache.commons.lang3.Validate;
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Info;
@@ -45,6 +47,8 @@ import de.shadowhunt.subversion.Transaction.Status;
  * Base for all {@link de.shadowhunt.subversion.Repository}
  */
 public abstract class AbstractBaseRepository implements Repository {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger("de.shadowhunt.subversion.Repository");
 
     private static UUID determineRepositoryId(final URI repository, final VersionParser parser, final HttpClient client, final HttpContext context) {
         final InfoOperation operation = new InfoOperation(repository, Resource.ROOT, parser);
@@ -109,6 +113,7 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.notNull(resource, "resource must not be null");
         Validate.notNull(content, "content must not be null");
 
+        LOGGER.trace("adding resource {} during transaction {} (parents: {})", resource, transaction.getId(), parents);
         if (parents) {
             mkdir(transaction, resource.getParent(), parents);
         }
@@ -133,6 +138,7 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.notNull(sourceRevision, "sourceRevision must not be null");
         Validate.notNull(targetResource, "targetResource must not be null");
 
+        LOGGER.trace("coping resource from {}@{} to {} during transaction {} (parents: {})", sourceResource, sourceRevision, targetResource, transaction.getId(), parents);
         if (parents) {
             createFolder(transaction, targetResource.getParent(), Revision.HEAD, parents);
         } else {
@@ -142,7 +148,7 @@ public abstract class AbstractBaseRepository implements Repository {
         final RepositoryCache cache = fromTransaction(transaction);
         final Info sourceInfo = info0(cache, sourceResource, sourceRevision, true);
         if (sourceInfo == null) {
-            throw new SubversionException("Can't resolve: " + sourceResource + '@' + sourceResource);
+            throw new SubversionException("Can't resolve: " + sourceResource + '@' + sourceRevision);
         }
 
         final Info targetInfo = info0(cache, targetResource, Revision.HEAD, true);
@@ -196,6 +202,7 @@ public abstract class AbstractBaseRepository implements Repository {
         validateTransaction(transaction);
         Validate.notNull(resource, "resource must not be null");
 
+        LOGGER.trace("deleting resource {} during transaction {}", resource, transaction.getId());
         final RepositoryCache cache = fromTransaction(transaction);
         final Info info = info0(cache, resource, Revision.HEAD, true);
 
@@ -209,6 +216,7 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.notNull(resource, "resource must not be null");
         Validate.notNull(revision, "revision must not be null");
 
+        LOGGER.trace("downloading resource {}@{}", resource, revision);
         return download0(new RepositoryCache(this), resource, revision);
     }
 
@@ -226,6 +234,7 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.notNull(resource, "resource must not be null");
         Validate.notNull(revision, "revision must not be null");
 
+        LOGGER.trace("creating download uri for resource {}@{}", resource, revision);
         return downloadURI0(new RepositoryCache(this), resource, revision);
     }
 
@@ -241,6 +250,8 @@ public abstract class AbstractBaseRepository implements Repository {
     public final boolean exists(final Resource resource, final Revision revision) {
         Validate.notNull(resource, "resource must not be null");
         Validate.notNull(revision, "revision must not be null");
+
+        LOGGER.trace("checking existence for resource {}@{}", resource, revision);
         return exists0(new RepositoryCache(this), resource, revision);
     }
 
@@ -315,6 +326,7 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.notNull(resource, "resource must not be null");
         Validate.notNull(revision, "revision must not be null");
 
+        LOGGER.trace("retrieving info for resource {}@{}", resource, revision);
         final Info info = info0(new RepositoryCache(this), resource, revision, true);
         if (info == null) {
             throw new SubversionException("Can't resolve: " + resource + '@' + revision);
@@ -346,6 +358,7 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.notNull(revision, "revision must not be null");
         Validate.notNull(depth, "depth must not be null");
 
+        LOGGER.trace("listing info for resource {}@{} and depth ", resource, revision, depth);
         return list0(new RepositoryCache(this), resource, revision, depth);
     }
 
@@ -383,6 +396,7 @@ public abstract class AbstractBaseRepository implements Repository {
     public final void lock(final Resource resource, final boolean steal) {
         Validate.notNull(resource, "resource must not be null");
 
+        LOGGER.trace("locking resource {} (steal: {})", resource, steal);
         final LockOperation operation = new LockOperation(repository, resource, steal);
         operation.execute(client, context);
     }
@@ -392,6 +406,7 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.notNull(resource, "resource must not be null");
         Validate.notNull(startRevision, "endRevision must not be null");
 
+        LOGGER.trace("retrieving log for resource {} from {} to {} (limit: {})", resource, startRevision, endRevision, limit);
         return log0(new RepositoryCache(this), resource, startRevision, endRevision, limit);
     }
 
@@ -413,6 +428,7 @@ public abstract class AbstractBaseRepository implements Repository {
         validateTransaction(transaction);
         Validate.notNull(resource, "resource must not be null");
 
+        LOGGER.trace("creating folder for resource {} during {} (parent: {})", resource, transaction.getId(), parent);
         final RepositoryCache cache = fromTransaction(transaction);
         final Revision revision = cache.getConcreteRevision(Revision.HEAD);
         createFolder(transaction, resource, revision, parent);
@@ -424,6 +440,7 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.notNull(srcResource, "srcResource must not be null");
         Validate.notNull(targetResource, "targetResource must not be null");
 
+        LOGGER.trace("moving {} to {} during {} (parents: {})", srcResource, targetResource, transaction.getId(), parents);
         copy(transaction, srcResource, Revision.HEAD, targetResource, parents);
         delete(transaction, srcResource);
     }
@@ -433,6 +450,8 @@ public abstract class AbstractBaseRepository implements Repository {
         validateTransaction(transaction);
         Validate.notNull(resource, "resource must not be null");
         Validate.noNullElements(properties, "properties must not contain null elements");
+
+        LOGGER.trace("deleting properties {} on {} during {}", properties, resource, transaction.getId());
 
         // there can only be a lock token if the file is already in the repository
         final RepositoryCache cache = fromTransaction(transaction);
@@ -449,6 +468,8 @@ public abstract class AbstractBaseRepository implements Repository {
         validateTransaction(transaction);
         Validate.notNull(resource, "resource must not be null");
         Validate.noNullElements(properties, "properties must not contain null elements");
+
+        LOGGER.trace("setting properties {} on {} during {}", properties, resource, transaction.getId());
 
         // there can only be a lock token if the file is already in the repository
         final RepositoryCache cache = fromTransaction(transaction);
@@ -497,6 +518,7 @@ public abstract class AbstractBaseRepository implements Repository {
     public void rollback(final Transaction transaction) {
         validateTransaction(transaction);
 
+        LOGGER.trace("rolling transaction {} back", transaction.getId());
         try {
             final Resource resource = config.getTransactionResource(transaction);
             final DeleteOperation operation = new DeleteOperation(repository, resource, null);
@@ -509,6 +531,8 @@ public abstract class AbstractBaseRepository implements Repository {
     @Override
     public final void unlock(final Resource resource, final boolean force) {
         Validate.notNull(resource, "resource must not be null");
+
+        LOGGER.trace("unlocking {} (force: {})", resource, force);
         unlock0(new RepositoryCache(this), resource, force);
     }
 

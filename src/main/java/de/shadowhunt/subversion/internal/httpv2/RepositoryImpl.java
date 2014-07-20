@@ -22,6 +22,8 @@ import javax.annotation.Nullable;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
@@ -34,6 +36,8 @@ import de.shadowhunt.subversion.internal.MergeOperation;
 import de.shadowhunt.subversion.internal.TransactionImpl;
 
 class RepositoryImpl extends AbstractBaseRepository {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger("de.shadowhunt.subversion.Repository");
 
     private static class ResourceMapperImpl implements ResourceMapper {
 
@@ -93,6 +97,8 @@ class RepositoryImpl extends AbstractBaseRepository {
     public void commit(final Transaction transaction, @Nullable final String message) {
         validateTransaction(transaction);
 
+        LOGGER.trace("committing {} with message {}", transaction.getId(), message);
+
         if (transaction.isChangeSetEmpty()) {
             // empty change set => nothing to commit, release resources
             rollback(transaction);
@@ -112,6 +118,8 @@ class RepositoryImpl extends AbstractBaseRepository {
 
     @Override
     public Transaction createTransaction() {
+        LOGGER.trace("creating new transaction");
+        
         final Resource resource = config.getCreateTransactionResource();
         final CreateTransactionOperation cto = new CreateTransactionOperation(repository, resource);
         final TransactionImpl transaction = cto.execute(client, context);
