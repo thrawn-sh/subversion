@@ -78,7 +78,7 @@ public abstract class AbstractHelper {
         return dumpUri;
     }
 
-    public DefaultHttpClient getHttpClient(final String username) {
+    public HttpClient getHttpClient(final String username) {
         final DefaultHttpClient client = new DefaultHttpClient();
         final CredentialsProvider cp = new BasicCredentialsProvider();
         final Credentials credentials = new UsernamePasswordCredentials(username, PASSWORD);
