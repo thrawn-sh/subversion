@@ -45,7 +45,7 @@ public abstract class RepositoryFactory {
      *
      * @throws SubversionException if no {@link RepositoryFactory} can be created
      */
-    public static final RepositoryFactory getInstance() throws SubversionException {
+    public static RepositoryFactory getInstance() throws SubversionException {
         for (final RepositoryFactory factory : ServiceLoader.load(RepositoryFactory.class)) {
             return factory;
         }
