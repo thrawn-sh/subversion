@@ -558,7 +558,7 @@ public abstract class AbstractBaseRepository implements Repository {
             throw new SubversionException("Transaction invalid: does not belong to this repository");
         }
         if (!transaction.isActive()) {
-            throw new SubversionException("Transaction invalid: has already been commited or rolledback");
+            throw new SubversionException("Transaction invalid: has already been committed or reverted");
         }
     }
 }
