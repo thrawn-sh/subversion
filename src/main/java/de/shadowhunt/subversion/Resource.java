@@ -18,6 +18,7 @@ package de.shadowhunt.subversion;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 
 /**
  * {@link Resource} defines a resource location in the repository
@@ -73,8 +74,9 @@ public final class Resource implements Comparable<Resource> {
     }
 
     @Override
-    public int compareTo(final Resource o) {
-        return value.compareTo(o.value);
+    public int compareTo(final Resource other) {
+        Validate.notNull(other, "other must not be null");
+        return value.compareTo(other.value);
     }
 
     @Override
