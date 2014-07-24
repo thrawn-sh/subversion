@@ -45,6 +45,7 @@ client.setHttpRequestRetryHandler(new WebDavHttpRequestRetryHandler());
 
 HttpContext context = ...;
 URI repositoryUri = URI.create("https://scm.example.net/svn/test-repo");
+RepositoryFactory factory = RepositoryFactory.getInstance();
 Repository repository = factory.probeRepository(repositoryUri, client, context);
 
 Transaction transaction = repository.createTransaction();
