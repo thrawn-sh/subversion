@@ -10,7 +10,7 @@ Its API is based on the command-lines client.
 
 *Usage*
 
-```
+```java
  RepositoryFactory factory = RepositoryFactory.getInstance();
 
  CredentialsProvider cp = new BasicCredentialsProvider();
