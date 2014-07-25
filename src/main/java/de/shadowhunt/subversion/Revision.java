@@ -72,7 +72,7 @@ public final class Revision implements Comparable<Revision>, Serializable {
     @Override
     public int compareTo(final Revision other) {
         Validate.notNull(other, "other must not be null");
-        return (version < other.version) ? -1 : ((version == other.version) ? 0 : 1);
+        return Long.compare(version, other.version);
     }
 
     @Override
