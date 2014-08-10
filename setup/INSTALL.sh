@@ -2,6 +2,7 @@
 
 # install necessary components
 aptitude install \
+    cron \
     chkconfig \
     libxml2-utils \
     rsync \
