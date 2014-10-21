@@ -138,7 +138,7 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.notNull(sourceRevision, "sourceRevision must not be null");
         Validate.notNull(targetResource, "targetResource must not be null");
 
-        LOGGER.trace("coping resource from {}@{} to {} during transaction {} (parents: {})", sourceResource, sourceRevision, targetResource, transaction.getId(), parents);
+        LOGGER.trace("copying resource from {}@{} to {} during transaction {} (parents: {})", sourceResource, sourceRevision, targetResource, transaction.getId(), parents);
         if (parents) {
             createFolder(transaction, targetResource.getParent(), Revision.HEAD, parents);
         } else {
