@@ -93,6 +93,10 @@ public class RepositoryCache {
     }
 
     private Revision determineHeadRevision() {
+        if (headRevision != null) {
+            return headRevision;
+        }
+
         final Resource resolved = repository.resolve(this, Resource.ROOT, Revision.HEAD, false);
         if (resolved == null) {
             throw new SubversionException("Can't resolve: " + Resource.ROOT + '@' + Revision.HEAD);
@@ -107,23 +111,16 @@ public class RepositoryCache {
 
     @CheckForNull
     public final Info get(final Resource resource, final Revision revision) {
-        final Revision concreteRevision = getConcreteRevision0(revision, false);
+        Revision concreteRevision = revision;
+        if (Revision.HEAD.equals(revision)) {
+            concreteRevision = getConcreteRevision(revision);
+        }
         return cache.get(new Key(resource, concreteRevision));
     }
 
     public final Revision getConcreteRevision(final Revision revision) {
-        return getConcreteRevision0(revision, true);
-    }
-
-    private final Revision getConcreteRevision0(final Revision revision, final boolean active) {
         if (Revision.HEAD.equals(revision)) {
-            if (headRevision != null) {
-                return headRevision;
-            }
-
-            if (!active) {
-                return determineHeadRevision();
-            }
+            return determineHeadRevision();
         }
         return revision;
     }
