@@ -119,7 +119,7 @@ class RepositoryImpl extends AbstractBaseRepository {
     @Override
     public Transaction createTransaction() {
         LOGGER.trace("creating new transaction");
-        
+
         final Resource resource = config.getCreateTransactionResource();
         final CreateTransactionOperation cto = new CreateTransactionOperation(repository, resource);
         final TransactionImpl transaction = cto.execute(client, context);
