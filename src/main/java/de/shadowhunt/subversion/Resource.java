@@ -25,12 +25,16 @@ import org.apache.commons.lang3.Validate;
  */
 public final class Resource implements Comparable<Resource> {
 
-    private static final Pattern PATH_PATTERN = Pattern.compile("/");
-
     /**
      * Represents the base {@link Resource} in the repository
      */
     public static final Resource ROOT = new Resource("");
+
+    public static final String SEPARATOR = "/";
+
+    private static final Pattern PATH_PATTERN = Pattern.compile(SEPARATOR);
+
+    public static final char SEPARATOR_CHAR = '/';
 
     /**
      * Create a new {@link Resource} instance for the given value
@@ -40,14 +44,14 @@ public final class Resource implements Comparable<Resource> {
      * @return the new {@link Resource} instance with the given value
      */
     public static Resource create(final String path) {
-        if (StringUtils.isEmpty(path) || "/".equals(path)) {
+        if (StringUtils.isEmpty(path) || SEPARATOR.equals(path)) {
             return ROOT;
         }
 
         final StringBuilder sb = new StringBuilder();
         for (final String segment : PATH_PATTERN.split(path)) {
             if (!StringUtils.isEmpty(segment)) {
-                sb.append('/');
+                sb.append(SEPARATOR_CHAR);
                 sb.append(segment);
             }
         }
@@ -103,7 +107,7 @@ public final class Resource implements Comparable<Resource> {
         if (equals(ROOT)) {
             return ROOT; // parent of root is root
         }
-        final int indexOf = value.lastIndexOf('/');
+        final int indexOf = value.lastIndexOf(SEPARATOR_CHAR);
         return new Resource(value.substring(0, indexOf));
     }
 

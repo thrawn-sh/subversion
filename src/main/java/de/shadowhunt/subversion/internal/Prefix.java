@@ -30,7 +30,7 @@ import de.shadowhunt.subversion.SubversionException;
 
 final class Prefix {
 
-    private static final Pattern PATH_PATTERN = Pattern.compile("/");
+    private static final Pattern PATH_PATTERN = Pattern.compile(Resource.SEPARATOR);
 
     private static class PrefixHandler extends BasicHandler {
 

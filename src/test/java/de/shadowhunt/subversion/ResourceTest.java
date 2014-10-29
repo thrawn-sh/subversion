@@ -44,7 +44,7 @@ public class ResourceTest {
 
     @Test
     public void createRootResource() {
-        Assert.assertEquals("/ is ROOT", Resource.ROOT, Resource.create("/"));
+        Assert.assertEquals("/ is ROOT", Resource.ROOT, Resource.create(Resource.SEPARATOR));
         Assert.assertEquals("empty is ROOT", Resource.ROOT, Resource.create(""));
         Assert.assertEquals("null is ROOT", Resource.ROOT, Resource.create(null));
     }

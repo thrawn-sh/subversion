@@ -83,7 +83,7 @@ class RepositoryImpl extends AbstractBaseRepository {
         @Override
         public Resource getVersionedResource(final Resource resource, final Revision revision) {
             assert (!Revision.HEAD.equals(revision)) : "must not be HEAD revision";
-            final Resource suffix = Resource.create("/rvr/" + revision + '/' + resource);
+            final Resource suffix = Resource.create("/rvr/" + revision + Resource.SEPARATOR + resource);
             return prefix.append(suffix);
         }
 

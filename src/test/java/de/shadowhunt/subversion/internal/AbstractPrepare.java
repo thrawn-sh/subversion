@@ -28,6 +28,8 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import de.shadowhunt.subversion.Resource;
+
 public class AbstractPrepare {
 
     private static boolean extractArchive(final File zip, final File prefix) throws Exception {
@@ -39,7 +41,7 @@ public class AbstractPrepare {
             final String name = zipEntry.getName();
 
             final File file = new File(prefix, name);
-            if (name.endsWith("/")) {
+            if (name.charAt(name.length() - 1) == Resource.SEPARATOR_CHAR) {
                 if (!file.isDirectory() && !file.mkdirs()) {
                     throw new IOException("can not create directory structure: " + file);
                 }

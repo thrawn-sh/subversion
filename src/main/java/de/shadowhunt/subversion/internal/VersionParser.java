@@ -17,11 +17,12 @@ package de.shadowhunt.subversion.internal;
 
 import java.util.regex.Pattern;
 
+import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 
 class VersionParser {
 
-    private static final Pattern PATH_PATTERN = Pattern.compile("/");
+    private static final Pattern PATH_PATTERN = Pattern.compile(Resource.SEPARATOR);
 
     private final int prefixPathLength;
 
