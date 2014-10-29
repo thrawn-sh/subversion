@@ -216,21 +216,6 @@ final class InfoImpl implements Info {
                 return;
             }
         }
-
-        @Override
-        public String toString() {
-            return "SubversionInfoHandler{" +
-                    "checkedin=" + checkedin +
-                    ", current=" + current +
-                    ", infoSet=" + infoSet +
-                    ", lockToken=" + lockToken +
-                    ", parser=" + parser +
-                    ", properties=" + properties +
-                    ", resourceType=" + resourceType +
-                    ", lastModifiedParser=" + lastModifiedParser +
-                    ", createdParser=" + createdParser +
-                    '}';
-        }
     }
 
     /**
