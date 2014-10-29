@@ -50,8 +50,8 @@ public abstract class AbstractBaseRepository implements Repository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("de.shadowhunt.subversion.Repository");
 
-    private static UUID determineRepositoryId(final URI repository, final VersionParser parser, final HttpClient client, final HttpContext context) {
-        final InfoOperation operation = new InfoOperation(repository, Resource.ROOT, parser);
+    private static UUID determineRepositoryId(final URI repository, final VersionParser parser, final HttpClient client, final HttpContext context, final Resource marker) {
+        final InfoOperation operation = new InfoOperation(repository, Resource.ROOT, parser, marker);
         final Info info = operation.execute(client, context);
         return info.getRepositoryId();
     }
@@ -106,7 +106,7 @@ public abstract class AbstractBaseRepository implements Repository {
         this.context = context;
 
         parser = new VersionParser(repository.getPath());
-        repositoryId = determineRepositoryId(repository, parser, client, context);
+        repositoryId = determineRepositoryId(repository, parser, client, context, config.getPrefix());
     }
 
     @Override
@@ -348,7 +348,7 @@ public abstract class AbstractBaseRepository implements Repository {
             return null; // resource does not exists
         }
 
-        final InfoOperation operation = new InfoOperation(repository, resolved, parser);
+        final InfoOperation operation = new InfoOperation(repository, resolved, parser, config.getPrefix());
         info = operation.execute(client, context);
         cache.put(info);
         return info;
@@ -376,7 +376,7 @@ public abstract class AbstractBaseRepository implements Repository {
             throw new SubversionException("Can't resolve: " + resource + '@' + revision);
         }
 
-        final ListOperation operation = new ListOperation(repository, resolved, depth, parser);
+        final ListOperation operation = new ListOperation(repository, resolved, depth, parser, config.getPrefix());
         final Set<Info> infoSet = operation.execute(client, context);
         cache.putAll(infoSet);
         return infoSet;

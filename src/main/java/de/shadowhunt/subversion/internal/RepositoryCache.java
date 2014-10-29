@@ -102,7 +102,8 @@ public class RepositoryCache {
             throw new SubversionException("Can't resolve: " + Resource.ROOT + '@' + Revision.HEAD);
         }
 
-        final InfoOperation operation = new InfoOperation(repository.getBaseUri(), resolved, repository.getVersionParser());
+        final Resource marker = repository.config.getPrefix();
+        final InfoOperation operation = new InfoOperation(repository.getBaseUri(), resolved, repository.getVersionParser(), marker);
         final Info info = operation.execute(repository.client, repository.context);
         headRevision = info.getRevision();
         put(info);

@@ -26,6 +26,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import javax.xml.parsers.SAXParser;
 
+import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -47,6 +48,8 @@ final class InfoImpl implements Info {
 
     private static class SubversionInfoHandler extends BasicHandler {
 
+        private final String base;
+
         private boolean checkedin = false;
 
         private InfoImpl current = null;
@@ -55,14 +58,34 @@ final class InfoImpl implements Info {
 
         private boolean lockToken = false;
 
+        private final String marker;
+
         private final VersionParser parser;
 
         private Set<ResourceProperty> properties = null;
 
+        private boolean props;
+
         private boolean resourceType = false;
 
-        SubversionInfoHandler(final VersionParser parser) {
+        SubversionInfoHandler(final VersionParser parser, final String base, final String marker) {
             this.parser = parser;
+            this.base = base;
+            this.marker = marker;
+        }
+
+        private Resource determineResource(final String path) {
+            final String plainPath = StringUtils.removeStart(path, base);
+
+            if (!plainPath.startsWith(marker)) {
+                return Resource.create(plainPath);
+            }
+
+            int part = marker.length() + 1;
+            for (int i = 0; i < 2; i++) {
+                part = plainPath.indexOf(Resource.SEPARATOR_CHAR, part) + 1;
+            }
+            return Resource.create(plainPath.substring(part));
         }
 
         @Override
@@ -83,12 +106,6 @@ final class InfoImpl implements Info {
                 return;
             }
 
-            if ("baseline-relative-path".equals(name)) {
-                final Resource resource = Resource.create(getText());
-                current.setResource(resource);
-                return;
-            }
-
             if (resourceType && "collection".equals(name)) {
                 current.setDirectory(true);
                 resourceType = false;
@@ -104,6 +121,12 @@ final class InfoImpl implements Info {
             if ("getlastmodified".equals(name)) {
                 final Date date = DateUtils.parseLastModifiedDate(getText());
                 current.setLastModifiedDate(date);
+                return;
+            }
+
+            if (!props && "href".equals(name)) {
+                final Resource resource = determineResource(getText());
+                current.setResource(resource);
                 return;
             }
 
@@ -169,11 +192,17 @@ final class InfoImpl implements Info {
                 lockToken = false;
                 resourceType = false;
                 properties = new TreeSet<ResourceProperty>(ResourceProperty.TYPE_NAME_COMPARATOR);
+                props = false;
                 return;
             }
 
             if ("locktoken".equals(name)) {
                 lockToken = true;
+                return;
+            }
+
+            if ("propstat".equals(name)) {
+                props = true;
                 return;
             }
 
@@ -187,13 +216,15 @@ final class InfoImpl implements Info {
     /**
      * Reads status information for a single revision of a resource from the given {@link InputStream}
      *
-     * @param in {@link InputStream} from which the status information is read (Note: will not be closed)
-     * @param parser {@link VersionParser} that is used to retrieve the version information from the server response
+     * @param in {@link java.io.InputStream} from which the status information is read (Note: will not be closed)
+     * @param parser {@link de.shadowhunt.subversion.internal.VersionParser} that is used to retrieve the version information from the server response
+     * @param base base path of the repository
+     * @param marker path marker for special subversion directory (default: !svn)
      *
      * @return {@link InfoImpl} for the resource
      */
-    static InfoImpl read(final InputStream in, final VersionParser parser) {
-        final SortedSet<InfoImpl> infos = readAll(in, parser);
+    static InfoImpl read(final InputStream in, final VersionParser parser, final String base, final String marker) {
+        final SortedSet<InfoImpl> infos = readAll(in, parser, base, marker);
         if (infos.isEmpty()) {
             throw new SubversionException("Invalid server response: expected content is missing");
         }
@@ -205,13 +236,15 @@ final class InfoImpl implements Info {
      *
      * @param in {@link InputStream} from which the status information is read (Note: will not be closed)
      * @param parser {@link VersionParser} that is used to retrieve the version information from the server response
+     * @param base base path of the repository
+     * @param marker path marker for special subversion directory (default: !svn)
      *
      * @return {@link InfoImpl} for the resources
      */
-    static SortedSet<InfoImpl> readAll(final InputStream in, final VersionParser parser) {
+    static SortedSet<InfoImpl> readAll(final InputStream in, final VersionParser parser, final String base, final String marker) {
         try {
             final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
-            final SubversionInfoHandler handler = new SubversionInfoHandler(parser);
+            final SubversionInfoHandler handler = new SubversionInfoHandler(parser, base, marker);
 
             saxParser.parse(in, handler);
             return handler.getInfoSet();
