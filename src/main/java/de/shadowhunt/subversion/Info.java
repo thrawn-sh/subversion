@@ -41,26 +41,76 @@ public interface Info {
         }
     };
 
+    /**
+     * Returns a name of the lock owner
+     *
+     * @return the name of the lock owner or {@code null} if the resource is not locked
+     */
     @CheckForNull
     String getLockOwner();
 
+    /**
+     * Returns a lock-token
+     *
+     * @return the lock-token or {@code null} if the resource is not locked
+     */
     @CheckForNull
     String getLockToken();
 
+    /**
+     * Returns a MD5 checksum of the resource
+     *
+     * @return the MD5 checksum of the resource or {@code null} if the resource is a directory
+     */
     @CheckForNull
     String getMd5();
 
+    /**
+     * Returns an array of the custom {@link ResourceProperty}
+     *
+     * @return the array of the custom {@link ResourceProperty} or an empty array if there a non
+     */
     ResourceProperty[] getProperties();
 
+    /**
+     * Returns a globally unique identifier of the repository
+     *
+     * @return the globally unique identifier of the repository
+     */
     UUID getRepositoryId();
 
+    /**
+     * Returns a {@link Resource} of the resource (relative to the root of the repository)
+     *
+     * @return the {@link Resource} of the resource (relative to the root of the repository)
+     */
     Resource getResource();
 
+    /**
+     * Returns a {@link Revision} of the resource
+     *
+     * @return the {@link Revision} of the resource
+     */
     Revision getRevision();
 
+    /**
+     * Determines if the resource is a directory
+     *
+     * @return {@code true} if the resource is a directory otherwise {@code false}
+     */
     boolean isDirectory();
 
+    /**
+     * Determines if the resource is a file
+     *
+     * @return {@code true} if the resource is a file otherwise {@code false}
+     */
     boolean isFile();
 
+    /**
+     * Determines if the resource is locked
+     *
+     * @return {@code true} if the resource is locked otherwise {@code false}
+     */
     boolean isLocked();
 }

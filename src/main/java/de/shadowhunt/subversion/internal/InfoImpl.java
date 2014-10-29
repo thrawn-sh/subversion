@@ -280,71 +280,36 @@ final class InfoImpl implements Info {
         return true;
     }
 
-    /**
-     * Returns a name of the lock owner
-     *
-     * @return the name of the lock owner or {@code null} if the resource is not locked
-     */
     @Override
     public String getLockOwner() {
         return lockOwner;
     }
 
-    /**
-     * Returns a lock-token
-     *
-     * @return the lock-token or {@code null} if the resource is not locked
-     */
     @Override
     public String getLockToken() {
         return lockToken;
     }
 
-    /**
-     * Returns a MD5 checksum of the resource
-     *
-     * @return the MD5 checksum of the resource or {@code null} if the resource is a directory
-     */
     @Override
     public String getMd5() {
         return md5;
     }
 
-    /**
-     * Returns an array of the custom {@link ResourceProperty}
-     *
-     * @return the array of the custom {@link ResourceProperty} or an empty array if there a non
-     */
     @Override
     public ResourceProperty[] getProperties() {
         return Arrays.copyOf(properties, properties.length);
     }
 
-    /**
-     * Returns a globally unique identifier of the repository
-     *
-     * @return the globally unique identifier of the repository
-     */
     @Override
     public UUID getRepositoryId() {
         return repositoryId;
     }
 
-    /**
-     * Returns a {@link Resource} of the resource (relative to the root of the repository)
-     *
-     * @return the {@link Resource} of the resource (relative to the root of the repository)
-     */
     @Override
     public Resource getResource() {
         return resource;
     }
 
-    /**
-     * Returns a {@link Revision} of the resource
-     *
-     * @return the {@link Revision} of the resource
-     */
     @Override
     public Revision getRevision() {
         return revision;
@@ -364,31 +329,16 @@ final class InfoImpl implements Info {
         return result;
     }
 
-    /**
-     * Determines if the resource is a directory
-     *
-     * @return {@code true} if the resource is a directory otherwise {@code false}
-     */
     @Override
     public boolean isDirectory() {
         return directory;
     }
 
-    /**
-     * Determines if the resource is a file
-     *
-     * @return {@code true} if the resource is a file otherwise {@code false}
-     */
     @Override
     public boolean isFile() {
         return !directory;
     }
 
-    /**
-     * Determines if the resource is locked
-     *
-     * @return {@code true} if the resource is locked otherwise {@code false}
-     */
     @Override
     public boolean isLocked() {
         return lockToken != null;
