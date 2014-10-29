@@ -31,7 +31,6 @@ final class DateUtils {
     private static final TimeZone ZULU = TimeZone.getTimeZone("ZULU");
 
     static Date parseCreatedDate(final String date) {
-
         if ('Z' != date.charAt(date.length() - 1)) {
             throw new IllegalArgumentException("date '" + date + "'is not in Zulu timezone");
         }
