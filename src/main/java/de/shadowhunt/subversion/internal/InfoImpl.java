@@ -16,15 +16,10 @@
 package de.shadowhunt.subversion.internal;
 
 import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.UUID;
 
@@ -52,21 +47,11 @@ final class InfoImpl implements Info {
 
     private static class SubversionInfoHandler extends BasicHandler {
 
-        private static final String CREATED_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS";
-
-        private static final String LAST_MODIFIED_PATTERN = "EEE, dd MMM yyyy HH:mm:ss 'GMT'";
-
-        private static final TimeZone ZULU = TimeZone.getTimeZone("ZULU");
-
         private boolean checkedin = false;
-
-        private final DateFormat createdParser = new SimpleDateFormat(CREATED_PATTERN, Locale.US);
 
         private InfoImpl current = null;
 
         private final SortedSet<InfoImpl> infoSet = new TreeSet<InfoImpl>(Info.RESOURCE_COMPARATOR);
-
-        private final DateFormat lastModifiedParser = new SimpleDateFormat(LAST_MODIFIED_PATTERN, Locale.US);
 
         private boolean lockToken = false;
 
@@ -111,33 +96,14 @@ final class InfoImpl implements Info {
             }
 
             if ("creationdate".equals(name)) {
-                String time = getText();
-                if ('Z' != time.charAt(time.length() - 1)) {
-                    throw new SAXException("Invalid server response: date is not in Zulu timezone");
-                }
-
-                final int index = time.indexOf('.');
-                if (index > 0) {
-                    time = time.substring(0, index + 4); // remove nanoseconds
-                }
-                try {
-                    createdParser.setTimeZone(ZULU);
-                    final Date date = createdParser.parse(time);
-                    current.setCreationDate(date);
-                } catch (final ParseException e) {
-                    throw new SAXException("Invalid server response: date has unexpected format", e);
-                }
-
+                final Date date = DateUtils.parseCreatedDate(getText());
+                current.setCreationDate(date);
                 return;
             }
 
             if ("getlastmodified".equals(name)) {
-                try {
-                    final Date date = lastModifiedParser.parse(getText());
-                    current.setLastModifiedDate(date);
-                } catch (final ParseException e) {
-                    throw new SAXException("Invalid server response: date has unexpected format", e);
-                }
+                final Date date = DateUtils.parseLastModifiedDate(getText());
+                current.setLastModifiedDate(date);
                 return;
             }
 

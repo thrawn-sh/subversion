@@ -16,14 +16,9 @@
 package de.shadowhunt.subversion.internal;
 
 import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import javax.xml.parsers.SAXParser;
 
@@ -41,11 +36,7 @@ final class LogImpl implements Log {
 
     private static class SubversionLogHandler extends BasicHandler {
 
-        private static final TimeZone ZULU = TimeZone.getTimeZone("ZULU");
-
         private LogImpl current = null;
-
-        private final DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US);
 
         private final List<LogImpl> logs = new ArrayList<LogImpl>();
 
@@ -78,22 +69,8 @@ final class LogImpl implements Log {
             }
 
             if ("date".equals(name)) {
-                String time = getText();
-                if ('Z' != time.charAt(time.length() - 1)) {
-                    throw new SAXException("Invalid server response: date is not in Zulu timezone");
-                }
-
-                final int index = time.indexOf('.');
-                if (index > 0) {
-                    time = time.substring(0, index + 4); // remove nanoseconds
-                }
-                try {
-                    format.setTimeZone(ZULU);
-                    final Date date = format.parse(time);
-                    current.setDate(date);
-                } catch (final ParseException e) {
-                    throw new SAXException("Invalid server response: date has unexpected format", e);
-                }
+                final Date date = DateUtils.parseCreatedDate(getText());
+                current.setDate(date);
                 return;
             }
 
