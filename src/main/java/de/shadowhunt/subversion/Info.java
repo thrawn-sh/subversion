@@ -16,6 +16,7 @@
 package de.shadowhunt.subversion;
 
 import java.util.Comparator;
+import java.util.Date;
 import java.util.UUID;
 
 import javax.annotation.CheckForNull;
@@ -40,6 +41,22 @@ public interface Info {
             return i1.getResource().compareTo(i2.getResource());
         }
     };
+
+    /**
+     * Returns the {@link Date} when the resource was created
+     *
+     * @return the {@link Date} when the resource was created or {@code null} if the {@link Date} is unknown
+     */
+    @CheckForNull
+    Date getCreationDate();
+
+    /**
+     * Returns the {@link Date} when the resource was last modified
+     *
+     * @return the {@link Date} when the resource was last modified or {@code null} if the {@link Date} is unknown
+     */
+    @CheckForNull
+    Date getLastModifiedDate();
 
     /**
      * Returns a name of the lock owner

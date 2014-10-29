@@ -16,9 +16,15 @@
 package de.shadowhunt.subversion.internal;
 
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.UUID;
 
@@ -26,6 +32,7 @@ import javax.annotation.Nullable;
 import javax.xml.parsers.SAXParser;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
@@ -41,15 +48,27 @@ final class InfoImpl implements Info {
 
     private static final ResourceProperty[] EMPTY = new ResourceProperty[0];
 
+    private ResourceProperty[] properties = EMPTY;
+
     private static class SubversionInfoHandler extends BasicHandler {
+
+        private static final String CREATED_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+
+        private static final String LAST_MODIFIED_PATTERN = "EEE, dd MMM yyyy HH:mm:ss 'GMT'";
+
+        private static final TimeZone ZULU = TimeZone.getTimeZone("ZULU");
 
         private boolean checkedin = false;
 
+        private final DateFormat createdParser = new SimpleDateFormat(CREATED_PATTERN, Locale.US);
+
         private InfoImpl current = null;
 
-        private final SortedSet<InfoImpl> infos = new TreeSet<InfoImpl>(Info.RESOURCE_COMPARATOR);
+        private final SortedSet<InfoImpl> infoSet = new TreeSet<InfoImpl>(Info.RESOURCE_COMPARATOR);
 
-        private boolean locktoken = false;
+        private final DateFormat lastModifiedParser = new SimpleDateFormat(LAST_MODIFIED_PATTERN, Locale.US);
+
+        private boolean lockToken = false;
 
         private final VersionParser parser;
 
@@ -62,7 +81,7 @@ final class InfoImpl implements Info {
         }
 
         @Override
-        public void endElement(final String uri, final String localName, final String qName) {
+        public void endElement(final String uri, final String localName, final String qName) throws SAXException {
             final String name = getNameFromQName(qName);
 
             if (current == null) {
@@ -72,7 +91,7 @@ final class InfoImpl implements Info {
             if ("response".equals(name)) {
                 if (current.getResource() != null) {
                     current.setProperties(properties.toArray(new ResourceProperty[properties.size()]));
-                    infos.add(current);
+                    infoSet.add(current);
                 }
                 properties = null;
                 current = null;
@@ -91,6 +110,37 @@ final class InfoImpl implements Info {
                 return;
             }
 
+            if ("creationdate".equals(name)) {
+                String time = getText();
+                if ('Z' != time.charAt(time.length() - 1)) {
+                    throw new SAXException("Invalid server response: date is not in Zulu timezone");
+                }
+
+                final int index = time.indexOf('.');
+                if (index > 0) {
+                    time = time.substring(0, index + 4); // remove nanoseconds
+                }
+                try {
+                    createdParser.setTimeZone(ZULU);
+                    final Date date = createdParser.parse(time);
+                    current.setCreationDate(date);
+                } catch (final ParseException e) {
+                    throw new SAXException("Invalid server response: date has unexpected format", e);
+                }
+
+                return;
+            }
+
+            if ("getlastmodified".equals(name)) {
+                try {
+                    final Date date = lastModifiedParser.parse(getText());
+                    current.setLastModifiedDate(date);
+                } catch (final ParseException e) {
+                    throw new SAXException("Invalid server response: date has unexpected format", e);
+                }
+                return;
+            }
+
             if (checkedin && "href".equals(name)) {
                 final String text = getText();
                 final Revision revision = parser.getRevisionFromPath(text);
@@ -99,9 +149,14 @@ final class InfoImpl implements Info {
                 return;
             }
 
-            if (locktoken && "href".equals(name)) {
+            if ("repository-uuid".equals(name)) {
+                current.setRepositoryId(UUID.fromString(getText()));
+                return;
+            }
+
+            if (lockToken && "href".equals(name)) {
                 current.setLockToken(getText());
-                locktoken = false;
+                lockToken = false;
                 return;
             }
 
@@ -128,8 +183,8 @@ final class InfoImpl implements Info {
             }
         }
 
-        SortedSet<InfoImpl> getInfos() {
-            return infos;
+        SortedSet<InfoImpl> getInfoSet() {
+            return infoSet;
         }
 
         @Override
@@ -145,14 +200,14 @@ final class InfoImpl implements Info {
 
             if ("response".equals(name)) {
                 current = new InfoImpl();
-                locktoken = false;
+                lockToken = false;
                 resourceType = false;
                 properties = new TreeSet<ResourceProperty>(ResourceProperty.TYPE_NAME_COMPARATOR);
                 return;
             }
 
-            if ("locktoken".equals(name)) {
-                locktoken = true;
+            if ("lockToken".equals(name)) {
+                lockToken = true;
                 return;
             }
 
@@ -160,6 +215,21 @@ final class InfoImpl implements Info {
                 resourceType = true;
                 return;
             }
+        }
+
+        @Override
+        public String toString() {
+            return "SubversionInfoHandler{" +
+                    "checkedin=" + checkedin +
+                    ", current=" + current +
+                    ", infoSet=" + infoSet +
+                    ", lockToken=" + lockToken +
+                    ", parser=" + parser +
+                    ", properties=" + properties +
+                    ", resourceType=" + resourceType +
+                    ", lastModifiedParser=" + lastModifiedParser +
+                    ", createdParser=" + createdParser +
+                    '}';
         }
     }
 
@@ -193,13 +263,18 @@ final class InfoImpl implements Info {
             final SubversionInfoHandler handler = new SubversionInfoHandler(parser);
 
             saxParser.parse(in, handler);
-            return handler.getInfos();
+            return handler.getInfoSet();
+
         } catch (final Exception e) {
             throw new SubversionException("Invalid server response: could not parse response", e);
         }
     }
 
+    private Date creationDate = null;
+
     private boolean directory = false;
+
+    private Date lastModifiedDate = null;
 
     // NOTE: not part of xml response but determined by a response header
     private String lockOwner = null;
@@ -207,8 +282,6 @@ final class InfoImpl implements Info {
     private String lockToken = null;
 
     private String md5 = null;
-
-    private ResourceProperty[] properties = EMPTY;
 
     private UUID repositoryId = null;
 
@@ -221,63 +294,36 @@ final class InfoImpl implements Info {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (obj == null) {
+        if (!(o instanceof InfoImpl)) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+
+        final InfoImpl info = (InfoImpl) o;
+
+        if (!repositoryId.equals(info.repositoryId)) {
             return false;
         }
-        final InfoImpl other = (InfoImpl) obj;
-        if (directory != other.directory) {
+        if (!resource.equals(info.resource)) {
             return false;
         }
-        if (lockOwner == null) {
-            if (other.lockOwner != null) {
-                return false;
-            }
-        } else if (!lockOwner.equals(other.lockOwner)) {
+        if (!revision.equals(info.revision)) {
             return false;
         }
-        if (lockToken == null) {
-            if (other.lockToken != null) {
-                return false;
-            }
-        } else if (!lockToken.equals(other.lockToken)) {
-            return false;
-        }
-        if (md5 == null) {
-            if (other.md5 != null) {
-                return false;
-            }
-        } else if (!md5.equals(other.md5)) {
-            return false;
-        }
-        if (repositoryId == null) {
-            if (other.repositoryId != null) {
-                return false;
-            }
-        } else if (!repositoryId.equals(other.repositoryId)) {
-            return false;
-        }
-        if (resource == null) {
-            if (other.resource != null) {
-                return false;
-            }
-        } else if (!resource.equals(other.resource)) {
-            return false;
-        }
-        if (revision == null) {
-            if (other.revision != null) {
-                return false;
-            }
-        } else if (!revision.equals(other.revision)) {
-            return false;
-        }
+
         return true;
+    }
+
+    @Override
+    public Date getCreationDate() {
+        return (creationDate == null) ? null : new Date(creationDate.getTime());
+    }
+
+    public Date getLastModifiedDate() {
+        return (lastModifiedDate == null) ? null : new Date(lastModifiedDate.getTime());
     }
 
     @Override
@@ -317,15 +363,9 @@ final class InfoImpl implements Info {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = (prime * result) + (directory ? 1231 : 1237);
-        result = (prime * result) + ((lockOwner == null) ? 0 : lockOwner.hashCode());
-        result = (prime * result) + ((lockToken == null) ? 0 : lockToken.hashCode());
-        result = (prime * result) + ((md5 == null) ? 0 : md5.hashCode());
-        result = (prime * result) + ((repositoryId == null) ? 0 : repositoryId.hashCode());
-        result = (prime * result) + ((resource == null) ? 0 : resource.hashCode());
-        result = (prime * result) + ((revision == null) ? 0 : revision.hashCode());
+        int result = repositoryId.hashCode();
+        result = 31 * result + resource.hashCode();
+        result = 31 * result + revision.hashCode();
         return result;
     }
 
@@ -344,8 +384,16 @@ final class InfoImpl implements Info {
         return lockToken != null;
     }
 
+    void setCreationDate(@Nullable final Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
     void setDirectory(final boolean directory) {
         this.directory = directory;
+    }
+
+    void setLastModifiedDate(@Nullable final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
     }
 
     void setLockOwner(@Nullable final String lockOwner) {
