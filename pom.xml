@@ -57,7 +57,7 @@
         <tag>HEAD</tag>
         <connection>scm:git:https://scm.shadowhunt.de/subversion</connection>
         <developerConnection>scm:git:https://scm.shadowhunt.de/subversion</developerConnection>
-        <url>https://github.com/thrawn-sh</url>
+        <url>https://github.com/thrawn-sh/subversion</url>
     </scm>
 
     <prerequisites>
