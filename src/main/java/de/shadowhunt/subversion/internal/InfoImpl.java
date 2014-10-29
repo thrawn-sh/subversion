@@ -206,7 +206,7 @@ final class InfoImpl implements Info {
                 return;
             }
 
-            if ("lockToken".equals(name)) {
+            if ("locktoken".equals(name)) {
                 lockToken = true;
                 return;
             }
