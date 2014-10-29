@@ -50,7 +50,7 @@ public abstract class AbstractRepositoryLocking {
     }
 
     @Test(expected = SubversionException.class)
-    public void test00_LockNonExisitingResource() throws Exception {
+    public void test00_LockNonExistingResource() throws Exception {
         final Resource resource = prefix.append(Resource.create("/non_existing.txt"));
 
         repositoryA.lock(resource, false);
@@ -58,7 +58,7 @@ public abstract class AbstractRepositoryLocking {
     }
 
     @Test(expected = SubversionException.class)
-    public void test00_UnlockNonExisitingResource() throws Exception {
+    public void test00_UnlockNonExistingResource() throws Exception {
         final Resource resource = prefix.append(Resource.create("/non_existing.txt"));
 
         repositoryA.unlock(resource, false);

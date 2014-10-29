@@ -42,7 +42,7 @@ public abstract class AbstractRepositoryExists {
     }
 
     @Test
-    public void test00_NonExisitingResource() throws Exception {
+    public void test00_NonExistingResource() throws Exception {
         final Resource resource = PREFIX.append(Resource.create("/non_existing.txt"));
         final Revision revision = Revision.HEAD;
 
@@ -51,7 +51,7 @@ public abstract class AbstractRepositoryExists {
     }
 
     @Test(expected = SubversionException.class)
-    public void test00_NonExisitingRevision() throws Exception {
+    public void test00_NonExistingRevision() throws Exception {
         final Resource resource = PREFIX.append(Resource.create("/file.txt"));
         final Revision revision = Revision.create(Integer.MAX_VALUE); // there should not be a such high revision
 

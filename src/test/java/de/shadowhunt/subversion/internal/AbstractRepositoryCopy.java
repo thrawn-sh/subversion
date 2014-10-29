@@ -279,7 +279,7 @@ public class AbstractRepositoryCopy {
     }
 
     @Test
-    public void test04_copyFileToExisiting() throws Exception {
+    public void test04_copyFileToExisting() throws Exception {
         final Resource source = prefix.append(Resource.create("file_exisitng_source.txt"));
         final Resource target = prefix.append(Resource.create("file_exisitng_target.txt"));
 
@@ -313,7 +313,7 @@ public class AbstractRepositoryCopy {
     }
 
     @Test
-    public void test04_copyFolderToExisiting() throws Exception {
+    public void test04_copyFolderToExisting() throws Exception {
         final Resource source = prefix.append(Resource.create("folder_exisitng_source"));
         final Resource target = prefix.append(Resource.create("folder_exisitng_target"));
 

@@ -230,7 +230,7 @@ public class AbstractRepositoryMove {
     }
 
     @Test
-    public void test04_moveFileToExisiting() throws Exception {
+    public void test04_moveFileToExisting() throws Exception {
         final Resource source = prefix.append(Resource.create("file_existing_source.txt"));
         final Resource target = prefix.append(Resource.create("file_existing_target.txt"));
 
@@ -266,7 +266,7 @@ public class AbstractRepositoryMove {
     }
 
     @Test
-    public void test04_moveFolderToExisiting() throws Exception {
+    public void test04_moveFolderToExisting() throws Exception {
         final Resource source = prefix.append(Resource.create("folder_exisitng_source"));
         final Resource target = prefix.append(Resource.create("folder_exisitng_target"));
 

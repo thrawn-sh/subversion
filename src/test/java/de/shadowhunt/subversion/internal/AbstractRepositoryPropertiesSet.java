@@ -64,7 +64,7 @@ public class AbstractRepositoryPropertiesSet {
     }
 
     @Test(expected = SubversionException.class)
-    public void test00_NonExisitingResource() throws Exception {
+    public void test00_NonExistingResource() throws Exception {
         final Resource resource = prefix.append(Resource.create("non_existing.txt"));
         final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "test");
         Assert.assertFalse(resource + " does already exist", repository.exists(resource, Revision.HEAD));
@@ -136,8 +136,8 @@ public class AbstractRepositoryPropertiesSet {
         }
         {
             final ResourceProperty newProperty = new ResourceProperty(Type.CUSTOM, "new", "new");
-            final ResourceProperty exisitingProperty = new ResourceProperty(Type.CUSTOM, "test", "B");
-            setProperties(repository, resource, newProperty, exisitingProperty);
+            final ResourceProperty existingProperty = new ResourceProperty(Type.CUSTOM, "test", "B");
+            setProperties(repository, resource, newProperty, existingProperty);
         }
     }
 }

@@ -45,7 +45,7 @@ public class AbstractRepositoryPropertiesDelete {
     }
 
     @Test(expected = SubversionException.class)
-    public void test00_NonExisitingResource() throws Exception {
+    public void test00_NonExistingResource() throws Exception {
         final Resource resource = prefix.append(Resource.create("non_existing.txt"));
         final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "test");
         Assert.assertFalse(resource + " does already exist", repository.exists(resource, Revision.HEAD));
@@ -98,7 +98,7 @@ public class AbstractRepositoryPropertiesDelete {
     }
 
     @Test
-    public void test01_deleteExisitingProperties() throws Exception {
+    public void test01_deleteExistingProperties() throws Exception {
         final Resource resource = prefix.append(Resource.create("file.txt"));
         final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "test");
 
@@ -127,7 +127,7 @@ public class AbstractRepositoryPropertiesDelete {
     }
 
     @Test
-    public void test01_deleteNonExisitingProperties() throws Exception {
+    public void test01_deleteNonExistingProperties() throws Exception {
         final Resource resource = prefix.append(Resource.create("no_properties.txt"));
         final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "test");
 

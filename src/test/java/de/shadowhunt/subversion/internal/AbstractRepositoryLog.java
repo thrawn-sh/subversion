@@ -51,7 +51,7 @@ public abstract class AbstractRepositoryLog {
     }
 
     @Test(expected = SubversionException.class)
-    public void test00_NonExisitingEndRevision() throws Exception {
+    public void test00_NonExistingEndRevision() throws Exception {
         final Resource resource = PREFIX.append(Resource.create("/file.txt"));
         final Revision start = Revision.INITIAL;
         final Revision end = Revision.create(Integer.MAX_VALUE); // there should not be a such high revision
@@ -62,7 +62,7 @@ public abstract class AbstractRepositoryLog {
     }
 
     @Test(expected = SubversionException.class)
-    public void test00_NonExisitingResource() throws Exception {
+    public void test00_NonExistingResource() throws Exception {
         final Resource resource = PREFIX.append(Resource.create("/non_existing.txt"));
         final Revision start = Revision.INITIAL;
         final Revision end = Revision.HEAD;
@@ -73,7 +73,7 @@ public abstract class AbstractRepositoryLog {
     }
 
     @Test(expected = SubversionException.class)
-    public void test00_NonExisitingStartRevision() throws Exception {
+    public void test00_NonExistingStartRevision() throws Exception {
         final Resource resource = PREFIX.append(Resource.create("/file.txt"));
         final Revision start = Revision.create(Integer.MAX_VALUE); // there should not be a such high revision
         final Revision end = Revision.HEAD;

@@ -59,7 +59,7 @@ public class AbstractRepositoryDelete {
     }
 
     @Test(expected = SubversionException.class)
-    public void test00_noExisitings() throws Exception {
+    public void test00_noExistings() throws Exception {
         Assert.assertFalse(prefix + " does already exist", repository.exists(prefix, Revision.HEAD));
         final Resource resource = prefix.append(Resource.create("non_existing.txt"));
 
