@@ -61,6 +61,11 @@ class RepositoryImpl extends AbstractBaseRepository {
         }
 
         @Override
+        public Resource getPrefix() {
+            return prefix;
+        }
+
+        @Override
         public Resource getRegisterResource(final Resource resource, final Revision revision) {
             throw new UnsupportedOperationException("Not supported by httpv2");
         }

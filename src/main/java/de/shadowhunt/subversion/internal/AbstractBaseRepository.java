@@ -69,6 +69,8 @@ public abstract class AbstractBaseRepository implements Repository {
 
         Resource getCreateTransactionResource();
 
+        Resource getPrefix();
+
         Resource getRegisterResource(Resource resource, Revision revision);
 
         Resource getRegisterTransactionResource(Transaction transaction);
