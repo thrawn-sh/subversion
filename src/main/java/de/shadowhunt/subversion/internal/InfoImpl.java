@@ -348,15 +348,15 @@ final class InfoImpl implements Info {
         this.directory = directory;
     }
 
-    void setLockOwner(final String lockOwner) {
+    void setLockOwner(@Nullable final String lockOwner) {
         this.lockOwner = lockOwner;
     }
 
-    void setLockToken(final String lockToken) {
+    void setLockToken(@Nullable final String lockToken) {
         this.lockToken = lockToken;
     }
 
-    void setMd5(final String md5) {
+    void setMd5(@Nullable final String md5) {
         this.md5 = md5;
     }
 
