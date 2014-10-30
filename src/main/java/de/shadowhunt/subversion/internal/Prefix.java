@@ -44,10 +44,8 @@ final class Prefix {
 
         @Override
         public void endElement(final String uri, final String localName, final String qName) throws SAXException {
-            final String name = getNameFromQName(qName);
-
             if ((ProtocolVersion.HTTP_V1 == version) || (ProtocolVersion.HTTP_V2 == version)) {
-                if ("href".equals(name)) {
+                if ("href".equals(localName)) {
                     final String text = getText();
                     // .../${svn}/act/
                     //     ^^^^^^ <- prefix

@@ -52,9 +52,7 @@ public final class LogLoader extends BaseLoader {
 
         @Override
         public void endElement(final String uri, final String localName, final String qName) throws SAXException {
-            final String name = getNameFromQName(qName);
-
-            if ("logentry".equals(name)) {
+            if ("logentry".equals(localName)) {
                 logs.add(current);
                 current = null;
                 return;
@@ -64,17 +62,17 @@ public final class LogLoader extends BaseLoader {
                 return;
             }
 
-            if ("msg".equals(name)) {
+            if ("msg".equals(localName)) {
                 current.setMessage(getText());
                 return;
             }
 
-            if ("author".equals(name)) {
+            if ("author".equals(localName)) {
                 current.setAuthor(getText());
                 return;
             }
 
-            if ("date".equals(name)) {
+            if ("date".equals(localName)) {
                 try {
                     format.setTimeZone(ZULU);
                     final Date date = format.parse(getText());
@@ -94,9 +92,7 @@ public final class LogLoader extends BaseLoader {
         public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
             clearText();
 
-            final String name = getNameFromQName(qName);
-
-            if ("logentry".equals(name)) {
+            if ("logentry".equals(localName)) {
                 current = new LogImpl();
                 final String revision = attributes.getValue("revision");
                 current.setRevision(Revision.create(Integer.parseInt(revision)));

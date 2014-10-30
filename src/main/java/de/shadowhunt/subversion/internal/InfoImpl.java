@@ -90,13 +90,11 @@ final class InfoImpl implements Info {
 
         @Override
         public void endElement(final String uri, final String localName, final String qName) throws SAXException {
-            final String name = getNameFromQName(qName);
-
             if (current == null) {
                 return;
             }
 
-            if ("response".equals(name)) {
+            if ("response".equals(localName)) {
                 if (current.getResource() != null) {
                     current.setProperties(properties.toArray(new ResourceProperty[properties.size()]));
                     infoSet.add(current);
@@ -106,31 +104,31 @@ final class InfoImpl implements Info {
                 return;
             }
 
-            if (resourceType && "collection".equals(name)) {
+            if (resourceType && "collection".equals(localName)) {
                 current.setDirectory(true);
                 resourceType = false;
                 return;
             }
 
-            if ("creationdate".equals(name)) {
+            if ("creationdate".equals(localName)) {
                 final Date date = DateUtils.parseCreatedDate(getText());
                 current.setCreationDate(date);
                 return;
             }
 
-            if ("getlastmodified".equals(name)) {
+            if ("getlastmodified".equals(localName)) {
                 final Date date = DateUtils.parseLastModifiedDate(getText());
                 current.setLastModifiedDate(date);
                 return;
             }
 
-            if (!props && "href".equals(name)) {
+            if (!props && "href".equals(localName)) {
                 final Resource resource = determineResource(getText());
                 current.setResource(resource);
                 return;
             }
 
-            if (checkedin && "href".equals(name)) {
+            if (checkedin && "href".equals(localName)) {
                 final String text = getText();
                 final Revision revision = parser.getRevisionFromPath(text);
                 current.setRevision(revision);
@@ -138,35 +136,34 @@ final class InfoImpl implements Info {
                 return;
             }
 
-            if ("repository-uuid".equals(name)) {
+            if ("repository-uuid".equals(localName)) {
                 current.setRepositoryId(UUID.fromString(getText()));
                 return;
             }
 
-            if (lockToken && "href".equals(name)) {
+            if (lockToken && "href".equals(localName)) {
                 current.setLockToken(getText());
                 lockToken = false;
                 return;
             }
 
-            if ("md5-checksum".equals(name)) {
+            if ("md5-checksum".equals(localName)) {
                 current.setMd5(getText());
                 return;
             }
 
-            if ("repository-uuid".equals(name)) {
+            if ("repository-uuid".equals(localName)) {
                 current.setRepositoryId(UUID.fromString(getText()));
                 return;
             }
 
-            final String namespace = getNamespaceFromQName(qName);
-            if ("C".equals(namespace)) {
-                final ResourceProperty property = new ResourceProperty(Type.CUSTOM, name, getText());
+            if (XmlConstants.CUSTOM_PROPERTIES_NAMESPACE.equals(uri)) {
+                final ResourceProperty property = new ResourceProperty(Type.CUSTOM, localName, getText());
                 properties.add(property);
                 return;
             }
-            if ("S".equals(namespace)) {
-                final ResourceProperty property = new ResourceProperty(Type.SVN, name, getText());
+            if (XmlConstants.SVN_PROPERTIES_NAMESPACE.equals(uri)) {
+                final ResourceProperty property = new ResourceProperty(Type.SVN, localName, getText());
                 properties.add(property);
                 return;
             }
@@ -180,14 +177,12 @@ final class InfoImpl implements Info {
         public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
             clearText();
 
-            final String name = getNameFromQName(qName);
-
-            if ("checked-in".equals(name)) {
+            if ("checked-in".equals(localName)) {
                 checkedin = true;
                 return;
             }
 
-            if ("response".equals(name)) {
+            if ("response".equals(localName)) {
                 current = new InfoImpl();
                 lockToken = false;
                 resourceType = false;
@@ -196,17 +191,17 @@ final class InfoImpl implements Info {
                 return;
             }
 
-            if ("locktoken".equals(name)) {
+            if ("locktoken".equals(localName)) {
                 lockToken = true;
                 return;
             }
 
-            if ("propstat".equals(name)) {
+            if ("propstat".equals(localName)) {
                 props = true;
                 return;
             }
 
-            if ("resourcetype".equals(name)) {
+            if ("resourcetype".equals(localName)) {
                 resourceType = true;
                 return;
             }

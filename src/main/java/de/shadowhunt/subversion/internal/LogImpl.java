@@ -46,9 +46,10 @@ final class LogImpl implements Log {
 
         @Override
         public void endElement(final String uri, final String localName, final String qName) throws SAXException {
-            final String name = getNameFromQName(qName);
+            final boolean isDavNameSpace = (XmlConstants.DAV_NAMESPACE.equals(uri));
+            final boolean isSvnNameSpace = (XmlConstants.SVN_NAMESPACE.equals(uri));
 
-            if ("log-item".equals(name)) {
+            if (isSvnNameSpace && "log-item".equals(localName)) {
                 logs.add(current);
                 current = null;
                 return;
@@ -58,23 +59,23 @@ final class LogImpl implements Log {
                 return;
             }
 
-            if ("comment".equals(name)) {
+            if (isDavNameSpace && "comment".equals(localName)) {
                 current.setMessage(getText());
                 return;
             }
 
-            if ("creator-displayname".equals(name)) {
+            if (isDavNameSpace && "creator-displayname".equals(localName)) {
                 current.setAuthor(getText());
                 return;
             }
 
-            if ("date".equals(name)) {
+            if (isSvnNameSpace && "date".equals(localName)) {
                 final Date date = DateUtils.parseCreatedDate(getText());
                 current.setDate(date);
                 return;
             }
 
-            if ("version-name".equals(name)) {
+            if (isDavNameSpace && "version-name".equals(localName)) {
                 final int revision = Integer.parseInt(getText());
                 current.setRevision(Revision.create(revision));
                 return;
@@ -89,9 +90,7 @@ final class LogImpl implements Log {
         public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
             clearText();
 
-            final String name = getNameFromQName(qName);
-
-            if ("log-item".equals(name)) {
+            if (XmlConstants.SVN_NAMESPACE.equals(uri) && "log-item".equals(localName)) {
                 current = new LogImpl();
                 return;
             }

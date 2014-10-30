@@ -50,9 +50,8 @@ public final class ResourcePropertyLoader extends BaseLoader {
 
         @Override
         public void endElement(final String uri, final String localName, final String qName) throws SAXException {
-            final String name = getNameFromQName(qName);
 
-            if ("property".equals(name)) {
+            if ("property".equals(localName)) {
                 properties.add(new ResourceProperty(propertyType, propertyName, getText()));
             }
         }
@@ -65,9 +64,7 @@ public final class ResourcePropertyLoader extends BaseLoader {
         public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
             clearText();
 
-            final String name = getNameFromQName(qName);
-
-            if ("property".equals(name)) {
+            if ("property".equals(localName)) {
                 final String value = attributes.getValue("name");
                 final int split = value.indexOf(':');
                 if (split >= 0) {

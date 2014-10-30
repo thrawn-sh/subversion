@@ -45,8 +45,7 @@ final class Resolve {
         public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
             clearText();
 
-            final String name = getNameFromQName(qName);
-            if ("location".equals(name)) {
+            if ("location".equals(localName)) {
                 entry = new Resolve();
 
                 final String version = attributes.getValue("rev");

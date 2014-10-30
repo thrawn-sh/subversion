@@ -40,15 +40,13 @@ public final class InfoLoader extends BaseLoader {
 
         @Override
         public void endElement(final String uri, final String localName, final String qName) throws SAXException {
-            final String name = getNameFromQName(qName);
-
-            if ("token".equals(name)) {
+            if ("token".equals(localName)) {
                 final String text = getText();
                 current.setLockToken(text.substring(16));
                 return;
             }
 
-            if ("uuid".equals(name)) {
+            if ("uuid".equals(localName)) {
                 current.setRepositoryId(UUID.fromString(getText()));
                 return;
             }
@@ -62,8 +60,7 @@ public final class InfoLoader extends BaseLoader {
         public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
             clearText();
 
-            final String name = getNameFromQName(qName);
-            if ("commit".equals(name)) {
+            if ("commit".equals(localName)) {
                 final String revision = attributes.getValue("revision");
                 current.setRevision(Revision.create(Integer.parseInt(revision)));
             }

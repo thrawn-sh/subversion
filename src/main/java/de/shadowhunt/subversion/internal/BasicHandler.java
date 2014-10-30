@@ -26,7 +26,7 @@ class BasicHandler extends DefaultHandler {
 
     static {
         FACTORY = SAXParserFactory.newInstance();
-        FACTORY.setNamespaceAware(false);
+        FACTORY.setNamespaceAware(true);
         FACTORY.setValidating(false);
     }
 
@@ -40,22 +40,6 @@ class BasicHandler extends DefaultHandler {
     protected void clearText() {
         // clear buffer, but reuse the object and its allocated memory
         buffer.setLength(0);
-    }
-
-    protected final String getNameFromQName(final String qName) {
-        final int index = qName.indexOf(':');
-        if (index >= 0) {
-            return qName.substring(index + 1);
-        }
-        return qName;
-    }
-
-    final String getNamespaceFromQName(final String qName) {
-        final int index = qName.indexOf(':');
-        if (index >= 0) {
-            return qName.substring(0, index);
-        }
-        return "";
     }
 
     protected String getText() {
