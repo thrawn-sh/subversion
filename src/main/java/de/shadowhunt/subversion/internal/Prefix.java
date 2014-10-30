@@ -18,11 +18,8 @@ package de.shadowhunt.subversion.internal;
 import java.io.InputStream;
 import java.util.regex.Pattern;
 
-import javax.annotation.CheckForNull;
+import javax.xml.namespace.QName;
 import javax.xml.parsers.SAXParser;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 
 import de.shadowhunt.subversion.Repository.ProtocolVersion;
 import de.shadowhunt.subversion.Resource;
@@ -30,51 +27,65 @@ import de.shadowhunt.subversion.SubversionException;
 
 final class Prefix {
 
-    private static final Pattern PATH_PATTERN = Pattern.compile(Resource.SEPARATOR);
+    private static class PrefixExpression extends SaxExpressionHandler.SaxExpression {
 
-    private static class PrefixHandler extends BasicHandler {
+        private static QName[] PATH;
 
-        private Resource prefix = null;
+        private static final Pattern PATH_PATTERN = Pattern.compile(Resource.SEPARATOR);
+
+        static {
+            final QName[] path = new QName[3];
+            path[0] = new QName(XmlConstants.DAV_NAMESPACE, "options-response");
+            path[1] = new QName(XmlConstants.DAV_NAMESPACE, "activity-collection-set");
+            path[2] = new QName(XmlConstants.DAV_NAMESPACE, "href");
+            PATH = path;
+        }
+
+        Resource prefix = null;
 
         private final ProtocolVersion version;
 
-        PrefixHandler(final ProtocolVersion version) {
+        PrefixExpression(final ProtocolVersion version) {
+            super(PATH, false, true);
             this.version = version;
         }
 
         @Override
-        public void endElement(final String uri, final String localName, final String qName) throws SAXException {
+        protected void processEnd(final String namespaceUri, final String localName, final String text) {
             if ((ProtocolVersion.HTTP_V1 == version) || (ProtocolVersion.HTTP_V2 == version)) {
-                if (XmlConstants.DAV_NAMESPACE.equals(uri) && "href".equals(localName)) {
-                    final String text = getText();
-                    // .../${svn}/act/
-                    //     ^^^^^^ <- prefix
-                    final String[] segments = PATH_PATTERN.split(text);
-                    prefix = Resource.create(segments[segments.length - 2]);
-                    return;
-                }
+                // .../${svn}/act/
+                //     ^^^^^^ <- prefix
+                final String[] segments = PATH_PATTERN.split(text);
+                prefix = Resource.create(segments[segments.length - 2]);
             }
         }
 
-        @CheckForNull
-        Resource getPrefix() {
-            return prefix;
+        @Override
+        protected void resetHandler() {
+            prefix = null;
+        }
+    }
+
+    private static class PrefixHandler extends SaxExpressionHandler<Resource> {
+
+        PrefixHandler(final ProtocolVersion version) {
+            super(new PrefixExpression(version));
         }
 
         @Override
-        public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
-            clearText();
+        public Resource getValue() {
+            return ((PrefixExpression) expressions[0]).prefix;
         }
     }
 
     static Resource read(final InputStream inputStream, final ProtocolVersion version) {
         final Resource prefix;
         try {
-            final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
-            final PrefixHandler handler = new PrefixHandler(version);
+            final SAXParser saxParser = SaxExpressionHandler.newParser();
+            final SaxExpressionHandler<Resource> handler = new PrefixHandler(version);
 
             saxParser.parse(inputStream, handler);
-            prefix = handler.getPrefix();
+            prefix = handler.getValue();
         } catch (final Exception e) {
             throw new SubversionException("Invalid server response: could not parse response", e);
         }

@@ -17,7 +17,7 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.InputStream;
 
-import javax.annotation.CheckForNull;
+import javax.xml.namespace.QName;
 import javax.xml.parsers.SAXParser;
 
 import org.xml.sax.Attributes;
@@ -28,31 +28,48 @@ import de.shadowhunt.subversion.SubversionException;
 
 final class Resolve {
 
-    private static class ResolveHandler extends BasicHandler {
+    private static class ResolveExpression extends SaxExpressionHandler.SaxExpression {
 
-        private Resolve entry = null;
+        private static QName[] PATH;
 
-        ResolveHandler() {
-            // make the handler visible in surrounding class
+        static {
+            final QName[] path = new QName[2];
+            path[0] = new QName(XmlConstants.SVN_NAMESPACE, "get-locations-report");
+            path[1] = new QName(XmlConstants.SVN_NAMESPACE, "location");
+            PATH = path;
         }
 
-        @CheckForNull
-        public Resolve getEntry() {
-            return entry;
+        Resolve entry = null;
+
+        ResolveExpression() {
+            super(PATH, true, false);
         }
 
         @Override
-        public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
-            clearText();
+        protected void processStart(final String namespaceUri, final String localName, final Attributes attributes) {
+            entry = new Resolve();
 
-            if (XmlConstants.SVN_NAMESPACE.equals(uri) && "location".equals(localName)) {
-                entry = new Resolve();
+            final String version = attributes.getValue("rev");
+            entry.setRevision(Revision.create(Integer.parseInt(version)));
+            final String path = attributes.getValue("path");
+            entry.setResource(Resource.create(path));
+        }
 
-                final String version = attributes.getValue("rev");
-                entry.setRevision(Revision.create(Integer.parseInt(version)));
-                final String path = attributes.getValue("path");
-                entry.setResource(Resource.create(path));
-            }
+        @Override
+        protected void resetHandler() {
+            entry = null;
+        }
+    }
+
+    private static class ResolveHandler extends SaxExpressionHandler<Resolve> {
+
+        ResolveHandler() {
+            super(new ResolveExpression());
+        }
+
+        @Override
+        public Resolve getValue() {
+            return ((ResolveExpression) expressions[0]).entry;
         }
     }
 
@@ -66,11 +83,11 @@ final class Resolve {
     static Resolve read(final InputStream inputStream) {
         final Resolve resolve;
         try {
-            final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
-            final ResolveHandler handler = new ResolveHandler();
+            final SAXParser saxParser = SaxExpressionHandler.newParser();
+            final SaxExpressionHandler<Resolve> handler = new ResolveHandler();
 
             saxParser.parse(inputStream, handler);
-            resolve = handler.getEntry();
+            resolve = handler.getValue();
         } catch (final Exception e) {
             throw new SubversionException("Invalid server response: could not parse response", e);
         }
