@@ -15,16 +15,20 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.io.StringWriter;
 import java.net.URI;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.SubversionException;
 
 public class MergeOperation extends AbstractVoidOperation {
 
@@ -43,26 +47,54 @@ public class MergeOperation extends AbstractVoidOperation {
         final DavTemplateRequest request = new DavTemplateRequest("MERGE", repository);
         request.addHeader("X-SVN-Options", "release-locks");
 
-        final StringBuilder body = new StringBuilder(XML_PREAMBLE);
-        body.append("<merge xmlns=\"DAV:\"><source><href>");
-        body.append(StringEscapeUtils.escapeXml10(repository.getPath() + resource.getValue()));
-        body.append("</href></source><no-auto-merge/><no-checkout/><prop><checked-in/><version-name/><resourcetype/><creationdate/><creator-displayname/></prop>");
-        if (!infos.isEmpty()) {
-            body.append("<S:lock-token-list xmlns:S=\"svn:\">");
-            for (final Info info : infos) {
-                final String lockToken = info.getLockToken();
-                assert (lockToken != null) : "must not be null";
-                body.append("<S:lock><S:lock-path>");
-                final Resource plain = info.getResource();
-                body.append(StringEscapeUtils.escapeXml10(plain.getValueWithoutLeadingSeparator()));
-                body.append("</S:lock-path>");
-                body.append("<S:lock-token>");
-                body.append(lockToken);
-                body.append("</S:lock-token></S:lock>");
+        final StringWriter body = new StringWriter();
+        try {
+            final XMLStreamWriter writer = XML_OUTPUT_FACTORY.createXMLStreamWriter(body);
+            writer.writeStartDocument(XmlConstants.ENCODING, XmlConstants.VERSION_1_0);
+            writer.writeStartElement("merge");
+            writer.writeDefaultNamespace(XmlConstants.DAV_NAMESPACE);
+            writer.writeStartElement("source");
+            writer.writeStartElement("href");
+            writer.writeCharacters(repository.getPath());
+            writer.writeCharacters(resource.getValue());
+            writer.writeEndElement(); // href
+            writer.writeEndElement(); // source
+            writer.writeEmptyElement("no-auto-merge");
+            writer.writeEmptyElement("no-checkout");
+            writer.writeStartElement("prop");
+            writer.writeEmptyElement("checked-in");
+            writer.writeEmptyElement("version-name");
+            writer.writeEmptyElement("resourcetype");
+            writer.writeEmptyElement("creationdate");
+            writer.writeEmptyElement("creator-displayname");
+            writer.writeEndElement(); // prop
+            if (!infos.isEmpty()) {
+                writer.setPrefix(XmlConstants.SVN_PREFIX, XmlConstants.SVN_NAMESPACE);
+                writer.writeStartElement(XmlConstants.SVN_NAMESPACE, "lock-token-list");
+                writer.writeNamespace(XmlConstants.SVN_PREFIX, XmlConstants.SVN_NAMESPACE);
+                for (final Info info : infos) {
+                    final String lockToken = info.getLockToken();
+                    assert (lockToken != null) : "must not be null";
+                    final Resource infoResource = info.getResource();
+
+                    writer.writeStartElement(XmlConstants.SVN_NAMESPACE, "lock");
+                    writer.writeStartElement(XmlConstants.SVN_NAMESPACE, "lock-path");
+                    writer.writeCharacters(infoResource.getValueWithoutLeadingSeparator());
+                    writer.writeEndElement(); // lock-path
+                    writer.writeStartElement(XmlConstants.SVN_NAMESPACE, "lock-token");
+                    writer.writeCharacters(lockToken);
+                    writer.writeEndElement(); // lock-token
+                    writer.writeEndElement(); // lock
+                }
+                writer.writeEndElement(); // lock-token-list
             }
-            body.append("</S:lock-token-list>");
+            writer.writeEndElement(); // merge
+            writer.writeEndDocument();
+            writer.close();
+        } catch (final XMLStreamException e) {
+            throw new SubversionException("could not create request body", e);
         }
-        body.append("</merge>");
+
         request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
         return request;
     }

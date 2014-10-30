@@ -16,8 +16,12 @@
 package de.shadowhunt.subversion.internal;
 
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.URI;
 import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -28,6 +32,7 @@ import org.apache.http.entity.StringEntity;
 import de.shadowhunt.subversion.Log;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.SubversionException;
 
 class LogOperation extends AbstractOperation<List<Log>> {
 
@@ -52,18 +57,32 @@ class LogOperation extends AbstractOperation<List<Log>> {
         final URI uri = URIUtils.createURI(repository, resource);
         final DavTemplateRequest request = new DavTemplateRequest("REPORT", uri);
 
-        final StringBuilder body = new StringBuilder(XML_PREAMBLE);
-        body.append("<log-report xmlns=\"svn:\"><start-revision>");
-        body.append(start);
-        body.append("</start-revision><end-revision>");
-        body.append(end);
-        body.append("</end-revision>");
-        if (limit > 0) {
-            body.append("<limit>");
-            body.append(limit);
-            body.append("</limit>");
+        final StringWriter body = new StringWriter();
+        try {
+            final XMLStreamWriter writer = XML_OUTPUT_FACTORY.createXMLStreamWriter(body);
+            writer.writeStartDocument(XmlConstants.ENCODING, XmlConstants.VERSION_1_0);
+            writer.writeStartElement("log-report");
+            writer.writeDefaultNamespace(XmlConstants.SVN_NAMESPACE);
+            writer.writeStartElement("start-revision");
+            writer.writeCharacters(start.toString());
+            writer.writeEndElement(); // start-revision
+            writer.writeStartElement("end-revision");
+            writer.writeCharacters(end.toString());
+            writer.writeEndElement(); // end-revision
+            if (limit > 0) {
+                writer.writeStartElement("limit");
+                writer.writeCharacters(Integer.toString(limit));
+                writer.writeEndElement(); // limit
+            }
+            writer.writeEmptyElement("discover-changed-paths");
+            writer.writeEmptyElement("all-revprops");
+            writer.writeEmptyElement("path");
+            writer.writeEndElement(); // log-report
+            writer.writeEndDocument();
+            writer.close();
+        } catch (final XMLStreamException e) {
+            throw new SubversionException("could not create request body", e);
         }
-        body.append("<discover-changed-paths/><encode-binary-props/><all-revprops/><path/></log-report>");
 
         request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
         return request;

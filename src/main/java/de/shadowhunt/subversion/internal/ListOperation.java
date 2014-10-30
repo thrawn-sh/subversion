@@ -16,8 +16,12 @@
 package de.shadowhunt.subversion.internal;
 
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.URI;
 import java.util.Set;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -28,6 +32,7 @@ import org.apache.http.entity.StringEntity;
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.SubversionException;
 
 class ListOperation extends AbstractOperation<Set<Info>> {
 
@@ -53,8 +58,19 @@ class ListOperation extends AbstractOperation<Set<Info>> {
         final DavTemplateRequest request = new DavTemplateRequest("PROPFIND", uri);
         request.addHeader("Depth", depth.value);
 
-        final StringBuilder body = new StringBuilder(XML_PREAMBLE);
-        body.append("<propfind xmlns=\"DAV:\"><allprop/></propfind>");
+        final StringWriter body = new StringWriter();
+        try {
+            final XMLStreamWriter writer = XML_OUTPUT_FACTORY.createXMLStreamWriter(body);
+            writer.writeStartDocument(XmlConstants.ENCODING, XmlConstants.VERSION_1_0);
+            writer.writeStartElement("propfind");
+            writer.writeDefaultNamespace(XmlConstants.DAV_NAMESPACE);
+            writer.writeEmptyElement("allprop");
+            writer.writeEndElement(); //propfind
+            writer.writeEndDocument();
+            writer.close();
+        } catch (final XMLStreamException e) {
+            throw new SubversionException("could not create request body", e);
+        }
 
         request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
         return request;

@@ -16,9 +16,12 @@
 package de.shadowhunt.subversion.internal;
 
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.URI;
 
 import javax.annotation.CheckForNull;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -29,6 +32,7 @@ import org.apache.http.util.EntityUtils;
 
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.internal.AbstractBaseRepository.ResourceMapper;
 
 class ResolveOperation extends AbstractOperation<Resource> {
@@ -54,14 +58,27 @@ class ResolveOperation extends AbstractOperation<Resource> {
         final URI uri = URIUtils.createURI(repository, resource);
         final DavTemplateRequest request = new DavTemplateRequest("REPORT", uri);
 
-        final StringBuilder sb = new StringBuilder(XML_PREAMBLE);
-        sb.append("<get-locations xmlns=\"svn:\"><path/><peg-revision>");
-        sb.append(revision);
-        sb.append("</peg-revision><location-revision>");
-        sb.append(expected);
-        sb.append("</location-revision></get-locations>");
+        final StringWriter body = new StringWriter();
+        try {
+            final XMLStreamWriter writer = XML_OUTPUT_FACTORY.createXMLStreamWriter(body);
+            writer.writeStartDocument(XmlConstants.ENCODING, XmlConstants.VERSION_1_0);
+            writer.writeStartElement("get-locations");
+            writer.writeDefaultNamespace(XmlConstants.SVN_NAMESPACE);
+            writer.writeEmptyElement("path");
+            writer.writeStartElement("peg-revision");
+            writer.writeCharacters(revision.toString());
+            writer.writeEndElement(); // peg-revision
+            writer.writeStartElement("location-revision");
+            writer.writeCharacters(expected.toString());
+            writer.writeEndElement(); // location-revision
+            writer.writeEndElement(); //get-locations
+            writer.writeEndDocument();
+            writer.close();
+        } catch (final XMLStreamException e) {
+            throw new SubversionException("could not create request body", e);
+        }
 
-        request.setEntity(new StringEntity(sb.toString(), CONTENT_TYPE_XML));
+        request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
         return request;
     }
 

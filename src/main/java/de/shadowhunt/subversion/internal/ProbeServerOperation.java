@@ -16,8 +16,12 @@
 package de.shadowhunt.subversion.internal;
 
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.URI;
 import java.util.ServiceLoader;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
@@ -52,8 +56,19 @@ class ProbeServerOperation extends AbstractOperation<Repository> {
     protected HttpUriRequest createRequest() {
         final DavTemplateRequest request = new DavTemplateRequest("OPTIONS", repository);
 
-        final StringBuilder body = new StringBuilder(XML_PREAMBLE);
-        body.append("<options xmlns=\"DAV:\"><activity-collection-set/></options>");
+        final StringWriter body = new StringWriter();
+        try {
+            final XMLStreamWriter writer = XML_OUTPUT_FACTORY.createXMLStreamWriter(body);
+            writer.writeStartDocument(XmlConstants.ENCODING, XmlConstants.VERSION_1_0);
+            writer.writeStartElement("options");
+            writer.writeDefaultNamespace(XmlConstants.DAV_NAMESPACE);
+            writer.writeEmptyElement("activity-collection-set");
+            writer.writeEndElement(); //options
+            writer.writeEndDocument();
+            writer.close();
+        } catch (final XMLStreamException e) {
+            throw new SubversionException("could not create request body: " + e.getMessage(), e);
+        }
         request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
 
         return request;

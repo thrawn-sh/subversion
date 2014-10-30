@@ -15,17 +15,19 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.io.StringWriter;
 import java.net.URI;
 
 import javax.annotation.Nullable;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 
 import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.SubversionException;
 
 public class CommitMessageOperation extends AbstractVoidOperation {
 
@@ -44,12 +46,27 @@ public class CommitMessageOperation extends AbstractVoidOperation {
         final URI uri = URIUtils.createURI(repository, resource);
         final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH", uri);
 
-        final StringBuilder body = new StringBuilder(XML_PREAMBLE);
-        body.append("<propertyupdate xmlns=\"DAV:\" xmlns:S=\"http://subversion.tigris.org/xmlns/svn/\"><set><prop><S:log>");
-        if (StringUtils.isNotEmpty(message)) {
-            body.append(StringEscapeUtils.escapeXml10(message));
+        final StringWriter body = new StringWriter();
+        try {
+            final XMLStreamWriter writer = XML_OUTPUT_FACTORY.createXMLStreamWriter(body);
+            writer.writeStartDocument(XmlConstants.ENCODING, XmlConstants.VERSION_1_0);
+            writer.writeStartElement("propertyupdate");
+            writer.writeDefaultNamespace(XmlConstants.DAV_NAMESPACE);
+            writer.writeStartElement("set");
+            writer.writeStartElement("prop");
+            writer.setPrefix(XmlConstants.SVN_PROPERTIES_PREFIX, XmlConstants.SVN_PROPERTIES_NAMESPACE);
+            writer.writeStartElement(XmlConstants.SVN_PROPERTIES_NAMESPACE, "log");
+            writer.writeNamespace(XmlConstants.SVN_PROPERTIES_PREFIX, XmlConstants.SVN_PROPERTIES_NAMESPACE);
+            writer.writeCharacters(message);
+            writer.writeEndElement(); // log
+            writer.writeEndElement(); // prop
+            writer.writeEndElement(); // set
+            writer.writeEndElement(); // propertyupdate
+            writer.writeEndDocument();
+            writer.close();
+        } catch (final XMLStreamException e) {
+            throw new SubversionException("could not create request body", e);
         }
-        body.append("</S:log></prop></set></propertyupdate>");
 
         request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
         return request;

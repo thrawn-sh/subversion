@@ -49,8 +49,8 @@ public final class ResourceProperty {
      * {@link ResourceProperty} can have various types, depending of the context they are used
      */
     public static enum Type {
-        CUSTOM("C:"),
-        SVN("S:");
+        CUSTOM("http://subversion.tigris.org/xmlns/custom/"),
+        SVN("http://subversion.tigris.org/xmlns/svn/");
 
         private final String prefix;
 

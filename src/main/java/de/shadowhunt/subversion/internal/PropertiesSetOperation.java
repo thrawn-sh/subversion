@@ -15,12 +15,14 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.io.StringWriter;
 import java.net.URI;
 import java.util.Arrays;
 
 import javax.annotation.Nullable;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
@@ -28,6 +30,7 @@ import org.apache.http.entity.StringEntity;
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
+import de.shadowhunt.subversion.SubversionException;
 
 class PropertiesSetOperation extends AbstractVoidOperation {
 
@@ -54,23 +57,36 @@ class PropertiesSetOperation extends AbstractVoidOperation {
             request.addHeader("If", '<' + lockTarget.toASCIIString() + "> (<" + info.getLockToken() + ">)");
         }
 
-        final StringBuilder sb = new StringBuilder(XML_PREAMBLE);
-        sb.append("<propertyupdate xmlns=\"DAV:\" xmlns:C=\"http://subversion.tigris.org/xmlns/custom/\" xmlns:S=\"http://subversion.tigris.org/xmlns/svn/\" xmlns:V=\"http://subversion.tigris.org/xmlns/dav/\"><set><prop>");
-        for (final ResourceProperty property : properties) {
-            final String prefix = property.getType().getPrefix();
-            final String name = property.getName();
-            sb.append('<');
-            sb.append(prefix);
-            sb.append(name);
-            sb.append('>');
-            sb.append(StringEscapeUtils.escapeXml10(property.getValue()));
-            sb.append("</");
-            sb.append(prefix);
-            sb.append(name);
-            sb.append('>');
+        final StringWriter body = new StringWriter();
+        try {
+            final XMLStreamWriter writer = XML_OUTPUT_FACTORY.createXMLStreamWriter(body);
+            writer.writeStartDocument(XmlConstants.ENCODING, XmlConstants.VERSION_1_0);
+            writer.writeStartElement("propertyupdate");
+            writer.writeDefaultNamespace(XmlConstants.DAV_NAMESPACE);
+            writer.setPrefix(XmlConstants.CUSTOM_PROPERTIES_PREFIX, XmlConstants.CUSTOM_PROPERTIES_NAMESPACE);
+            writer.writeNamespace(XmlConstants.CUSTOM_PROPERTIES_PREFIX, XmlConstants.CUSTOM_PROPERTIES_NAMESPACE);
+            writer.setPrefix(XmlConstants.SVN_PROPERTIES_PREFIX, XmlConstants.SVN_PROPERTIES_NAMESPACE);
+            writer.writeNamespace(XmlConstants.SVN_PROPERTIES_PREFIX, XmlConstants.SVN_PROPERTIES_NAMESPACE);
+            writer.setPrefix(XmlConstants.SVN_DAV_PREFIX, XmlConstants.SVN_DAV_NAMESPACE);
+            writer.writeNamespace(XmlConstants.SVN_DAV_PREFIX, XmlConstants.SVN_DAV_NAMESPACE);
+            writer.writeStartElement("set");
+            writer.writeStartElement("prop");
+            for (final ResourceProperty property : properties) {
+                final String prefix = property.getType().getPrefix();
+                writer.writeStartElement(prefix, property.getName());
+                writer.writeCharacters(property.getValue());
+                writer.writeEndElement();
+            }
+            writer.writeEndElement(); // prop
+            writer.writeEndElement(); // set
+            writer.writeEndElement(); // propertyupdate
+            writer.writeEndDocument();
+            writer.close();
+        } catch (final XMLStreamException e) {
+            throw new SubversionException("could not create request body", e);
         }
-        sb.append("</prop></set></propertyupdate>");
-        request.setEntity(new StringEntity(sb.toString(), CONTENT_TYPE_XML));
+
+        request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
         return request;
     }
 

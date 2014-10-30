@@ -15,13 +15,18 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.io.StringWriter;
 import java.net.URI;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 
 import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.SubversionException;
 
 class LockOperation extends AbstractVoidOperation {
 
@@ -43,8 +48,24 @@ class LockOperation extends AbstractVoidOperation {
             request.addHeader("X-SVN-Options", "lock-steal");
         }
 
-        final StringBuilder body = new StringBuilder(XML_PREAMBLE);
-        body.append("<lockinfo xmlns=\"DAV:\"><lockscope><exclusive/></lockscope><locktype><write/></locktype></lockinfo>");
+        final StringWriter body = new StringWriter();
+        try {
+            final XMLStreamWriter writer = XML_OUTPUT_FACTORY.createXMLStreamWriter(body);
+            writer.writeStartDocument(XmlConstants.ENCODING, XmlConstants.VERSION_1_0);
+            writer.writeStartElement("lockinfo");
+            writer.writeDefaultNamespace(XmlConstants.DAV_NAMESPACE);
+            writer.writeStartElement("lockscope");
+            writer.writeEmptyElement("exclusive");
+            writer.writeEndElement(); // lockscope
+            writer.writeStartElement("locktype");
+            writer.writeEmptyElement("write");
+            writer.writeEndElement(); // locktype
+            writer.writeEndElement(); //lockinfo
+            writer.writeEndDocument();
+            writer.close();
+        } catch (final XMLStreamException e) {
+            throw new SubversionException("could not create request body", e);
+        }
 
         request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
         return request;

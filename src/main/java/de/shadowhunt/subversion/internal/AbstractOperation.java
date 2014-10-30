@@ -18,6 +18,8 @@ package de.shadowhunt.subversion.internal;
 import java.io.InputStream;
 import java.net.URI;
 
+import javax.xml.stream.XMLOutputFactory;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -34,9 +36,9 @@ import de.shadowhunt.subversion.SubversionException;
 
 public abstract class AbstractOperation<T> {
 
-    protected static final ContentType CONTENT_TYPE_XML = ContentType.create("text/xml", "UTF-8");
+    protected static final ContentType CONTENT_TYPE_XML = ContentType.create("text/xml", XmlConstants.ENCODING);
 
-    protected static final String XML_PREAMBLE = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
+    protected static final XMLOutputFactory XML_OUTPUT_FACTORY = XMLOutputFactory.newInstance();
 
     protected static final class DavTemplateRequest extends HttpEntityEnclosingRequestBase {
 
