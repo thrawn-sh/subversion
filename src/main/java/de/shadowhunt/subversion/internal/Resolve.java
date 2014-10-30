@@ -45,7 +45,7 @@ final class Resolve {
         public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
             clearText();
 
-            if ("location".equals(localName)) {
+            if (XmlConstants.SVN_NAMESPACE.equals(uri) && "location".equals(localName)) {
                 entry = new Resolve();
 
                 final String version = attributes.getValue("rev");

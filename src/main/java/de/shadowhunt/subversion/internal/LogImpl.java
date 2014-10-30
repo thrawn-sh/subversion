@@ -46,8 +46,8 @@ final class LogImpl implements Log {
 
         @Override
         public void endElement(final String uri, final String localName, final String qName) throws SAXException {
-            final boolean isDavNameSpace = (XmlConstants.DAV_NAMESPACE.equals(uri));
-            final boolean isSvnNameSpace = (XmlConstants.SVN_NAMESPACE.equals(uri));
+            final boolean isDavNameSpace = XmlConstants.DAV_NAMESPACE.equals(uri);
+            final boolean isSvnNameSpace = XmlConstants.SVN_NAMESPACE.equals(uri);
 
             if (isSvnNameSpace && "log-item".equals(localName)) {
                 logs.add(current);
