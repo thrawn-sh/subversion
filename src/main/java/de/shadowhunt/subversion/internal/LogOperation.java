@@ -98,9 +98,7 @@ class LogOperation extends AbstractOperation<List<Log>> {
     protected List<Log> processResponse(final HttpResponse response) {
         final InputStream in = getContent(response);
         try {
-            @SuppressWarnings({ "rawtypes", "unchecked" })
-            final List<Log> logs = ((List) LogImpl.read(in));
-            return logs;
+            return LogImpl.read(in);
         } finally {
             IOUtils.closeQuietly(in);
         }

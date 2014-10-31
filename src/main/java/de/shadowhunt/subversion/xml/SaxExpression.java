@@ -21,9 +21,9 @@ public interface SaxExpression<V> {
 
     void end(String nameSpaceUri, String localName, int depth, String text);
 
+    V getValue();
+
     void reset();
 
     void start(String nameSpaceUri, String localName, int depth, Attributes attributes);
-
-    V getValue();
 }

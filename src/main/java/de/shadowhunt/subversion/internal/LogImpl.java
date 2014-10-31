@@ -15,102 +15,258 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.parsers.SAXParser;
+import javax.xml.namespace.QName;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 
 import de.shadowhunt.subversion.Log;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
+import de.shadowhunt.subversion.xml.AbstractSaxExpression;
+import de.shadowhunt.subversion.xml.AbstractSaxExpressionHandler;
+import de.shadowhunt.subversion.xml.SaxExpression;
 
 /**
  * Default implementation for {@link Log}
  */
 final class LogImpl implements Log {
 
-    private static class SubversionLogHandler extends BasicHandler {
+    private static class CommentExpression extends AbstractSaxExpression<String> {
 
-        private LogImpl current = null;
+        private static QName[] PATH;
 
-        private final List<LogImpl> logs = new ArrayList<LogImpl>();
+        static {
+            final QName[] path = new QName[1];
+            path[0] = new QName(XmlConstants.DAV_NAMESPACE, "comment");
+            PATH = path;
+        }
 
-        SubversionLogHandler() {
-            // make the handler visible in surrounding class
+        private String comment = "";
+
+        CommentExpression() {
+            super(PATH);
         }
 
         @Override
-        public void endElement(final String uri, final String localName, final String qName) throws SAXException {
-            final boolean isDavNameSpace = XmlConstants.DAV_NAMESPACE.equals(uri);
-            final boolean isSvnNameSpace = XmlConstants.SVN_NAMESPACE.equals(uri);
-
-            if (isSvnNameSpace && "log-item".equals(localName)) {
-                logs.add(current);
-                current = null;
-                return;
-            }
-
-            if (current == null) {
-                return;
-            }
-
-            if (isDavNameSpace && "comment".equals(localName)) {
-                current.setMessage(getText());
-                return;
-            }
-
-            if (isDavNameSpace && "creator-displayname".equals(localName)) {
-                current.setAuthor(getText());
-                return;
-            }
-
-            if (isSvnNameSpace && "date".equals(localName)) {
-                final Date date = DateUtils.parseCreatedDate(getText());
-                current.setDate(date);
-                return;
-            }
-
-            if (isDavNameSpace && "version-name".equals(localName)) {
-                final int revision = Integer.parseInt(getText());
-                current.setRevision(Revision.create(revision));
-                return;
-            }
-        }
-
-        List<LogImpl> getLogs() {
-            return logs;
+        public String getValue() {
+            return comment;
         }
 
         @Override
-        public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
-            clearText();
-
-            if (XmlConstants.SVN_NAMESPACE.equals(uri) && "log-item".equals(localName)) {
-                current = new LogImpl();
-                return;
-            }
+        protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
+            comment = text;
         }
+
+        @Override
+        protected void processStart(final String nameSpaceUri, final String localName, final Attributes attributes) {
+            // nothing to do
+        }
+
+        @Override
+        protected void resetHandler() {
+            comment = "";
+        }
+    }
+
+    private static class CreatorExpression extends AbstractSaxExpression<String> {
+
+        private static QName[] PATH;
+
+        static {
+            final QName[] path = new QName[1];
+            path[0] = new QName(XmlConstants.DAV_NAMESPACE, "creator-displayname");
+            PATH = path;
+        }
+
+        private String creator = "";
+
+        CreatorExpression() {
+            super(PATH);
+        }
+
+        @Override
+        public String getValue() {
+            return creator;
+        }
+
+        @Override
+        protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
+            creator = text;
+        }
+
+        @Override
+        protected void processStart(final String nameSpaceUri, final String localName, final Attributes attributes) {
+            // nothing to do
+        }
+
+        @Override
+        protected void resetHandler() {
+            creator = "";
+        }
+    }
+
+    private static class DateExpression extends AbstractSaxExpression<Date> {
+
+        private static QName[] PATH;
+
+        static {
+            final QName[] path = new QName[1];
+            path[0] = new QName(XmlConstants.SVN_NAMESPACE, "date");
+            PATH = path;
+        }
+
+        private Date date = null;
+
+        DateExpression() {
+            super(PATH);
+        }
+
+        @Override
+        public Date getValue() {
+            return date;
+        }
+
+        @Override
+        protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
+            date = DateUtils.parseCreatedDate(text);
+        }
+
+        @Override
+        protected void processStart(final String nameSpaceUri, final String localName, final Attributes attributes) {
+            // nothing to do
+        }
+
+        @Override
+        protected void resetHandler() {
+            date = null;
+        }
+    }
+
+    private static class LogExpression extends AbstractSaxExpression<List<Log>> {
+
+        private static SaxExpression[] CHILDREN;
+
+        static {
+            final QName[] path = new QName[2];
+            path[0] = new QName(XmlConstants.SVN_NAMESPACE, "log-report");
+            path[1] = new QName(XmlConstants.SVN_NAMESPACE, "log-item");
+            PATH = path;
+
+            final SaxExpression[] expressions = new SaxExpression[4];
+            expressions[0] = new CommentExpression();
+            expressions[1] = new CreatorExpression();
+            expressions[2] = new DateExpression();
+            expressions[3] = new RevisionExpression();
+            CHILDREN = expressions;
+        }
+
+        private static QName[] PATH;
+
+        private List<Log> entries = new ArrayList<Log>();
+
+        LogExpression() {
+            super(PATH, CHILDREN);
+        }
+
+        @Override
+        public List<Log> getValue() {
+            return entries;
+        }
+
+        @Override
+        protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
+            final LogImpl log = new LogImpl();
+            log.setMessage(((CommentExpression) CHILDREN[0]).getValue());
+            log.setAuthor(((CreatorExpression) CHILDREN[1]).getValue());
+            log.setDate(((DateExpression) CHILDREN[2]).getValue());
+            log.setRevision(((RevisionExpression) CHILDREN[3]).getValue());
+            entries.add(log);
+        }
+
+        @Override
+        protected void processStart(final String nameSpaceUri, final String localName, final Attributes attributes) {
+            // nothing to do
+        }
+
+        @Override
+        protected void resetHandler() {
+            entries = new ArrayList<Log>();
+        }
+    }
+
+    private static class LogHandler extends AbstractSaxExpressionHandler<List<Log>> {
+
+        LogHandler() {
+            super(new LogExpression());
+        }
+
+        @Override
+        public List<Log> getValue() {
+            return ((LogExpression) expressions[0]).getValue();
+        }
+    }
+
+    private static class RevisionExpression extends AbstractSaxExpression<Revision> {
+
+        private static QName[] PATH;
+
+        static {
+            final QName[] path = new QName[1];
+            path[0] = new QName(XmlConstants.DAV_NAMESPACE, "version-name");
+            PATH = path;
+        }
+
+        private Revision revision = null;
+
+        RevisionExpression() {
+            super(PATH);
+        }
+
+        @Override
+        public Revision getValue() {
+            return revision;
+        }
+
+        @Override
+        protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
+            final int revision = Integer.parseInt(text);
+            this.revision = Revision.create(revision);
+        }
+
+        @Override
+        protected void processStart(final String nameSpaceUri, final String localName, final Attributes attributes) {
+            // nothing to do
+        }
+
+        @Override
+        protected void resetHandler() {
+            revision = null;
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        FileInputStream fis = new FileInputStream(new File("/home/thrawn/log.xml"));
+        System.out.println(read(fis));
     }
 
     /**
      * Reads log information for a resource from the given {@link InputStream}
      *
-     * @param in {@link InputStream} from which the status information is read (Note: will not be closed)
+     * @param inputStream {@link InputStream} from which the status information is read (Note: will not be closed)
      *
-     * @return {@link LogImpl} for the resource
+     * @return {@link Log} for the resource
      */
-    static List<LogImpl> read(final InputStream in) {
+    static List<Log> read(final InputStream inputStream) {
         try {
-            final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
-            final SubversionLogHandler handler = new SubversionLogHandler();
-
-            saxParser.parse(in, handler);
-            return handler.getLogs();
+            final AbstractSaxExpressionHandler<List<Log>> handler = new LogHandler();
+            return handler.parse(inputStream);
         } catch (final Exception e) {
             throw new SubversionException("Invalid server response: could not parse response", e);
         }

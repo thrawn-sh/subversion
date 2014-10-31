@@ -19,14 +19,14 @@ import java.io.InputStream;
 import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
-import javax.xml.parsers.SAXParser;
+
+import org.xml.sax.Attributes;
 
 import de.shadowhunt.subversion.Repository.ProtocolVersion;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.xml.AbstractSaxExpression;
 import de.shadowhunt.subversion.xml.AbstractSaxExpressionHandler;
-import org.xml.sax.Attributes;
 
 final class Prefix {
 
@@ -54,6 +54,11 @@ final class Prefix {
         }
 
         @Override
+        public Resource getValue() {
+            return prefix;
+        }
+
+        @Override
         protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
             if ((ProtocolVersion.HTTP_V1 == version) || (ProtocolVersion.HTTP_V2 == version)) {
                 // .../${svn}/act/
@@ -72,11 +77,6 @@ final class Prefix {
         protected void resetHandler() {
             prefix = null;
         }
-
-        @Override
-        public Resource getValue() {
-            return prefix;
-        }
     }
 
     private static class PrefixHandler extends AbstractSaxExpressionHandler<Resource> {
@@ -87,7 +87,7 @@ final class Prefix {
 
         @Override
         public Resource getValue() {
-            return ((PrefixExpression) expressions[0]).prefix;
+            return ((PrefixExpression) expressions[0]).getValue();
         }
     }
 

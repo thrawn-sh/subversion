@@ -15,6 +15,9 @@
  */
 package de.shadowhunt.subversion.xml;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import javax.annotation.CheckForNull;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -24,9 +27,6 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import java.io.IOException;
-import java.io.InputStream;
 
 public abstract class AbstractSaxExpressionHandler<V> extends DefaultHandler {
 
@@ -60,7 +60,7 @@ public abstract class AbstractSaxExpressionHandler<V> extends DefaultHandler {
 
     @Override
     public void endDocument() {
-        assert(depth == 0);
+        assert (depth == 0);
     }
 
     @Override
@@ -77,14 +77,14 @@ public abstract class AbstractSaxExpressionHandler<V> extends DefaultHandler {
     }
 
     @CheckForNull
+    public abstract V getValue();
+
+    @CheckForNull
     public V parse(final InputStream inputStream) throws ParserConfigurationException, SAXException, IOException {
         final SAXParser saxParser = FACTORY.newSAXParser();
         saxParser.parse(inputStream, this);
         return getValue();
     }
-
-    @CheckForNull
-    public abstract V getValue();
 
     @Override
     public void startDocument() {

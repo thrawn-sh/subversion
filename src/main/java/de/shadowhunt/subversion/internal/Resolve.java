@@ -18,15 +18,14 @@ package de.shadowhunt.subversion.internal;
 import java.io.InputStream;
 
 import javax.xml.namespace.QName;
-import javax.xml.parsers.SAXParser;
 
-import de.shadowhunt.subversion.xml.AbstractSaxExpression;
-import de.shadowhunt.subversion.xml.AbstractSaxExpressionHandler;
 import org.xml.sax.Attributes;
 
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
+import de.shadowhunt.subversion.xml.AbstractSaxExpression;
+import de.shadowhunt.subversion.xml.AbstractSaxExpressionHandler;
 
 final class Resolve {
 
@@ -48,6 +47,11 @@ final class Resolve {
         }
 
         @Override
+        public Resolve getValue() {
+            return entry;
+        }
+
+        @Override
         protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
             // nothing to do
         }
@@ -65,11 +69,6 @@ final class Resolve {
         @Override
         protected void resetHandler() {
             entry = null;
-        }
-
-        @Override
-        public Resolve getValue() {
-            return entry;
         }
     }
 

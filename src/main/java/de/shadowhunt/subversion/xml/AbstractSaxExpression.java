@@ -15,28 +15,13 @@
  */
 package de.shadowhunt.subversion.xml;
 
-import org.xml.sax.Attributes;
-
 import javax.xml.namespace.QName;
+
+import org.xml.sax.Attributes;
 
 public abstract class AbstractSaxExpression<V> implements SaxExpression<V> {
 
     private static final SaxExpression[] NO_CHILDREN = new SaxExpression[0];
-
-    private final QName[] path;
-
-    private final SaxExpression[] children;
-
-    private int position = 0;
-
-    protected AbstractSaxExpression(final QName[] path) {
-        this(path, NO_CHILDREN);
-    }
-
-    protected AbstractSaxExpression(final QName[] path, final SaxExpression... children) {
-        this.path = path;
-        this.children = children;
-    }
 
     private static boolean doesElementMatch(final QName element, final String nameSpaceUri, final String localName) {
         return doesNameSpaceUriMatch(element, nameSpaceUri) && doesLocalNameMatch(element, localName);
@@ -54,6 +39,21 @@ public abstract class AbstractSaxExpression<V> implements SaxExpression<V> {
         return (pNameSpaceUri == null) || (pNameSpaceUri.equals(nameSpaceUri));
     }
 
+    private final SaxExpression[] children;
+
+    private final QName[] path;
+
+    private int position = 0;
+
+    protected AbstractSaxExpression(final QName[] path) {
+        this(path, NO_CHILDREN);
+    }
+
+    protected AbstractSaxExpression(final QName[] path, final SaxExpression... children) {
+        this.path = path;
+        this.children = children;
+    }
+
     @Override
     public final void end(final String nameSpaceUri, final String localName, final int depth, final String text) {
         if ((depth > position) || ((position - 1) >= path.length)) {
@@ -64,11 +64,11 @@ public abstract class AbstractSaxExpression<V> implements SaxExpression<V> {
             return;
         }
 
-        if (!doesElementMatch(path[position - 1], nameSpaceUri, localName)) {
-            return;
-        }
-
         try {
+            if (!doesElementMatch(path[position - 1], nameSpaceUri, localName)) {
+                return;
+            }
+
             if (position == path.length) {
                 processEnd(nameSpaceUri, localName, text);
             }
@@ -102,12 +102,12 @@ public abstract class AbstractSaxExpression<V> implements SaxExpression<V> {
             return;
         }
 
-        if (!doesElementMatch(path[position], nameSpaceUri, localName)) {
-            return;
-        }
-
         try {
-            if (position == path.length -1) {
+            if (!doesElementMatch(path[position], nameSpaceUri, localName)) {
+                return;
+            }
+
+            if (position == path.length - 1) {
                 processStart(nameSpaceUri, localName, attributes);
             }
         } finally {
