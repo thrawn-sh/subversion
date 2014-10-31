@@ -24,10 +24,13 @@ import javax.xml.parsers.SAXParser;
 import de.shadowhunt.subversion.Repository.ProtocolVersion;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.SubversionException;
+import de.shadowhunt.subversion.xml.AbstractSaxExpression;
+import de.shadowhunt.subversion.xml.AbstractSaxExpressionHandler;
+import org.xml.sax.Attributes;
 
 final class Prefix {
 
-    private static class PrefixExpression extends SaxExpressionHandler.SaxExpression {
+    private static class PrefixExpression extends AbstractSaxExpression<Resource> {
 
         private static QName[] PATH;
 
@@ -41,17 +44,17 @@ final class Prefix {
             PATH = path;
         }
 
-        Resource prefix = null;
+        private Resource prefix = null;
 
         private final ProtocolVersion version;
 
         PrefixExpression(final ProtocolVersion version) {
-            super(PATH, false, true);
+            super(PATH);
             this.version = version;
         }
 
         @Override
-        protected void processEnd(final String namespaceUri, final String localName, final String text) {
+        protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
             if ((ProtocolVersion.HTTP_V1 == version) || (ProtocolVersion.HTTP_V2 == version)) {
                 // .../${svn}/act/
                 //     ^^^^^^ <- prefix
@@ -61,12 +64,22 @@ final class Prefix {
         }
 
         @Override
+        protected void processStart(final String nameSpaceUri, final String localName, final Attributes attributes) {
+            // nothing to do
+        }
+
+        @Override
         protected void resetHandler() {
             prefix = null;
         }
+
+        @Override
+        public Resource getValue() {
+            return prefix;
+        }
     }
 
-    private static class PrefixHandler extends SaxExpressionHandler<Resource> {
+    private static class PrefixHandler extends AbstractSaxExpressionHandler<Resource> {
 
         PrefixHandler(final ProtocolVersion version) {
             super(new PrefixExpression(version));
@@ -81,11 +94,8 @@ final class Prefix {
     static Resource read(final InputStream inputStream, final ProtocolVersion version) {
         final Resource prefix;
         try {
-            final SAXParser saxParser = SaxExpressionHandler.newParser();
-            final SaxExpressionHandler<Resource> handler = new PrefixHandler(version);
-
-            saxParser.parse(inputStream, handler);
-            prefix = handler.getValue();
+            final AbstractSaxExpressionHandler<Resource> handler = new PrefixHandler(version);
+            prefix = handler.parse(inputStream);
         } catch (final Exception e) {
             throw new SubversionException("Invalid server response: could not parse response", e);
         }

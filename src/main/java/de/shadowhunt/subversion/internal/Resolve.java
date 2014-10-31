@@ -20,6 +20,8 @@ import java.io.InputStream;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.SAXParser;
 
+import de.shadowhunt.subversion.xml.AbstractSaxExpression;
+import de.shadowhunt.subversion.xml.AbstractSaxExpressionHandler;
 import org.xml.sax.Attributes;
 
 import de.shadowhunt.subversion.Resource;
@@ -28,7 +30,7 @@ import de.shadowhunt.subversion.SubversionException;
 
 final class Resolve {
 
-    private static class ResolveExpression extends SaxExpressionHandler.SaxExpression {
+    private static class ResolveExpression extends AbstractSaxExpression<Resolve> {
 
         private static QName[] PATH;
 
@@ -39,14 +41,19 @@ final class Resolve {
             PATH = path;
         }
 
-        Resolve entry = null;
+        private Resolve entry = null;
 
         ResolveExpression() {
-            super(PATH, true, false);
+            super(PATH);
         }
 
         @Override
-        protected void processStart(final String namespaceUri, final String localName, final Attributes attributes) {
+        protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
+            // nothing to do
+        }
+
+        @Override
+        protected void processStart(final String nameSpaceUri, final String localName, final Attributes attributes) {
             entry = new Resolve();
 
             final String version = attributes.getValue("rev");
@@ -59,9 +66,14 @@ final class Resolve {
         protected void resetHandler() {
             entry = null;
         }
+
+        @Override
+        public Resolve getValue() {
+            return entry;
+        }
     }
 
-    private static class ResolveHandler extends SaxExpressionHandler<Resolve> {
+    private static class ResolveHandler extends AbstractSaxExpressionHandler<Resolve> {
 
         ResolveHandler() {
             super(new ResolveExpression());
@@ -69,7 +81,7 @@ final class Resolve {
 
         @Override
         public Resolve getValue() {
-            return ((ResolveExpression) expressions[0]).entry;
+            return ((ResolveExpression) expressions[0]).getValue();
         }
     }
 
@@ -83,11 +95,8 @@ final class Resolve {
     static Resolve read(final InputStream inputStream) {
         final Resolve resolve;
         try {
-            final SAXParser saxParser = SaxExpressionHandler.newParser();
-            final SaxExpressionHandler<Resolve> handler = new ResolveHandler();
-
-            saxParser.parse(inputStream, handler);
-            resolve = handler.getValue();
+            final AbstractSaxExpressionHandler<Resolve> handler = new ResolveHandler();
+            resolve = handler.parse(inputStream);
         } catch (final Exception e) {
             throw new SubversionException("Invalid server response: could not parse response", e);
         }
