@@ -15,8 +15,6 @@
  */
 package de.shadowhunt.subversion.internal;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
@@ -249,11 +247,6 @@ final class LogImpl implements Log {
         protected void resetHandler() {
             revision = null;
         }
-    }
-
-    public static void main(String[] args) throws Exception {
-        FileInputStream fis = new FileInputStream(new File("/home/thrawn/log.xml"));
-        System.out.println(read(fis));
     }
 
     /**
