@@ -15,12 +15,13 @@
  */
 package de.shadowhunt.subversion.internal.httpv1;
 
-import java.io.StringWriter;
+import java.io.Writer;
 import java.net.URI;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
@@ -49,7 +50,7 @@ class CheckoutOperation extends AbstractVoidOperation {
         final DavTemplateRequest request = new DavTemplateRequest("CHECKOUT", uri);
 
         final URI transactionURI = URIUtils.createURI(repository, transaction);
-        final StringWriter body = new StringWriter();
+        final Writer body = new StringBuilderWriter();
         try {
             final XMLStreamWriter writer = XML_OUTPUT_FACTORY.createXMLStreamWriter(body);
             writer.writeStartDocument(XmlConstants.ENCODING, XmlConstants.VERSION_1_0);

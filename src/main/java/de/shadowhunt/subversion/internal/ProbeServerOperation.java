@@ -16,7 +16,7 @@
 package de.shadowhunt.subversion.internal;
 
 import java.io.InputStream;
-import java.io.StringWriter;
+import java.io.Writer;
 import java.net.URI;
 import java.util.ServiceLoader;
 
@@ -24,6 +24,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -56,7 +57,7 @@ class ProbeServerOperation extends AbstractOperation<Repository> {
     protected HttpUriRequest createRequest() {
         final DavTemplateRequest request = new DavTemplateRequest("OPTIONS", repository);
 
-        final StringWriter body = new StringWriter();
+        final Writer body = new StringBuilderWriter();
         try {
             final XMLStreamWriter writer = XML_OUTPUT_FACTORY.createXMLStreamWriter(body);
             writer.writeStartDocument(XmlConstants.ENCODING, XmlConstants.VERSION_1_0);
