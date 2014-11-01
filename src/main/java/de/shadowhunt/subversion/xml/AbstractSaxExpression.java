@@ -15,6 +15,8 @@
  */
 package de.shadowhunt.subversion.xml;
 
+import java.util.Arrays;
+
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
@@ -51,7 +53,7 @@ public abstract class AbstractSaxExpression<V> implements SaxExpression<V> {
     }
 
     protected AbstractSaxExpression(final QName[] path, final SaxExpression... children) {
-        this.path = path;
+        this.path = Arrays.copyOf(path, path.length);
         this.children = children;
     }
 

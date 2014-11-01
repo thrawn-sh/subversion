@@ -169,8 +169,8 @@ final class LogImplReader {
 
         @Override
         protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
-            final int revision = Integer.parseInt(text);
-            this.revision = Revision.create(revision);
+            final int version = Integer.parseInt(text);
+            revision = Revision.create(version);
         }
 
         @Override

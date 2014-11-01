@@ -20,7 +20,7 @@ import de.shadowhunt.subversion.xml.AbstractSaxExpression;
 import de.shadowhunt.subversion.xml.AbstractSaxExpressionHandler;
 import de.shadowhunt.subversion.xml.SaxExpression;
 
-class InfoImplReader {
+final class InfoImplReader {
 
     private static class InfoExpression extends AbstractSaxExpression<SortedSet<Info>> {
 
@@ -220,7 +220,7 @@ class InfoImplReader {
 
         @Override
         public Void getValue() {
-            return null;
+            throw new UnsupportedOperationException("no value available");
         }
 
         @Override
