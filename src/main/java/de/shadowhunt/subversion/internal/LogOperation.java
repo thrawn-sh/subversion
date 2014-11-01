@@ -98,7 +98,7 @@ class LogOperation extends AbstractOperation<List<Log>> {
     protected List<Log> processResponse(final HttpResponse response) {
         final InputStream in = getContent(response);
         try {
-            return LogImpl.read(in);
+            return LogImplReader.read(in);
         } finally {
             IOUtils.closeQuietly(in);
         }

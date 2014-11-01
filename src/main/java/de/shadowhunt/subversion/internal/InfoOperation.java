@@ -85,7 +85,7 @@ class InfoOperation extends AbstractOperation<Info> {
     protected Info processResponse(final HttpResponse response) {
         final InputStream in = getContent(response);
         try {
-            final Info info = InfoImpl.read(in, parser, repository.getPath(), marker.getValue());
+            final Info info = InfoImplReader.read(in, parser, repository.getPath(), marker.getValue());
             if (info.isLocked()) {
                 final Header header = response.getFirstHeader(LOCK_OWNER_HEADER);
                 ((InfoImpl) info).setLockOwner(header.getValue());

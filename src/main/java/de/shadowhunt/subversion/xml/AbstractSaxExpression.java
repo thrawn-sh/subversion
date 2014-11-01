@@ -56,6 +56,11 @@ public abstract class AbstractSaxExpression<V> implements SaxExpression<V> {
     }
 
     @Override
+    public void clear() {
+        // nothing to do
+    }
+
+    @Override
     public final void end(final String nameSpaceUri, final String localName, final int depth, final String text) {
         if ((depth > position) || ((position - 1) >= path.length)) {
             final int childDepth = depth - position;
@@ -95,11 +100,6 @@ public abstract class AbstractSaxExpression<V> implements SaxExpression<V> {
         for (final SaxExpression child : children) {
             ((AbstractSaxExpression) child).resetHandler();
         }
-    }
-
-    @Override
-    public void clear() {
-        // nothing to do
     }
 
     @Override
