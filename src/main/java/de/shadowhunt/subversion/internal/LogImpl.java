@@ -116,14 +116,14 @@ final class LogImpl implements Log {
 
     private static class LogExpression extends AbstractSaxExpression<List<Log>> {
 
-        private static SaxExpression[] CHILDREN = { //
+        private static final SaxExpression[] CHILDREN = { //
                 new CommentExpression(), //
                 new CreatorExpression(), //
                 new DateExpression(), //
                 new RevisionExpression() //
         };
 
-        private static QName[] PATH = { //
+        private static final QName[] PATH = { //
                 new QName(XmlConstants.SVN_NAMESPACE, "log-report"), //
                 new QName(XmlConstants.SVN_NAMESPACE, "log-item") //
         };

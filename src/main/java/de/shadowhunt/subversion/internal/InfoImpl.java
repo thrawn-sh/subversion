@@ -73,7 +73,7 @@ final class InfoImpl implements Info {
             };
         }
 
-        private SortedSet<Info> entries = new TreeSet<Info>(Info.RESOURCE_COMPARATOR);
+        private final SortedSet<Info> entries = new TreeSet<Info>(Info.RESOURCE_COMPARATOR);
 
         InfoExpression(final String base, final String marker) {
             super(PATH, createExpressions(base, marker));
@@ -137,7 +137,7 @@ final class InfoImpl implements Info {
         public ResourceProperty[] getValue() {
             final ResourceProperty[] resourceProperties = new ResourceProperty[properties.size()];
             int i = 0;
-            for (ResourceProperty property : properties) {
+            for (final ResourceProperty property : properties) {
                 resourceProperties[i++] = property;
             }
             return resourceProperties;
@@ -268,11 +268,11 @@ final class InfoImpl implements Info {
         private static final QName PROP = new QName(XmlConstants.DAV_NAMESPACE, "prop");
 
         private static final QName[] prefix(final QName... path) {
-            QName[] prefixPath = new QName[path.length + 2];
+            final QName[] prefixPath = new QName[path.length + 2];
             int i=0;
             prefixPath[i++] = PROPSTAT;
             prefixPath[i++] = PROP;
-            for (QName name : path) {
+            for (final QName name : path) {
                 prefixPath[i++] = name;
             }
             return prefixPath;
@@ -298,8 +298,8 @@ final class InfoImpl implements Info {
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        FileInputStream fis = new FileInputStream(new File("/home/thrawn/info.xml"));
+    public static void main(final String[] args) throws Exception {
+        final FileInputStream fis = new FileInputStream(new File("/home/thrawn/info.xml"));
         System.out.println(readAll(fis, new VersionParser("/!svn"), "/1.8.0/svn-basic/test", "/!svn"));
     }
 
