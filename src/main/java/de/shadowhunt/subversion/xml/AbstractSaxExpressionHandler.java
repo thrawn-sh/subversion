@@ -76,7 +76,6 @@ public abstract class AbstractSaxExpressionHandler<V> extends DefaultHandler {
         return StringEscapeUtils.unescapeXml(buffer.toString());
     }
 
-    @CheckForNull
     public abstract V getValue();
 
     @CheckForNull
@@ -89,10 +88,6 @@ public abstract class AbstractSaxExpressionHandler<V> extends DefaultHandler {
     @Override
     public void startDocument() {
         depth = 0;
-        clearText();
-        for (final SaxExpression expression : expressions) {
-            expression.reset();
-        }
     }
 
     @Override

@@ -40,7 +40,7 @@ public abstract class AbstractSaxExpression<V> implements SaxExpression<V> {
         return XMLConstants.NULL_NS_URI.equals(pNameSpaceUri) || (pNameSpaceUri.equals(nameSpaceUri));
     }
 
-    private final SaxExpression[] children;
+    protected final SaxExpression[] children;
 
     private final QName[] path;
 
@@ -65,17 +65,14 @@ public abstract class AbstractSaxExpression<V> implements SaxExpression<V> {
             return;
         }
 
-        try {
-            if (!doesElementMatch(path[position - 1], nameSpaceUri, localName)) {
-                return;
-            }
-
-            if (position == path.length) {
-                processEnd(nameSpaceUri, localName, text);
-            }
-        } finally {
-            position--;
+        if (!doesElementMatch(path[position - 1], nameSpaceUri, localName)) {
+            return;
         }
+
+        if (position == path.length) {
+            processEnd(nameSpaceUri, localName, text);
+        }
+        position--;
     }
 
     protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
@@ -89,13 +86,19 @@ public abstract class AbstractSaxExpression<V> implements SaxExpression<V> {
     @Override
     public final void reset() {
         position = 0;
-        resetHandler();
         for (final SaxExpression child : children) {
             child.reset();
         }
     }
 
-    protected void resetHandler() {
+    public void resetHandler() {
+        for (final SaxExpression child : children) {
+            ((AbstractSaxExpression) child).resetHandler();
+        }
+    }
+
+    @Override
+    public void clear() {
         // nothing to do
     }
 
@@ -109,16 +112,14 @@ public abstract class AbstractSaxExpression<V> implements SaxExpression<V> {
             return;
         }
 
-        try {
-            if (!doesElementMatch(path[position], nameSpaceUri, localName)) {
-                return;
-            }
+        if (!doesElementMatch(path[position], nameSpaceUri, localName)) {
+            return;
+        }
 
-            if (position == path.length - 1) {
-                processStart(nameSpaceUri, localName, attributes);
-            }
-        } finally {
-            position++;
+        position++;
+        if (position == path.length) {
+            resetHandler();
+            processStart(nameSpaceUri, localName, attributes);
         }
     }
 }

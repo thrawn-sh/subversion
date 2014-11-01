@@ -15,6 +15,8 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Date;
@@ -24,11 +26,10 @@ import java.util.TreeSet;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
-import javax.xml.parsers.SAXParser;
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
 
 import org.apache.commons.lang3.StringUtils;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
@@ -36,6 +37,9 @@ import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.ResourceProperty.Type;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
+import de.shadowhunt.subversion.xml.AbstractSaxExpression;
+import de.shadowhunt.subversion.xml.AbstractSaxExpressionHandler;
+import de.shadowhunt.subversion.xml.SaxExpression;
 
 /**
  * Default implementation for {@link Info}
@@ -46,166 +50,257 @@ final class InfoImpl implements Info {
 
     private ResourceProperty[] properties = EMPTY;
 
-    private static class SubversionInfoHandler extends BasicHandler {
+    private static class InfoExpression extends AbstractSaxExpression<SortedSet<Info>> {
+
+        private static final QName[] PATH = { //
+                new QName(XmlConstants.DAV_NAMESPACE, "multistatus"), //
+                new QName(XmlConstants.DAV_NAMESPACE, "response") //
+        };
+
+        private static SaxExpression[] createExpressions(final String base, final String marker) {
+            return new SaxExpression[] { //
+                    new StringExpression(new QName(XmlConstants.DAV_NAMESPACE, "creationdate")), //
+                    new ResourceTypeExpression(),
+                    new StringExpression(new QName(XmlConstants.DAV_NAMESPACE, "getlastmodified")), //
+                    new StringExpression(new QName(XmlConstants.DAV_NAMESPACE, "lockdiscovery"), new QName(XmlConstants.DAV_NAMESPACE, "activelock"), new QName(XmlConstants.DAV_NAMESPACE, "locktoken"), new QName(XmlConstants.DAV_NAMESPACE, "href")),
+                    new StringExpression(new QName(XmlConstants.SVN_DAV_NAMESPACE, "md5-checksum")), //
+                    new PropertyExpression(), //
+                    new StringExpression(new QName(XmlConstants.SVN_DAV_NAMESPACE, "repository-uuid")), //
+                    new ResourceExpression(base, marker), //
+                    new StringExpression(new QName(XmlConstants.DAV_NAMESPACE, "version-name")), //
+
+                    new StatusExpression(), // throws exception on error
+            };
+        }
+
+        private SortedSet<Info> entries = new TreeSet<Info>(Info.RESOURCE_COMPARATOR);
+
+        InfoExpression(final String base, final String marker) {
+            super(PATH, createExpressions(base, marker));
+        }
+
+        @Override
+        public SortedSet<Info> getValue() {
+            return entries;
+        }
+
+        @Override
+        protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
+            final InfoImpl info = new InfoImpl();
+            info.setCreationDate(DateUtils.parseCreatedDate(((StringExpression) children[0]).getValue()));
+            info.setDirectory(((ResourceTypeExpression) children[1]).getValue());
+            info.setLastModifiedDate(DateUtils.parseLastModifiedDate(((StringExpression) children[2]).getValue()));
+            info.setLockToken(((StringExpression) children[3]).getValue());
+            info.setMd5(((StringExpression) children[4]).getValue());
+            info.setProperties(((PropertyExpression) children[5]).getValue());
+            info.setRepositoryId(UUID.fromString(((StringExpression) children[6]).getValue()));
+            info.setResource(((ResourceExpression) children[7]).getValue());
+            final int revision = Integer.parseInt(((StringExpression) children[8]).getValue());
+            info.setRevision(Revision.create(revision));
+            entries.add(info);
+
+            children[5].clear();
+        }
+    }
+
+    private static class InfoHandler extends AbstractSaxExpressionHandler<SortedSet<Info>> {
+
+        InfoHandler(final String base, final String marker) {
+            super(new InfoExpression(base, marker));
+        }
+
+        @Override
+        public SortedSet<Info> getValue() {
+            return ((InfoExpression) expressions[0]).getValue();
+        }
+    }
+
+    private static class PropertyExpression extends AbstractSaxExpression<ResourceProperty[]> {
+
+        private static final QName[] PATH = { //
+                new QName(XmlConstants.DAV_NAMESPACE, "propstat"), //
+                new QName(XmlConstants.DAV_NAMESPACE, "prop"), //
+                new QName(XMLConstants.NULL_NS_URI, "*")
+        };
+
+        private Set<ResourceProperty> properties = new TreeSet<ResourceProperty>(ResourceProperty.TYPE_NAME_COMPARATOR);
+
+        PropertyExpression() {
+            super(PATH);
+        }
+
+        public void clear() {
+            properties = new TreeSet<ResourceProperty>(ResourceProperty.TYPE_NAME_COMPARATOR);
+        }
+
+        @Override
+        public ResourceProperty[] getValue() {
+            final ResourceProperty[] resourceProperties = new ResourceProperty[properties.size()];
+            int i = 0;
+            for (ResourceProperty property : properties) {
+                resourceProperties[i++] = property;
+            }
+            return resourceProperties;
+        }
+
+        @Override
+        protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
+            if (XmlConstants.CUSTOM_PROPERTIES_NAMESPACE.equals(nameSpaceUri)) {
+                properties.add(new ResourceProperty(Type.CUSTOM, localName, text));
+                return;
+            }
+
+            if (XmlConstants.SVN_PROPERTIES_NAMESPACE.equals(nameSpaceUri)) {
+                properties.add(new ResourceProperty(Type.SVN, localName, text));
+                return;
+            }
+        }
+    }
+
+    private static class ResourceExpression extends AbstractSaxExpression<Resource> {
+
+        private static final QName[] PATH = { //
+                new QName(XmlConstants.DAV_NAMESPACE, "propstat"), //
+                new QName(XmlConstants.DAV_NAMESPACE, "prop"), //
+                new QName(XmlConstants.DAV_NAMESPACE, "checked-in"), //
+                new QName(XmlConstants.DAV_NAMESPACE, "href") //
+        };
 
         private final String base;
 
-        private boolean checkedin = false;
-
-        private InfoImpl current = null;
-
-        private final SortedSet<InfoImpl> infoSet = new TreeSet<InfoImpl>(Info.RESOURCE_COMPARATOR);
-
-        private boolean lockToken = false;
-
         private final String marker;
 
-        private final VersionParser parser;
+        private Resource resource = null;
 
-        private Set<ResourceProperty> properties = null;
-
-        private boolean props;
-
-        private boolean resourceType = false;
-
-        SubversionInfoHandler(final VersionParser parser, final String base, final String marker) {
-            this.parser = parser;
+        ResourceExpression(final String base, final String marker) {
+            super(PATH);
             this.base = base;
             this.marker = marker;
         }
 
-        private Resource determineResource(final String path) {
-            final String plainPath = StringUtils.removeStart(path, base);
-
-            if (!plainPath.startsWith(marker)) {
-                return Resource.create(plainPath);
-            }
-
-            int part = marker.length() + 1;
-            for (int i = 0; i < 2; i++) {
-                part = plainPath.indexOf(Resource.SEPARATOR_CHAR, part) + 1;
-            }
-            return Resource.create(plainPath.substring(part));
+        @Override
+        public Resource getValue() {
+            return resource;
         }
 
         @Override
-        public void endElement(final String uri, final String localName, final String qName) throws SAXException {
-            if (current == null) {
-                return;
-            }
+        protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
+            final String path = StringUtils.removeStart(text, base);
 
-            if ("response".equals(localName)) {
-                if (current.getResource() != null) {
-                    current.setProperties(properties.toArray(new ResourceProperty[properties.size()]));
-                    infoSet.add(current);
+            if (path.startsWith(marker)) {
+                int part = marker.length() + 1;
+                for (int i = 0; i < 2; i++) {
+                    part = path.indexOf(Resource.SEPARATOR_CHAR, part) + 1;
                 }
-                properties = null;
-                current = null;
-                return;
+                resource = Resource.create(path.substring(part));
+            } else {
+                resource = Resource.create(path);
             }
-
-            if (resourceType && "collection".equals(localName)) {
-                current.setDirectory(true);
-                resourceType = false;
-                return;
-            }
-
-            if ("creationdate".equals(localName)) {
-                final Date date = DateUtils.parseCreatedDate(getText());
-                current.setCreationDate(date);
-                return;
-            }
-
-            if ("getlastmodified".equals(localName)) {
-                final Date date = DateUtils.parseLastModifiedDate(getText());
-                current.setLastModifiedDate(date);
-                return;
-            }
-
-            if (!props && "href".equals(localName)) {
-                final Resource resource = determineResource(getText());
-                current.setResource(resource);
-                return;
-            }
-
-            if (checkedin && "href".equals(localName)) {
-                final String text = getText();
-                final Revision revision = parser.getRevisionFromPath(text);
-                current.setRevision(revision);
-                checkedin = false;
-                return;
-            }
-
-            if ("repository-uuid".equals(localName)) {
-                current.setRepositoryId(UUID.fromString(getText()));
-                return;
-            }
-
-            if (lockToken && "href".equals(localName)) {
-                current.setLockToken(getText());
-                lockToken = false;
-                return;
-            }
-
-            if ("md5-checksum".equals(localName)) {
-                current.setMd5(getText());
-                return;
-            }
-
-            if ("repository-uuid".equals(localName)) {
-                current.setRepositoryId(UUID.fromString(getText()));
-                return;
-            }
-
-            if (XmlConstants.CUSTOM_PROPERTIES_NAMESPACE.equals(uri)) {
-                final ResourceProperty property = new ResourceProperty(Type.CUSTOM, localName, getText());
-                properties.add(property);
-                return;
-            }
-            if (XmlConstants.SVN_PROPERTIES_NAMESPACE.equals(uri)) {
-                final ResourceProperty property = new ResourceProperty(Type.SVN, localName, getText());
-                properties.add(property);
-                return;
-            }
-        }
-
-        SortedSet<InfoImpl> getInfoSet() {
-            return infoSet;
         }
 
         @Override
-        public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
-            clearText();
+        public void resetHandler() {
+            resource = null;
+        }
+    }
 
-            if ("checked-in".equals(localName)) {
-                checkedin = true;
-                return;
-            }
+    private static class ResourceTypeExpression extends AbstractSaxExpression<Boolean> {
 
-            if ("response".equals(localName)) {
-                current = new InfoImpl();
-                lockToken = false;
-                resourceType = false;
-                properties = new TreeSet<ResourceProperty>(ResourceProperty.TYPE_NAME_COMPARATOR);
-                props = false;
-                return;
-            }
+        private static final QName[] PATH = { //
+                new QName(XmlConstants.DAV_NAMESPACE, "propstat"), //
+                new QName(XmlConstants.DAV_NAMESPACE, "prop"), //
+                new QName(XmlConstants.DAV_NAMESPACE, "resourcetype"), //
+                new QName(XmlConstants.DAV_NAMESPACE, "collection") //
+        };
 
-            if ("locktoken".equals(localName)) {
-                lockToken = true;
-                return;
-            }
+        private boolean folder = false;
 
-            if ("propstat".equals(localName)) {
-                props = true;
-                return;
-            }
+        protected ResourceTypeExpression() {
+            super(PATH);
+        }
 
-            if ("resourcetype".equals(localName)) {
-                resourceType = true;
-                return;
+        @Override
+        public Boolean getValue() {
+            return folder;
+        }
+
+        @Override
+        protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
+            folder = true;
+        }
+
+        @Override
+        public void resetHandler() {
+            folder = false;
+        }
+    }
+
+    private static class StatusExpression extends AbstractSaxExpression<Void> {
+
+        public static final QName[] PATH = { //
+                new QName(XmlConstants.DAV_NAMESPACE, "propstat"), //
+         new QName(XmlConstants.DAV_NAMESPACE, "status")  //
+        };
+
+        StatusExpression() {
+            super(PATH);
+        }
+
+        @Override
+        public Void getValue() {
+            return null;
+        }
+
+        @Override
+        protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
+            if (!"HTTP/1.1 200 OK".equals(text)) {
+                throw new SubversionException("properties are missing");
             }
         }
+    }
+
+    private static class StringExpression extends AbstractSaxExpression<String> {
+
+        private String value = null;
+
+        private static final QName PROPSTAT = new QName(XmlConstants.DAV_NAMESPACE, "propstat");
+
+        private static final QName PROP = new QName(XmlConstants.DAV_NAMESPACE, "prop");
+
+        private static final QName[] prefix(final QName... path) {
+            QName[] prefixPath = new QName[path.length + 2];
+            int i=0;
+            prefixPath[i++] = PROPSTAT;
+            prefixPath[i++] = PROP;
+            for (QName name : path) {
+                prefixPath[i++] = name;
+            }
+            return prefixPath;
+        }
+
+        protected StringExpression(final QName... path) {
+            super(prefix(path));
+        }
+
+        @Override
+        public String getValue() {
+            return value;
+        }
+
+        @Override
+        protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
+            value = text;
+        }
+
+        @Override
+        public void resetHandler() {
+            value = null;
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        FileInputStream fis = new FileInputStream(new File("/home/thrawn/info.xml"));
+        System.out.println(readAll(fis, new VersionParser("/!svn"), "/1.8.0/svn-basic/test", "/!svn"));
     }
 
     /**
@@ -218,32 +313,28 @@ final class InfoImpl implements Info {
      *
      * @return {@link InfoImpl} for the resource
      */
-    static InfoImpl read(final InputStream in, final VersionParser parser, final String base, final String marker) {
-        final SortedSet<InfoImpl> infos = readAll(in, parser, base, marker);
-        if (infos.isEmpty()) {
+    static Info read(final InputStream in, final VersionParser parser, final String base, final String marker) {
+        final SortedSet<Info> infoSet = readAll(in, parser, base, marker);
+        if (infoSet.isEmpty()) {
             throw new SubversionException("Invalid server response: expected content is missing");
         }
-        return infos.first();
+        return infoSet.first();
     }
 
     /**
      * Reads a {@link SortedSet} of status information for a single revision of various resources from the given {@link InputStream}
      *
-     * @param in {@link InputStream} from which the status information is read (Note: will not be closed)
+     * @param inputStream {@link InputStream} from which the status information is read (Note: will not be closed)
      * @param parser {@link VersionParser} that is used to retrieve the version information from the server response
      * @param base base path of the repository
      * @param marker path marker for special subversion directory (default: !svn)
      *
      * @return {@link InfoImpl} for the resources
      */
-    static SortedSet<InfoImpl> readAll(final InputStream in, final VersionParser parser, final String base, final String marker) {
+    static SortedSet<Info> readAll(final InputStream inputStream, final VersionParser parser, final String base, final String marker) {
         try {
-            final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
-            final SubversionInfoHandler handler = new SubversionInfoHandler(parser, base, marker);
-
-            saxParser.parse(in, handler);
-            return handler.getInfoSet();
-
+            final InfoHandler handler = new InfoHandler(base, marker);
+            return handler.parse(inputStream);
         } catch (final Exception e) {
             throw new SubversionException("Invalid server response: could not parse response", e);
         }

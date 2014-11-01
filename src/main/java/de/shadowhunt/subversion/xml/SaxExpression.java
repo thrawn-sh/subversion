@@ -15,15 +15,20 @@
  */
 package de.shadowhunt.subversion.xml;
 
+import javax.annotation.CheckForNull;
+
 import org.xml.sax.Attributes;
 
 public interface SaxExpression<V> {
 
     void end(String nameSpaceUri, String localName, int depth, String text);
 
+    @CheckForNull
     V getValue();
 
     void reset();
+
+    void clear();
 
     void start(String nameSpaceUri, String localName, int depth, Attributes attributes);
 }

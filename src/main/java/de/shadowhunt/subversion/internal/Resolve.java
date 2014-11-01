@@ -58,7 +58,8 @@ final class Resolve {
         }
 
         @Override
-        protected void resetHandler() {
+        public void resetHandler() {
+            super.resetHandler();
             entry = null;
         }
     }

@@ -57,7 +57,7 @@ final class LogImpl implements Log {
         }
 
         @Override
-        protected void resetHandler() {
+        public void resetHandler() {
             comment = "";
         }
     }
@@ -83,7 +83,7 @@ final class LogImpl implements Log {
         }
 
         @Override
-        protected void resetHandler() {
+        public void resetHandler() {
             creator = "";
         }
     }
@@ -109,7 +109,7 @@ final class LogImpl implements Log {
         }
 
         @Override
-        protected void resetHandler() {
+        public void resetHandler() {
             date = null;
         }
     }
@@ -135,6 +135,11 @@ final class LogImpl implements Log {
         }
 
         @Override
+        public void clear() {
+            entries = new ArrayList<Log>();
+        }
+
+        @Override
         public List<Log> getValue() {
             return entries;
         }
@@ -142,16 +147,11 @@ final class LogImpl implements Log {
         @Override
         protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
             final LogImpl log = new LogImpl();
-            log.setMessage(((CommentExpression) CHILDREN[0]).getValue());
-            log.setAuthor(((CreatorExpression) CHILDREN[1]).getValue());
-            log.setDate(((DateExpression) CHILDREN[2]).getValue());
-            log.setRevision(((RevisionExpression) CHILDREN[3]).getValue());
+            log.setMessage(((CommentExpression) children[0]).getValue());
+            log.setAuthor(((CreatorExpression) children[1]).getValue());
+            log.setDate(((DateExpression) children[2]).getValue());
+            log.setRevision(((RevisionExpression) children[3]).getValue());
             entries.add(log);
-        }
-
-        @Override
-        protected void resetHandler() {
-            entries = new ArrayList<Log>();
         }
     }
 
@@ -163,7 +163,10 @@ final class LogImpl implements Log {
 
         @Override
         public List<Log> getValue() {
-            return ((LogExpression) expressions[0]).getValue();
+            final LogExpression expression = (LogExpression) expressions[0];
+            final List<Log> logs = expression.getValue();
+            expression.clear();
+            return logs;
         }
     }
 
@@ -194,7 +197,7 @@ final class LogImpl implements Log {
         }
 
         @Override
-        protected void resetHandler() {
+        public void resetHandler() {
             revision = null;
         }
     }

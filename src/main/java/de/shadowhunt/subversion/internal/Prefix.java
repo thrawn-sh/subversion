@@ -63,7 +63,8 @@ final class Prefix {
         }
 
         @Override
-        protected void resetHandler() {
+        public void resetHandler() {
+            super.resetHandler();
             prefix = null;
         }
     }
