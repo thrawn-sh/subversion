@@ -298,11 +298,6 @@ final class InfoImpl implements Info {
         }
     }
 
-    public static void main(final String[] args) throws Exception {
-        final FileInputStream fis = new FileInputStream(new File("/home/thrawn/info.xml"));
-        System.out.println(readAll(fis, new VersionParser("/!svn"), "/1.8.0/svn-basic/test", "/!svn"));
-    }
-
     /**
      * Reads status information for a single revision of a resource from the given {@link InputStream}
      *
