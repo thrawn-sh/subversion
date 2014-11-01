@@ -15,6 +15,7 @@
  */
 package de.shadowhunt.subversion.xml;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.xml.sax.Attributes;
@@ -35,8 +36,8 @@ public abstract class AbstractSaxExpression<V> implements SaxExpression<V> {
 
     private static boolean doesNameSpaceUriMatch(final QName element, final String nameSpaceUri) {
         final String pNameSpaceUri = element.getNamespaceURI();
-        // null = any nameSpace
-        return (pNameSpaceUri == null) || (pNameSpaceUri.equals(nameSpaceUri));
+        // XMLConstants.NULL_NS_URI = any nameSpace
+        return XMLConstants.NULL_NS_URI.equals(pNameSpaceUri) || (pNameSpaceUri.equals(nameSpaceUri));
     }
 
     private final SaxExpression[] children;
