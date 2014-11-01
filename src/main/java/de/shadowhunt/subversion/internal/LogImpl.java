@@ -38,13 +38,7 @@ final class LogImpl implements Log {
 
     private static class CommentExpression extends AbstractSaxExpression<String> {
 
-        private static QName[] PATH;
-
-        static {
-            final QName[] path = new QName[1];
-            path[0] = new QName(XmlConstants.DAV_NAMESPACE, "comment");
-            PATH = path;
-        }
+        private static final QName[] PATH = { new QName(XmlConstants.DAV_NAMESPACE, "comment") };
 
         private String comment = "";
 
@@ -63,11 +57,6 @@ final class LogImpl implements Log {
         }
 
         @Override
-        protected void processStart(final String nameSpaceUri, final String localName, final Attributes attributes) {
-            // nothing to do
-        }
-
-        @Override
         protected void resetHandler() {
             comment = "";
         }
@@ -75,13 +64,7 @@ final class LogImpl implements Log {
 
     private static class CreatorExpression extends AbstractSaxExpression<String> {
 
-        private static QName[] PATH;
-
-        static {
-            final QName[] path = new QName[1];
-            path[0] = new QName(XmlConstants.DAV_NAMESPACE, "creator-displayname");
-            PATH = path;
-        }
+        private static final QName[] PATH = { new QName(XmlConstants.DAV_NAMESPACE, "creator-displayname") };
 
         private String creator = "";
 
@@ -100,11 +83,6 @@ final class LogImpl implements Log {
         }
 
         @Override
-        protected void processStart(final String nameSpaceUri, final String localName, final Attributes attributes) {
-            // nothing to do
-        }
-
-        @Override
         protected void resetHandler() {
             creator = "";
         }
@@ -112,13 +90,7 @@ final class LogImpl implements Log {
 
     private static class DateExpression extends AbstractSaxExpression<Date> {
 
-        private static QName[] PATH;
-
-        static {
-            final QName[] path = new QName[1];
-            path[0] = new QName(XmlConstants.SVN_NAMESPACE, "date");
-            PATH = path;
-        }
+        public static final QName[] PATH = { new QName(XmlConstants.SVN_NAMESPACE, "date") };
 
         private Date date = null;
 
@@ -137,11 +109,6 @@ final class LogImpl implements Log {
         }
 
         @Override
-        protected void processStart(final String nameSpaceUri, final String localName, final Attributes attributes) {
-            // nothing to do
-        }
-
-        @Override
         protected void resetHandler() {
             date = null;
         }
@@ -149,23 +116,17 @@ final class LogImpl implements Log {
 
     private static class LogExpression extends AbstractSaxExpression<List<Log>> {
 
-        private static SaxExpression[] CHILDREN;
+        private static SaxExpression[] CHILDREN = { //
+                new CommentExpression(), //
+                new CreatorExpression(), //
+                new DateExpression(), //
+                new RevisionExpression() //
+        };
 
-        static {
-            final QName[] path = new QName[2];
-            path[0] = new QName(XmlConstants.SVN_NAMESPACE, "log-report");
-            path[1] = new QName(XmlConstants.SVN_NAMESPACE, "log-item");
-            PATH = path;
-
-            final SaxExpression[] expressions = new SaxExpression[4];
-            expressions[0] = new CommentExpression();
-            expressions[1] = new CreatorExpression();
-            expressions[2] = new DateExpression();
-            expressions[3] = new RevisionExpression();
-            CHILDREN = expressions;
-        }
-
-        private static QName[] PATH;
+        private static QName[] PATH = { //
+                new QName(XmlConstants.SVN_NAMESPACE, "log-report"), //
+                new QName(XmlConstants.SVN_NAMESPACE, "log-item") //
+        };
 
         private List<Log> entries = new ArrayList<Log>();
 
@@ -189,11 +150,6 @@ final class LogImpl implements Log {
         }
 
         @Override
-        protected void processStart(final String nameSpaceUri, final String localName, final Attributes attributes) {
-            // nothing to do
-        }
-
-        @Override
         protected void resetHandler() {
             entries = new ArrayList<Log>();
         }
@@ -213,13 +169,7 @@ final class LogImpl implements Log {
 
     private static class RevisionExpression extends AbstractSaxExpression<Revision> {
 
-        private static QName[] PATH;
-
-        static {
-            final QName[] path = new QName[1];
-            path[0] = new QName(XmlConstants.DAV_NAMESPACE, "version-name");
-            PATH = path;
-        }
+        public static final QName[] PATH = { new QName(XmlConstants.DAV_NAMESPACE, "version-name") };
 
         private Revision revision = null;
 
@@ -258,7 +208,7 @@ final class LogImpl implements Log {
      */
     static List<Log> read(final InputStream inputStream) {
         try {
-            final AbstractSaxExpressionHandler<List<Log>> handler = new LogHandler();
+            final LogHandler handler = new LogHandler();
             return handler.parse(inputStream);
         } catch (final Exception e) {
             throw new SubversionException("Invalid server response: could not parse response", e);

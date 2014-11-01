@@ -31,14 +31,10 @@ final class Resolve {
 
     private static class ResolveExpression extends AbstractSaxExpression<Resolve> {
 
-        private static QName[] PATH;
-
-        static {
-            final QName[] path = new QName[2];
-            path[0] = new QName(XmlConstants.SVN_NAMESPACE, "get-locations-report");
-            path[1] = new QName(XmlConstants.SVN_NAMESPACE, "location");
-            PATH = path;
-        }
+        private static final QName[] PATH = { //
+                new QName(XmlConstants.SVN_NAMESPACE, "get-locations-report"), //
+                new QName(XmlConstants.SVN_NAMESPACE, "location") //
+        };
 
         private Resolve entry = null;
 
@@ -49,11 +45,6 @@ final class Resolve {
         @Override
         public Resolve getValue() {
             return entry;
-        }
-
-        @Override
-        protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
-            // nothing to do
         }
 
         @Override
@@ -94,7 +85,7 @@ final class Resolve {
     static Resolve read(final InputStream inputStream) {
         final Resolve resolve;
         try {
-            final AbstractSaxExpressionHandler<Resolve> handler = new ResolveHandler();
+            final ResolveHandler handler = new ResolveHandler();
             resolve = handler.parse(inputStream);
         } catch (final Exception e) {
             throw new SubversionException("Invalid server response: could not parse response", e);

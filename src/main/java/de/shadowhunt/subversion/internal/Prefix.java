@@ -20,8 +20,6 @@ import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
 
-import org.xml.sax.Attributes;
-
 import de.shadowhunt.subversion.Repository.ProtocolVersion;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.SubversionException;
@@ -32,17 +30,13 @@ final class Prefix {
 
     private static class PrefixExpression extends AbstractSaxExpression<Resource> {
 
-        private static QName[] PATH;
+        private static final QName[] PATH = { //
+                new QName(XmlConstants.DAV_NAMESPACE, "options-response"), //
+                new QName(XmlConstants.DAV_NAMESPACE, "activity-collection-set"), //
+                new QName(XmlConstants.DAV_NAMESPACE, "href") //
+        };
 
         private static final Pattern PATH_PATTERN = Pattern.compile(Resource.SEPARATOR);
-
-        static {
-            final QName[] path = new QName[3];
-            path[0] = new QName(XmlConstants.DAV_NAMESPACE, "options-response");
-            path[1] = new QName(XmlConstants.DAV_NAMESPACE, "activity-collection-set");
-            path[2] = new QName(XmlConstants.DAV_NAMESPACE, "href");
-            PATH = path;
-        }
 
         private Resource prefix = null;
 
@@ -69,11 +63,6 @@ final class Prefix {
         }
 
         @Override
-        protected void processStart(final String nameSpaceUri, final String localName, final Attributes attributes) {
-            // nothing to do
-        }
-
-        @Override
         protected void resetHandler() {
             prefix = null;
         }
@@ -94,7 +83,7 @@ final class Prefix {
     static Resource read(final InputStream inputStream, final ProtocolVersion version) {
         final Resource prefix;
         try {
-            final AbstractSaxExpressionHandler<Resource> handler = new PrefixHandler(version);
+            final PrefixHandler handler = new PrefixHandler(version);
             prefix = handler.parse(inputStream);
         } catch (final Exception e) {
             throw new SubversionException("Invalid server response: could not parse response", e);

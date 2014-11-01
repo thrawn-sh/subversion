@@ -86,8 +86,7 @@ class ListOperation extends AbstractOperation<Set<Info>> {
     protected Set<Info> processResponse(final HttpResponse response) {
         final InputStream in = getContent(response);
         try {
-            @SuppressWarnings({ "rawtypes", "unchecked" })
-            final Set<Info> info = ((Set) InfoImpl.readAll(in, parser, repository.getPath(), marker.getValue()));
+            final Set<Info> info = InfoImpl.readAll(in, parser, repository.getPath(), marker.getValue());
             return info;
         } finally {
             IOUtils.closeQuietly(in);

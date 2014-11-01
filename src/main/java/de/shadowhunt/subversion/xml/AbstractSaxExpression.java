@@ -77,9 +77,13 @@ public abstract class AbstractSaxExpression<V> implements SaxExpression<V> {
         }
     }
 
-    protected abstract void processEnd(final String nameSpaceUri, final String localName, final String text);
+    protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
+        // nothing to do
+    }
 
-    protected abstract void processStart(final String nameSpaceUri, final String localName, final Attributes attributes);
+    protected void processStart(final String nameSpaceUri, final String localName, final Attributes attributes) {
+        // nothing to do
+    }
 
     @Override
     public final void reset() {
@@ -90,7 +94,9 @@ public abstract class AbstractSaxExpression<V> implements SaxExpression<V> {
         }
     }
 
-    protected abstract void resetHandler();
+    protected void resetHandler() {
+        // nothing to do
+    }
 
     @Override
     public final void start(final String nameSpaceUri, final String localName, final int depth, final Attributes attributes) {
