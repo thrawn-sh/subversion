@@ -29,8 +29,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ContentType;
-import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.protocol.HttpContext;
 
 import de.shadowhunt.subversion.SubversionException;
@@ -117,7 +117,7 @@ public abstract class AbstractOperation<T> implements ResponseHandler<T> {
      * the other hand. Therefore we clear the redirection cache explicitly.
      */
     final void clearRedirects(final HttpContext context) {
-        context.removeAttribute(DefaultRedirectStrategy.REDIRECT_LOCATIONS);
+        context.removeAttribute(HttpClientContext.REDIRECT_LOCATIONS);
     }
 
     protected abstract HttpUriRequest createRequest();

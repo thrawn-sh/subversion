@@ -24,7 +24,6 @@ import java.util.List;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 import de.shadowhunt.subversion.Log;
@@ -189,11 +188,6 @@ final class LogImplReader {
         protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
             final int version = Integer.parseInt(text);
             revision = Revision.create(version);
-        }
-
-        @Override
-        protected void processStart(final String nameSpaceUri, final String localName, final Attributes attributes) {
-            // nothing to do
         }
 
         @Override

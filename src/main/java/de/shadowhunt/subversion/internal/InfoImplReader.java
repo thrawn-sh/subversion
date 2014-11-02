@@ -255,7 +255,7 @@ final class InfoImplReader {
 
         private static final QName PROPSTAT = new QName(XmlConstants.DAV_NAMESPACE, "propstat");
 
-        private static final QName[] prefix(final QName... path) {
+        private static QName[] prefix(final QName... path) {
             final QName[] prefixPath = new QName[path.length + 2];
             int i = 0;
             prefixPath[i++] = PROPSTAT;

@@ -24,28 +24,28 @@ import org.apache.http.annotation.Immutable;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 
 /**
- * A {@link WebDavHttpRequestRetryHandler} which retires all requested
+ * A {@link SubversionRequestRetryHandler} which retires all requested
  * HTTP and DAV methods which should be idempotent according to RFC-2616.
  */
 @Immutable
-public class WebDavHttpRequestRetryHandler extends DefaultHttpRequestRetryHandler {
+public class SubversionRequestRetryHandler extends DefaultHttpRequestRetryHandler {
 
     private final Map<String, Boolean> idempotentMethods;
 
     /**
-     * Create a {@link WebDavHttpRequestRetryHandler} with default settings
+     * Create a {@link SubversionRequestRetryHandler} with default settings
      */
-    public WebDavHttpRequestRetryHandler() {
+    public SubversionRequestRetryHandler() {
         this(3, true);
     }
 
     /**
-     * Create a {@link WebDavHttpRequestRetryHandler}
+     * Create a {@link SubversionRequestRetryHandler}
      *
      * @param retryCount number of times a method will be retried
      * @param requestSentRetryEnabled whether or not methods that have successfully sent their request will be retried
      */
-    public WebDavHttpRequestRetryHandler(final int retryCount, final boolean requestSentRetryEnabled) {
+    public SubversionRequestRetryHandler(final int retryCount, final boolean requestSentRetryEnabled) {
         super(retryCount, requestSentRetryEnabled);
 
         idempotentMethods = new HashMap<String, Boolean>();

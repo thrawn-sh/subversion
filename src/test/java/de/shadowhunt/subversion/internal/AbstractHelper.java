@@ -28,11 +28,11 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
-import de.shadowhunt.http.client.WebDavHttpRequestRetryHandler;
+import de.shadowhunt.http.client.SubversionRequestRetryHandler;
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.RepositoryFactory;
 
@@ -79,13 +79,15 @@ public abstract class AbstractHelper {
     }
 
     public HttpClient getHttpClient(final String username) {
-        final DefaultHttpClient client = new DefaultHttpClient();
+        final HttpClientBuilder builder = HttpClientBuilder.create();
+
         final CredentialsProvider cp = new BasicCredentialsProvider();
         final Credentials credentials = new UsernamePasswordCredentials(username, PASSWORD);
         cp.setCredentials(AuthScope.ANY, credentials);
-        client.setCredentialsProvider(cp);
-        client.setHttpRequestRetryHandler(new WebDavHttpRequestRetryHandler());
-        return client;
+        builder.setDefaultCredentialsProvider(cp);
+
+        builder.setRetryHandler(new SubversionRequestRetryHandler());
+        return builder.build();
     }
 
     public HttpContext getHttpContext() {
