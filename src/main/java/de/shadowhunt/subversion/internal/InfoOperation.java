@@ -16,14 +16,12 @@
 package de.shadowhunt.subversion.internal;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Writer;
 import java.net.URI;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -84,16 +82,11 @@ class InfoOperation extends AbstractOperation<Info> {
 
     @Override
     protected Info processResponse(final HttpResponse response) throws IOException {
-        final InputStream in = getContent(response);
-        try {
-            final Info info = InfoImplReader.read(in, parser, repository.getPath(), marker.getValue());
-            if (info.isLocked()) {
-                final Header header = response.getFirstHeader(LOCK_OWNER_HEADER);
-                ((InfoImpl) info).setLockOwner(header.getValue());
-            }
-            return info;
-        } finally {
-            IOUtils.closeQuietly(in);
+        final Info info = InfoImplReader.read(getContent(response), parser, repository.getPath(), marker.getValue());
+        if (info.isLocked()) {
+            final Header header = response.getFirstHeader(LOCK_OWNER_HEADER);
+            ((InfoImpl) info).setLockOwner(header.getValue());
         }
+        return info;
     }
 }

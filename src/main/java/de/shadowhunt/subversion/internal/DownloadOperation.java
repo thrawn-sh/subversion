@@ -55,7 +55,7 @@ class DownloadOperation extends AbstractOperation<InputStream> {
             in = getContent(response);
             check(response);
             return in;
-        } catch (final IOException e) {
+        } catch (final Exception e) {
             IOUtils.closeQuietly(in);
             throw new SubversionException("Could not execute request (" + request + ')', e);
         }

@@ -15,6 +15,7 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.xml.namespace.QName;
@@ -83,11 +84,13 @@ final class Resolve {
      *
      * @return {@link LogImpl} for the resource
      */
-    static Resolve read(final InputStream inputStream) {
+    static Resolve read(final InputStream inputStream) throws IOException {
         final Resolve resolve;
         try {
             final ResolveHandler handler = new ResolveHandler();
             resolve = handler.parse(inputStream);
+        } catch (final IOException ioe) {
+            throw ioe;
         } catch (final Exception e) {
             throw new SubversionException("Invalid server response: could not parse response", e);
         }

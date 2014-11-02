@@ -16,7 +16,6 @@
 package de.shadowhunt.subversion.internal;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Writer;
 import java.net.URI;
 import java.util.Set;
@@ -24,7 +23,6 @@ import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -85,13 +83,7 @@ class ListOperation extends AbstractOperation<Set<Info>> {
 
     @Override
     protected Set<Info> processResponse(final HttpResponse response) throws IOException {
-        final InputStream in = getContent(response);
-        try {
-            final Set<Info> info = InfoImplReader.readAll(in, parser, repository.getPath(), marker.getValue());
-            return info;
-        } finally {
-            IOUtils.closeQuietly(in);
-        }
+        return InfoImplReader.readAll(getContent(response), parser, repository.getPath(), marker.getValue());
     }
 
 }

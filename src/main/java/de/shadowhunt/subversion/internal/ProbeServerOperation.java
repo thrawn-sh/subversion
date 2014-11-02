@@ -90,7 +90,7 @@ class ProbeServerOperation extends AbstractOperation<Repository> {
 
             version = determineVersion(response.getAllHeaders());
             prefix = Prefix.read(in, version);
-        } catch (final IOException e) {
+        } catch (final Exception e) {
             throw new SubversionException("Could not execute request (" + request + ')', e);
         } finally {
             IOUtils.closeQuietly(in);
