@@ -15,7 +15,6 @@
  */
 package de.shadowhunt.subversion.internal;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.net.URI;
