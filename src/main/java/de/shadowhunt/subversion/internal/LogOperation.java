@@ -95,6 +95,6 @@ class LogOperation extends AbstractOperation<List<Log>> {
 
     @Override
     protected List<Log> processResponse(final HttpResponse response) throws IOException {
-            return LogImplReader.read(getContent(response));
+        return LogImplReader.read(getContent(response));
     }
 }
