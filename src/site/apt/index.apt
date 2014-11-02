@@ -35,13 +35,15 @@ Shadowhunt Subversion Library
 +-----+
 RepositoryFactory factory = RepositoryFactory.getInstance();
 
-CredentialsProvider cp = new BasicCredentialsProvider();
-Credentials credentials = new UsernamePasswordCredentials(USERNAME, PASSWORD);
-cp.setCredentials(AuthScope.ANY, credentials);
+final HttpClientBuilder builder = HttpClientBuilder.create();
 
-DefaultHttpClient client = new DefaultHttpClient();
-client.setCredentialsProvider(cp);
-client.setHttpRequestRetryHandler(new WebDavHttpRequestRetryHandler());
+final CredentialsProvider cp = new BasicCredentialsProvider();
+final Credentials credentials = new UsernamePasswordCredentials(username, PASSWORD);
+cp.setCredentials(AuthScope.ANY, credentials);
+builder.setDefaultCredentialsProvider(cp);
+
+builder.setRetryHandler(new SubversionRequestRetryHandler());
+final HttpClient =  builder.build();
 
 HttpContext context = ...;
 URI repositoryUri = URI.create("https://scm.example.net/svn/test-repo");
