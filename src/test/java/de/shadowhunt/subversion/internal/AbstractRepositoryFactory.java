@@ -38,7 +38,6 @@ public abstract class AbstractRepositoryFactory {
 
     private final Repository repository;
 
-
     protected AbstractRepositoryFactory(final Repository repository, final HttpClient client, final HttpContext context) {
         this.repository = repository;
         this.client = client;
