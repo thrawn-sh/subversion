@@ -24,8 +24,10 @@ import java.util.UUID;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.xml.sax.SAXException;
 
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
@@ -315,12 +317,12 @@ final class InfoImplReader {
      * @return {@link InfoImpl} for the resources
      */
     static SortedSet<Info> readAll(final InputStream inputStream, final VersionParser parser, final String base, final String marker) throws IOException {
+        final InfoHandler handler = new InfoHandler(base, marker);
         try {
-            final InfoHandler handler = new InfoHandler(base, marker);
             return handler.parse(inputStream);
-        } catch (final IOException ioe) {
-            throw ioe;
-        } catch (final Exception e) {
+        } catch (final ParserConfigurationException e) {
+            throw new SubversionException("Invalid server response: could not parse response", e);
+        } catch (final SAXException e) {
             throw new SubversionException("Invalid server response: could not parse response", e);
         }
     }

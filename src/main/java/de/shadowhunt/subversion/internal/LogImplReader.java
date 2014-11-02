@@ -22,8 +22,10 @@ import java.util.Date;
 import java.util.List;
 
 import javax.xml.namespace.QName;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 
 import de.shadowhunt.subversion.Log;
 import de.shadowhunt.subversion.Revision;
@@ -208,12 +210,12 @@ final class LogImplReader {
      * @return {@link Log} for the resource
      */
     static List<Log> read(final InputStream inputStream) throws IOException {
+        final LogHandler handler = new LogHandler();
         try {
-            final LogHandler handler = new LogHandler();
             return handler.parse(inputStream);
-        } catch (final IOException ioe) {
-            throw ioe;
-        } catch (final Exception e) {
+        } catch (final ParserConfigurationException e) {
+            throw new SubversionException("Invalid server response: could not parse response", e);
+        } catch (final SAXException e) {
             throw new SubversionException("Invalid server response: could not parse response", e);
         }
     }

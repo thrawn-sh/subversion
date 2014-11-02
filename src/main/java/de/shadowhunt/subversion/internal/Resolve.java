@@ -19,8 +19,10 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.xml.namespace.QName;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
@@ -85,13 +87,13 @@ final class Resolve {
      * @return {@link LogImpl} for the resource
      */
     static Resolve read(final InputStream inputStream) throws IOException {
+        final ResolveHandler handler = new ResolveHandler();
         final Resolve resolve;
         try {
-            final ResolveHandler handler = new ResolveHandler();
             resolve = handler.parse(inputStream);
-        } catch (final IOException ioe) {
-            throw ioe;
-        } catch (final Exception e) {
+        } catch (final ParserConfigurationException e) {
+            throw new SubversionException("Invalid server response: could not parse response", e);
+        } catch (final SAXException e) {
             throw new SubversionException("Invalid server response: could not parse response", e);
         }
 
