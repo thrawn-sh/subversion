@@ -15,6 +15,7 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.net.URI;
@@ -95,7 +96,7 @@ class LogOperation extends AbstractOperation<List<Log>> {
     }
 
     @Override
-    protected List<Log> processResponse(final HttpResponse response) {
+    protected List<Log> processResponse(final HttpResponse response) throws IOException {
         final InputStream in = getContent(response);
         try {
             return LogImplReader.read(in);

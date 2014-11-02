@@ -15,6 +15,7 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.net.URI;
@@ -29,7 +30,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.util.EntityUtils;
 
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
@@ -90,10 +90,9 @@ class ResolveOperation extends AbstractOperation<Resource> {
 
     @Override
     @CheckForNull
-    protected Resource processResponse(final HttpResponse response) {
+    protected Resource processResponse(final HttpResponse response) throws IOException {
         final int statusCode = getStatusCode(response);
         if (statusCode == HttpStatus.SC_NOT_FOUND) {
-            EntityUtils.consumeQuietly(response.getEntity());
             return null;
         }
 

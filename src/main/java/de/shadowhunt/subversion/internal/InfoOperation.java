@@ -15,6 +15,7 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.net.URI;
@@ -82,7 +83,7 @@ class InfoOperation extends AbstractOperation<Info> {
     }
 
     @Override
-    protected Info processResponse(final HttpResponse response) {
+    protected Info processResponse(final HttpResponse response) throws IOException {
         final InputStream in = getContent(response);
         try {
             final Info info = InfoImplReader.read(in, parser, repository.getPath(), marker.getValue());

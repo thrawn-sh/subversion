@@ -26,7 +26,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.util.EntityUtils;
 
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Resource;
@@ -73,7 +72,6 @@ class ExistsOperation extends AbstractOperation<Boolean> {
     @Override
     protected Boolean processResponse(final HttpResponse response) {
         final int statusCode = getStatusCode(response);
-        EntityUtils.consumeQuietly(response.getEntity());
         return (statusCode == HttpStatus.SC_MULTI_STATUS);
     }
 

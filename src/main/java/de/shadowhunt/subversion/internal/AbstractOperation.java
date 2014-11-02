@@ -15,6 +15,7 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
@@ -25,16 +26,16 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.protocol.HttpContext;
-import org.apache.http.util.EntityUtils;
 
 import de.shadowhunt.subversion.SubversionException;
 
-public abstract class AbstractOperation<T> {
+public abstract class AbstractOperation<T> implements ResponseHandler<T> {
 
     protected static final ContentType CONTENT_TYPE_XML = ContentType.create("text/xml", XmlConstants.ENCODING);
 
@@ -61,17 +62,13 @@ public abstract class AbstractOperation<T> {
         }
     }
 
-    static InputStream getContent(final HttpResponse response) {
+    static InputStream getContent(final HttpResponse response) throws IOException {
         final HttpEntity entity = response.getEntity();
         if (entity == null) {
             throw new SubversionException("Invalid server response: entity is missing");
         }
 
-        try {
-            return entity.getContent();
-        } catch (final Exception e) {
-            throw new SubversionException("Invalid server response: content stream is missing", e);
-        }
+        return entity.getContent();
     }
 
     static int getStatusCode(final HttpResponse response) {
@@ -85,7 +82,7 @@ public abstract class AbstractOperation<T> {
         this.repository = repository;
     }
 
-    protected void check(final HttpResponse response, final URI requestUri) {
+    protected void check(final HttpResponse response) {
         final int statusCode = getStatusCode(response);
 
         if (isExpectedStatusCode(statusCode)) {
@@ -95,20 +92,17 @@ public abstract class AbstractOperation<T> {
         final String message;
         switch (statusCode) {
             case HttpStatus.SC_FORBIDDEN:
-                message = "Insufficient permissions to execute operation on url:" + requestUri;
+                message = "Insufficient permissions to execute operation";
                 break;
             case HttpStatus.SC_NOT_FOUND:
-                message = "Requested url: " + requestUri + " could not be found";
+                message = "Requested resource could not be found";
                 break;
             case HttpStatus.SC_LOCKED:
-                message = "Requested url: " + requestUri + " is locked by another user";
+                message = "Requested resource is locked by another user";
                 break;
             default:
                 message = "Unexpected server response";
         }
-
-        // in case of unexpected status code we consume everything
-        EntityUtils.consumeQuietly(response.getEntity());
 
         throw new SubversionException(message, statusCode);
     }
@@ -138,21 +132,20 @@ public abstract class AbstractOperation<T> {
      */
     public T execute(final HttpClient client, final HttpContext context) {
         final HttpUriRequest request = createRequest();
-        final HttpResponse response = executeRequest(request, client, context);
-        check(response, request.getURI());
-        return processResponse(response);
-    }
-
-    final HttpResponse executeRequest(final HttpUriRequest request, final HttpClient client, final HttpContext context) {
         clearRedirects(context);
         try {
-            return client.execute(request, context);
+            return client.execute(request, this, context);
         } catch (final Exception e) {
             throw new SubversionException("Could not execute request (" + request + ')', e);
         }
     }
 
+    public T handleResponse(final HttpResponse response) throws IOException {
+        check(response);
+        return processResponse(response);
+    }
+
     protected abstract boolean isExpectedStatusCode(final int statusCode);
 
-    protected abstract T processResponse(final HttpResponse response);
+    protected abstract T processResponse(final HttpResponse response) throws IOException;
 }

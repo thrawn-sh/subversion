@@ -21,7 +21,6 @@ import java.util.UUID;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.util.EntityUtils;
 
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.internal.AbstractOperation;
@@ -52,7 +51,6 @@ class CreateTransactionOperation extends AbstractOperation<TransactionImpl> {
 
     @Override
     protected TransactionImpl processResponse(final HttpResponse response) {
-        EntityUtils.consumeQuietly(response.getEntity());
         return new TransactionImpl(transactionId.toString());
     }
 }

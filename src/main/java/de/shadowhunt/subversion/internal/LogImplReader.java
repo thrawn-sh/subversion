@@ -15,6 +15,7 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
@@ -206,10 +207,12 @@ final class LogImplReader {
      *
      * @return {@link Log} for the resource
      */
-    static List<Log> read(final InputStream inputStream) {
+    static List<Log> read(final InputStream inputStream) throws IOException {
         try {
             final LogHandler handler = new LogHandler();
             return handler.parse(inputStream);
+        } catch (final IOException ioe) {
+            throw ioe;
         } catch (final Exception e) {
             throw new SubversionException("Invalid server response: could not parse response", e);
         }

@@ -20,7 +20,6 @@ import java.net.URI;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.util.EntityUtils;
 
 import de.shadowhunt.subversion.Resource;
 
@@ -49,7 +48,6 @@ class CreateFolderOperation extends AbstractOperation<Boolean> {
     @Override
     protected Boolean processResponse(final HttpResponse response) {
         final int status = getStatusCode(response);
-        EntityUtils.consumeQuietly(response.getEntity());
         return (status == HttpStatus.SC_CREATED);
     }
 

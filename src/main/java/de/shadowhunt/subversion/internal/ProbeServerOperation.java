@@ -15,6 +15,7 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.net.URI;
@@ -40,8 +41,8 @@ import de.shadowhunt.subversion.SubversionException;
 
 class ProbeServerOperation extends AbstractOperation<Repository> {
 
-    private static ProtocolVersion determineVersion(final HttpResponse response) {
-        for (final Header header : response.getAllHeaders()) {
+    private static ProtocolVersion determineVersion(final Header... headers) {
+        for (final Header header : headers) {
             if (header.getName().startsWith("SVN")) {
                 return ProtocolVersion.HTTP_V2;
             }
@@ -78,14 +79,19 @@ class ProbeServerOperation extends AbstractOperation<Repository> {
     @Override
     public Repository execute(final HttpClient client, final HttpContext context) {
         final HttpUriRequest request = createRequest();
-        final HttpResponse response = executeRequest(request, client, context);
-        check(response, request.getURI());
 
-        final ProtocolVersion version = determineVersion(response);
+        final ProtocolVersion version;
         final Resource prefix;
-        final InputStream in = getContent(response);
+        InputStream in = null;
         try {
+            final HttpResponse response = client.execute(request, context);
+            in = getContent(response);
+            check(response);
+
+            version = determineVersion(response.getAllHeaders());
             prefix = Prefix.read(in, version);
+        } catch (final IOException e) {
+            throw new SubversionException("Could not execute request (" + request + ')', e);
         } finally {
             IOUtils.closeQuietly(in);
         }
@@ -97,6 +103,11 @@ class ProbeServerOperation extends AbstractOperation<Repository> {
         }
 
         throw new SubversionException("Could not find suitable repository for " + repository);
+    }
+
+    @Override
+    public Repository handleResponse(final HttpResponse response) {
+        return processResponse(response);
     }
 
     @Override

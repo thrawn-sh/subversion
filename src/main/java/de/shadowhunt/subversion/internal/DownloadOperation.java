@@ -15,15 +15,20 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.protocol.HttpContext;
 
 import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.SubversionException;
 
 class DownloadOperation extends AbstractOperation<InputStream> {
 
@@ -41,13 +46,34 @@ class DownloadOperation extends AbstractOperation<InputStream> {
     }
 
     @Override
+    public InputStream execute(final HttpClient client, final HttpContext context) {
+        final HttpUriRequest request = createRequest();
+
+        InputStream in = null;
+        try {
+            final HttpResponse response = client.execute(request, context);
+            in = getContent(response);
+            check(response);
+            return in;
+        } catch (final IOException e) {
+            IOUtils.closeQuietly(in);
+            throw new SubversionException("Could not execute request (" + request + ')', e);
+        }
+    }
+
+    @Override
+    public InputStream handleResponse(final HttpResponse response) {
+        return processResponse(response);
+    }
+
+    @Override
     protected boolean isExpectedStatusCode(final int statusCode) {
         return HttpStatus.SC_OK == statusCode;
     }
 
     @Override
     protected InputStream processResponse(final HttpResponse response) {
-        return getContent(response);
+        // we return the content stream
+        throw new UnsupportedOperationException();
     }
-
 }

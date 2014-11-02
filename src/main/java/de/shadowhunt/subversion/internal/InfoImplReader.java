@@ -15,6 +15,7 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
 import java.util.SortedSet;
@@ -295,7 +296,7 @@ final class InfoImplReader {
      *
      * @return {@link InfoImpl} for the resource
      */
-    static Info read(final InputStream in, final VersionParser parser, final String base, final String marker) {
+    static Info read(final InputStream in, final VersionParser parser, final String base, final String marker) throws IOException {
         final SortedSet<Info> infoSet = readAll(in, parser, base, marker);
         if (infoSet.isEmpty()) {
             throw new SubversionException("Invalid server response: expected content is missing");
@@ -313,10 +314,12 @@ final class InfoImplReader {
      *
      * @return {@link InfoImpl} for the resources
      */
-    static SortedSet<Info> readAll(final InputStream inputStream, final VersionParser parser, final String base, final String marker) {
+    static SortedSet<Info> readAll(final InputStream inputStream, final VersionParser parser, final String base, final String marker) throws IOException {
         try {
             final InfoHandler handler = new InfoHandler(base, marker);
             return handler.parse(inputStream);
+        } catch (final IOException ioe) {
+            throw ioe;
         } catch (final Exception e) {
             throw new SubversionException("Invalid server response: could not parse response", e);
         }
