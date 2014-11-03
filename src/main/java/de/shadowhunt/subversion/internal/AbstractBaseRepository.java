@@ -50,8 +50,8 @@ public abstract class AbstractBaseRepository implements Repository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("de.shadowhunt.subversion.Repository");
 
-    private static UUID determineRepositoryId(final URI repository, final VersionParser parser, final HttpClient client, final HttpContext context, final Resource marker) {
-        final InfoOperation operation = new InfoOperation(repository, Resource.ROOT, parser, marker);
+    private static UUID determineRepositoryId(final URI repository, final HttpClient client, final HttpContext context, final Resource marker) {
+        final InfoOperation operation = new InfoOperation(repository, Resource.ROOT, marker);
         final Info info = operation.execute(client, context);
         return info.getRepositoryId();
     }
@@ -88,8 +88,6 @@ public abstract class AbstractBaseRepository implements Repository {
 
     protected final HttpContext context;
 
-    private final VersionParser parser;
-
     protected final URI repository;
 
     private final UUID repositoryId;
@@ -105,8 +103,7 @@ public abstract class AbstractBaseRepository implements Repository {
         this.client = client;
         this.context = context;
 
-        parser = new VersionParser(repository.getPath());
-        repositoryId = determineRepositoryId(repository, parser, client, context, config.getPrefix());
+        repositoryId = determineRepositoryId(repository, client, context, config.getPrefix());
     }
 
     @Override
@@ -319,10 +316,6 @@ public abstract class AbstractBaseRepository implements Repository {
         return repositoryId;
     }
 
-    protected VersionParser getVersionParser() {
-        return parser;
-    }
-
     @Override
     public final Info info(final Resource resource, final Revision revision) {
         Validate.notNull(resource, "resource must not be null");
@@ -348,7 +341,7 @@ public abstract class AbstractBaseRepository implements Repository {
             return null; // resource does not exists
         }
 
-        final InfoOperation operation = new InfoOperation(repository, resolved, parser, config.getPrefix());
+        final InfoOperation operation = new InfoOperation(repository, resolved, config.getPrefix());
         info = operation.execute(client, context);
         cache.put(info);
         return info;
@@ -376,7 +369,7 @@ public abstract class AbstractBaseRepository implements Repository {
             throw new SubversionException("Can't resolve: " + resource + '@' + revision);
         }
 
-        final ListOperation operation = new ListOperation(repository, resolved, depth, parser, config.getPrefix());
+        final ListOperation operation = new ListOperation(repository, resolved, depth, config.getPrefix());
         final Set<Info> infoSet = operation.execute(client, context);
         cache.putAll(infoSet);
         return infoSet;

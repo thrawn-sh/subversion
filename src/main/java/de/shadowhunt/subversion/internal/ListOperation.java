@@ -40,15 +40,12 @@ class ListOperation extends AbstractOperation<Set<Info>> {
 
     private final Resource marker;
 
-    private final VersionParser parser;
-
     private final Resource resource;
 
-    public ListOperation(final URI repository, final Resource resource, final Depth depth, final VersionParser parser, final Resource marker) {
+    public ListOperation(final URI repository, final Resource resource, final Depth depth, final Resource marker) {
         super(repository);
         this.resource = resource;
         this.depth = depth;
-        this.parser = parser;
         this.marker = marker;
     }
 
@@ -83,7 +80,7 @@ class ListOperation extends AbstractOperation<Set<Info>> {
 
     @Override
     protected Set<Info> processResponse(final HttpResponse response) throws IOException {
-        return InfoImplReader.readAll(getContent(response), parser, repository.getPath(), marker.getValue());
+        return InfoImplReader.readAll(getContent(response), repository.getPath(), marker.getValue());
     }
 
 }

@@ -292,14 +292,13 @@ final class InfoImplReader {
      * Reads status information for a single revision of a resource from the given {@link java.io.InputStream}
      *
      * @param in {@link java.io.InputStream} from which the status information is read (Note: will not be closed)
-     * @param parser {@link de.shadowhunt.subversion.internal.VersionParser} that is used to retrieve the version information from the server response
      * @param base base path of the repository
      * @param marker path marker for special subversion directory (default: !svn)
      *
      * @return {@link InfoImpl} for the resource
      */
-    static Info read(final InputStream in, final VersionParser parser, final String base, final String marker) throws IOException {
-        final SortedSet<Info> infoSet = readAll(in, parser, base, marker);
+    static Info read(final InputStream in, final String base, final String marker) throws IOException {
+        final SortedSet<Info> infoSet = readAll(in, base, marker);
         if (infoSet.isEmpty()) {
             throw new SubversionException("Invalid server response: expected content is missing");
         }
@@ -310,13 +309,12 @@ final class InfoImplReader {
      * Reads a {@link SortedSet} of status information for a single revision of various resources from the given {@link InputStream}
      *
      * @param inputStream {@link InputStream} from which the status information is read (Note: will not be closed)
-     * @param parser {@link VersionParser} that is used to retrieve the version information from the server response
      * @param base base path of the repository
      * @param marker path marker for special subversion directory (default: !svn)
      *
      * @return {@link InfoImpl} for the resources
      */
-    static SortedSet<Info> readAll(final InputStream inputStream, final VersionParser parser, final String base, final String marker) throws IOException {
+    static SortedSet<Info> readAll(final InputStream inputStream, final String base, final String marker) throws IOException {
         final InfoHandler handler = new InfoHandler(base, marker);
         try {
             return handler.parse(inputStream);

@@ -103,7 +103,7 @@ public class RepositoryCache {
         }
 
         final Resource marker = repository.config.getPrefix();
-        final InfoOperation operation = new InfoOperation(repository.getBaseUri(), resolved, repository.getVersionParser(), marker);
+        final InfoOperation operation = new InfoOperation(repository.getBaseUri(), resolved, marker);
         final Info info = operation.execute(repository.client, repository.context);
         headRevision = info.getRevision();
         put(info);
