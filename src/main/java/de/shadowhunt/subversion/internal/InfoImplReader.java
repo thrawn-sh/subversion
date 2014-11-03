@@ -150,9 +150,6 @@ final class InfoImplReader {
     private static class ResourceExpression extends AbstractSaxExpression<Resource> {
 
         private static final QName[] PATH = { //
-                new QName(XmlConstants.DAV_NAMESPACE, "propstat"), //
-                new QName(XmlConstants.DAV_NAMESPACE, "prop"), //
-                new QName(XmlConstants.DAV_NAMESPACE, "checked-in"), //
                 new QName(XmlConstants.DAV_NAMESPACE, "href") //
         };
 
