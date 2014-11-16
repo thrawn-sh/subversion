@@ -69,7 +69,7 @@ public class AbstractRepositoryCombinedOperations {
 
         {
             final Info info = repository.info(folder, Revision.HEAD);
-            Assert.assertTrue("folder exisits", info.isDirectory());
+            Assert.assertTrue("folder exists", info.isDirectory());
         }
     }
 
@@ -83,7 +83,7 @@ public class AbstractRepositoryCombinedOperations {
         try {
             repository.add(transaction, resource, true, AbstractHelper.getInputStream(content));
             repository.propertiesSet(transaction, resource, property);
-            Assert.assertEquals("changeset must contain: " + resource, Status.ADDED, transaction.getChangeSet().get(resource));
+            Assert.assertEquals("change set must contain: " + resource, Status.ADDED, transaction.getChangeSet().get(resource));
             repository.commit(transaction, "add " + resource);
         } catch (final Exception e) {
             repository.rollback(transaction);
@@ -132,8 +132,8 @@ public class AbstractRepositoryCombinedOperations {
     @Test
     public void test01_ModifyMultipleLockedFiles() throws Exception {
         final String content = "test";
-        final Resource resourceA = prefix.append(Resource.create("lockedfileA.txt"));
-        final Resource resourceB = prefix.append(Resource.create("lockedfileB.txt"));
+        final Resource resourceA = prefix.append(Resource.create("lockedFileA.txt"));
+        final Resource resourceB = prefix.append(Resource.create("lockedFileB.txt"));
 
         AbstractRepositoryAdd.file(repository, resourceA, "A", true);
         AbstractRepositoryAdd.file(repository, resourceB, "B", true);
@@ -163,7 +163,7 @@ public class AbstractRepositoryCombinedOperations {
     @Test
     public void test02_OverrideFile() throws Exception {
         final String content = "test";
-        final Resource resource = prefix.append(Resource.create("overrride.txt"));
+        final Resource resource = prefix.append(Resource.create("override.txt"));
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -183,7 +183,7 @@ public class AbstractRepositoryCombinedOperations {
     @Test
     public void test02_SetAndDeleteProperties() throws Exception {
         final String content = "test";
-        final Resource resource = prefix.append(Resource.create("overrride.txt"));
+        final Resource resource = prefix.append(Resource.create("override.txt"));
 
         final ResourceProperty propertyA = new ResourceProperty(Type.CUSTOM, "propertyA", "a");
         final ResourceProperty propertyB = new ResourceProperty(Type.CUSTOM, "propertyB", "b");
@@ -237,7 +237,7 @@ public class AbstractRepositoryCombinedOperations {
     }
 
     @Test
-    public void test03_MofifyAndDeleteExisting() throws Exception {
+    public void test03_ModifyAndDeleteExisting() throws Exception {
         final String content = "test";
         final Resource resource = prefix.append(Resource.create("modify_delete.txt"));
 
@@ -246,9 +246,9 @@ public class AbstractRepositoryCombinedOperations {
         final Transaction transaction = repository.createTransaction();
         try {
             repository.add(transaction, resource, true, AbstractHelper.getInputStream(content));
-            Assert.assertEquals("changeset must contain: " + resource, Status.MODIFIED, transaction.getChangeSet().get(resource));
+            Assert.assertEquals("change set must contain: " + resource, Status.MODIFIED, transaction.getChangeSet().get(resource));
             repository.delete(transaction, resource);
-            Assert.assertEquals("changeset must contain: " + resource, Status.DELETED, transaction.getChangeSet().get(resource));
+            Assert.assertEquals("change set must contain: " + resource, Status.DELETED, transaction.getChangeSet().get(resource));
             repository.commit(transaction, "empty " + resource);
         } catch (final Exception e) {
             repository.rollback(transaction);

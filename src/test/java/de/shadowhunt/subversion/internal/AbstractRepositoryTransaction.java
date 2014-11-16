@@ -69,6 +69,6 @@ public abstract class AbstractRepositoryTransaction {
         repository.commit(transaction, "empty commit");
         Assert.assertFalse("transaction must be inactive", transaction.isActive());
         final Info after = repository.info(Resource.ROOT, Revision.HEAD);
-        AbstractRepositoryInfo.assertEquals("emptry commit", before, after);
+        AbstractRepositoryInfo.assertEquals("empty commit", before, after);
     }
 }

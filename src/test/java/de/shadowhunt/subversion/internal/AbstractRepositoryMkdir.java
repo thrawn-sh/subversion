@@ -110,7 +110,7 @@ public class AbstractRepositoryMkdir {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             repository.mkdir(transaction, resource, false);
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            Assert.assertEquals("changeset must contain: " + resource, Status.ADDED, transaction.getChangeSet().get(resource));
+            Assert.assertEquals("change set must contain: " + resource, Status.ADDED, transaction.getChangeSet().get(resource));
             assertParentsMapped(resource.getParent(), transaction);
             repository.rollback(transaction);
             Assert.assertFalse("transaction must not be active", transaction.isActive());

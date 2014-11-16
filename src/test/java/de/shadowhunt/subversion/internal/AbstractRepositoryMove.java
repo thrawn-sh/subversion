@@ -73,7 +73,7 @@ public class AbstractRepositoryMove {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             repository.move(transaction, source, target, true);
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            Assert.assertTrue("changeset must contain: " + target, transaction.getChangeSet().containsKey(target));
+            Assert.assertTrue("change set must contain: " + target, transaction.getChangeSet().containsKey(target));
             repository.rollback(transaction);
             Assert.assertFalse("transaction must not be active", transaction.isActive());
         } catch (final Exception e) {
@@ -98,7 +98,7 @@ public class AbstractRepositoryMove {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             repository.move(transaction, source, target, true);
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            Assert.assertTrue("changeset must contain: " + target, transaction.getChangeSet().containsKey(target));
+            Assert.assertTrue("change set must contain: " + target, transaction.getChangeSet().containsKey(target));
             repository.commit(transaction, "move");
             Assert.assertFalse("transaction must not be active", transaction.isActive());
         } catch (final Exception e) {
@@ -128,7 +128,7 @@ public class AbstractRepositoryMove {
         try {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             repository.move(transaction, source, target, false);
-            Assert.fail("move must not complet");
+            Assert.fail("move must not complete");
         } catch (final Exception e) {
             repository.rollback(transaction);
             throw e;
@@ -150,7 +150,7 @@ public class AbstractRepositoryMove {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             repository.move(transaction, source, target, true);
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            Assert.assertTrue("changeset must contain: " + target, transaction.getChangeSet().containsKey(target));
+            Assert.assertTrue("change set must contain: " + target, transaction.getChangeSet().containsKey(target));
             repository.commit(transaction, "move");
             Assert.assertFalse("transaction must not be active", transaction.isActive());
         } catch (final Exception e) {
@@ -180,7 +180,7 @@ public class AbstractRepositoryMove {
         try {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             repository.move(transaction, source, target, false);
-            Assert.fail("move must not complet");
+            Assert.fail("move must not complete");
         } catch (final Exception e) {
             repository.rollback(transaction);
             throw e;
@@ -196,7 +196,7 @@ public class AbstractRepositoryMove {
 
         final Resource subFile = Resource.create("file.txt");
         AbstractRepositoryAdd.file(repository, source.append(subFile), "A", true);
-        final Resource subFolder = Resource.create("subfolder");
+        final Resource subFolder = Resource.create("subFolder");
         AbstractRepositoryMkdir.mkdir(repository, source.append(subFolder), false);
 
         final Info sInfo = repository.info(source, Revision.HEAD);
@@ -207,7 +207,7 @@ public class AbstractRepositoryMove {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             repository.move(transaction, source, target, true);
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            Assert.assertTrue("changeset must contain: " + target, transaction.getChangeSet().containsKey(target));
+            Assert.assertTrue("change set must contain: " + target, transaction.getChangeSet().containsKey(target));
             repository.commit(transaction, "move");
             Assert.assertFalse("transaction must not be active", transaction.isActive());
         } catch (final Exception e) {
@@ -225,8 +225,8 @@ public class AbstractRepositoryMove {
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
 
-        Assert.assertTrue("subfile must exist", repository.exists(target.append(subFile), Revision.HEAD));
-        Assert.assertTrue("subfolder must exist", repository.exists(target.append(subFolder), Revision.HEAD));
+        Assert.assertTrue("subFile must exist", repository.exists(target.append(subFile), Revision.HEAD));
+        Assert.assertTrue("subFolder must exist", repository.exists(target.append(subFolder), Revision.HEAD));
     }
 
     @Test
@@ -245,7 +245,7 @@ public class AbstractRepositoryMove {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             repository.move(transaction, source, target, true);
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            Assert.assertEquals("changeset must contain: " + target, Status.MODIFIED, transaction.getChangeSet().get(target));
+            Assert.assertEquals("change set must contain: " + target, Status.MODIFIED, transaction.getChangeSet().get(target));
             AbstractRepositoryMkdir.assertParentsMapped(target.getParent(), transaction);
             repository.commit(transaction, "copy");
             Assert.assertFalse("transaction must not be active", transaction.isActive());
@@ -267,8 +267,8 @@ public class AbstractRepositoryMove {
 
     @Test
     public void test04_moveFolderToExisting() throws Exception {
-        final Resource source = prefix.append(Resource.create("folder_exisitng_source"));
-        final Resource target = prefix.append(Resource.create("folder_exisitng_target"));
+        final Resource source = prefix.append(Resource.create("folder_existing_source"));
+        final Resource target = prefix.append(Resource.create("folder_existing_target"));
 
         AbstractRepositoryMkdir.mkdir(repository, source, true);
         AbstractRepositoryMkdir.mkdir(repository, target, true);
@@ -281,7 +281,7 @@ public class AbstractRepositoryMove {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             repository.move(transaction, source, target, true);
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            Assert.assertEquals("changeset must contain: " + target, Status.MODIFIED, transaction.getChangeSet().get(target));
+            Assert.assertEquals("change set must contain: " + target, Status.MODIFIED, transaction.getChangeSet().get(target));
             AbstractRepositoryMkdir.assertParentsMapped(target.getParent(), transaction);
             repository.commit(transaction, "copy");
             Assert.assertFalse("transaction must not be active", transaction.isActive());

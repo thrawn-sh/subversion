@@ -315,7 +315,7 @@ public abstract class AbstractRepositoryLocking {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             repositoryA.copy(transaction, source, Revision.HEAD, target, true);
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            Assert.assertEquals("changeset must contain: " + target, Status.MODIFIED, transaction.getChangeSet().get(target));
+            Assert.assertEquals("change set must contain: " + target, Status.MODIFIED, transaction.getChangeSet().get(target));
             AbstractRepositoryMkdir.assertParentsMapped(target.getParent(), transaction);
             repositoryA.commit(transaction, "copy");
             Assert.assertFalse("transaction must not be active", transaction.isActive());
@@ -338,7 +338,7 @@ public abstract class AbstractRepositoryLocking {
 
     @Test
     public void test04_FileDeleteLocked() throws Exception {
-        final Resource resource = prefix.append(Resource.create("file_delte_locked.txt"));
+        final Resource resource = prefix.append(Resource.create("file_delete_locked.txt"));
 
         AbstractRepositoryAdd.file(repositoryA, resource, "source", true);
         repositoryA.lock(resource, false);
@@ -348,7 +348,7 @@ public abstract class AbstractRepositoryLocking {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             repositoryA.delete(transaction, resource);
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            Assert.assertEquals("changeset must contain: " + resource, Status.DELETED, transaction.getChangeSet().get(resource));
+            Assert.assertEquals("change set must contain: " + resource, Status.DELETED, transaction.getChangeSet().get(resource));
             repositoryA.commit(transaction, "deleted");
             Assert.assertFalse("transaction must not be active", transaction.isActive());
         } catch (final Exception e) {
@@ -376,7 +376,7 @@ public abstract class AbstractRepositoryLocking {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             repositoryA.move(transaction, source, target, true);
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            Assert.assertEquals("changeset must contain: " + target, Status.MODIFIED, transaction.getChangeSet().get(target));
+            Assert.assertEquals("change set must contain: " + target, Status.MODIFIED, transaction.getChangeSet().get(target));
             AbstractRepositoryMkdir.assertParentsMapped(target.getParent(), transaction);
             repositoryA.commit(transaction, "move");
             Assert.assertFalse("transaction must not be active", transaction.isActive());

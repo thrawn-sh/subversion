@@ -60,7 +60,7 @@ public abstract class AbstractRepositoryResolve {
         Assert.assertFalse("source must not exist", repository.exists(resource, Revision.HEAD));
 
         final Info targetWithOld = repository.info(resource, sInfo.getRevision());
-        AbstractRepositoryInfo.assertEquals("infos must match", sInfo, targetWithOld);
+        AbstractRepositoryInfo.assertEquals("info must match", sInfo, targetWithOld);
     }
 
     @Test
@@ -82,7 +82,7 @@ public abstract class AbstractRepositoryResolve {
         Assert.assertFalse("source must not exist", repository.exists(resource, Revision.HEAD));
 
         final Info targetWithOld = repository.info(resource, sInfo.getRevision());
-        AbstractRepositoryInfo.assertEquals("infos must match", sInfo, targetWithOld);
+        AbstractRepositoryInfo.assertEquals("info must match", sInfo, targetWithOld);
     }
 
     @Test
@@ -105,7 +105,7 @@ public abstract class AbstractRepositoryResolve {
         Assert.assertFalse("source must not exist", repository.exists(source, Revision.HEAD));
 
         final Info targetWithOld = repository.info(target, sInfo.getRevision());
-        AbstractRepositoryInfo.assertEquals("infos must match", sInfo, targetWithOld);
+        AbstractRepositoryInfo.assertEquals("info must match", sInfo, targetWithOld);
     }
 
     @Test
@@ -128,6 +128,6 @@ public abstract class AbstractRepositoryResolve {
         Assert.assertFalse("source must not exist", repository.exists(source, Revision.HEAD));
 
         final Info targetWithOld = repository.info(target, sInfo.getRevision());
-        AbstractRepositoryInfo.assertEquals("infos must match", sInfo, targetWithOld);
+        AbstractRepositoryInfo.assertEquals("info must match", sInfo, targetWithOld);
     }
 }

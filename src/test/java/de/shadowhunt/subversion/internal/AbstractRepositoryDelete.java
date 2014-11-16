@@ -59,7 +59,7 @@ public class AbstractRepositoryDelete {
     }
 
     @Test(expected = SubversionException.class)
-    public void test00_noExistings() throws Exception {
+    public void test00_noExisting() throws Exception {
         Assert.assertFalse(prefix + " does already exist", repository.exists(prefix, Revision.HEAD));
         final Resource resource = prefix.append(Resource.create("non_existing.txt"));
 
@@ -90,7 +90,7 @@ public class AbstractRepositoryDelete {
             repository.rollback(transaction);
             throw e;
         }
-        Assert.assertTrue(resource + " must still exisit", repository.exists(resource, Revision.HEAD));
+        Assert.assertTrue(resource + " must still exist", repository.exists(resource, Revision.HEAD));
     }
 
     @Test
@@ -128,7 +128,7 @@ public class AbstractRepositoryDelete {
             repository.rollback(transaction);
             throw e;
         }
-        Assert.assertFalse(resource + " must not exisit", repository.exists(resource, Revision.HEAD));
+        Assert.assertFalse(resource + " must not exist", repository.exists(resource, Revision.HEAD));
     }
 
     @Test
@@ -153,6 +153,6 @@ public class AbstractRepositoryDelete {
             repository.rollback(transaction);
             throw e;
         }
-        Assert.assertFalse(root + " must not exisit", repository.exists(root, Revision.HEAD));
+        Assert.assertFalse(root + " must not exist", repository.exists(root, Revision.HEAD));
     }
 }

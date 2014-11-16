@@ -91,6 +91,6 @@ public class AbstractPrepare {
         Assert.assertTrue("could not download " + zip, zip.isFile());
 
         final boolean extracted = extractArchive(zip, base);
-        Assert.assertTrue("could not extact " + zip, extracted);
+        Assert.assertTrue("could not extract " + zip, extracted);
     }
 }
