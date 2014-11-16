@@ -15,6 +15,7 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
@@ -26,8 +27,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.protocol.HttpContext;
 
+import de.shadowhunt.http.client.TransmissionException;
 import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.SubversionException;
 
 class DownloadOperation extends AbstractOperation<InputStream> {
 
@@ -54,9 +55,9 @@ class DownloadOperation extends AbstractOperation<InputStream> {
             in = getContent(response);
             check(response);
             return in;
-        } catch (final Exception e) {
+        } catch (final IOException e) {
             IOUtils.closeQuietly(in);
-            throw new SubversionException("Could not execute request (" + request + ')', e);
+            throw new TransmissionException(e);
         }
     }
 

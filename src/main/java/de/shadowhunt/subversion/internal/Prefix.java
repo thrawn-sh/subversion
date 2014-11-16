@@ -15,10 +15,14 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
 
 import de.shadowhunt.subversion.Repository.ProtocolVersion;
 import de.shadowhunt.subversion.Resource;
@@ -81,12 +85,14 @@ final class Prefix {
         }
     }
 
-    static Resource read(final InputStream inputStream, final ProtocolVersion version) {
+    static Resource read(final InputStream inputStream, final ProtocolVersion version) throws IOException {
         final Resource prefix;
         try {
             final PrefixHandler handler = new PrefixHandler(version);
             prefix = handler.parse(inputStream);
-        } catch (final Exception e) {
+        } catch (final ParserConfigurationException e) {
+            throw new SubversionException("Invalid server response: could not parse response", e);
+        } catch (final SAXException e) {
             throw new SubversionException("Invalid server response: could not parse response", e);
         }
 

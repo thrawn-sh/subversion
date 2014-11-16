@@ -15,6 +15,7 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.net.URI;
@@ -33,6 +34,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
 
+import de.shadowhunt.http.client.TransmissionException;
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Repository.ProtocolVersion;
 import de.shadowhunt.subversion.Resource;
@@ -89,8 +91,8 @@ class ProbeServerOperation extends AbstractOperation<Repository> {
 
             version = determineVersion(response.getAllHeaders());
             prefix = Prefix.read(in, version);
-        } catch (final Exception e) {
-            throw new SubversionException("Could not execute request (" + request + ')', e);
+        } catch (final IOException e) {
+            throw new TransmissionException(e);
         } finally {
             IOUtils.closeQuietly(in);
         }

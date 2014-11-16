@@ -33,6 +33,7 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ContentType;
 import org.apache.http.protocol.HttpContext;
 
+import de.shadowhunt.http.client.TransmissionException;
 import de.shadowhunt.subversion.SubversionException;
 
 public abstract class AbstractOperation<T> implements ResponseHandler<T> {
@@ -65,7 +66,7 @@ public abstract class AbstractOperation<T> implements ResponseHandler<T> {
     static InputStream getContent(final HttpResponse response) throws IOException {
         final HttpEntity entity = response.getEntity();
         if (entity == null) {
-            throw new SubversionException("Invalid server response: entity is missing");
+            throw new IOException("Invalid server response: entity is missing");
         }
 
         return entity.getContent();
@@ -135,8 +136,8 @@ public abstract class AbstractOperation<T> implements ResponseHandler<T> {
         clearRedirects(context);
         try {
             return client.execute(request, this, context);
-        } catch (final Exception e) {
-            throw new SubversionException("Could not execute request (" + request + ')', e);
+        } catch (final IOException e) {
+            throw new TransmissionException(e);
         }
     }
 
