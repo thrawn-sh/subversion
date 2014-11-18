@@ -442,36 +442,27 @@ public abstract class AbstractBaseRepository implements Repository {
 
     @Override
     public void propertiesDelete(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
-        validateTransaction(transaction);
-        Validate.notNull(resource, "resource must not be null");
-        Validate.noNullElements(properties, "properties must not contain null elements");
-
-        LOGGER.trace("deleting properties {} on {} during {}", properties, resource, transaction.getId());
-
-        // there can only be a lock token if the file is already in the repository
-        final RepositoryCache cache = fromTransaction(transaction);
-        final Info info = info0(cache, resource, Revision.HEAD, true);
-
-        final Resource r = config.getWorkingResource(transaction).append(resource);
-        final PropertiesDeleteOperation operation = new PropertiesDeleteOperation(repository, r, info, properties);
-        operation.execute(client, context);
-        transaction.register(resource, Status.MODIFIED);
+        propertiesUpdate(transaction, resource, PropertiesUpdateOperation.Type.DELETE, properties);
     }
 
     @Override
     public void propertiesSet(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
+        propertiesUpdate(transaction, resource, PropertiesUpdateOperation.Type.SET, properties);
+    }
+
+    protected void propertiesUpdate(final Transaction transaction, final Resource resource, final PropertiesUpdateOperation.Type type, final ResourceProperty... properties) {
         validateTransaction(transaction);
         Validate.notNull(resource, "resource must not be null");
         Validate.noNullElements(properties, "properties must not contain null elements");
 
-        LOGGER.trace("setting properties {} on {} during {}", properties, resource, transaction.getId());
+        LOGGER.trace("updating properties {} on {} during {}", properties, resource, transaction.getId());
 
         // there can only be a lock token if the file is already in the repository
         final RepositoryCache cache = fromTransaction(transaction);
         final Info info = info0(cache, resource, Revision.HEAD, true);
 
         final Resource r = config.getWorkingResource(transaction).append(resource);
-        final PropertiesSetOperation operation = new PropertiesSetOperation(repository, r, info, properties);
+        final PropertiesUpdateOperation operation = new PropertiesUpdateOperation(repository, r, type, info, properties);
         operation.execute(client, context);
         transaction.register(resource, Status.MODIFIED);
     }

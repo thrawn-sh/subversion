@@ -33,7 +33,7 @@ import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.SubversionException;
 
-class PropertiesDeleteOperation extends AbstractVoidOperation {
+class PropertiesUpdateOperation extends AbstractVoidOperation {
 
     private final Info info;
 
@@ -41,9 +41,22 @@ class PropertiesDeleteOperation extends AbstractVoidOperation {
 
     private final Resource resource;
 
-    PropertiesDeleteOperation(final URI repository, final Resource resource, @Nullable final Info info, final ResourceProperty[] properties) {
+    private final Type type;
+
+    static enum Type {
+        SET("set"), DELETE("remove");
+
+        final String action;
+
+        private Type(final String action) {
+            this.action = action;
+        }
+    }
+
+    PropertiesUpdateOperation(final URI repository, final Resource resource, final Type type, @Nullable final Info info, final ResourceProperty[] properties) {
         super(repository);
         this.resource = resource;
+        this.type = type;
         this.info = info;
         this.properties = Arrays.copyOf(properties, properties.length);
     }
@@ -70,14 +83,20 @@ class PropertiesDeleteOperation extends AbstractVoidOperation {
             writer.writeNamespace(XmlConstants.SVN_PROPERTIES_PREFIX, XmlConstants.SVN_PROPERTIES_NAMESPACE);
             writer.setPrefix(XmlConstants.SVN_DAV_PREFIX, XmlConstants.SVN_DAV_NAMESPACE);
             writer.writeNamespace(XmlConstants.SVN_DAV_PREFIX, XmlConstants.SVN_DAV_NAMESPACE);
-            writer.writeStartElement("remove");
+            writer.writeStartElement(type.action);
             writer.writeStartElement("prop");
             for (final ResourceProperty property : properties) {
                 final String prefix = property.getType().getPrefix();
-                writer.writeEmptyElement(prefix, property.getName());
+                if (type == Type.SET) {
+                    writer.writeStartElement(prefix, property.getName());
+                    writer.writeCharacters(property.getValue());
+                    writer.writeEndElement();
+                } else {
+                    writer.writeEmptyElement(prefix, property.getName());
+                }
             }
             writer.writeEndElement(); // prop
-            writer.writeEndElement(); // remove
+            writer.writeEndElement(); // set || delete
             writer.writeEndElement(); // propertyupdate
             writer.writeEndDocument();
             writer.close();
