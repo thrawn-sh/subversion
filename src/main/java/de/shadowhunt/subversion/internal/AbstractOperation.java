@@ -33,7 +33,7 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ContentType;
 import org.apache.http.protocol.HttpContext;
 
-import de.shadowhunt.http.client.TransmissionException;
+import de.shadowhunt.subversion.TransmissionException;
 import de.shadowhunt.subversion.SubversionException;
 
 public abstract class AbstractOperation<T> implements ResponseHandler<T> {

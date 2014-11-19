@@ -27,7 +27,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.protocol.HttpContext;
 
-import de.shadowhunt.http.client.TransmissionException;
+import de.shadowhunt.subversion.TransmissionException;
 import de.shadowhunt.subversion.Resource;
 
 class DownloadOperation extends AbstractOperation<InputStream> {

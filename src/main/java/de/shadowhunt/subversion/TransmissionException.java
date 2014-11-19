@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.shadowhunt.http.client;
+package de.shadowhunt.subversion;
 
 import java.io.IOException;
 
@@ -24,7 +24,16 @@ public class TransmissionException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    public TransmissionException(final IOException e) {
-        super(e);
+    /**
+     * Constructs a new TransmissionException wrapping the given {@link IOException}
+     * cause.  <p>Note that the detail message associated with
+     * {@code cause} is automatically incorporated in
+     * this runtime exception's detail message.
+     *
+     * @param cause the cause (which is saved for later retrieval by the
+     * {@link #getCause()} method).
+     */
+    public TransmissionException(final IOException cause) {
+        super(cause.getMessage(), cause);
     }
 }
