@@ -47,10 +47,11 @@ public interface Repository {
      * @param parents whether to create missing parents folders or not
      * @param content {@link InputStream} from which the content will be read (will be closed after transfer)
      *
-     * @throws NullPointerException if any parameter is {@code null}
-     * @throws SubversionException if an error occurs while operating on the repository
+     * @throws java.lang.NullPointerException if any parameter is {@code null}
+     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    void add(Transaction transaction, Resource resource, boolean parents, InputStream content) throws SubversionException;
+    void add(Transaction transaction, Resource resource, boolean parents, InputStream content);
 
     /**
      * Save all modifications of the current running {@link Transaction}
@@ -58,10 +59,11 @@ public interface Repository {
      * @param transaction the current running {@link Transaction}
      * @param message the commit message for the expected operation
      *
-     * @throws NullPointerException if transaction is {@code null}
-     * @throws SubversionException if an error occurs while operating on the repository
+     * @throws java.lang.NullPointerException if the transaction parameter is {@code null}
+     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    void commit(Transaction transaction, @Nullable String message) throws SubversionException;
+    void commit(Transaction transaction, @Nullable String message);
 
     /**
      * Recursively copy a resource in the given revision
@@ -72,19 +74,21 @@ public interface Repository {
      * @param targetResource the {@link Resource} of the target resource (relative to the repository root)
      * @param parents whether to create missing parents folders or not
      *
-     * @throws NullPointerException if any parameter is {@code null}
-     * @throws SubversionException if an error occurs while operating on the repository
+     * @throws java.lang.NullPointerException if any parameter is {@code null}
+     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    void copy(Transaction transaction, Resource srcResource, Revision srcRevision, Resource targetResource, boolean parents) throws SubversionException;
+    void copy(Transaction transaction, Resource srcResource, Revision srcRevision, Resource targetResource, boolean parents);
 
     /**
      * Create a new {@link Transaction} to make modifications within
      *
      * @return the new {@link Transaction}
      *
-     * @throws SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    Transaction createTransaction() throws SubversionException;
+    Transaction createTransaction();
 
     /**
      * Delete the resource from the repository
@@ -92,10 +96,11 @@ public interface Repository {
      * @param transaction the current running {@link Transaction}
      * @param resource the {@link Resource} of the resource (relative to the repository root)
      *
-     * @throws NullPointerException if any parameter is {@code null}
-     * @throws SubversionException if an error occurs while operating on the repository
+     * @throws java.lang.NullPointerException if any parameter is {@code null}
+     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    void delete(Transaction transaction, Resource resource) throws SubversionException;
+    void delete(Transaction transaction, Resource resource);
 
     /**
      * Download the resource
@@ -105,10 +110,11 @@ public interface Repository {
      *
      * @return {@link InputStream} from which the content can be read (caller has to close the stream properly)
      *
-     * @throws NullPointerException if any parameter is {@code null}
-     * @throws SubversionException if an error occurs while operating on the repository
+     * @throws java.lang.NullPointerException if any parameter is {@code null}
+     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    InputStream download(Resource resource, Revision revision) throws SubversionException;
+    InputStream download(Resource resource, Revision revision);
 
     /**
      * Determine the HTTP download URI for the resource
@@ -118,10 +124,11 @@ public interface Repository {
      *
      * @return the HTTP download {@link URI} for the resource
      *
-     * @throws NullPointerException if any parameter is {@code null}
-     * @throws SubversionException if an error occurs while operating on the repository
+     * @throws java.lang.NullPointerException if any parameter is {@code null}
+     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    URI downloadURI(Resource resource, Revision revision) throws SubversionException;
+    URI downloadURI(Resource resource, Revision revision);
 
     /**
      * Check if the resource already exists in the latest revision of the repository
@@ -131,10 +138,11 @@ public interface Repository {
      *
      * @return {@code true} if the resource already exists in the latest revision of the repository otherwise {@code false}
      *
-     * @throws NullPointerException if any parameter is {@code null}
-     * @throws SubversionException if an error occurs while operating on the repository
+     * @throws java.lang.NullPointerException if any parameter is {@code null}
+     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    boolean exists(Resource resource, Revision revision) throws SubversionException;
+    boolean exists(Resource resource, Revision revision);
 
     /**
      * Returns the {@link URI} to the root of this {@link Repository}
@@ -165,10 +173,11 @@ public interface Repository {
      *
      * @return {@link Info} for the resource
      *
-     * @throws NullPointerException if any parameter is {@code null}
-     * @throws SubversionException if an error occurs while operating on the repository
+     * @throws java.lang.NullPointerException if any parameter is {@code null}
+     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    Info info(Resource resource, Revision revision) throws SubversionException;
+    Info info(Resource resource, Revision revision);
 
     /**
      * Retrieve information for the resource in the given revision and its child resources (depending on depth parameter)
@@ -179,10 +188,11 @@ public interface Repository {
      *
      * @return {@link Set} of {@link Info} for the resource and its child resources (depending on depth parameter)
      *
-     * @throws NullPointerException if any parameter is {@code null}
-     * @throws SubversionException if an error occurs while operating on the repository
+     * @throws java.lang.NullPointerException if any parameter is {@code null}
+     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    Set<Info> list(Resource resource, Revision revision, Depth depth) throws SubversionException;
+    Set<Info> list(Resource resource, Revision revision, Depth depth);
 
     /**
      * Mark the expected revision of the resource as locked
@@ -190,10 +200,11 @@ public interface Repository {
      * @param resource the {@link Resource} of the resource (relative to the repository root)
      * @param steal if the resource is locked by another user {@code true} will override the lock, otherwise the operation will fail
      *
-     * @throws NullPointerException if resource is {@code null}
-     * @throws SubversionException if an error occurs while operating on the repository
+     * @throws java.lang.NullPointerException if the resource parameter is {@code null}
+     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    void lock(Resource resource, boolean steal) throws SubversionException;
+    void lock(Resource resource, boolean steal);
 
     /**
      * Retrieve the log information for the revisions between startRevision and endRevision of the resource
@@ -205,10 +216,11 @@ public interface Repository {
      *
      * @return ordered (early to latest) {@link List} of {@link Log} for the revisions between startRevision and endRevision of the resource
      *
-     * @throws NullPointerException if any parameter is {@code null}
-     * @throws SubversionException if an error occurs while operating on the repository
+     * @throws java.lang.NullPointerException if any parameter is {@code null}
+     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    List<Log> log(Resource resource, Revision startRevision, Revision endRevision, int limit) throws SubversionException;
+    List<Log> log(Resource resource, Revision startRevision, Revision endRevision, int limit);
 
     /**
      * Create a folder with all necessary parents folders
@@ -217,10 +229,11 @@ public interface Repository {
      * @param resource the {@link Resource} of the resource (relative to the repository root)
      * @param parents whether to create missing parents folders or not
      *
-     * @throws NullPointerException if any parameter is {@code null}
-     * @throws SubversionException if an error occurs while operating on the repository
+     * @throws java.lang.NullPointerException if any parameter is {@code null}
+     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    void mkdir(Transaction transaction, Resource resource, boolean parents) throws SubversionException;
+    void mkdir(Transaction transaction, Resource resource, boolean parents);
 
     /**
      * Recursively move a resource (latest revision)
@@ -230,10 +243,11 @@ public interface Repository {
      * @param targetResource the {@link Resource} of the target resource (relative to the repository root)
      * @param parents whether to create missing parents folders or not
      *
-     * @throws NullPointerException if any parameter is {@code null}
-     * @throws SubversionException if an error occurs while operating on the repository
+     * @throws java.lang.NullPointerException if any parameter is {@code null}
+     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    void move(Transaction transaction, Resource srcResource, Resource targetResource, boolean parents) throws SubversionException;
+    void move(Transaction transaction, Resource srcResource, Resource targetResource, boolean parents);
 
     /**
      * Remove the given properties form the resource
@@ -242,11 +256,12 @@ public interface Repository {
      * @param resource the {@link Resource} of the resource (relative to the repository root)
      * @param properties {@link ResourceProperty} to remove
      *
-     * @throws IllegalArgumentException if properties contain {@code null} elements
-     * @throws NullPointerException if any parameter is {@code null}
-     * @throws SubversionException if an error occurs while operating on the repository
+     * @throws java.lang.IllegalArgumentException if properties contain {@code null} elements
+     * @throws java.lang.NullPointerException if any parameter is {@code null}
+     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    void propertiesDelete(Transaction transaction, Resource resource, ResourceProperty... properties) throws SubversionException;
+    void propertiesDelete(Transaction transaction, Resource resource, ResourceProperty... properties);
 
     /**
      * Set the given properties for the resource (new properties will be added, existing properties will be overridden)
@@ -255,21 +270,23 @@ public interface Repository {
      * @param resource the {@link Resource} of the resource (relative to the repository root)
      * @param properties {@link ResourceProperty} to add or override
      *
-     * @throws IllegalArgumentException if properties contain {@code null} elements
-     * @throws NullPointerException if any parameter is {@code null}
-     * @throws SubversionException if an error occurs while operating on the repository
+     * @throws java.lang.IllegalArgumentException if properties contain {@code null} elements
+     * @throws java.lang.NullPointerException if any parameter is {@code null}
+     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    void propertiesSet(Transaction transaction, Resource resource, ResourceProperty... properties) throws SubversionException;
+    void propertiesSet(Transaction transaction, Resource resource, ResourceProperty... properties);
 
     /**
      * Abort the current running {@link Transaction} and revert all modifications
      *
      * @param transaction the current running {@link Transaction}
      *
-     * @throws NullPointerException if transaction is {@code null}
-     * @throws SubversionException if an error occurs while operating on the repository
+     * @throws java.lang.NullPointerException if the transaction parameter is {@code null}
+     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    void rollback(Transaction transaction) throws SubversionException;
+    void rollback(Transaction transaction);
 
     /**
      * Remove the lock on the expected revision of the resource
@@ -277,8 +294,9 @@ public interface Repository {
      * @param resource the {@link Resource} of the resource (relative to the repository root)
      * @param force the user that created the lock must match the user who wants to delete it, unless force is {@code true}
      *
-     * @throws NullPointerException if resource is {@code null}
-     * @throws SubversionException if an error occurs while operating on the repository
+     * @throws java.lang.NullPointerException if the resource parameter is {@code null}
+     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    void unlock(Resource resource, boolean force) throws SubversionException;
+    void unlock(Resource resource, boolean force);
 }
