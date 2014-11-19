@@ -109,7 +109,7 @@ public abstract class RepositoryFactory {
             } catch (final SubversionException e) {
                 // ignore errors while searching the correct repository
                 final int httpStatusCode = e.getHttpStatusCode();
-                if ((httpStatusCode > 0) && (httpStatusCode != HttpStatus.SC_NOT_FOUND)) {
+                if (httpStatusCode != HttpStatus.SC_NOT_FOUND) {
                     throw e;
                 }
             }
