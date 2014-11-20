@@ -71,6 +71,7 @@ public abstract class RepositoryFactory {
      *
      * @throws NullPointerException if any parameter is {@code null}
      * @throws SubversionException if no {@link Repository} can be created
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     public final Repository createRepository(final URI repository, final HttpClient client, final HttpContext context) {
         Validate.notNull(repository, "repository must not be null");
@@ -95,6 +96,7 @@ public abstract class RepositoryFactory {
      *
      * @throws NullPointerException if any parameter is {@code null}
      * @throws SubversionException if an error occurs during {@link Repository} probing and no {@link Repository} can be created
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     public Repository probeRepository(final URI repository, final HttpClient client, final HttpContext context) {
         Validate.notNull(repository, "repository must not be null");

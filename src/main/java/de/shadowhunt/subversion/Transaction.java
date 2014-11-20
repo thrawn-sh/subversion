@@ -58,16 +58,16 @@ public interface Transaction {
     Map<Resource, Status> getChangeSet();
 
     /**
-     * Returns the identifier of the {@link Transaction} (unique for each {@code Repository}
+     * Returns the identifier of the {@link Transaction} (unique for each {@link Repository}
      *
      * @return the identifier of the {@link Transaction}
      */
     String getId();
 
     /**
-     * Returns the {@link UUID} of the {@code Repository} this {@link Transaction} belongs to
+     * Returns the {@link UUID} of the {@link Repository} this {@link Transaction} belongs to
      *
-     * @return the {@link UUID} of the {@code Repository}
+     * @return the {@link UUID} of the {@link Repository}
      */
     UUID getRepositoryId();
 
