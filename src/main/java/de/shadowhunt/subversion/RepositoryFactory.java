@@ -109,9 +109,9 @@ public abstract class RepositoryFactory {
                 final URI saneUri = sanitise(repository, path);
                 return createRepository0(saneUri, client, context);
             } catch (final SubversionException e) {
-                // ignore errors while searching the correct repository
+                // ignore errors while searching the correct repository root
                 final int httpStatusCode = e.getHttpStatusCode();
-                if (httpStatusCode != HttpStatus.SC_NOT_FOUND) {
+                if (! ((httpStatusCode == HttpStatus.SC_BAD_REQUEST) || (httpStatusCode == HttpStatus.SC_NOT_FOUND))) {
                     throw e;
                 }
             }
