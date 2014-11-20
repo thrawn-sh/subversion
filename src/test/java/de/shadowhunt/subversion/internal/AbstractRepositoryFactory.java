@@ -18,6 +18,7 @@ package de.shadowhunt.subversion.internal;
 import java.net.URI;
 import java.util.UUID;
 
+import de.shadowhunt.subversion.SubversionException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 import org.junit.Assert;
@@ -45,7 +46,26 @@ public abstract class AbstractRepositoryFactory {
     }
 
     @Test
-    public void test00_probe() {
+    public void test00_create() {
+        final RepositoryFactory factory = RepositoryFactory.getInstance();
+        final Repository probeRepository = factory.createRepository(repository.getBaseUri(), client, context);
+        Assert.assertNotNull("probe repository must not be null", probeRepository);
+
+        Assert.assertEquals("base uri must match", repository.getBaseUri(), probeRepository.getBaseUri());
+        Assert.assertEquals("protocol version must match", repository.getProtocolVersion(), probeRepository.getProtocolVersion());
+        Assert.assertEquals("repository id must match", repository.getRepositoryId(), probeRepository.getRepositoryId());
+    }
+
+    @Test(expected = SubversionException.class)
+    public void test01_create() {
+        final RepositoryFactory factory = RepositoryFactory.getInstance();
+        final URI uri = URI.create(repository.getBaseUri().toString() + "/" + UUID.randomUUID().toString());
+        final Repository probeRepository = factory.createRepository(uri, client, context);
+        Assert.fail("must not complete");
+    }
+
+    @Test
+    public void test02_probe() {
         final RepositoryFactory factory = RepositoryFactory.getInstance();
         final Repository probeRepository = factory.probeRepository(repository.getBaseUri(), client, context);
         Assert.assertNotNull("probe repository must not be null", probeRepository);
@@ -56,7 +76,7 @@ public abstract class AbstractRepositoryFactory {
     }
 
     @Test
-    public void test01_probe() {
+    public void test03_probe() {
         final RepositoryFactory factory = RepositoryFactory.getInstance();
         final URI uri = URI.create(repository.getBaseUri().toString() + "/" + UUID.randomUUID().toString());
         final Repository probeRepository = factory.probeRepository(uri, client, context);
