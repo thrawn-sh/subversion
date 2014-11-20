@@ -91,6 +91,16 @@ public interface Repository {
     Transaction createTransaction();
 
     /**
+     * Create a new {@link View} to query consistent repository information
+     *
+     * @return the new {@link View}
+     *
+     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
+     */
+    View createView();
+
+    /**
      * Delete the resource from the repository
      *
      * @param transaction the current running {@link Transaction}
@@ -105,6 +115,7 @@ public interface Repository {
     /**
      * Download the resource
      *
+     * @param view the current valid {@link View}
      * @param resource the {@link Resource} of the resource (relative to the repository root)
      * @param revision the {@link Revision} of the resource to retrieve
      *
@@ -114,11 +125,12 @@ public interface Repository {
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
      * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    InputStream download(Resource resource, Revision revision);
+    InputStream download(View view, Resource resource, Revision revision);
 
     /**
      * Determine the HTTP download URI for the resource
      *
+     * @param view the current valid {@link View}
      * @param resource the {@link Resource} of the resource (relative to the repository root)
      * @param revision the {@link Revision} of the resource to retrieve
      *
@@ -128,11 +140,12 @@ public interface Repository {
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
      * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    URI downloadURI(Resource resource, Revision revision);
+    URI downloadURI(View view, Resource resource, Revision revision);
 
     /**
      * Check if the resource already exists in the latest revision of the repository
      *
+     * @param view the current valid {@link View}
      * @param resource the {@link Resource} of the resource (relative to the repository root)
      * @param revision the {@link Revision} of the resource to retrieve
      *
@@ -142,7 +155,7 @@ public interface Repository {
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
      * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    boolean exists(Resource resource, Revision revision);
+    boolean exists(View view, Resource resource, Revision revision);
 
     /**
      * Returns the {@link URI} to the root of this {@link Repository}
@@ -168,6 +181,7 @@ public interface Repository {
     /**
      * Retrieve information for the resource
      *
+     * @param view the current valid {@link View}
      * @param resource the {@link Resource} of the resource (relative to the repository root)
      * @param revision the {@link Revision} of the resource to retrieve
      *
@@ -177,11 +191,12 @@ public interface Repository {
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
      * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    Info info(Resource resource, Revision revision);
+    Info info(View view, Resource resource, Revision revision);
 
     /**
      * Retrieve information for the resource in the given revision and its child resources (depending on depth parameter)
      *
+     * @param view the current valid {@link View}
      * @param resource the {@link Resource} of the resource (relative to the repository root)
      * @param revision the {@link Revision} of the resource to retrieve
      * @param depth whether to retrieve only for the given resource, its children or only part of its children depending on the value of {@link Depth}
@@ -192,7 +207,7 @@ public interface Repository {
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
      * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    Set<Info> list(Resource resource, Revision revision, Depth depth);
+    Set<Info> list(View view, Resource resource, Revision revision, Depth depth);
 
     /**
      * Mark the expected revision of the resource as locked
@@ -209,6 +224,7 @@ public interface Repository {
     /**
      * Retrieve the log information for the revisions between startRevision and endRevision of the resource
      *
+     * @param view the current valid {@link View}
      * @param resource the {@link Resource} of the resource (relative to the repository root)
      * @param startRevision the first {@link Revision} of the resource to retrieve (including)
      * @param endRevision the last {@link Revision} of the resource to retrieve (including)
@@ -220,7 +236,7 @@ public interface Repository {
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
      * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    List<Log> log(Resource resource, Revision startRevision, Revision endRevision, int limit);
+    List<Log> log(View view, Resource resource, Revision startRevision, Revision endRevision, int limit);
 
     /**
      * Create a folder with all necessary parents folders

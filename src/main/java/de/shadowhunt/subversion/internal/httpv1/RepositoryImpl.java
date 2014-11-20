@@ -33,7 +33,6 @@ import de.shadowhunt.subversion.Transaction.Status;
 import de.shadowhunt.subversion.internal.AbstractBaseRepository;
 import de.shadowhunt.subversion.internal.CommitMessageOperation;
 import de.shadowhunt.subversion.internal.MergeOperation;
-import de.shadowhunt.subversion.internal.RepositoryCache;
 import de.shadowhunt.subversion.internal.TransactionImpl;
 
 class RepositoryImpl extends AbstractBaseRepository {
@@ -116,8 +115,7 @@ class RepositoryImpl extends AbstractBaseRepository {
             return;
         }
 
-        final RepositoryCache cache = fromTransaction(transaction);
-        final Revision concreteRevision = cache.getConcreteRevision(Revision.HEAD);
+        final Revision concreteRevision = transaction.getHeadRevision();
         final Resource messageResource = config.getCommitMessageResource(transaction).append(Resource.create(concreteRevision.toString()));
         final CommitMessageOperation cmo = new CommitMessageOperation(repository, messageResource, message);
         cmo.execute(client, context);
@@ -137,9 +135,9 @@ class RepositoryImpl extends AbstractBaseRepository {
 
         { // create transaction
             final Resource resource = config.getCreateTransactionResource();
-            final CreateTransactionOperation cto = new CreateTransactionOperation(repository, resource);
+            final Revision headRevision = determineHeadRevision();
+            final CreateTransactionOperation cto = new CreateTransactionOperation(repository, repositoryId, resource, headRevision);
             transaction = cto.execute(client, context);
-            transaction.setRepository(this);
         }
 
         {// transaction resource must be explicitly registered
@@ -161,12 +159,7 @@ class RepositoryImpl extends AbstractBaseRepository {
     protected void registerResource(final Transaction transaction, final Resource resource, final Revision revision) {
         validateTransaction(transaction);
 
-        final RepositoryCache cache = fromTransaction(transaction);
-        if (cache.status(resource) != null) {
-            return;
-        }
-
-        final Revision concreteRevision = cache.getConcreteRevision(revision);
+        final Revision concreteRevision = getConcreteRevision(transaction, revision);
         final Resource existingResource = config.getRegisterResource(resource, concreteRevision);
         final Resource transactionResource = config.getTransactionResource(transaction);
         final CheckoutOperation co = new CheckoutOperation(repository, existingResource, transactionResource);

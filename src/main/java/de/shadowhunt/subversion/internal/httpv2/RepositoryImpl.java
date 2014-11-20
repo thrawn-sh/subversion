@@ -33,7 +33,6 @@ import de.shadowhunt.subversion.Transaction.Status;
 import de.shadowhunt.subversion.internal.AbstractBaseRepository;
 import de.shadowhunt.subversion.internal.CommitMessageOperation;
 import de.shadowhunt.subversion.internal.MergeOperation;
-import de.shadowhunt.subversion.internal.TransactionImpl;
 
 class RepositoryImpl extends AbstractBaseRepository {
 
@@ -126,10 +125,9 @@ class RepositoryImpl extends AbstractBaseRepository {
         LOGGER.trace("creating new transaction");
 
         final Resource resource = config.getCreateTransactionResource();
-        final CreateTransactionOperation cto = new CreateTransactionOperation(repository, resource);
-        final TransactionImpl transaction = cto.execute(client, context);
-        transaction.setRepository(this);
-        return transaction;
+        final Revision headRevision = determineHeadRevision();
+        final CreateTransactionOperation cto = new CreateTransactionOperation(repository, repositoryId, resource, headRevision);
+        return cto.execute(client, context);
     }
 
     @Override

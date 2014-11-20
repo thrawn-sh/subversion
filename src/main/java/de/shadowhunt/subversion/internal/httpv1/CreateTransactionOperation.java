@@ -23,19 +23,26 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 
 import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.internal.AbstractOperation;
 import de.shadowhunt.subversion.internal.TransactionImpl;
 import de.shadowhunt.subversion.internal.URIUtils;
 
 class CreateTransactionOperation extends AbstractOperation<TransactionImpl> {
 
+    private final Revision headRevision;
+
+    private final UUID repositoryId;
+
     private final Resource resource;
 
     private final UUID transactionId = UUID.randomUUID();
 
-    CreateTransactionOperation(final URI repository, final Resource resource) {
+    CreateTransactionOperation(final URI repository, final UUID repositoryId, final Resource resource, final Revision headRevision) {
         super(repository);
+        this.repositoryId = repositoryId;
         this.resource = resource;
+        this.headRevision = headRevision;
     }
 
     @Override
@@ -51,6 +58,6 @@ class CreateTransactionOperation extends AbstractOperation<TransactionImpl> {
 
     @Override
     protected TransactionImpl processResponse(final HttpResponse response) {
-        return new TransactionImpl(transactionId.toString());
+        return new TransactionImpl(transactionId.toString(), repositoryId, headRevision);
     }
 }

@@ -16,12 +16,11 @@
 package de.shadowhunt.subversion;
 
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * {@link Transaction} allows the application to define units of work, it can be created via {@link Repository#createTransaction()}
  */
-public interface Transaction {
+public interface Transaction extends View {
 
     /**
      * Defines the status of each {@link Resource} that is part of the current active {@link Transaction}
@@ -63,13 +62,6 @@ public interface Transaction {
      * @return the identifier of the {@link Transaction}
      */
     String getId();
-
-    /**
-     * Returns the {@link UUID} of the {@link Repository} this {@link Transaction} belongs to
-     *
-     * @return the {@link UUID} of the {@link Repository}
-     */
-    UUID getRepositoryId();
 
     /**
      * After {@link Repository#commit(Transaction, String)} or {@link Repository#rollback(Transaction)} the {@link Transaction} is invalidated

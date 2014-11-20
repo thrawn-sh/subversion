@@ -24,12 +24,13 @@ import javax.annotation.CheckForNull;
 import org.apache.commons.lang3.Validate;
 
 import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
 
 /**
  * Default implementation for {@link Transaction}
  */
-public final class TransactionImpl extends RepositoryCache implements Transaction {
+public final class TransactionImpl extends ViewImpl implements Transaction {
 
     private boolean active = true;
 
@@ -37,7 +38,8 @@ public final class TransactionImpl extends RepositoryCache implements Transactio
 
     private final String id;
 
-    public TransactionImpl(final String id) {
+    public TransactionImpl(final String id, final UUID repositoryId, final Revision headRevision) {
+        super(repositoryId, headRevision);
         Validate.notNull(id, "id must not be null");
 
         this.id = id;
@@ -69,11 +71,6 @@ public final class TransactionImpl extends RepositoryCache implements Transactio
     @Override
     public String getId() {
         return id;
-    }
-
-    @Override
-    public UUID getRepositoryId() {
-        return getRepository().getRepositoryId();
     }
 
     @Override
@@ -131,7 +128,6 @@ public final class TransactionImpl extends RepositoryCache implements Transactio
         return true;
     }
 
-    @Override
     @CheckForNull
     public Status status(final Resource resource) {
         Validate.notNull(resource, "resource must not be null");
