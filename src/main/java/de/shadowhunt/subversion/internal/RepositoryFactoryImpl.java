@@ -17,6 +17,7 @@ package de.shadowhunt.subversion.internal;
 
 import java.net.URI;
 
+import de.shadowhunt.subversion.Transaction;
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 
@@ -29,6 +30,10 @@ public class RepositoryFactoryImpl extends RepositoryFactory {
     @Override
     protected Repository createRepository0(final URI saneUri, final HttpClient client, final HttpContext context) {
         final ProbeServerOperation operation = new ProbeServerOperation(saneUri);
-        return operation.execute(client, context);
+        final Repository repository = operation.execute(client, context);
+        // check if we got the real repository root
+        final Transaction transaction = repository.createTransaction();
+        repository.rollback(transaction);
+        return repository;
     }
 }
