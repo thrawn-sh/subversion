@@ -42,7 +42,7 @@ public abstract class AbstractRepositoryResolve {
     }
 
     @Test
-    public void test01_deleteFile() throws Exception {
+    public void test01_deletedFile() throws Exception {
         final Resource resource = prefix.append(Resource.create("file_delete.txt"));
 
         AbstractRepositoryAdd.file(repository, resource, "test", true);
@@ -64,7 +64,7 @@ public abstract class AbstractRepositoryResolve {
     }
 
     @Test
-    public void test01_deleteFolder() throws Exception {
+    public void test01_deletedFolder() throws Exception {
         final Resource resource = prefix.append(Resource.create("folder_delete/file.txt"));
 
         AbstractRepositoryAdd.file(repository, resource, "test", true);

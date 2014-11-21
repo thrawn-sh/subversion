@@ -57,13 +57,6 @@ public abstract class AbstractBaseRepository implements Repository {
         return info.getRepositoryId();
     }
 
-    protected Revision getConcreteRevision(final View view, final Revision revision) {
-        if (Revision.HEAD.equals(revision)) {
-            return view.getHeadRevision();
-        }
-        return revision;
-    }
-
     protected static interface ResourceMapper {
 
         Resource getCommitMessageResource(Transaction transaction);
@@ -136,6 +129,7 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.notNull(sourceResource, "sourceResource must not be null");
         Validate.notNull(sourceRevision, "sourceRevision must not be null");
         Validate.notNull(targetResource, "targetResource must not be null");
+        validateRevision(transaction, sourceRevision);
 
         LOGGER.trace("copying resource from {}@{} to {} during transaction {} (parents: {})", sourceResource, sourceRevision, targetResource, transaction.getId(), parents);
         if (parents) {
@@ -224,9 +218,15 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.notNull(view, "view must not be null");
         Validate.notNull(resource, "resource must not be null");
         Validate.notNull(revision, "revision must not be null");
+        validateRevision(view, revision);
 
         LOGGER.trace("downloading resource {}@{}", resource, revision);
         return download0(view, resource, revision);
+    }
+
+    @Override
+    public InputStream download(final Resource resource, final Revision revision) {
+        return download(createView(), resource, revision);
     }
 
     private InputStream download0(final View view, final Resource resource, final Revision revision) {
@@ -243,9 +243,15 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.notNull(view, "view must not be null");
         Validate.notNull(resource, "resource must not be null");
         Validate.notNull(revision, "revision must not be null");
+        validateRevision(view, revision);
 
         LOGGER.trace("creating download uri for resource {}@{}", resource, revision);
         return downloadURI0(view, resource, revision);
+    }
+
+    @Override
+    public URI downloadURI(final Resource resource, final Revision revision) {
+        return downloadURI(createView(), resource, revision);
     }
 
     private URI downloadURI0(final View view, final Resource resource, final Revision revision) {
@@ -261,9 +267,15 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.notNull(view, "view must not be null");
         Validate.notNull(resource, "resource must not be null");
         Validate.notNull(revision, "revision must not be null");
+        validateRevision(view, revision);
 
         LOGGER.trace("checking existence for resource {}@{}", resource, revision);
         return exists0(view, resource, revision);
+    }
+
+    @Override
+    public boolean exists(final Resource resource, final Revision revision) {
+        return exists(createView(), resource, revision);
     }
 
     private boolean exists0(final View view, final Resource resource, final Revision revision) {
@@ -279,6 +291,13 @@ public abstract class AbstractBaseRepository implements Repository {
     @Override
     public final URI getBaseUri() {
         return URIUtils.createURI(repository);
+    }
+
+    protected Revision getConcreteRevision(final View view, final Revision revision) {
+        if (Revision.HEAD.equals(revision)) {
+            return view.getHeadRevision();
+        }
+        return revision;
     }
 
     protected Set<Info> getInfosWithLockTokens(final Transaction transaction) {
@@ -315,6 +334,7 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.notNull(view, "view must not be null");
         Validate.notNull(resource, "resource must not be null");
         Validate.notNull(revision, "revision must not be null");
+        validateRevision(view, revision);
 
         LOGGER.trace("retrieving info for resource {}@{}", resource, revision);
         final Info info = info0(view, resource, revision, true);
@@ -322,6 +342,11 @@ public abstract class AbstractBaseRepository implements Repository {
             throw new SubversionException("Can't resolve: " + resource + '@' + revision);
         }
         return info;
+    }
+
+    @Override
+    public Info info(final Resource resource, final Revision revision) {
+        return info(createView(), resource, revision);
     }
 
     @CheckForNull
@@ -341,9 +366,15 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.notNull(resource, "resource must not be null");
         Validate.notNull(revision, "revision must not be null");
         Validate.notNull(depth, "depth must not be null");
+        validateRevision(view, revision);
 
         LOGGER.trace("listing info for resource {}@{} and depth ", resource, revision, depth);
         return list0(view, resource, revision, depth);
+    }
+
+    @Override
+    public Set<Info> list(final Resource resource, final Revision revision, final Depth depth) {
+        return list(createView(), resource, revision, depth);
     }
 
     private Set<Info> list0(final View view, final Resource resource, final Revision revision, final Depth depth) {
@@ -389,9 +420,16 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.notNull(resource, "resource must not be null");
         Validate.notNull(startRevision, "startRevision must not be null");
         Validate.notNull(endRevision, "endRevision must not be null");
+        validateRevision(view, startRevision);
+        validateRevision(view, endRevision);
 
         LOGGER.trace("retrieving log for resource {} from {} to {} (limit: {})", resource, startRevision, endRevision, limit);
         return log0(view, resource, startRevision, endRevision, limit);
+    }
+
+    @Override
+    public List<Log> log(final Resource resource, final Revision startRevision, final Revision endRevision, final int limit) {
+        return log(createView(), resource, startRevision, endRevision, limit);
     }
 
     private List<Log> log0(final View view, final Resource resource, final Revision startRevision, final Revision endRevision, final int limit) {
@@ -460,6 +498,7 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.notNull(view, "view must not be null");
         Validate.notNull(resource, "resource must not be null");
         Validate.notNull(revision, "revision must not be null");
+        validateRevision(view, revision);
 
         if (Revision.HEAD.equals(revision)) {
             final ExistsOperation operation = new ExistsOperation(repository, resource);
@@ -519,6 +558,17 @@ public abstract class AbstractBaseRepository implements Repository {
         }
         final UnlockOperation operation = new UnlockOperation(repository, resource, lockToken, force);
         operation.execute(client, context);
+    }
+
+    protected void validateRevision(final View view, final Revision revision) {
+        if (Revision.HEAD.equals(revision)) {
+            return;
+        }
+
+        final Revision headRevision = view.getHeadRevision();
+        if (headRevision.compareTo(revision) < 0) {
+            throw new SubversionException("revision " + revision + " is to new for Transaction/View with head revision " + headRevision);
+        }
     }
 
     protected void validateTransaction(final Transaction transaction) {

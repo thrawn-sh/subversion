@@ -23,7 +23,6 @@ import org.apache.http.protocol.HttpContext;
 
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.RepositoryFactory;
-import de.shadowhunt.subversion.SubversionException;
 
 public class RepositoryFactoryImpl extends RepositoryFactory {
 

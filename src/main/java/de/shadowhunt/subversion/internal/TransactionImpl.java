@@ -26,23 +26,31 @@ import org.apache.commons.lang3.Validate;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
+import de.shadowhunt.subversion.View;
 
 /**
  * Default implementation for {@link Transaction}
  */
-public final class TransactionImpl extends ViewImpl implements Transaction {
+public final class TransactionImpl implements Transaction, View {
 
     private boolean active = true;
 
     private final Map<Resource, Status> changeSet = new TreeMap<Resource, Status>();
 
+    private final Revision headRevision;
+
     private final String id;
 
+    private final UUID repositoryId;
+
     public TransactionImpl(final String id, final UUID repositoryId, final Revision headRevision) {
-        super(repositoryId, headRevision);
         Validate.notNull(id, "id must not be null");
+        Validate.notNull(repositoryId, "repositoryId must not be null");
+        Validate.notNull(headRevision, "headRevision must not be null");
 
         this.id = id;
+        this.repositoryId = repositoryId;
+        this.headRevision = headRevision;
     }
 
     @Override
@@ -71,6 +79,16 @@ public final class TransactionImpl extends ViewImpl implements Transaction {
     @Override
     public String getId() {
         return id;
+    }
+
+    @Override
+    public UUID getRepositoryId() {
+        return repositoryId;
+    }
+
+    @Override
+    public Revision getHeadRevision() {
+        return headRevision;
     }
 
     @Override
