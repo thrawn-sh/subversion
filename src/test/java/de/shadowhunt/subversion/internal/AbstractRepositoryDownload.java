@@ -33,7 +33,7 @@ import de.shadowhunt.subversion.SubversionException;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class AbstractRepositoryDownload {
 
-    private static final Resource PREFIX = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/download");
+    public static final Resource PREFIX = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/download");
 
     public static void assertEquals(final String message, final InputStream expected, final InputStream actual) throws Exception {
         try {

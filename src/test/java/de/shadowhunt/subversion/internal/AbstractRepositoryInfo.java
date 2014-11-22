@@ -32,7 +32,7 @@ import de.shadowhunt.subversion.SubversionException;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class AbstractRepositoryInfo {
 
-    private static final Resource PREFIX = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/info");
+    public static final Resource PREFIX = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/info");
 
     public static void assertEquals(final String message, final Info expected, final Info actual) {
         Assert.assertEquals(message, expected, actual);

@@ -22,6 +22,7 @@ import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.UUID;
 
+import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -78,13 +79,17 @@ public abstract class AbstractHelper {
         return dumpUri;
     }
 
-    public HttpClient getHttpClient(final String username) {
+    public HttpClient getHttpClient(final String username, final HttpRequestInterceptor... interceptors) {
         final HttpClientBuilder builder = HttpClientBuilder.create();
 
         final CredentialsProvider cp = new BasicCredentialsProvider();
         final Credentials credentials = new UsernamePasswordCredentials(username, PASSWORD);
         cp.setCredentials(AuthScope.ANY, credentials);
         builder.setDefaultCredentialsProvider(cp);
+
+        for (HttpRequestInterceptor interceptor : interceptors) {
+            builder.addInterceptorFirst(interceptor);
+        }
 
         builder.setRetryHandler(new SubversionRequestRetryHandler());
         return builder.build();
@@ -94,20 +99,20 @@ public abstract class AbstractHelper {
         return new BasicHttpContext();
     }
 
-    public Repository getRepositoryA() {
+    public Repository getRepositoryA(final HttpRequestInterceptor... interceptors) {
         if (repositoryA == null) {
             final HttpContext context = getHttpContext();
-            final HttpClient client = getHttpClient(USERNAME_A);
+            final HttpClient client = getHttpClient(USERNAME_A, interceptors);
 
             repositoryA = RepositoryFactory.getInstance().createRepository(repositoryUri, client, context);
         }
         return repositoryA;
     }
 
-    public Repository getRepositoryB() {
+    public Repository getRepositoryB(final HttpRequestInterceptor... interceptors) {
         if (repositoryB == null) {
             final HttpContext context = getHttpContext();
-            final HttpClient client = getHttpClient(USERNAME_B);
+            final HttpClient client = getHttpClient(USERNAME_B, interceptors);
 
             repositoryB = RepositoryFactory.getInstance().createRepository(repositoryUri, client, context);
         }
