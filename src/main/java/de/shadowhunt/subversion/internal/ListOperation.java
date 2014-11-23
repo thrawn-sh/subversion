@@ -75,11 +75,14 @@ class ListOperation extends AbstractOperation<Set<Info>> {
 
     @Override
     protected boolean isExpectedStatusCode(final int statusCode) {
-        return HttpStatus.SC_MULTI_STATUS == statusCode;
+        return HttpStatus.SC_MULTI_STATUS == statusCode || HttpStatus.SC_NOT_FOUND == statusCode;
     }
 
     @Override
     protected Set<Info> processResponse(final HttpResponse response) throws IOException {
+        if (getStatusCode(response) == HttpStatus.SC_NOT_FOUND) {
+            return null;
+        }
         return InfoImplReader.readAll(getContent(response), repository.getPath(), marker.getValue());
     }
 

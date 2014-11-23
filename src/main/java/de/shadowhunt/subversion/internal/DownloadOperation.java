@@ -50,6 +50,9 @@ class DownloadOperation extends AbstractOperation<InputStream> {
 
         try {
             final HttpResponse response = client.execute(request, context);
+            if (getStatusCode(response) == HttpStatus.SC_NOT_FOUND) {
+                return null;
+            }
             final InputStream content = getContent(response);
             check(response);
             return content;
@@ -65,7 +68,7 @@ class DownloadOperation extends AbstractOperation<InputStream> {
 
     @Override
     protected boolean isExpectedStatusCode(final int statusCode) {
-        return HttpStatus.SC_OK == statusCode;
+        return (HttpStatus.SC_OK == statusCode) || (HttpStatus.SC_NOT_FOUND == statusCode);
     }
 
     @Override

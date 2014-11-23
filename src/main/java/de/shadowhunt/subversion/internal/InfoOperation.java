@@ -74,11 +74,15 @@ class InfoOperation extends AbstractOperation<Info> {
 
     @Override
     protected boolean isExpectedStatusCode(final int statusCode) {
-        return HttpStatus.SC_MULTI_STATUS == statusCode;
+        return HttpStatus.SC_MULTI_STATUS == statusCode || HttpStatus.SC_NOT_FOUND == statusCode;
     }
 
     @Override
     protected Info processResponse(final HttpResponse response) throws IOException {
+        if (getStatusCode(response) == HttpStatus.SC_NOT_FOUND) {
+            return null;
+        }
+
         final Info info = InfoImplReader.read(getContent(response), repository.getPath(), marker.getValue());
         if (info.isLocked()) {
             final Header header = response.getFirstHeader(LOCK_OWNER_HEADER);
