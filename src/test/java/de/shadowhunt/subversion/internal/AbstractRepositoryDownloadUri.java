@@ -26,6 +26,7 @@ import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
+import de.shadowhunt.subversion.View;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -66,7 +67,9 @@ public abstract class AbstractRepositoryDownloadUri {
         final Resource resource = PREFIX.append(Resource.create("/file.txt"));
         final Revision revision = Revision.HEAD;
 
-        final URI expected = URIUtils.createURI(repository.getBaseUri(), resource);
+        final View view = repository.createView();
+        final AbstractBaseRepository ar = (AbstractBaseRepository) repository;
+        final URI expected = URIUtils.createURI(repository.getBaseUri(), ar.config.getVersionedResource(resource, view.getHeadRevision()));
         final String message = createMessage(resource, revision);
         Assert.assertEquals(message, expected, repository.downloadURI(resource, revision));
     }

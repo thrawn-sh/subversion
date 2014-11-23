@@ -29,6 +29,7 @@ import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.ResourceProperty.Type;
 import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.Transaction.Status;
 
@@ -215,7 +216,7 @@ public class AbstractRepositoryCombinedOperations {
         }
     }
 
-    @Test
+    @Test(expected = SubversionException.class)
     public void test03_AddAndDelete() throws Exception {
         final String content = "test";
         final Resource resource = prefix.append(Resource.create("delete.txt"));
@@ -225,15 +226,10 @@ public class AbstractRepositoryCombinedOperations {
         try {
             repository.add(transaction, resource, true, AbstractHelper.getInputStream(content));
             repository.delete(transaction, resource);
-            repository.commit(transaction, "empty " + resource);
-        } catch (final Exception e) {
+            Assert.fail("must not complete");
+        } finally {
             repository.rollback(transaction);
-            throw e;
         }
-        final Info after = repository.info(Resource.ROOT, Revision.HEAD);
-
-        Assert.assertFalse("must not exist", repository.exists(resource, Revision.HEAD));
-        AbstractRepositoryInfo.assertEquals("repo not modified", before, after);
     }
 
     @Test

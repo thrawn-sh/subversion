@@ -47,6 +47,7 @@ import org.junit.runners.Suite.SuiteClasses;
         RepositoryCombinedOperations.class, // *ALL*
         // other
         RepositoryFactory.class, // repository probing
+        RepositoryPerformance.class, // count the number of requests
 })
 public class SuiteIT {
     // no code, just a placeholder class
