@@ -15,58 +15,18 @@
  */
 package de.shadowhunt.subversion.internal;
 
-import java.io.Writer;
 import java.net.URI;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
-import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.entity.StringEntity;
 
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.SubversionException;
 
-class ExistsOperation extends AbstractOperation<Boolean> {
+class ExistsOperation extends PropfindOperation<Boolean> {
 
-    private final Resource resource;
-
-    ExistsOperation(final URI repository, final Resource resource) {
-        super(repository);
-        this.resource = resource;
-    }
-
-    @Override
-    protected HttpUriRequest createRequest() {
-        final URI uri = URIUtils.createURI(repository, resource);
-        final DavTemplateRequest request = new DavTemplateRequest("PROPFIND", uri);
-        request.addHeader("Depth", Depth.EMPTY.value);
-
-        final Writer body = new StringBuilderWriter();
-        try {
-            final XMLStreamWriter writer = XML_OUTPUT_FACTORY.createXMLStreamWriter(body);
-            writer.writeStartDocument(XmlConstants.ENCODING, XmlConstants.VERSION_1_0);
-            writer.writeStartElement("propfind");
-            writer.writeDefaultNamespace(XmlConstants.DAV_NAMESPACE);
-            writer.writeEmptyElement("prop");
-            writer.writeEndElement(); //propfind
-            writer.writeEndDocument();
-            writer.close();
-        } catch (final XMLStreamException e) {
-            throw new SubversionException("could not create request body", e);
-        }
-
-        request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
-        return request;
-    }
-
-    @Override
-    protected boolean isExpectedStatusCode(final int statusCode) {
-        return (HttpStatus.SC_MULTI_STATUS == statusCode) || (HttpStatus.SC_NOT_FOUND == statusCode);
+    ExistsOperation(final URI repository, final Resource resource, final Resource marker) {
+        super(repository, resource, marker, Depth.EMPTY);
     }
 
     @Override

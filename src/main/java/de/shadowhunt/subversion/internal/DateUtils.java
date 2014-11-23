@@ -22,6 +22,9 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+
 final class DateUtils {
 
     private static final String CREATED_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS";
@@ -30,7 +33,11 @@ final class DateUtils {
 
     private static final TimeZone ZULU = TimeZone.getTimeZone("ZULU");
 
-    static Date parseCreatedDate(final String date) {
+    @CheckForNull
+    static Date parseCreatedDate(@Nullable final String date) {
+        if (date == null) {
+            return null;
+        }
         if ('Z' != date.charAt(date.length() - 1)) {
             throw new IllegalArgumentException("date '" + date + "'is not in Zulu timezone");
         }
@@ -52,7 +59,11 @@ final class DateUtils {
         }
     }
 
-    static Date parseLastModifiedDate(final String date) {
+    @CheckForNull
+    static Date parseLastModifiedDate(@Nullable final String date) {
+        if (date == null) {
+            return null;
+        }
         final DateFormat dateFormat = new SimpleDateFormat(LAST_MODIFIED_PATTERN, Locale.US);
         try {
             return dateFormat.parse(date);

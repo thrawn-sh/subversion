@@ -83,10 +83,15 @@ final class InfoImplReader {
             info.setLockToken(((StringExpression) children[3]).getValue());
             info.setMd5(((StringExpression) children[4]).getValue());
             info.setProperties(((PropertyExpression) children[5]).getValue());
-            info.setRepositoryId(UUID.fromString(((StringExpression) children[6]).getValue()));
+            final String uuid = ((StringExpression) children[6]).getValue();
+            if (uuid != null) {
+                info.setRepositoryId(UUID.fromString(uuid));
+            }
             info.setResource(((ResourceExpression) children[7]).getValue());
-            final int revision = Integer.parseInt(((StringExpression) children[8]).getValue());
-            info.setRevision(Revision.create(revision));
+            final String revision = ((StringExpression) children[8]).getValue();
+            if (revision != null) {
+                info.setRevision(Revision.create(Integer.parseInt(revision)));
+            }
             entries.add(info);
 
             children[5].clear();

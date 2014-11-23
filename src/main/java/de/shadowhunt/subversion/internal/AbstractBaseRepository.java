@@ -103,6 +103,7 @@ public abstract class AbstractBaseRepository implements Repository {
         this.context = context;
 
         repositoryId = determineRepositoryId(repository, client, context, config.getPrefix());
+        Validate.notNull(repositoryId, "repositoryId must not be null");
     }
 
     @Override
@@ -290,7 +291,7 @@ public abstract class AbstractBaseRepository implements Repository {
     private boolean exists0(final View view, final Resource resource, final Revision revision) {
         // ask the server
         final Resource resolved = resolve2(view, resource, revision, false);
-        final ExistsOperation operation = new ExistsOperation(repository, resolved);
+        final ExistsOperation operation = new ExistsOperation(repository, resolved, config.getPrefix());
         return operation.execute(client, context);
     }
 
@@ -387,7 +388,7 @@ public abstract class AbstractBaseRepository implements Repository {
         }
 
         final Resource resolved = resolve2(view, resource, revision, true);
-        final ListOperation operation = new ListOperation(repository, resolved, depth, config.getPrefix());
+        final ListOperation operation = new ListOperation(repository, resolved, config.getPrefix(), depth);
         final Set<Info> infoSet = operation.execute(client, context);
         if (infoSet == null) {
             throw new SubversionException("Can't resolve: " + resource + '@' + revision);

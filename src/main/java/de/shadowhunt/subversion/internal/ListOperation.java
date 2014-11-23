@@ -16,66 +16,21 @@
 package de.shadowhunt.subversion.internal;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.net.URI;
 import java.util.Set;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
-import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.entity.StringEntity;
 
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.SubversionException;
+import de.shadowhunt.subversion.ResourceProperty;
 
-class ListOperation extends AbstractOperation<Set<Info>> {
+class ListOperation extends PropfindOperation<Set<Info>> {
 
-    private final Depth depth;
-
-    private final Resource marker;
-
-    private final Resource resource;
-
-    public ListOperation(final URI repository, final Resource resource, final Depth depth, final Resource marker) {
-        super(repository);
-        this.resource = resource;
-        this.depth = depth;
-        this.marker = marker;
-    }
-
-    @Override
-    protected HttpUriRequest createRequest() {
-        final URI uri = URIUtils.createURI(repository, resource);
-        final DavTemplateRequest request = new DavTemplateRequest("PROPFIND", uri);
-        request.addHeader("Depth", depth.value);
-
-        final Writer body = new StringBuilderWriter();
-        try {
-            final XMLStreamWriter writer = XML_OUTPUT_FACTORY.createXMLStreamWriter(body);
-            writer.writeStartDocument(XmlConstants.ENCODING, XmlConstants.VERSION_1_0);
-            writer.writeStartElement("propfind");
-            writer.writeDefaultNamespace(XmlConstants.DAV_NAMESPACE);
-            writer.writeEmptyElement("allprop");
-            writer.writeEndElement(); //propfind
-            writer.writeEndDocument();
-            writer.close();
-        } catch (final XMLStreamException e) {
-            throw new SubversionException("could not create request body", e);
-        }
-
-        request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
-        return request;
-    }
-
-    @Override
-    protected boolean isExpectedStatusCode(final int statusCode) {
-        return HttpStatus.SC_MULTI_STATUS == statusCode || HttpStatus.SC_NOT_FOUND == statusCode;
+    ListOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, final ResourceProperty... requestedProperties) {
+        super(repository, resource, marker, depth, requestedProperties);
     }
 
     @Override
