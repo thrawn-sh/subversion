@@ -36,7 +36,7 @@ class CreateTransactionOperation extends AbstractOperation<TransactionImpl> {
 
     private static final HttpEntity ENTITY;
 
-    private static final String HEADER_NAME = "SVN-Txn-Name";
+    private static final String TRANSACTION_ID_HEADER = "SVN-Txn-Name";
 
     static {
         final ContentType contentType = ContentType.create("application/vnd.svn-skel");
@@ -71,7 +71,7 @@ class CreateTransactionOperation extends AbstractOperation<TransactionImpl> {
 
     @Override
     protected TransactionImpl processResponse(final HttpResponse response) {
-        final String transactionId = response.getFirstHeader(HEADER_NAME).getValue();
+        final String transactionId = response.getFirstHeader(TRANSACTION_ID_HEADER).getValue();
         return new TransactionImpl(transactionId, repositoryId, headRevision);
     }
 }
