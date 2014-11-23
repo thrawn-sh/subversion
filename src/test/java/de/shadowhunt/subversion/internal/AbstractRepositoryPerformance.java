@@ -219,29 +219,29 @@ public class AbstractRepositoryPerformance {
     @Test
     public void test10_transactionCommit() throws Exception {
         final Transaction transaction = repository.createTransaction();
-        Assert.assertEquals("number of requests must match", 2, counter.getTotalRequestCount());
+        int expectedRequestForCreate = 2;
+        if (repository.getProtocolVersion() == Repository.ProtocolVersion.HTTP_V1) {
+            expectedRequestForCreate += 1;
+        }
+        Assert.assertEquals("number of requests must match", expectedRequestForCreate, counter.getTotalRequestCount());
 
         counter.reset();
         repository.commit(transaction, "empty commit");
-        int expectedRequest = 1;
-        if (repository.getProtocolVersion() == Repository.ProtocolVersion.HTTP_V1) {
-            expectedRequest += 1;
-        }
-        Assert.assertEquals("number of requests must match", expectedRequest, counter.getTotalRequestCount());
+        Assert.assertEquals("number of requests must match", 1, counter.getTotalRequestCount());
     }
 
     @Test
     public void test10_transactionRollback() throws Exception {
         final Transaction transaction = repository.createTransaction();
-        Assert.assertEquals("number of requests must match", 2, counter.getTotalRequestCount());
+        int expectedRequestForCreate = 2;
+        if (repository.getProtocolVersion() == Repository.ProtocolVersion.HTTP_V1) {
+            expectedRequestForCreate += 1;
+        }
+        Assert.assertEquals("number of requests must match", expectedRequestForCreate, counter.getTotalRequestCount());
 
         counter.reset();
         repository.rollback(transaction);
-        int expectedRequest = 1;
-        if (repository.getProtocolVersion() == Repository.ProtocolVersion.HTTP_V1) {
-            expectedRequest += 1;
-        }
-        Assert.assertEquals("number of requests must match", expectedRequest, counter.getTotalRequestCount());
+        Assert.assertEquals("number of requests must match", 1, counter.getTotalRequestCount());
     }
 
     @Test

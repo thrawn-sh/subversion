@@ -45,7 +45,7 @@ abstract class PropfindOperation<T> extends AbstractOperation<T> {
 
     protected final Resource resource;
 
-    PropfindOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, final ResourceProperty... requestedProperties) {
+    PropfindOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, final ResourceProperty[] requestedProperties) {
         super(repository);
         this.resource = resource;
         this.marker = marker;

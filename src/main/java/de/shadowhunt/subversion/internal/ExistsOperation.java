@@ -26,7 +26,7 @@ import de.shadowhunt.subversion.Resource;
 class ExistsOperation extends PropfindOperation<Boolean> {
 
     ExistsOperation(final URI repository, final Resource resource, final Resource marker) {
-        super(repository, resource, marker, Depth.EMPTY);
+        super(repository, resource, marker, Depth.EMPTY, PropfindOperation.NO_PROPERTIES);
     }
 
     @Override

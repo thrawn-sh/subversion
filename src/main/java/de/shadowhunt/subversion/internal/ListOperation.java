@@ -29,7 +29,11 @@ import de.shadowhunt.subversion.ResourceProperty;
 
 class ListOperation extends PropfindOperation<Set<Info>> {
 
-    ListOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, final ResourceProperty... requestedProperties) {
+    ListOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth) {
+        super(repository, resource, marker, depth, PropfindOperation.ALL_PROPERTIES);
+    }
+
+    ListOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, final ResourceProperty[] requestedProperties) {
         super(repository, resource, marker, depth, requestedProperties);
     }
 
