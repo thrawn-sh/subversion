@@ -17,6 +17,7 @@ package de.shadowhunt.subversion;
 
 import java.util.Comparator;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 import org.apache.commons.lang3.Validate;
@@ -75,12 +76,13 @@ public final class ResourceProperty {
         }
 
         @Override
-        public int compareTo(final Key o) {
-            final int result = type.compareTo(o.type);
+        public int compareTo(@Nullable final Key other) {
+            Validate.notNull(other, "other must not be null");
+            final int result = type.compareTo(other.type);
             if (result != 0) {
                 return result;
             }
-            return name.compareTo(o.name);
+            return name.compareTo(other.name);
         }
 
         @Override

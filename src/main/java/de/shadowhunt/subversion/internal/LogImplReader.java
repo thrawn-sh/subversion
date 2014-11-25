@@ -127,7 +127,7 @@ final class LogImplReader {
                 new QName(XmlConstants.SVN_NAMESPACE, "log-item") //
         };
 
-        private List<Log> entries = new ArrayList<Log>();
+        private List<Log> entries = new ArrayList<>();
 
         LogExpression() {
             super(PATH, CHILDREN);
@@ -135,7 +135,7 @@ final class LogImplReader {
 
         @Override
         public void clear() {
-            entries = new ArrayList<Log>();
+            entries = new ArrayList<>();
         }
 
         @Override
@@ -207,9 +207,7 @@ final class LogImplReader {
         final LogHandler handler = new LogHandler();
         try {
             return handler.parse(inputStream);
-        } catch (final ParserConfigurationException e) {
-            throw new SubversionException("Invalid server response: could not parse response", e);
-        } catch (final SAXException e) {
+        } catch (final ParserConfigurationException | SAXException e) {
             throw new SubversionException("Invalid server response: could not parse response", e);
         }
     }

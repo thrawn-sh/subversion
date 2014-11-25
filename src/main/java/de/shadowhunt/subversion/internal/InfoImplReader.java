@@ -63,7 +63,7 @@ final class InfoImplReader {
             };
         }
 
-        private final SortedSet<Info> entries = new TreeSet<Info>(Info.RESOURCE_COMPARATOR);
+        private final SortedSet<Info> entries = new TreeSet<>(Info.RESOURCE_COMPARATOR);
 
         InfoExpression(final String base, final String marker) {
             super(PATH, createExpressions(base, marker));
@@ -118,14 +118,14 @@ final class InfoImplReader {
                 new QName(XMLConstants.NULL_NS_URI, "*")
         };
 
-        private Set<ResourceProperty> properties = new TreeSet<ResourceProperty>(ResourceProperty.TYPE_NAME_COMPARATOR);
+        private Set<ResourceProperty> properties = new TreeSet<>(ResourceProperty.TYPE_NAME_COMPARATOR);
 
         PropertyExpression() {
             super(PATH);
         }
 
         public void clear() {
-            properties = new TreeSet<ResourceProperty>(ResourceProperty.TYPE_NAME_COMPARATOR);
+            properties = new TreeSet<>(ResourceProperty.TYPE_NAME_COMPARATOR);
         }
 
         @Override
@@ -320,9 +320,7 @@ final class InfoImplReader {
         final InfoHandler handler = new InfoHandler(base, marker);
         try {
             return handler.parse(inputStream);
-        } catch (final ParserConfigurationException e) {
-            throw new SubversionException("Invalid server response: could not parse response", e);
-        } catch (final SAXException e) {
+        } catch (final ParserConfigurationException | SAXException e) {
             throw new SubversionException("Invalid server response: could not parse response", e);
         }
     }

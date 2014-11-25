@@ -90,9 +90,7 @@ final class Prefix {
         try {
             final PrefixHandler handler = new PrefixHandler(version);
             prefix = handler.parse(inputStream);
-        } catch (final ParserConfigurationException e) {
-            throw new SubversionException("Invalid server response: could not parse response", e);
-        } catch (final SAXException e) {
+        } catch (final ParserConfigurationException | SAXException e) {
             throw new SubversionException("Invalid server response: could not parse response", e);
         }
 

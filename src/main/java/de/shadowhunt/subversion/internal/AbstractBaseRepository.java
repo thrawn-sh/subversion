@@ -118,7 +118,7 @@ public abstract class AbstractBaseRepository implements Repository {
 
         LOGGER.trace("adding resource {} during transaction {} (parents: {})", resource, transaction.getId(), parents);
         if (parents) {
-            mkdir(transaction, resource.getParent(), parents);
+            mkdir(transaction, resource.getParent(), true);
         }
 
         final Info info = info0(transaction, resource, transaction.getHeadRevision(), true);
@@ -143,7 +143,7 @@ public abstract class AbstractBaseRepository implements Repository {
 
         LOGGER.trace("copying resource from {}@{} to {} during transaction {} (parents: {})", sourceResource, sourceRevision, targetResource, transaction.getId(), parents);
         if (parents) {
-            createFolder(transaction, targetResource.getParent(), parents);
+            createFolder(transaction, targetResource.getParent(), true);
         } else {
             registerResource(transaction, targetResource.getParent(), transaction.getHeadRevision());
         }
@@ -171,7 +171,7 @@ public abstract class AbstractBaseRepository implements Repository {
         final Info info = info0(transaction, resource, transaction.getHeadRevision(), true); // null if resource does not exists
 
         if (parents && (info == null) && !Resource.ROOT.equals(resource)) {
-            createFolder(transaction, resource.getParent(), parents);
+            createFolder(transaction, resource.getParent(), true);
         }
 
         if (info == null) {
@@ -319,7 +319,7 @@ public abstract class AbstractBaseRepository implements Repository {
             return Collections.emptySet();
         }
 
-        final Set<Info> infoSet = new TreeSet<Info>(Info.RESOURCE_COMPARATOR);
+        final Set<Info> infoSet = new TreeSet<>(Info.RESOURCE_COMPARATOR);
         for (final Map.Entry<Resource, Status> entry : changeSet.entrySet()) {
             final Status status = entry.getValue();
             if ((Status.EXISTS == status) || (Status.ADDED == status)) {
@@ -386,7 +386,7 @@ public abstract class AbstractBaseRepository implements Repository {
 
     private Set<Info> list0(final View view, final Resource resource, final Revision revision, final Depth depth) {
         if (Depth.INFINITY == depth) {
-            final Set<Info> result = new TreeSet<Info>(Info.RESOURCE_COMPARATOR);
+            final Set<Info> result = new TreeSet<>(Info.RESOURCE_COMPARATOR);
             listRecursively0(view, resource, revision, result);
             return result;
         }

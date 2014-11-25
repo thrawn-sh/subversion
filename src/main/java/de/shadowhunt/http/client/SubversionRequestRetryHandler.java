@@ -48,7 +48,7 @@ public class SubversionRequestRetryHandler extends DefaultHttpRequestRetryHandle
     public SubversionRequestRetryHandler(final int retryCount, final boolean requestSentRetryEnabled) {
         super(retryCount, requestSentRetryEnabled);
 
-        idempotentMethods = new HashMap<String, Boolean>();
+        idempotentMethods = new HashMap<>();
         // http
         idempotentMethods.put("DELETE", Boolean.TRUE);
         idempotentMethods.put("GET", Boolean.TRUE);

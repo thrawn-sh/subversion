@@ -40,7 +40,7 @@ abstract class PropfindOperation<T> extends AbstractOperation<T> {
     public static final ResourceProperty.Key[] NO_PROPERTIES = new ResourceProperty.Key[0];
 
     @Nullable
-    private static final ResourceProperty.Key[] filter(final ResourceProperty.Key[] requestedProperties) {
+    private static ResourceProperty.Key[] filter(final ResourceProperty.Key[] requestedProperties) {
         if (requestedProperties == null) {
             return null;
         }
@@ -96,7 +96,7 @@ abstract class PropfindOperation<T> extends AbstractOperation<T> {
                     writer.setPrefix(XmlConstants.SUBVERSION_DAV_PREFIX, XmlConstants.SUBVERSION_DAV_NAMESPACE);
                     writer.writeNamespace(XmlConstants.SUBVERSION_SVN_PREFIX, XmlConstants.SUBVERSION_SVN_NAMESPACE);
                     writer.setPrefix(XmlConstants.SUBVERSION_SVN_PREFIX, XmlConstants.SUBVERSION_SVN_NAMESPACE);
-                    for (ResourceProperty.Key requestedProperty : requestedProperties) {
+                    for (final ResourceProperty.Key requestedProperty : requestedProperties) {
                         writer.writeEmptyElement(requestedProperty.getType().getPrefix(), requestedProperty.getName());
                     }
                     writer.writeEndElement(); // prop

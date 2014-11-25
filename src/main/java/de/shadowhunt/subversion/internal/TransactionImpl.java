@@ -35,7 +35,7 @@ public final class TransactionImpl implements Transaction, View {
 
     private boolean active = true;
 
-    private final Map<Resource, Status> changeSet = new TreeMap<Resource, Status>();
+    private final Map<Resource, Status> changeSet = new TreeMap<>();
 
     private final Revision headRevision;
 
@@ -73,7 +73,7 @@ public final class TransactionImpl implements Transaction, View {
 
     @Override
     public Map<Resource, Status> getChangeSet() {
-        return new TreeMap<Resource, Status>(changeSet);
+        return new TreeMap<>(changeSet);
     }
 
     @Override
