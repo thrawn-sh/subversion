@@ -342,17 +342,7 @@ public abstract class AbstractBaseRepository implements Repository {
 
     @Override
     public final Info info(final View view, final Resource resource, final Revision revision) {
-        Validate.notNull(view, "view must not be null");
-        Validate.notNull(resource, "resource must not be null");
-        Validate.notNull(revision, "revision must not be null");
-        validateRevision(view, revision);
-
-        LOGGER.trace("retrieving info for resource {}@{}", resource, revision);
-        final Info info = info0(view, resource, revision, true, PropfindOperation.ALL_PROPERTIES);
-        if (info == null) {
-            throw new SubversionException("Can't resolve: " + resource + '@' + revision);
-        }
-        return info;
+        return info(view, resource, revision, PropfindOperation.ALL_PROPERTIES);
     }
 
     @Override
@@ -389,14 +379,7 @@ public abstract class AbstractBaseRepository implements Repository {
 
     @Override
     public final Set<Info> list(final View view, final Resource resource, final Revision revision, final Depth depth) {
-        Validate.notNull(view, "view must not be null");
-        Validate.notNull(resource, "resource must not be null");
-        Validate.notNull(revision, "revision must not be null");
-        Validate.notNull(depth, "depth must not be null");
-        validateRevision(view, revision);
-
-        LOGGER.trace("listing info for resource {}@{} and depth ", resource, revision, depth);
-        return list0(view, resource, revision, depth, PropfindOperation.ALL_PROPERTIES);
+        return list(view, resource, revision, depth, PropfindOperation.ALL_PROPERTIES);
     }
 
     @Override
