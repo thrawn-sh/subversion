@@ -77,12 +77,12 @@ class PropertiesUpdateOperation extends AbstractVoidOperation {
             writer.writeStartDocument(XmlConstants.ENCODING, XmlConstants.VERSION_1_0);
             writer.writeStartElement("propertyupdate");
             writer.writeDefaultNamespace(XmlConstants.DAV_NAMESPACE);
-            writer.setPrefix(XmlConstants.CUSTOM_PROPERTIES_PREFIX, XmlConstants.CUSTOM_PROPERTIES_NAMESPACE);
-            writer.writeNamespace(XmlConstants.CUSTOM_PROPERTIES_PREFIX, XmlConstants.CUSTOM_PROPERTIES_NAMESPACE);
-            writer.setPrefix(XmlConstants.SVN_PROPERTIES_PREFIX, XmlConstants.SVN_PROPERTIES_NAMESPACE);
-            writer.writeNamespace(XmlConstants.SVN_PROPERTIES_PREFIX, XmlConstants.SVN_PROPERTIES_NAMESPACE);
-            writer.setPrefix(XmlConstants.SVN_DAV_PREFIX, XmlConstants.SVN_DAV_NAMESPACE);
-            writer.writeNamespace(XmlConstants.SVN_DAV_PREFIX, XmlConstants.SVN_DAV_NAMESPACE);
+            writer.setPrefix(XmlConstants.SUBVERSION_CUSTOM_PREFIX, XmlConstants.SUBVERSION_CUSTOM_NAMESPACE);
+            writer.writeNamespace(XmlConstants.SUBVERSION_CUSTOM_PREFIX, XmlConstants.SUBVERSION_CUSTOM_NAMESPACE);
+            writer.setPrefix(XmlConstants.SUBVERSION_SVN_PREFIX, XmlConstants.SUBVERSION_SVN_NAMESPACE);
+            writer.writeNamespace(XmlConstants.SUBVERSION_SVN_PREFIX, XmlConstants.SUBVERSION_SVN_NAMESPACE);
+            writer.setPrefix(XmlConstants.SUBVERSION_DAV_PREFIX, XmlConstants.SUBVERSION_DAV_NAMESPACE);
+            writer.writeNamespace(XmlConstants.SUBVERSION_DAV_PREFIX, XmlConstants.SUBVERSION_DAV_NAMESPACE);
             writer.writeStartElement(type.action);
             writer.writeStartElement("prop");
             for (final ResourceProperty property : properties) {

@@ -55,9 +55,9 @@ public class CommitMessageOperation extends AbstractVoidOperation {
             writer.writeDefaultNamespace(XmlConstants.DAV_NAMESPACE);
             writer.writeStartElement("set");
             writer.writeStartElement("prop");
-            writer.setPrefix(XmlConstants.SVN_PROPERTIES_PREFIX, XmlConstants.SVN_PROPERTIES_NAMESPACE);
-            writer.writeStartElement(XmlConstants.SVN_PROPERTIES_NAMESPACE, "log");
-            writer.writeNamespace(XmlConstants.SVN_PROPERTIES_PREFIX, XmlConstants.SVN_PROPERTIES_NAMESPACE);
+            writer.setPrefix(XmlConstants.SUBVERSION_DAV_PREFIX, XmlConstants.SUBVERSION_DAV_NAMESPACE);
+            writer.writeStartElement(XmlConstants.SUBVERSION_DAV_NAMESPACE, "log");
+            writer.writeNamespace(XmlConstants.SUBVERSION_DAV_PREFIX, XmlConstants.SUBVERSION_DAV_NAMESPACE);
             writer.writeCharacters(message);
             writer.writeEndElement(); // log
             writer.writeEndElement(); // prop

@@ -15,13 +15,7 @@
  */
 package de.shadowhunt.subversion.internal;
 
-import de.shadowhunt.subversion.ResourceProperty;
-
 public final class XmlConstants {
-
-    public static final String CUSTOM_PROPERTIES_NAMESPACE = ResourceProperty.Type.CUSTOM.getPrefix();
-
-    public static final String CUSTOM_PROPERTIES_PREFIX = "C";
 
     public static final String DAV_NAMESPACE = "DAV:";
 
@@ -29,17 +23,21 @@ public final class XmlConstants {
 
     public static final String ENCODING = "UTF-8";
 
-    public static final String SVN_DAV_NAMESPACE = "http://subversion.tigris.org/xmlns/dav/";
+    public static final String SUBVERSION_CUSTOM_NAMESPACE = "http://subversion.tigris.org/xmlns/custom/";
 
-    public static final String SVN_DAV_PREFIX = "V";
+    public static final String SUBVERSION_CUSTOM_PREFIX = "C";
+
+    public static final String SUBVERSION_DAV_NAMESPACE = "http://subversion.tigris.org/xmlns/dav/";
+
+    public static final String SUBVERSION_DAV_PREFIX = "V";
+
+    public static final String SUBVERSION_SVN_NAMESPACE = "http://subversion.tigris.org/xmlns/svn/";
+
+    public static final String SUBVERSION_SVN_PREFIX = "S";
 
     public static final String SVN_NAMESPACE = "svn:";
 
-    public static final String SVN_PREFIX = "S";
-
-    public static final String SVN_PROPERTIES_NAMESPACE = ResourceProperty.Type.SVN.getPrefix();
-
-    public static final String SVN_PROPERTIES_PREFIX = "S";
+    public static final String SVN_PREFIX = "s";
 
     public static final String VERSION_1_0 = "1.0";
 

@@ -53,9 +53,9 @@ final class InfoImplReader {
                     new ResourceTypeExpression(),
                     new StringExpression(new QName(XmlConstants.DAV_NAMESPACE, "getlastmodified")), //
                     new StringExpression(new QName(XmlConstants.DAV_NAMESPACE, "lockdiscovery"), new QName(XmlConstants.DAV_NAMESPACE, "activelock"), new QName(XmlConstants.DAV_NAMESPACE, "locktoken"), new QName(XmlConstants.DAV_NAMESPACE, "href")),
-                    new StringExpression(new QName(XmlConstants.SVN_DAV_NAMESPACE, "md5-checksum")), //
+                    new StringExpression(new QName(XmlConstants.SUBVERSION_DAV_NAMESPACE, "md5-checksum")), //
                     new PropertyExpression(), //
-                    new StringExpression(new QName(XmlConstants.SVN_DAV_NAMESPACE, "repository-uuid")), //
+                    new StringExpression(new QName(XmlConstants.SUBVERSION_DAV_NAMESPACE, "repository-uuid")), //
                     new ResourceExpression(base, marker), //
                     new StringExpression(new QName(XmlConstants.DAV_NAMESPACE, "version-name")), //
 
@@ -140,13 +140,13 @@ final class InfoImplReader {
 
         @Override
         protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
-            if (XmlConstants.CUSTOM_PROPERTIES_NAMESPACE.equals(nameSpaceUri)) {
+            if (XmlConstants.SUBVERSION_CUSTOM_NAMESPACE.equals(nameSpaceUri)) {
                 properties.add(new ResourceProperty(ResourceProperty.Type.CUSTOM, localName, text));
                 return;
             }
 
-            if (XmlConstants.SVN_PROPERTIES_NAMESPACE.equals(nameSpaceUri)) {
-                properties.add(new ResourceProperty(ResourceProperty.Type.SVN, localName, text));
+            if (XmlConstants.SUBVERSION_SVN_NAMESPACE.equals(nameSpaceUri)) {
+                properties.add(new ResourceProperty(ResourceProperty.Type.SUBVERSION_SVN, localName, text));
                 return;
             }
         }
