@@ -37,13 +37,87 @@ public final class ResourceProperty {
             Validate.notNull(rp1, "rp1 must not be null");
             Validate.notNull(rp2, "rp2 must not be null");
 
-            final int result = rp1.getType().compareTo(rp2.getType());
+            return rp1.getKey().compareTo(rp2.getKey());
+        }
+    };
+
+    /**
+     * {@link Key} is the internal name a {@link ResourceProperty} is stored
+     */
+    public static final class Key implements Comparable<Key> {
+
+        private final String name;
+
+        private final Type type;
+
+        public Key(final Type type, final String name) {
+            Validate.notNull(type, "type must not be null");
+            Validate.notNull(name, "name must not be null");
+
+            this.type = type;
+            this.name = name;
+        }
+
+        @Override
+        public int compareTo(final Key o) {
+            final int result = type.compareTo(o.type);
             if (result != 0) {
                 return result;
             }
-            return rp1.getName().compareTo(rp2.getName());
+            return name.compareTo(o.name);
         }
-    };
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof Key)) {
+                return false;
+            }
+
+            final Key key = (Key) o;
+
+            if (!name.equals(key.name)) {
+                return false;
+            }
+            if (type != key.type) {
+                return false;
+            }
+
+            return true;
+        }
+
+        /**
+         * Returns the name of the {@link Key}
+         *
+         * @return the name of the {@link Key}
+         */
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * Returns the {@link Type} of the {@link Key}
+         *
+         * @return the {@link Type} of the {@link Key}
+         */
+        public Type getType() {
+            return type;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = name.hashCode();
+            result = 31 * result + type.hashCode();
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "Key{type=" + type + ", name='" + name + "'}";
+        }
+    }
 
     /**
      * {@link ResourceProperty} can have various types, depending of the context they are used
@@ -68,9 +142,7 @@ public final class ResourceProperty {
         }
     }
 
-    private final String name;
-
-    private final Type type;
+    private final Key key;
 
     private final String value;
 
@@ -84,12 +156,9 @@ public final class ResourceProperty {
      * @throws NullPointerException if any parameter is {@code null}
      */
     public ResourceProperty(final Type type, final String name, final String value) {
-        Validate.notNull(type, "type must not be null");
-        Validate.notNull(name, "name must not be null");
         Validate.notNull(value, "value must not be null");
 
-        this.type = type;
-        this.name = name;
+        this.key = new Key(type, name);
         this.value = value;
     }
 
@@ -104,10 +173,7 @@ public final class ResourceProperty {
 
         final ResourceProperty that = (ResourceProperty) o;
 
-        if (!name.equals(that.name)) {
-            return false;
-        }
-        if (type != that.type) {
+        if (!key.equals(that.key)) {
             return false;
         }
         if (!value.equals(that.value)) {
@@ -118,21 +184,30 @@ public final class ResourceProperty {
     }
 
     /**
-     * Returns the name of the {@link ResourceProperty}
+     * Returns the {@link de.shadowhunt.subversion.ResourceProperty.Key} of the {@link de.shadowhunt.subversion.ResourceProperty}
      *
-     * @return the name of the {@link ResourceProperty}
+     * @return the {@link de.shadowhunt.subversion.ResourceProperty.Key} of the {@link de.shadowhunt.subversion.ResourceProperty}
      */
-    public String getName() {
-        return name;
+    public Key getKey() {
+        return key;
     }
 
     /**
-     * Returns the {@link Type} of the {@link ResourceProperty}
+     * Returns the name of the {@link de.shadowhunt.subversion.ResourceProperty.Key}
      *
-     * @return the {@link Type} of the {@link ResourceProperty}
+     * @return the name of the {@link de.shadowhunt.subversion.ResourceProperty.Key}
+     */
+    public String getName() {
+        return key.getName();
+    }
+
+    /**
+     * Returns the {@link Type} of the {@link de.shadowhunt.subversion.ResourceProperty.Key}
+     *
+     * @return the {@link Type} of the {@link de.shadowhunt.subversion.ResourceProperty.Key}
      */
     public Type getType() {
-        return type;
+        return key.getType();
     }
 
     /**
@@ -146,22 +221,13 @@ public final class ResourceProperty {
 
     @Override
     public int hashCode() {
-        int result = name.hashCode();
-        result = 31 * result + type.hashCode();
-        result = 31 * result + value.hashCode();
+        int result = value.hashCode();
+        result = 31 * result + key.hashCode();
         return result;
     }
 
     @Override
     public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("ResourceProperty [type=");
-        builder.append(type);
-        builder.append(", name=");
-        builder.append(name);
-        builder.append(", value=");
-        builder.append(value);
-        builder.append(']');
-        return builder.toString();
+        return "ResourceProperty{ key=" + key + ", value='" + value + "'}";
     }
 }
