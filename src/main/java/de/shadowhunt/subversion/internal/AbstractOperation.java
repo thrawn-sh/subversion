@@ -92,8 +92,11 @@ public abstract class AbstractOperation<T> implements ResponseHandler<T> {
 
         final String message;
         switch (statusCode) {
+            case HttpStatus.SC_UNAUTHORIZED:
+                message = "Missing or insufficient user credentials to execute operation";
+                break;
             case HttpStatus.SC_FORBIDDEN:
-                message = "Insufficient permissions to execute operation";
+                message = "Operation can not be executed";
                 break;
             case HttpStatus.SC_NOT_FOUND:
                 message = "Requested resource could not be found";

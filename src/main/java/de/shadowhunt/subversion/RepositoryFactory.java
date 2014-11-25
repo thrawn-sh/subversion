@@ -109,9 +109,8 @@ public abstract class RepositoryFactory {
                 final URI saneUri = sanitise(repository, path);
                 return createRepository0(saneUri, client, context);
             } catch (final SubversionException e) {
-                // ignore errors while searching the correct repository root
-                final int httpStatusCode = e.getHttpStatusCode();
-                if (! ((httpStatusCode == HttpStatus.SC_BAD_REQUEST) || (httpStatusCode == HttpStatus.SC_NOT_FOUND))) {
+                // ignore these errors while searching the correct repository root
+                if (!isTolerableError(e.getHttpStatusCode())) {
                     throw e;
                 }
             }
@@ -123,5 +122,21 @@ public abstract class RepositoryFactory {
         }
 
         throw new SubversionException("Could not find repository in path: " + repository.getPath());
+    }
+
+    private static boolean isTolerableError(final int httpStatusCode) {
+        switch(httpStatusCode) {
+            case HttpStatus.SC_NOT_FOUND:
+                // part of the path does not exists
+                return true;
+            case HttpStatus.SC_FORBIDDEN:
+                // not (yet) the root of the repository (Repository.ProtocolVersion.HTTP_V1)
+                return true;
+            case HttpStatus.SC_BAD_REQUEST:
+                // not (yet) the root of the repository (Repository.ProtocolVersion.HTTP_V2)
+                return true;
+            default:
+                return false;
+        }
     }
 }
