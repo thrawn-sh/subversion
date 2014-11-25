@@ -401,7 +401,7 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.noNullElements(keys, "keys must not contain null elements");
         validateRevision(view, revision);
 
-        LOGGER.trace("listing info for resource {}@{} and depth", resource, revision, depth);
+        LOGGER.trace("listing info for resource {}@{} and depth {}", resource, revision, depth);
         if (keys.length == 0) {
             return list0(view, resource, revision, depth, PropfindOperation.ALL_PROPERTIES);
         }
