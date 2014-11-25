@@ -35,14 +35,6 @@ import de.shadowhunt.subversion.SubversionException;
 
 class PropertiesUpdateOperation extends AbstractVoidOperation {
 
-    private final Info info;
-
-    private final ResourceProperty[] properties;
-
-    private final Resource resource;
-
-    private final Type type;
-
     static enum Type {
         SET("set"), DELETE("remove");
 
@@ -52,6 +44,14 @@ class PropertiesUpdateOperation extends AbstractVoidOperation {
             this.action = action;
         }
     }
+
+    private final Info info;
+
+    private final ResourceProperty[] properties;
+
+    private final Resource resource;
+
+    private final Type type;
 
     PropertiesUpdateOperation(final URI repository, final Resource resource, final Type type, @Nullable final Info info, final ResourceProperty[] properties) {
         super(repository);

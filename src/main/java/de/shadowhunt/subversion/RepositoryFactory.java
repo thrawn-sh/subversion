@@ -52,6 +52,22 @@ public abstract class RepositoryFactory {
         throw new SubversionException("Can not find a RepositoryFactory");
     }
 
+    private static boolean isTolerableError(final int httpStatusCode) {
+        switch (httpStatusCode) {
+            case HttpStatus.SC_NOT_FOUND:
+                // part of the path does not exists
+                return true;
+            case HttpStatus.SC_FORBIDDEN:
+                // not (yet) the root of the repository (Repository.ProtocolVersion.HTTP_V1)
+                return true;
+            case HttpStatus.SC_BAD_REQUEST:
+                // not (yet) the root of the repository (Repository.ProtocolVersion.HTTP_V2)
+                return true;
+            default:
+                return false;
+        }
+    }
+
     private static URI sanitise(final URI uri, final Resource path) {
         try {
             return new URI(uri.getScheme(), DEFAULT_USER_INFO, uri.getHost(), uri.getPort(), path.getValue(), DEFAULT_QUERY, DEFAULT_FRAGMENT);
@@ -122,21 +138,5 @@ public abstract class RepositoryFactory {
         }
 
         throw new SubversionException("Could not find repository in path: " + repository.getPath());
-    }
-
-    private static boolean isTolerableError(final int httpStatusCode) {
-        switch(httpStatusCode) {
-            case HttpStatus.SC_NOT_FOUND:
-                // part of the path does not exists
-                return true;
-            case HttpStatus.SC_FORBIDDEN:
-                // not (yet) the root of the repository (Repository.ProtocolVersion.HTTP_V1)
-                return true;
-            case HttpStatus.SC_BAD_REQUEST:
-                // not (yet) the root of the repository (Repository.ProtocolVersion.HTTP_V2)
-                return true;
-            default:
-                return false;
-        }
     }
 }

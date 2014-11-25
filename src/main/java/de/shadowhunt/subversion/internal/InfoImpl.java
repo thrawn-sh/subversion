@@ -33,8 +33,6 @@ final class InfoImpl implements Info {
 
     private static final ResourceProperty[] EMPTY = new ResourceProperty[0];
 
-    private ResourceProperty[] properties = EMPTY;
-
     private Date creationDate = null;
 
     private boolean directory = false;
@@ -47,6 +45,8 @@ final class InfoImpl implements Info {
     private String lockToken = null;
 
     private String md5 = null;
+
+    private ResourceProperty[] properties = EMPTY;
 
     private UUID repositoryId = null;
 

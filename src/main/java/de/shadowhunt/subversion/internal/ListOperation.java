@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Set;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 
@@ -38,6 +40,7 @@ class ListOperation extends PropfindOperation<Set<Info>> {
     }
 
     @Override
+    @CheckForNull
     protected Set<Info> processResponse(final HttpResponse response) throws IOException {
         if (getStatusCode(response) == HttpStatus.SC_NOT_FOUND) {
             return null;

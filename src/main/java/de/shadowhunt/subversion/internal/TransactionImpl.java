@@ -77,6 +77,11 @@ public final class TransactionImpl implements Transaction, View {
     }
 
     @Override
+    public Revision getHeadRevision() {
+        return headRevision;
+    }
+
+    @Override
     public String getId() {
         return id;
     }
@@ -84,11 +89,6 @@ public final class TransactionImpl implements Transaction, View {
     @Override
     public UUID getRepositoryId() {
         return repositoryId;
-    }
-
-    @Override
-    public Revision getHeadRevision() {
-        return headRevision;
     }
 
     @Override

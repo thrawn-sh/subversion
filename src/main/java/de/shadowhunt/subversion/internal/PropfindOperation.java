@@ -17,7 +17,9 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.Writer;
 import java.net.URI;
+import java.util.Arrays;
 
+import javax.annotation.Nullable;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 

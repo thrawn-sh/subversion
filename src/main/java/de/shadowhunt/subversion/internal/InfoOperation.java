@@ -3,6 +3,8 @@ package de.shadowhunt.subversion.internal;
 import java.io.IOException;
 import java.net.URI;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -25,6 +27,7 @@ class InfoOperation extends PropfindOperation<Info> {
     }
 
     @Override
+    @CheckForNull
     protected Info processResponse(final HttpResponse response) throws IOException {
         if (getStatusCode(response) == HttpStatus.SC_NOT_FOUND) {
             return null;
