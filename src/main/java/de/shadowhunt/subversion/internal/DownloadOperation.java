@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -45,6 +47,7 @@ class DownloadOperation extends AbstractOperation<InputStream> {
     }
 
     @Override
+    @CheckForNull
     public InputStream execute(final HttpClient client, final HttpContext context) {
         final HttpUriRequest request = createRequest();
 

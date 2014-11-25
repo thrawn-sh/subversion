@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.annotation.Nullable;
+import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.ThreadSafe;
 
 /**
@@ -63,7 +63,7 @@ public interface Repository {
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
      * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    void commit(Transaction transaction, @Nullable String message);
+    void commit(Transaction transaction, @CheckForNull String message);
 
     /**
      * Recursively copy a resource in the given revision

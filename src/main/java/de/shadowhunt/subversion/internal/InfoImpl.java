@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.UUID;
 
-import javax.annotation.Nullable;
+import javax.annotation.CheckForNull;
 
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
@@ -149,7 +149,7 @@ final class InfoImpl implements Info {
         return lockToken != null;
     }
 
-    void setCreationDate(@Nullable final Date creationDate) {
+    void setCreationDate(@CheckForNull final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -157,23 +157,23 @@ final class InfoImpl implements Info {
         this.directory = directory;
     }
 
-    void setLastModifiedDate(@Nullable final Date lastModifiedDate) {
+    void setLastModifiedDate(@CheckForNull final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
-    void setLockOwner(@Nullable final String lockOwner) {
+    void setLockOwner(@CheckForNull final String lockOwner) {
         this.lockOwner = lockOwner;
     }
 
-    void setLockToken(@Nullable final String lockToken) {
+    void setLockToken(@CheckForNull final String lockToken) {
         this.lockToken = lockToken;
     }
 
-    void setMd5(@Nullable final String md5) {
+    void setMd5(@CheckForNull final String md5) {
         this.md5 = md5;
     }
 
-    void setProperties(@Nullable final ResourceProperty[] properties) {
+    void setProperties(@CheckForNull final ResourceProperty[] properties) {
         if ((properties == null) || (properties.length == 0)) {
             this.properties = EMPTY;
         } else {

@@ -19,7 +19,7 @@ import java.io.Writer;
 import java.net.URI;
 import java.util.Arrays;
 
-import javax.annotation.Nullable;
+import javax.annotation.CheckForNull;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -39,7 +39,7 @@ abstract class PropfindOperation<T> extends AbstractOperation<T> {
 
     public static final ResourceProperty.Key[] NO_PROPERTIES = new ResourceProperty.Key[0];
 
-    @Nullable
+    @CheckForNull
     private static ResourceProperty.Key[] filter(final ResourceProperty.Key[] requestedProperties) {
         if (requestedProperties == null) {
             return null;
@@ -65,7 +65,7 @@ abstract class PropfindOperation<T> extends AbstractOperation<T> {
 
     protected final Resource resource;
 
-    PropfindOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, @Nullable final ResourceProperty.Key[] requestedProperties) {
+    PropfindOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, @CheckForNull final ResourceProperty.Key[] requestedProperties) {
         super(repository);
         this.resource = resource;
         this.marker = marker;

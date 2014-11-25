@@ -18,7 +18,7 @@ package de.shadowhunt.subversion.internal;
 import java.io.InputStream;
 import java.net.URI;
 
-import javax.annotation.Nullable;
+import javax.annotation.CheckForNull;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPut;
@@ -38,7 +38,7 @@ class UploadOperation extends AbstractVoidOperation {
 
     private final Resource resource;
 
-    UploadOperation(final URI repository, final Resource resource, @Nullable final Info info, final InputStream content) {
+    UploadOperation(final URI repository, final Resource resource, @CheckForNull final Info info, final InputStream content) {
         super(repository);
         this.resource = resource;
         this.info = info;

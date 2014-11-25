@@ -18,7 +18,7 @@ package de.shadowhunt.subversion.internal.httpv1;
 import java.net.URI;
 import java.util.Set;
 
-import javax.annotation.Nullable;
+import javax.annotation.CheckForNull;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
@@ -104,7 +104,7 @@ class RepositoryImpl extends AbstractBaseRepository {
     }
 
     @Override
-    public void commit(final Transaction transaction, @Nullable final String message) {
+    public void commit(final Transaction transaction, @CheckForNull final String message) {
         validateTransaction(transaction);
 
         LOGGER.trace("committing {} with message {}", transaction.getId(), message);

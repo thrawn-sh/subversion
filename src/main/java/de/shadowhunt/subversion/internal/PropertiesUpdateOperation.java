@@ -19,7 +19,7 @@ import java.io.Writer;
 import java.net.URI;
 import java.util.Arrays;
 
-import javax.annotation.Nullable;
+import javax.annotation.CheckForNull;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -53,7 +53,7 @@ class PropertiesUpdateOperation extends AbstractVoidOperation {
 
     private final Type type;
 
-    PropertiesUpdateOperation(final URI repository, final Resource resource, final Type type, @Nullable final Info info, final ResourceProperty[] properties) {
+    PropertiesUpdateOperation(final URI repository, final Resource resource, final Type type, @CheckForNull final Info info, final ResourceProperty[] properties) {
         super(repository);
         this.resource = resource;
         this.type = type;

@@ -23,7 +23,6 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
 
 final class DateUtils {
 
@@ -34,7 +33,7 @@ final class DateUtils {
     private static final TimeZone ZULU = TimeZone.getTimeZone("ZULU");
 
     @CheckForNull
-    static Date parseCreatedDate(@Nullable final String date) {
+    static Date parseCreatedDate(@CheckForNull final String date) {
         if (date == null) {
             return null;
         }
@@ -60,7 +59,7 @@ final class DateUtils {
     }
 
     @CheckForNull
-    static Date parseLastModifiedDate(@Nullable final String date) {
+    static Date parseLastModifiedDate(@CheckForNull final String date) {
         if (date == null) {
             return null;
         }

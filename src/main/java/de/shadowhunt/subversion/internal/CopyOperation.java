@@ -17,7 +17,7 @@ package de.shadowhunt.subversion.internal;
 
 import java.net.URI;
 
-import javax.annotation.Nullable;
+import javax.annotation.CheckForNull;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -34,7 +34,7 @@ class CopyOperation extends AbstractVoidOperation {
 
     private final Resource target;
 
-    public CopyOperation(final URI repository, final Resource source, final Resource target, @Nullable final Info info) {
+    public CopyOperation(final URI repository, final Resource source, final Resource target, @CheckForNull final Info info) {
         super(repository);
         this.source = source;
         this.target = target;

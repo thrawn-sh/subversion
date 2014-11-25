@@ -17,7 +17,7 @@ package de.shadowhunt.subversion;
 
 import java.util.Comparator;
 
-import javax.annotation.Nullable;
+import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.Immutable;
 
 import org.apache.commons.lang3.Validate;
@@ -76,7 +76,7 @@ public final class ResourceProperty {
         }
 
         @Override
-        public int compareTo(@Nullable final Key other) {
+        public int compareTo(@CheckForNull final Key other) {
             Validate.notNull(other, "other must not be null");
             final int result = type.compareTo(other.type);
             if (result != 0) {

@@ -17,7 +17,7 @@ package de.shadowhunt.subversion;
 
 import java.io.Serializable;
 
-import javax.annotation.Nullable;
+import javax.annotation.CheckForNull;
 
 import org.apache.commons.lang3.Validate;
 
@@ -72,7 +72,7 @@ public final class Revision implements Comparable<Revision>, Serializable {
     }
 
     @Override
-    public int compareTo(@Nullable final Revision other) {
+    public int compareTo(@CheckForNull final Revision other) {
         Validate.notNull(other, "other must not be null");
         return Long.compare(version, other.version);
     }
