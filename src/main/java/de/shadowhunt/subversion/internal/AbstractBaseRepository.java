@@ -342,7 +342,7 @@ public abstract class AbstractBaseRepository implements Repository {
 
     @Override
     public final Info info(final View view, final Resource resource, final Revision revision) {
-        return info(view, resource, revision, PropfindOperation.ALL_PROPERTIES);
+        return info(view, resource, revision, PropfindOperation.NO_PROPERTIES);
     }
 
     @Override
@@ -371,7 +371,7 @@ public abstract class AbstractBaseRepository implements Repository {
     }
 
     @CheckForNull
-    private Info info0(final View view, final Resource resource, final Revision revision, final boolean resolve, final ResourceProperty.Key[] keys) {
+    private Info info0(final View view, final Resource resource, final Revision revision, final boolean resolve, @CheckForNull final ResourceProperty.Key[] keys) {
         final Resource resolved = resolve2(view, resource, revision, resolve);
         final InfoOperation operation = new InfoOperation(repository, resolved, config.getPrefix(), keys);
         return operation.execute(client, context);
@@ -379,7 +379,7 @@ public abstract class AbstractBaseRepository implements Repository {
 
     @Override
     public final Set<Info> list(final View view, final Resource resource, final Revision revision, final Depth depth) {
-        return list(view, resource, revision, depth, PropfindOperation.ALL_PROPERTIES);
+        return list(view, resource, revision, depth, PropfindOperation.NO_PROPERTIES);
     }
 
     @Override

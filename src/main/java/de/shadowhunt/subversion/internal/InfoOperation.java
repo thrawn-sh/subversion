@@ -33,12 +33,8 @@ class InfoOperation extends PropfindOperation<Info> {
 
     private static final String LOCK_OWNER_HEADER = "X-SVN-Lock-Owner";
 
-    InfoOperation(final URI repository, final Resource resource, final Resource marker, final ResourceProperty.Key[] requestedProperties) {
+    InfoOperation(final URI repository, final Resource resource, final Resource marker, @CheckForNull final ResourceProperty.Key[] requestedProperties) {
         super(repository, resource, marker, Depth.EMPTY, requestedProperties);
-    }
-
-    InfoOperation(final URI repository, final Resource resource, final Resource marker) {
-        super(repository, resource, marker, Depth.EMPTY, PropfindOperation.ALL_PROPERTIES);
     }
 
     @Override
