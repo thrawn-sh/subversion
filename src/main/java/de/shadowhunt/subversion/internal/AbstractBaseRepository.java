@@ -121,7 +121,7 @@ public abstract class AbstractBaseRepository implements Repository {
             mkdir(transaction, resource.getParent(), true);
         }
 
-        final Info info = info0(transaction, resource, transaction.getHeadRevision(), true);
+        final Info info = info0(transaction, resource, transaction.getHeadRevision(), true, PropfindOperation.ALL_PROPERTIES);
         final Resource uploadResource = config.getWorkingResource(transaction).append(resource);
         final UploadOperation operation = new UploadOperation(repository, uploadResource, info, content);
         operation.execute(client, context);
@@ -148,12 +148,12 @@ public abstract class AbstractBaseRepository implements Repository {
             registerResource(transaction, targetResource.getParent(), transaction.getHeadRevision());
         }
 
-        final Info sourceInfo = info0(transaction, sourceResource, sourceRevision, true);
+        final Info sourceInfo = info0(transaction, sourceResource, sourceRevision, true, PropfindOperation.ALL_PROPERTIES);
         if (sourceInfo == null) {
             throw new SubversionException("Can't resolve: " + sourceResource + '@' + sourceRevision);
         }
 
-        final Info targetInfo = info0(transaction, targetResource, transaction.getHeadRevision(), true);
+        final Info targetInfo = info0(transaction, targetResource, transaction.getHeadRevision(), true, PropfindOperation.ALL_PROPERTIES);
         final Resource source = config.getVersionedResource(sourceInfo.getResource(), sourceInfo.getRevision());
         final Resource target = config.getWorkingResource(transaction).append(targetResource);
 
@@ -168,7 +168,7 @@ public abstract class AbstractBaseRepository implements Repository {
     }
 
     private void createFolder(final Transaction transaction, final Resource resource, final boolean parents) {
-        final Info info = info0(transaction, resource, transaction.getHeadRevision(), true); // null if resource does not exists
+        final Info info = info0(transaction, resource, transaction.getHeadRevision(), true, PropfindOperation.ALL_PROPERTIES); // null if resource does not exists
 
         if (parents && (info == null) && !Resource.ROOT.equals(resource)) {
             createFolder(transaction, resource.getParent(), true);
@@ -210,7 +210,7 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.notNull(resource, "resource must not be null");
 
         LOGGER.trace("deleting resource {} during transaction {}", resource, transaction.getId());
-        final Info info = info0(transaction, resource, transaction.getHeadRevision(), true);
+        final Info info = info0(transaction, resource, transaction.getHeadRevision(), true, PropfindOperation.ALL_PROPERTIES);
         if (info == null) {
             throw new SubversionException("Can't resolve: " + resource + '@' + Revision.HEAD);
         }
@@ -327,7 +327,7 @@ public abstract class AbstractBaseRepository implements Repository {
             }
 
             final Resource resource = entry.getKey();
-            final Info info = info0(transaction, resource, transaction.getHeadRevision(), false);
+            final Info info = info0(transaction, resource, transaction.getHeadRevision(), false, PropfindOperation.ALL_PROPERTIES);
             if ((info != null) && info.isLocked()) {
                 infoSet.add(info);
             }
@@ -348,7 +348,7 @@ public abstract class AbstractBaseRepository implements Repository {
         validateRevision(view, revision);
 
         LOGGER.trace("retrieving info for resource {}@{}", resource, revision);
-        final Info info = info0(view, resource, revision, true);
+        final Info info = info0(view, resource, revision, true, PropfindOperation.ALL_PROPERTIES);
         if (info == null) {
             throw new SubversionException("Can't resolve: " + resource + '@' + revision);
         }
@@ -360,10 +360,30 @@ public abstract class AbstractBaseRepository implements Repository {
         return info(createView(), resource, revision);
     }
 
+    @Override
+    public Info info(final Resource resource, final Revision revision, final ResourceProperty.Key... keys) {
+        return info(createView(), resource, revision, keys);
+    }
+
+    @Override
+    public Info info(final View view, final Resource resource, final Revision revision, final ResourceProperty.Key... keys) {
+        Validate.notNull(view, "view must not be null");
+        Validate.notNull(resource, "resource must not be null");
+        Validate.notNull(revision, "revision must not be null");
+        Validate.noNullElements(keys, "keys must not contain null elements");
+        validateRevision(view, revision);
+
+        LOGGER.trace("retrieving info for resource {}@{}", resource, revision);
+        if (keys.length == 0) {
+            return info0(view, resource, revision, true, PropfindOperation.ALL_PROPERTIES);
+        }
+        return info0(view, resource, revision, true, keys);
+    }
+
     @CheckForNull
-    private Info info0(final View view, final Resource resource, final Revision revision, final boolean resolve) {
+    private Info info0(final View view, final Resource resource, final Revision revision, final boolean resolve, final ResourceProperty.Key[] keys) {
         final Resource resolved = resolve2(view, resource, revision, resolve);
-        final InfoOperation operation = new InfoOperation(repository, resolved, config.getPrefix());
+        final InfoOperation operation = new InfoOperation(repository, resolved, config.getPrefix(), keys);
         return operation.execute(client, context);
     }
 
@@ -376,7 +396,7 @@ public abstract class AbstractBaseRepository implements Repository {
         validateRevision(view, revision);
 
         LOGGER.trace("listing info for resource {}@{} and depth ", resource, revision, depth);
-        return list0(view, resource, revision, depth);
+        return list0(view, resource, revision, depth, PropfindOperation.ALL_PROPERTIES);
     }
 
     @Override
@@ -384,15 +404,36 @@ public abstract class AbstractBaseRepository implements Repository {
         return list(createView(), resource, revision, depth);
     }
 
-    private Set<Info> list0(final View view, final Resource resource, final Revision revision, final Depth depth) {
+    @Override
+    public Set<Info> list(final Resource resource, final Revision revision, final Depth depth, final ResourceProperty.Key... keys) {
+        return list(createView(), resource, revision, depth, keys);
+    }
+
+    @Override
+    public Set<Info> list(final View view, final Resource resource, final Revision revision, final Depth depth, final ResourceProperty.Key... keys) {
+        Validate.notNull(view, "view must not be null");
+        Validate.notNull(resource, "resource must not be null");
+        Validate.notNull(revision, "revision must not be null");
+        Validate.notNull(depth, "depth must not be null");
+        Validate.noNullElements(keys, "keys must not contain null elements");
+        validateRevision(view, revision);
+
+        LOGGER.trace("listing info for resource {}@{} and depth", resource, revision, depth);
+        if (keys.length == 0) {
+            return list0(view, resource, revision, depth, PropfindOperation.ALL_PROPERTIES);
+        }
+        return list0(view, resource, revision, depth, keys);
+    }
+
+    private Set<Info> list0(final View view, final Resource resource, final Revision revision, final Depth depth, @CheckForNull final ResourceProperty.Key[] keys) {
         if (Depth.INFINITY == depth) {
             final Set<Info> result = new TreeSet<>(Info.RESOURCE_COMPARATOR);
-            listRecursively0(view, resource, revision, result);
+            listRecursively0(view, resource, revision, result, keys);
             return result;
         }
 
         final Resource resolved = resolve2(view, resource, revision, true);
-        final ListOperation operation = new ListOperation(repository, resolved, config.getPrefix(), depth);
+        final ListOperation operation = new ListOperation(repository, resolved, config.getPrefix(), depth, keys);
         final Set<Info> infoSet = operation.execute(client, context);
         if (infoSet == null) {
             throw new SubversionException("Can't resolve: " + resource + '@' + revision);
@@ -400,14 +441,14 @@ public abstract class AbstractBaseRepository implements Repository {
         return infoSet;
     }
 
-    private void listRecursively0(final View view, final Resource resource, final Revision revision, final Set<Info> result) {
-        for (final Info info : list0(view, resource, revision, Depth.IMMEDIATES)) {
+    private void listRecursively0(final View view, final Resource resource, final Revision revision, final Set<Info> result, @CheckForNull final ResourceProperty.Key[] keys) {
+        for (final Info info : list0(view, resource, revision, Depth.IMMEDIATES, keys)) {
             if (!result.add(info)) {
                 continue;
             }
 
             if (info.isDirectory() && !resource.equals(info.getResource())) {
-                listRecursively0(view, info.getResource(), revision, result);
+                listRecursively0(view, info.getResource(), revision, result, keys);
             }
         }
     }
@@ -492,7 +533,7 @@ public abstract class AbstractBaseRepository implements Repository {
         LOGGER.trace("updating properties {} on {} during {}", properties, resource, transaction.getId());
 
         // there can only be a lock token if the file is already in the repository
-        final Info info = info0(transaction, resource, transaction.getHeadRevision(), true);
+        final Info info = info0(transaction, resource, transaction.getHeadRevision(), true, PropfindOperation.ALL_PROPERTIES);
 
         final Resource r = config.getWorkingResource(transaction).append(resource);
         final PropertiesUpdateOperation operation = new PropertiesUpdateOperation(repository, r, type, info, properties);
@@ -535,7 +576,7 @@ public abstract class AbstractBaseRepository implements Repository {
     }
 
     private void unlock0(final View view, final Resource resource, final boolean force) {
-        final Info info = info0(view, resource, view.getHeadRevision(), true);
+        final Info info = info0(view, resource, view.getHeadRevision(), true, PropfindOperation.ALL_PROPERTIES);
         if (info == null) {
             throw new SubversionException("Can't resolve: " + resource + '@' + view.getHeadRevision());
         }

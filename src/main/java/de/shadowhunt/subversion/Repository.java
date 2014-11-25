@@ -115,6 +115,20 @@ public interface Repository {
     /**
      * Download the resource
      *
+     * @param resource the {@link Resource} of the resource (relative to the repository root)
+     * @param revision the {@link Revision} of the resource to retrieve
+     *
+     * @return {@link InputStream} from which the content can be read (caller has to close the stream properly)
+     *
+     * @throws java.lang.NullPointerException if any parameter is {@code null}
+     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
+     */
+    InputStream download(Resource resource, Revision revision);
+
+    /**
+     * Download the resource
+     *
      * @param view the current valid {@link View}
      * @param resource the {@link Resource} of the resource (relative to the repository root)
      * @param revision the {@link Revision} of the resource to retrieve
@@ -128,18 +142,18 @@ public interface Repository {
     InputStream download(View view, Resource resource, Revision revision);
 
     /**
-     * Download the resource
+     * Determine the HTTP download URI for the resource
      *
      * @param resource the {@link Resource} of the resource (relative to the repository root)
      * @param revision the {@link Revision} of the resource to retrieve
      *
-     * @return {@link InputStream} from which the content can be read (caller has to close the stream properly)
+     * @return the HTTP download {@link URI} for the resource
      *
      * @throws java.lang.NullPointerException if any parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
      * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    InputStream download(Resource resource, Revision revision);
+    URI downloadURI(Resource resource, Revision revision);
 
     /**
      * Determine the HTTP download URI for the resource
@@ -157,18 +171,18 @@ public interface Repository {
     URI downloadURI(View view, Resource resource, Revision revision);
 
     /**
-     * Determine the HTTP download URI for the resource
+     * Check if the resource already exists in the latest revision of the repository
      *
      * @param resource the {@link Resource} of the resource (relative to the repository root)
      * @param revision the {@link Revision} of the resource to retrieve
      *
-     * @return the HTTP download {@link URI} for the resource
+     * @return {@code true} if the resource already exists in the latest revision of the repository otherwise {@code false}
      *
      * @throws java.lang.NullPointerException if any parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
      * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    URI downloadURI(Resource resource, Revision revision);
+    boolean exists(Resource resource, Revision revision);
 
     /**
      * Check if the resource already exists in the latest revision of the repository
@@ -184,20 +198,6 @@ public interface Repository {
      * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     boolean exists(View view, Resource resource, Revision revision);
-
-    /**
-     * Check if the resource already exists in the latest revision of the repository
-     *
-     * @param resource the {@link Resource} of the resource (relative to the repository root)
-     * @param revision the {@link Revision} of the resource to retrieve
-     *
-     * @return {@code true} if the resource already exists in the latest revision of the repository otherwise {@code false}
-     *
-     * @throws java.lang.NullPointerException if any parameter is {@code null}
-     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
-     */
-    boolean exists(Resource resource, Revision revision);
 
     /**
      * Returns the {@link URI} to the root of this {@link Repository}
@@ -223,6 +223,20 @@ public interface Repository {
     /**
      * Retrieve information for the resource
      *
+     * @param resource the {@link Resource} of the resource (relative to the repository root)
+     * @param revision the {@link Revision} of the resource to retrieve
+     *
+     * @return {@link Info} for the resource
+     *
+     * @throws java.lang.NullPointerException if any parameter is {@code null}
+     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
+     */
+    Info info(Resource resource, Revision revision);
+
+    /**
+     * Retrieve information for the resource
+     *
      * @param view the current valid {@link View}
      * @param resource the {@link Resource} of the resource (relative to the repository root)
      * @param revision the {@link Revision} of the resource to retrieve
@@ -236,18 +250,52 @@ public interface Repository {
     Info info(View view, Resource resource, Revision revision);
 
     /**
-     * Retrieve information for the resource
+     * Retrieve reduced information for the resource,
+     * the resulting {@link Info} will not contain all values, but only the requested
      *
      * @param resource the {@link Resource} of the resource (relative to the repository root)
      * @param revision the {@link Revision} of the resource to retrieve
+     * @param keys request only the specified {@link ResourceProperty.Key}s
      *
-     * @return {@link Info} for the resource
+     * @return reduced {@link Info} for the resource
      *
      * @throws java.lang.NullPointerException if any parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
      * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    Info info(Resource resource, Revision revision);
+    Info info(Resource resource, Revision revision, ResourceProperty.Key... keys);
+
+    /**
+     * Retrieve reduced information for the resource,
+     * the resulting {@link Info} will not contain all values, but only the requested
+     *
+     * @param view the current valid {@link View}
+     * @param resource the {@link Resource} of the resource (relative to the repository root)
+     * @param revision the {@link Revision} of the resource to retrieve
+     * @param keys request only the specified {@link ResourceProperty.Key}s
+     *
+     * @return reduced {@link Info} for the resource
+     *
+     * @throws java.lang.NullPointerException if any parameter is {@code null}
+     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
+     */
+    Info info(View view, Resource resource, Revision revision, ResourceProperty.Key... keys);
+
+    /**
+     * Retrieve information for the resource in the given revision and its child resources (depending on depth parameter)
+     *
+     * @param resource the {@link Resource} of the resource (relative to the repository root)
+     * @param revision the {@link Revision} of the resource to retrieve
+     * @param depth whether to retrieve only for the given resource, its children or only part of its children depending on the value of {@link Depth}
+     *
+     * @return {@link Set} of {@link Info} for the resource and its child resources (depending on depth parameter)
+     *
+     * @throws java.lang.NullPointerException if any parameter is {@code null}
+     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
+     */
+    Set<Info> list(Resource resource, Revision revision, Depth depth);
 
     /**
      * Retrieve information for the resource in the given revision and its child resources (depending on depth parameter)
@@ -266,11 +314,13 @@ public interface Repository {
     Set<Info> list(View view, Resource resource, Revision revision, Depth depth);
 
     /**
-     * Retrieve information for the resource in the given revision and its child resources (depending on depth parameter)
+     * Retrieve reduced information for the resource in the given revision and its child resources (depending on depth parameter),
+     * the resulting {@link Info} Set will not contain all values, but only the requested
      *
      * @param resource the {@link Resource} of the resource (relative to the repository root)
      * @param revision the {@link Revision} of the resource to retrieve
      * @param depth whether to retrieve only for the given resource, its children or only part of its children depending on the value of {@link Depth}
+     * @param keys request only the specified {@link ResourceProperty.Key}s
      *
      * @return {@link Set} of {@link Info} for the resource and its child resources (depending on depth parameter)
      *
@@ -278,7 +328,25 @@ public interface Repository {
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
      * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    Set<Info> list(Resource resource, Revision revision, Depth depth);
+    Set<Info> list(Resource resource, Revision revision, Depth depth, ResourceProperty.Key... keys);
+
+    /**
+     * Retrieve reduced information for the resource in the given revision and its child resources (depending on depth parameter),
+     * the resulting {@link Info} Set will not contain all values, but only the requested
+     *
+     * @param view the current valid {@link View}
+     * @param resource the {@link Resource} of the resource (relative to the repository root)
+     * @param revision the {@link Revision} of the resource to retrieve
+     * @param depth whether to retrieve only for the given resource, its children or only part of its children depending on the value of {@link Depth}
+     * @param keys request only the specified {@link ResourceProperty.Key}s
+     *
+     * @return {@link Set} of {@link Info} for the resource and its child resources (depending on depth parameter)
+     *
+     * @throws java.lang.NullPointerException if any parameter is {@code null}
+     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
+     */
+    Set<Info> list(View view, Resource resource, Revision revision, Depth depth, ResourceProperty.Key... keys);
 
     /**
      * Mark the expected revision of the resource as locked
@@ -291,6 +359,22 @@ public interface Repository {
      * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     void lock(Resource resource, boolean steal);
+
+    /**
+     * Retrieve the log information for the revisions between startRevision and endRevision of the resource
+     *
+     * @param resource the {@link Resource} of the resource (relative to the repository root)
+     * @param startRevision the first {@link Revision} of the resource to retrieve (including)
+     * @param endRevision the last {@link Revision} of the resource to retrieve (including)
+     * @param limit maximal number of {@link Log} entries, if the value is lower or equal to {@code 0} all entries will be returned
+     *
+     * @return ordered (early to latest) {@link List} of {@link Log} for the revisions between startRevision and endRevision of the resource
+     *
+     * @throws java.lang.NullPointerException if any parameter is {@code null}
+     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
+     */
+    List<Log> log(Resource resource, Revision startRevision, Revision endRevision, int limit);
 
     /**
      * Retrieve the log information for the revisions between startRevision and endRevision of the resource
@@ -308,22 +392,6 @@ public interface Repository {
      * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     List<Log> log(View view, Resource resource, Revision startRevision, Revision endRevision, int limit);
-
-    /**
-     * Retrieve the log information for the revisions between startRevision and endRevision of the resource
-     *
-     * @param resource the {@link Resource} of the resource (relative to the repository root)
-     * @param startRevision the first {@link Revision} of the resource to retrieve (including)
-     * @param endRevision the last {@link Revision} of the resource to retrieve (including)
-     * @param limit maximal number of {@link Log} entries, if the value is lower or equal to {@code 0} all entries will be returned
-     *
-     * @return ordered (early to latest) {@link List} of {@link Log} for the revisions between startRevision and endRevision of the resource
-     *
-     * @throws java.lang.NullPointerException if any parameter is {@code null}
-     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
-     */
-    List<Log> log(Resource resource, Revision startRevision, Revision endRevision, int limit);
 
     /**
      * Create a folder with all necessary parents folders
