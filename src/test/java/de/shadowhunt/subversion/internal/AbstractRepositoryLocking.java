@@ -281,7 +281,7 @@ public abstract class AbstractRepositoryLocking {
     @Test
     public void test04_DeletePropertiesOfLocked() throws Exception {
         final Resource resource = prefix.append(Resource.create("file_delete_properties_locked.txt"));
-        final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "A");
+        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "A");
 
         AbstractRepositoryAdd.file(repositoryA, resource, "resource", true);
         AbstractRepositoryPropertiesSet.setProperties(repositoryA, resource, property);
@@ -421,8 +421,8 @@ public abstract class AbstractRepositoryLocking {
     @Test
     public void test04_SetPropertiesOfLocked() throws Exception {
         final Resource resource = prefix.append(Resource.create("file_set_properties_locked.txt"));
-        final ResourceProperty propertyA = new ResourceProperty(Type.CUSTOM, "test", "A");
-        final ResourceProperty propertyB = new ResourceProperty(Type.CUSTOM, "test", "B");
+        final ResourceProperty propertyA = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "A");
+        final ResourceProperty propertyB = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "B");
 
         AbstractRepositoryAdd.file(repositoryA, resource, "resource", true);
         AbstractRepositoryPropertiesSet.setProperties(repositoryA, resource, propertyA);

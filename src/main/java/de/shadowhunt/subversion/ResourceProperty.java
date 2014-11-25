@@ -27,6 +27,20 @@ import org.apache.commons.lang3.Validate;
 @Immutable
 public final class ResourceProperty {
 
+    public static final ResourceProperty.Key AUTHOR = new ResourceProperty.Key(Type.DAV, "creator-displayname");
+
+    public static final ResourceProperty.Key CREATION_DATE = new ResourceProperty.Key(Type.DAV, "creationdate");
+
+    public static final ResourceProperty.Key LAST_MODIFIED_DATE = new ResourceProperty.Key(Type.DAV, "getlastmodified");
+
+    public static final ResourceProperty.Key LOCK_STATUS = new ResourceProperty.Key(Type.DAV, "lockdiscovery");
+
+    public static final ResourceProperty.Key MD5_HASH = new ResourceProperty.Key(Type.SUBVERSION_DAV, "md5-checksum");
+
+    public static final ResourceProperty.Key REPOSITORY_ID = new ResourceProperty.Key(Type.SUBVERSION_DAV, "repository-uuid");
+
+    public static final ResourceProperty.Key RESOURCE_TYPE = new ResourceProperty.Key(Type.DAV, "resourcetype");
+
     /**
      * {@link Comparator} that compares {@link ResourceProperty} by their type and name
      */
@@ -40,6 +54,8 @@ public final class ResourceProperty {
             return rp1.getKey().compareTo(rp2.getKey());
         }
     };
+
+    public static final ResourceProperty.Key VERSION = new ResourceProperty.Key(Type.DAV, "version-name");
 
     /**
      * {@link Key} is the internal name a {@link ResourceProperty} is stored
@@ -123,8 +139,11 @@ public final class ResourceProperty {
      * {@link ResourceProperty} can have various types, depending of the context they are used
      */
     public static enum Type {
-        CUSTOM("http://subversion.tigris.org/xmlns/custom/"),
-        SVN("http://subversion.tigris.org/xmlns/svn/");
+        DAV("DAV:"),
+        SVN("svn:"),
+        SUBVERSION_CUSTOM("http://subversion.tigris.org/xmlns/custom/"),
+        SUBVERSION_DAV("http://subversion.tigris.org/xmlns/dav/"),
+        SUBVERSION_SVN("http://subversion.tigris.org/xmlns/svn/");
 
         private final String prefix;
 

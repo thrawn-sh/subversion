@@ -52,9 +52,13 @@ public abstract class AbstractBaseRepository implements Repository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("de.shadowhunt.subversion.Repository");
 
+    private static final ResourceProperty.Key[] REPOSITORY_UUID = new ResourceProperty.Key[] { ResourceProperty.REPOSITORY_ID };
+
+    private static final ResourceProperty.Key[] REVISION = new ResourceProperty.Key[] { ResourceProperty.VERSION };
+
     @CheckForNull
     private static UUID determineRepositoryId(final URI repository, final HttpClient client, final HttpContext context, final Resource marker) {
-        final InfoOperation operation = new InfoOperation(repository, Resource.ROOT, marker);
+        final InfoOperation operation = new InfoOperation(repository, Resource.ROOT, marker, REPOSITORY_UUID);
         final Info info = operation.execute(client, context);
         if (info == null) {
             throw new SubversionException("No repository found at " + repository, HttpStatus.SC_BAD_REQUEST);
@@ -217,7 +221,7 @@ public abstract class AbstractBaseRepository implements Repository {
     }
 
     protected Revision determineHeadRevision() {
-        final InfoOperation operation = new InfoOperation(repository, Resource.ROOT, config.getPrefix());
+        final InfoOperation operation = new InfoOperation(repository, Resource.ROOT, config.getPrefix(), REVISION);
         final Info info = operation.execute(client, context);
         return info.getRevision();
     }

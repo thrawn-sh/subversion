@@ -35,7 +35,7 @@ class ListOperation extends PropfindOperation<Set<Info>> {
         super(repository, resource, marker, depth, PropfindOperation.ALL_PROPERTIES);
     }
 
-    ListOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, final ResourceProperty[] requestedProperties) {
+    ListOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, final ResourceProperty.Key[] requestedProperties) {
         super(repository, resource, marker, depth, requestedProperties);
     }
 

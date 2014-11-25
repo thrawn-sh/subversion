@@ -26,10 +26,10 @@ public class ResourcePropertyTest {
     public void createCustomPropertyTest() {
         final String name = "testName";
         final String value = "testValue";
-        final ResourceProperty property = new ResourceProperty(Type.CUSTOM, name, value);
+        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, name, value);
 
         Assert.assertNotNull("property must not be null", property);
-        Assert.assertEquals("type is not CUSTOM", Type.CUSTOM, property.getType());
+        Assert.assertEquals("type is not SUBVERSION_CUSTOM", Type.SUBVERSION_CUSTOM, property.getType());
         Assert.assertEquals("name does not match", name, property.getName());
         Assert.assertEquals("value does not match", value, property.getValue());
     }

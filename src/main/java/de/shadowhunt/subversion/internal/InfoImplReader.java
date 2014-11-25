@@ -141,7 +141,7 @@ final class InfoImplReader {
         @Override
         protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
             if (XmlConstants.SUBVERSION_CUSTOM_NAMESPACE.equals(nameSpaceUri)) {
-                properties.add(new ResourceProperty(ResourceProperty.Type.CUSTOM, localName, text));
+                properties.add(new ResourceProperty(ResourceProperty.Type.SUBVERSION_CUSTOM, localName, text));
                 return;
             }
 

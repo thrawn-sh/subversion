@@ -37,7 +37,7 @@ public final class ResourcePropertyLoader extends BaseLoader {
 
         private static Type convert(final String prefix) {
             if ("svn".equals(prefix)) {
-                return Type.SVN;
+                return Type.SUBVERSION_SVN;
             }
             throw new IllegalArgumentException("prefix " + prefix + " not supported");
         }
@@ -71,7 +71,7 @@ public final class ResourcePropertyLoader extends BaseLoader {
                     propertyType = convert(value.substring(0, split));
                     propertyName = value.substring(split + 1);
                 } else {
-                    propertyType = Type.CUSTOM;
+                    propertyType = Type.SUBVERSION_CUSTOM;
                     propertyName = value;
                 }
                 return;

@@ -66,7 +66,7 @@ public class AbstractRepositoryPropertiesSet {
     @Test(expected = SubversionException.class)
     public void test00_NonExistingResource() throws Exception {
         final Resource resource = prefix.append(Resource.create("non_existing.txt"));
-        final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "test");
+        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "test");
         Assert.assertFalse(resource + " does already exist", repository.exists(resource, Revision.HEAD));
 
         final Transaction transaction = repository.createTransaction();
@@ -83,7 +83,7 @@ public class AbstractRepositoryPropertiesSet {
     @Test(expected = SubversionException.class)
     public void test00_invalid() throws Exception {
         final Resource resource = prefix.append(Resource.create("invalid.txt"));
-        final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "test");
+        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "test");
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -101,7 +101,7 @@ public class AbstractRepositoryPropertiesSet {
     @Test(expected = SubversionException.class)
     public void test00_rollback() throws Exception {
         final Resource resource = prefix.append(Resource.create("rollback.txt"));
-        final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "test");
+        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "test");
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -119,7 +119,7 @@ public class AbstractRepositoryPropertiesSet {
     @Test
     public void test01_setProperties() throws Exception {
         final Resource resource = prefix.append(Resource.create("file.txt"));
-        final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "test");
+        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "test");
 
         AbstractRepositoryAdd.file(repository, resource, "test", true);
         setProperties(repository, resource, property);
@@ -131,12 +131,12 @@ public class AbstractRepositoryPropertiesSet {
 
         AbstractRepositoryAdd.file(repository, resource, "test", true);
         {
-            final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "A");
+            final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "A");
             setProperties(repository, resource, property);
         }
         {
-            final ResourceProperty newProperty = new ResourceProperty(Type.CUSTOM, "new", "new");
-            final ResourceProperty existingProperty = new ResourceProperty(Type.CUSTOM, "test", "B");
+            final ResourceProperty newProperty = new ResourceProperty(Type.SUBVERSION_CUSTOM, "new", "new");
+            final ResourceProperty existingProperty = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "B");
             setProperties(repository, resource, newProperty, existingProperty);
         }
     }

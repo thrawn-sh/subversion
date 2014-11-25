@@ -35,24 +35,42 @@ import de.shadowhunt.subversion.SubversionException;
 
 abstract class PropfindOperation<T> extends AbstractOperation<T> {
 
-    public static final ResourceProperty[] ALL_PROPERTIES = null;
+    public static final ResourceProperty.Key[] ALL_PROPERTIES = null;
 
-    public static final ResourceProperty[] NO_PROPERTIES = new ResourceProperty[0];
+    public static final ResourceProperty.Key[] NO_PROPERTIES = new ResourceProperty.Key[0];
+
+    @Nullable
+    private static final ResourceProperty.Key[] filter(final ResourceProperty.Key[] requestedProperties) {
+        if (requestedProperties == null) {
+            return null;
+        }
+
+        int w = 0;
+        int r = 0;
+        while (r < requestedProperties.length) {
+            if (ResourceProperty.Type.SUBVERSION_CUSTOM.equals(requestedProperties[r].getType())) {
+                r++;
+                continue;
+            }
+            requestedProperties[w++] = requestedProperties[r++];
+        }
+        return Arrays.copyOf(requestedProperties, w);
+    }
 
     protected final Depth depth;
 
     protected final Resource marker;
 
-    protected final ResourceProperty[] requestedProperties;
+    protected final ResourceProperty.Key[] requestedProperties;
 
     protected final Resource resource;
 
-    PropfindOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, final ResourceProperty[] requestedProperties) {
+    PropfindOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, @Nullable final ResourceProperty.Key[] requestedProperties) {
         super(repository);
         this.resource = resource;
         this.marker = marker;
         this.depth = depth;
-        this.requestedProperties = requestedProperties;
+        this.requestedProperties = filter(requestedProperties);
     }
 
     @Override
@@ -73,10 +91,18 @@ abstract class PropfindOperation<T> extends AbstractOperation<T> {
                 if (requestedProperties.length == 0) {
                     writer.writeEmptyElement("prop");
                 } else {
-                    // FIXME
+                    writer.writeStartElement("prop");
+                    writer.writeNamespace(XmlConstants.SUBVERSION_DAV_PREFIX, XmlConstants.SUBVERSION_DAV_NAMESPACE);
+                    writer.setPrefix(XmlConstants.SUBVERSION_DAV_PREFIX, XmlConstants.SUBVERSION_DAV_NAMESPACE);
+                    writer.writeNamespace(XmlConstants.SUBVERSION_SVN_PREFIX, XmlConstants.SUBVERSION_SVN_NAMESPACE);
+                    writer.setPrefix(XmlConstants.SUBVERSION_SVN_PREFIX, XmlConstants.SUBVERSION_SVN_NAMESPACE);
+                    for (ResourceProperty.Key requestedProperty : requestedProperties) {
+                        writer.writeEmptyElement(requestedProperty.getType().getPrefix(), requestedProperty.getName());
+                    }
+                    writer.writeEndElement(); // prop
                 }
             }
-            writer.writeEndElement(); //propfind
+            writer.writeEndElement(); // propfind
             writer.writeEndDocument();
             writer.close();
         } catch (final XMLStreamException e) {

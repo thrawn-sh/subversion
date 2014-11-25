@@ -320,8 +320,8 @@ public class AbstractRepositoryPerformance {
     @Test
     public void test12_propertiesDelete() throws Exception {
         final Resource resource = prefix.append(Resource.create("/properties_delete.txt"));
-        final ResourceProperty a = new ResourceProperty(ResourceProperty.Type.CUSTOM, "a", "a");
-        final ResourceProperty b = new ResourceProperty(ResourceProperty.Type.CUSTOM, "b", "b");
+        final ResourceProperty a = new ResourceProperty(ResourceProperty.Type.SUBVERSION_CUSTOM, "a", "a");
+        final ResourceProperty b = new ResourceProperty(ResourceProperty.Type.SUBVERSION_CUSTOM, "b", "b");
         { // prepare
             final Transaction transaction = repository.createTransaction();
             repository.mkdir(transaction, prefix, true);
@@ -354,8 +354,8 @@ public class AbstractRepositoryPerformance {
         final Transaction transaction = repository.createTransaction();
         counter.reset();
 
-        final ResourceProperty a = new ResourceProperty(ResourceProperty.Type.CUSTOM, "a", "a");
-        final ResourceProperty b = new ResourceProperty(ResourceProperty.Type.CUSTOM, "b", "b");
+        final ResourceProperty a = new ResourceProperty(ResourceProperty.Type.SUBVERSION_CUSTOM, "a", "a");
+        final ResourceProperty b = new ResourceProperty(ResourceProperty.Type.SUBVERSION_CUSTOM, "b", "b");
         repository.propertiesSet(transaction, resource, a, b);
         Assert.assertEquals("number of requests must match", 2, counter.getTotalRequestCount());
 

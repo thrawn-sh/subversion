@@ -79,10 +79,10 @@ class PropertiesUpdateOperation extends AbstractVoidOperation {
             writer.writeDefaultNamespace(XmlConstants.DAV_NAMESPACE);
             writer.setPrefix(XmlConstants.SUBVERSION_CUSTOM_PREFIX, XmlConstants.SUBVERSION_CUSTOM_NAMESPACE);
             writer.writeNamespace(XmlConstants.SUBVERSION_CUSTOM_PREFIX, XmlConstants.SUBVERSION_CUSTOM_NAMESPACE);
-            writer.setPrefix(XmlConstants.SUBVERSION_SVN_PREFIX, XmlConstants.SUBVERSION_SVN_NAMESPACE);
-            writer.writeNamespace(XmlConstants.SUBVERSION_SVN_PREFIX, XmlConstants.SUBVERSION_SVN_NAMESPACE);
             writer.setPrefix(XmlConstants.SUBVERSION_DAV_PREFIX, XmlConstants.SUBVERSION_DAV_NAMESPACE);
             writer.writeNamespace(XmlConstants.SUBVERSION_DAV_PREFIX, XmlConstants.SUBVERSION_DAV_NAMESPACE);
+            writer.setPrefix(XmlConstants.SUBVERSION_SVN_PREFIX, XmlConstants.SUBVERSION_SVN_NAMESPACE);
+            writer.writeNamespace(XmlConstants.SUBVERSION_SVN_PREFIX, XmlConstants.SUBVERSION_SVN_NAMESPACE);
             writer.writeStartElement(type.action);
             writer.writeStartElement("prop");
             for (final ResourceProperty property : properties) {

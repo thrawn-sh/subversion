@@ -47,7 +47,7 @@ public class AbstractRepositoryPropertiesDelete {
     @Test(expected = SubversionException.class)
     public void test00_NonExistingResource() throws Exception {
         final Resource resource = prefix.append(Resource.create("non_existing.txt"));
-        final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "test");
+        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "test");
         Assert.assertFalse(resource + " does already exist", repository.exists(resource, Revision.HEAD));
 
         final Transaction transaction = repository.createTransaction();
@@ -64,7 +64,7 @@ public class AbstractRepositoryPropertiesDelete {
     @Test(expected = SubversionException.class)
     public void test00_invalid() throws Exception {
         final Resource resource = prefix.append(Resource.create("invalid.txt"));
-        final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "test");
+        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "test");
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -82,7 +82,7 @@ public class AbstractRepositoryPropertiesDelete {
     @Test(expected = SubversionException.class)
     public void test00_rollback() throws Exception {
         final Resource resource = prefix.append(Resource.create("rollback.txt"));
-        final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "test");
+        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "test");
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -100,7 +100,7 @@ public class AbstractRepositoryPropertiesDelete {
     @Test
     public void test01_deleteExistingProperties() throws Exception {
         final Resource resource = prefix.append(Resource.create("file.txt"));
-        final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "test");
+        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "test");
 
         AbstractRepositoryAdd.file(repository, resource, "test", true);
         AbstractRepositoryPropertiesSet.setProperties(repository, resource, property);
@@ -129,7 +129,7 @@ public class AbstractRepositoryPropertiesDelete {
     @Test
     public void test01_deleteNonExistingProperties() throws Exception {
         final Resource resource = prefix.append(Resource.create("no_properties.txt"));
-        final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "test", "test");
+        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "test");
 
         AbstractRepositoryAdd.file(repository, resource, "test", true);
 

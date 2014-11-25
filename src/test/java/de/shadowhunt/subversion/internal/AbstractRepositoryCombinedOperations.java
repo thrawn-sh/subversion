@@ -78,7 +78,7 @@ public class AbstractRepositoryCombinedOperations {
     public void test01_AddFileAndSetProperties() throws Exception {
         final String content = "test";
         final Resource resource = prefix.append(Resource.create("file_and_properties.txt"));
-        final ResourceProperty property = new ResourceProperty(Type.CUSTOM, "foo", "bar");
+        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "foo", "bar");
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -186,9 +186,9 @@ public class AbstractRepositoryCombinedOperations {
         final String content = "test";
         final Resource resource = prefix.append(Resource.create("override.txt"));
 
-        final ResourceProperty propertyA = new ResourceProperty(Type.CUSTOM, "propertyA", "a");
-        final ResourceProperty propertyB = new ResourceProperty(Type.CUSTOM, "propertyB", "b");
-        final ResourceProperty propertyC = new ResourceProperty(Type.CUSTOM, "propertyC", "c");
+        final ResourceProperty propertyA = new ResourceProperty(Type.SUBVERSION_CUSTOM, "propertyA", "a");
+        final ResourceProperty propertyB = new ResourceProperty(Type.SUBVERSION_CUSTOM, "propertyB", "b");
+        final ResourceProperty propertyC = new ResourceProperty(Type.SUBVERSION_CUSTOM, "propertyC", "c");
 
         final Transaction transaction = repository.createTransaction();
         try {
