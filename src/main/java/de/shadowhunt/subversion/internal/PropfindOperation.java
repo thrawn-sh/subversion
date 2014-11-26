@@ -70,7 +70,7 @@ abstract class PropfindOperation<T> extends AbstractOperation<T> {
     }
 
     private boolean contains(final String namespace) {
-        for (ResourceProperty.Key requestedProperty : requestedProperties) {
+        for (final ResourceProperty.Key requestedProperty : requestedProperties) {
             if (namespace.equals(requestedProperty.getType().getPrefix())) {
                 return true;
             }
