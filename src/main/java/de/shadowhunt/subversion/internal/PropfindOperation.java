@@ -35,11 +35,6 @@ import de.shadowhunt.subversion.SubversionException;
 
 abstract class PropfindOperation<T> extends AbstractOperation<T> {
 
-    @Deprecated
-    public static final ResourceProperty.Key[] ALL_PROPERTIES = new ResourceProperty.Key[0];
-
-    public static final ResourceProperty.Key[] NO_PROPERTIES = null;
-
     @CheckForNull
     private static ResourceProperty.Key[] filter(final ResourceProperty.Key[] requestedProperties) {
         if (requestedProperties == null) {

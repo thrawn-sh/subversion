@@ -52,9 +52,13 @@ public abstract class AbstractBaseRepository implements Repository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("de.shadowhunt.subversion.Repository");
 
+    private static final ResourceProperty.Key[] LOCKING = new ResourceProperty.Key[] { ResourceProperty.LOCK_STATUS };
+
     private static final ResourceProperty.Key[] REPOSITORY_UUID = new ResourceProperty.Key[] { ResourceProperty.REPOSITORY_ID };
 
     private static final ResourceProperty.Key[] REVISION = new ResourceProperty.Key[] { ResourceProperty.VERSION };
+
+    private static final ResourceProperty.Key[] TYPE = new ResourceProperty.Key[] { ResourceProperty.RESOURCE_TYPE };
 
     @CheckForNull
     private static UUID determineRepositoryId(final URI repository, final HttpClient client, final HttpContext context, final Resource marker) {
@@ -121,7 +125,7 @@ public abstract class AbstractBaseRepository implements Repository {
             mkdir(transaction, resource.getParent(), true);
         }
 
-        final Info info = info0(transaction, resource, transaction.getHeadRevision(), true, PropfindOperation.ALL_PROPERTIES);
+        final Info info = info0(transaction, resource, transaction.getHeadRevision(), true, LOCKING);
         final Resource uploadResource = config.getWorkingResource(transaction).append(resource);
         final UploadOperation operation = new UploadOperation(repository, uploadResource, info, content);
         operation.execute(client, context);
@@ -148,12 +152,12 @@ public abstract class AbstractBaseRepository implements Repository {
             registerResource(transaction, targetResource.getParent(), transaction.getHeadRevision());
         }
 
-        final Info sourceInfo = info0(transaction, sourceResource, sourceRevision, true, PropfindOperation.ALL_PROPERTIES);
+        final Info sourceInfo = info0(transaction, sourceResource, sourceRevision, true, REVISION);
         if (sourceInfo == null) {
             throw new SubversionException("Can't resolve: " + sourceResource + '@' + sourceRevision);
         }
 
-        final Info targetInfo = info0(transaction, targetResource, transaction.getHeadRevision(), true, PropfindOperation.ALL_PROPERTIES);
+        final Info targetInfo = info0(transaction, targetResource, transaction.getHeadRevision(), true, LOCKING);
         final Resource source = config.getVersionedResource(sourceInfo.getResource(), sourceInfo.getRevision());
         final Resource target = config.getWorkingResource(transaction).append(targetResource);
 
@@ -168,7 +172,7 @@ public abstract class AbstractBaseRepository implements Repository {
     }
 
     private void createFolder(final Transaction transaction, final Resource resource, final boolean parents) {
-        final Info info = info0(transaction, resource, transaction.getHeadRevision(), true, PropfindOperation.ALL_PROPERTIES); // null if resource does not exists
+        final Info info = info0(transaction, resource, transaction.getHeadRevision(), true, TYPE); // null if resource does not exists
 
         if (parents && (info == null) && !Resource.ROOT.equals(resource)) {
             createFolder(transaction, resource.getParent(), true);
@@ -210,7 +214,7 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.notNull(resource, "resource must not be null");
 
         LOGGER.trace("deleting resource {} during transaction {}", resource, transaction.getId());
-        final Info info = info0(transaction, resource, transaction.getHeadRevision(), true, PropfindOperation.ALL_PROPERTIES);
+        final Info info = info0(transaction, resource, transaction.getHeadRevision(), true, LOCKING);
         if (info == null) {
             throw new SubversionException("Can't resolve: " + resource + '@' + Revision.HEAD);
         }
@@ -327,7 +331,7 @@ public abstract class AbstractBaseRepository implements Repository {
             }
 
             final Resource resource = entry.getKey();
-            final Info info = info0(transaction, resource, transaction.getHeadRevision(), false, PropfindOperation.ALL_PROPERTIES);
+            final Info info = info0(transaction, resource, transaction.getHeadRevision(), false, LOCKING);
             if ((info != null) && info.isLocked()) {
                 infoSet.add(info);
             }
@@ -494,7 +498,7 @@ public abstract class AbstractBaseRepository implements Repository {
         LOGGER.trace("updating properties {} on {} during {}", properties, resource, transaction.getId());
 
         // there can only be a lock token if the file is already in the repository
-        final Info info = info0(transaction, resource, transaction.getHeadRevision(), true, PropfindOperation.ALL_PROPERTIES);
+        final Info info = info0(transaction, resource, transaction.getHeadRevision(), true, LOCKING);
 
         final Resource r = config.getWorkingResource(transaction).append(resource);
         final PropertiesUpdateOperation operation = new PropertiesUpdateOperation(repository, r, type, info, properties);
@@ -537,7 +541,7 @@ public abstract class AbstractBaseRepository implements Repository {
     }
 
     private void unlock0(final View view, final Resource resource, final boolean force) {
-        final Info info = info0(view, resource, view.getHeadRevision(), true, PropfindOperation.ALL_PROPERTIES);
+        final Info info = info0(view, resource, view.getHeadRevision(), true, LOCKING);
         if (info == null) {
             throw new SubversionException("Can't resolve: " + resource + '@' + view.getHeadRevision());
         }
