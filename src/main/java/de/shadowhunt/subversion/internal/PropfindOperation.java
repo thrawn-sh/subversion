@@ -35,9 +35,10 @@ import de.shadowhunt.subversion.SubversionException;
 
 abstract class PropfindOperation<T> extends AbstractOperation<T> {
 
-    public static final ResourceProperty.Key[] ALL_PROPERTIES = null;
+    @Deprecated
+    public static final ResourceProperty.Key[] ALL_PROPERTIES = new ResourceProperty.Key[0];
 
-    public static final ResourceProperty.Key[] NO_PROPERTIES = new ResourceProperty.Key[0];
+    public static final ResourceProperty.Key[] NO_PROPERTIES = null;
 
     @CheckForNull
     private static ResourceProperty.Key[] filter(final ResourceProperty.Key[] requestedProperties) {
@@ -86,10 +87,10 @@ abstract class PropfindOperation<T> extends AbstractOperation<T> {
             writer.writeStartElement("propfind");
             writer.writeDefaultNamespace(XmlConstants.DAV_NAMESPACE);
             if (requestedProperties == null) {
-                writer.writeEmptyElement("allprop");
+                writer.writeEmptyElement("prop");
             } else {
                 if (requestedProperties.length == 0) {
-                    writer.writeEmptyElement("prop");
+                    writer.writeEmptyElement("allprop");
                 } else {
                     writer.writeStartElement("prop");
                     writer.writeNamespace(XmlConstants.SUBVERSION_DAV_PREFIX, XmlConstants.SUBVERSION_DAV_NAMESPACE);
