@@ -69,6 +69,15 @@ abstract class PropfindOperation<T> extends AbstractOperation<T> {
         this.requestedProperties = filter(requestedProperties);
     }
 
+    private boolean contains(final String namespace) {
+        for (ResourceProperty.Key requestedProperty : requestedProperties) {
+            if (namespace.equals(requestedProperty.getType().getPrefix())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     protected HttpUriRequest createRequest() {
         final URI uri = URIUtils.createURI(repository, resource);
@@ -111,15 +120,6 @@ abstract class PropfindOperation<T> extends AbstractOperation<T> {
 
         request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
         return request;
-    }
-
-    private boolean contains(final String namespace) {
-        for (ResourceProperty.Key requestedProperty : requestedProperties) {
-            if (namespace.equals(requestedProperty.getType().getPrefix())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
