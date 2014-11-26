@@ -30,7 +30,7 @@ import org.junit.Test;
 
 import de.shadowhunt.subversion.Resource;
 
-public class AbstractPrepare {
+public abstract class AbstractPrepare {
 
     private static boolean extractArchive(final File zip, final File prefix) throws Exception {
         final ZipFile zipFile = new ZipFile(zip);

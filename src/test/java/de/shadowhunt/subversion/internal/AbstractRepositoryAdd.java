@@ -32,7 +32,7 @@ import de.shadowhunt.subversion.Transaction.Status;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class AbstractRepositoryAdd {
+public abstract class AbstractRepositoryAdd {
 
     public static void file(final Repository repository, final Resource resource, final String content, final boolean initial) throws Exception {
         if (!initial) {

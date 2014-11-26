@@ -32,7 +32,7 @@ import de.shadowhunt.subversion.Transaction.Status;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class AbstractRepositoryMkdir {
+public abstract class AbstractRepositoryMkdir {
 
     public static void assertParentsMapped(final Resource resource, final Transaction transaction) {
         final Map<Resource, Status> changeSet = transaction.getChangeSet();

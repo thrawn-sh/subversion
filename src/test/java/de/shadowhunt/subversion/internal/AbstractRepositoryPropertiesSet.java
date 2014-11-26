@@ -33,7 +33,7 @@ import de.shadowhunt.subversion.Transaction;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class AbstractRepositoryPropertiesSet {
+public abstract class AbstractRepositoryPropertiesSet {
 
     public static void setProperties(final Repository repository, final Resource resource, final ResourceProperty... properties) throws Exception {
         final Transaction transaction = repository.createTransaction();

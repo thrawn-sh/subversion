@@ -30,7 +30,7 @@ import de.shadowhunt.subversion.Transaction;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class AbstractRepositoryDelete {
+public abstract class AbstractRepositoryDelete {
 
     private final Resource prefix;
 

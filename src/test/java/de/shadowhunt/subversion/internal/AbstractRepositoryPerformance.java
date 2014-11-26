@@ -39,7 +39,7 @@ import de.shadowhunt.subversion.View;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class AbstractRepositoryPerformance {
+public abstract class AbstractRepositoryPerformance {
 
     public static class CountingHttpRequestInterceptor implements HttpRequestInterceptor {
 

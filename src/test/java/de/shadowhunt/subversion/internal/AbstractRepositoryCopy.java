@@ -34,7 +34,7 @@ import de.shadowhunt.subversion.Transaction.Status;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class AbstractRepositoryCopy {
+public abstract class AbstractRepositoryCopy {
 
     private final Resource prefix;
 
