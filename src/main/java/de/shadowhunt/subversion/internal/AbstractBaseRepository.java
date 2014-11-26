@@ -341,16 +341,6 @@ public abstract class AbstractBaseRepository implements Repository {
     }
 
     @Override
-    public final Info info(final View view, final Resource resource, final Revision revision) {
-        return info(view, resource, revision, PropfindOperation.NO_PROPERTIES);
-    }
-
-    @Override
-    public Info info(final Resource resource, final Revision revision) {
-        return info(createView(), resource, revision);
-    }
-
-    @Override
     public Info info(final Resource resource, final Revision revision, final ResourceProperty.Key... keys) {
         return info(createView(), resource, revision, keys);
     }
@@ -364,13 +354,7 @@ public abstract class AbstractBaseRepository implements Repository {
         validateRevision(view, revision);
 
         LOGGER.trace("retrieving info for resource {}@{}", resource, revision);
-        final Info info;
-        if (keys.length == 0) {
-            info = info0(view, resource, revision, true, PropfindOperation.ALL_PROPERTIES);
-        } else {
-            info = info0(view, resource, revision, true, keys);
-        }
-
+        final Info info = info0(view, resource, revision, true, keys);
         if (info == null) {
             throw new SubversionException("Can't resolve: " + resource + '@' + revision);
         }
@@ -382,16 +366,6 @@ public abstract class AbstractBaseRepository implements Repository {
         final Resource resolved = resolve2(view, resource, revision, resolve);
         final InfoOperation operation = new InfoOperation(repository, resolved, config.getPrefix(), keys);
         return operation.execute(client, context);
-    }
-
-    @Override
-    public final Set<Info> list(final View view, final Resource resource, final Revision revision, final Depth depth) {
-        return list(view, resource, revision, depth, PropfindOperation.NO_PROPERTIES);
-    }
-
-    @Override
-    public Set<Info> list(final Resource resource, final Revision revision, final Depth depth) {
-        return list(createView(), resource, revision, depth);
     }
 
     @Override
@@ -409,9 +383,6 @@ public abstract class AbstractBaseRepository implements Repository {
         validateRevision(view, revision);
 
         LOGGER.trace("listing info for resource {}@{} and depth {}", resource, revision, depth);
-        if (keys.length == 0) {
-            return list0(view, resource, revision, depth, PropfindOperation.ALL_PROPERTIES);
-        }
         return list0(view, resource, revision, depth, keys);
     }
 
