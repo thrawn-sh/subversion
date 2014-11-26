@@ -20,15 +20,12 @@ import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
+import de.shadowhunt.subversion.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.shadowhunt.subversion.Info;
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.Revision;
-import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.Transaction.Status;
 import de.shadowhunt.subversion.internal.AbstractBaseRepository;
 import de.shadowhunt.subversion.internal.CommitMessageOperation;
@@ -69,7 +66,9 @@ class RepositoryImpl extends AbstractBaseRepository {
 
         @Override
         public Resource getRegisterResource(final Resource resource, final Revision revision) {
-            assert (!Revision.HEAD.equals(revision)) : "must not be HEAD revision";
+            if (Revision.HEAD.equals(revision)) {
+                throw new SubversionException("must not be HEAD revision");
+            }
             final Resource suffix = Resource.create("/ver/" + revision + Resource.SEPARATOR + resource);
             return prefix.append(suffix);
         }
@@ -87,7 +86,9 @@ class RepositoryImpl extends AbstractBaseRepository {
 
         @Override
         public Resource getVersionedResource(final Resource resource, final Revision revision) {
-            assert (!Revision.HEAD.equals(revision)) : "must not be HEAD revision";
+            if (Revision.HEAD.equals(revision)) {
+                throw new SubversionException("must not be HEAD revision");
+            }
             final Resource suffix = Resource.create("/bc/" + revision + Resource.SEPARATOR + resource);
             return prefix.append(suffix);
         }
