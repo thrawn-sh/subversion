@@ -88,10 +88,14 @@ abstract class PropfindOperation<T> extends AbstractOperation<T> {
                     writer.writeEmptyElement("allprop");
                 } else {
                     writer.writeStartElement("prop");
-                    writer.writeNamespace(XmlConstants.SUBVERSION_DAV_PREFIX, XmlConstants.SUBVERSION_DAV_NAMESPACE);
-                    writer.setPrefix(XmlConstants.SUBVERSION_DAV_PREFIX, XmlConstants.SUBVERSION_DAV_NAMESPACE);
-                    writer.writeNamespace(XmlConstants.SUBVERSION_SVN_PREFIX, XmlConstants.SUBVERSION_SVN_NAMESPACE);
-                    writer.setPrefix(XmlConstants.SUBVERSION_SVN_PREFIX, XmlConstants.SUBVERSION_SVN_NAMESPACE);
+                    if (contains(XmlConstants.SUBVERSION_DAV_NAMESPACE)) {
+                        writer.writeNamespace(XmlConstants.SUBVERSION_DAV_PREFIX, XmlConstants.SUBVERSION_DAV_NAMESPACE);
+                        writer.setPrefix(XmlConstants.SUBVERSION_DAV_PREFIX, XmlConstants.SUBVERSION_DAV_NAMESPACE);
+                    }
+                    if (contains(XmlConstants.SUBVERSION_SVN_NAMESPACE)) {
+                        writer.writeNamespace(XmlConstants.SUBVERSION_SVN_PREFIX, XmlConstants.SUBVERSION_SVN_NAMESPACE);
+                        writer.setPrefix(XmlConstants.SUBVERSION_SVN_PREFIX, XmlConstants.SUBVERSION_SVN_NAMESPACE);
+                    }
                     for (final ResourceProperty.Key requestedProperty : requestedProperties) {
                         writer.writeEmptyElement(requestedProperty.getType().getPrefix(), requestedProperty.getName());
                     }
@@ -107,6 +111,15 @@ abstract class PropfindOperation<T> extends AbstractOperation<T> {
 
         request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
         return request;
+    }
+
+    private boolean contains(final String namespace) {
+        for (ResourceProperty.Key requestedProperty : requestedProperties) {
+            if (namespace.equals(requestedProperty.getType().getPrefix())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
