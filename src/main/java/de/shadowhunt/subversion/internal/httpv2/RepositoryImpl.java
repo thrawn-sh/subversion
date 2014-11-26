@@ -20,12 +20,16 @@ import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
-import de.shadowhunt.subversion.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.shadowhunt.subversion.Info;
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.SubversionException;
+import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.Transaction.Status;
 import de.shadowhunt.subversion.internal.AbstractBaseRepository;
 import de.shadowhunt.subversion.internal.CommitMessageOperation;
