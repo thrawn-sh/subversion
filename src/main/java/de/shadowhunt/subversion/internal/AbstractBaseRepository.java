@@ -364,10 +364,17 @@ public abstract class AbstractBaseRepository implements Repository {
         validateRevision(view, revision);
 
         LOGGER.trace("retrieving info for resource {}@{}", resource, revision);
+        final Info info;
         if (keys.length == 0) {
-            return info0(view, resource, revision, true, PropfindOperation.ALL_PROPERTIES);
+            info = info0(view, resource, revision, true, PropfindOperation.ALL_PROPERTIES);
+        } else {
+            info = info0(view, resource, revision, true, keys);
         }
-        return info0(view, resource, revision, true, keys);
+
+        if (info == null) {
+            throw new SubversionException("Can't resolve: " + resource + '@' + revision);
+        }
+        return info;
     }
 
     @CheckForNull
