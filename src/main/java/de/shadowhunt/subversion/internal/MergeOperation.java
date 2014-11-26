@@ -33,14 +33,14 @@ import de.shadowhunt.subversion.SubversionException;
 
 public class MergeOperation extends AbstractVoidOperation {
 
-    private final Set<Info> infos;
+    private final Set<Info> infoSet;
 
     private final Resource resource;
 
-    public MergeOperation(final URI repository, final Resource resource, final Set<Info> infos) {
+    public MergeOperation(final URI repository, final Resource resource, final Set<Info> infoSet) {
         super(repository);
         this.resource = resource;
-        this.infos = infos;
+        this.infoSet = infoSet;
     }
 
     @Override
@@ -69,11 +69,11 @@ public class MergeOperation extends AbstractVoidOperation {
             writer.writeEmptyElement("creationdate");
             writer.writeEmptyElement("creator-displayname");
             writer.writeEndElement(); // prop
-            if (!infos.isEmpty()) {
+            if (!infoSet.isEmpty()) {
                 writer.setPrefix(XmlConstants.SVN_PREFIX, XmlConstants.SVN_NAMESPACE);
                 writer.writeStartElement(XmlConstants.SVN_NAMESPACE, "lock-token-list");
                 writer.writeNamespace(XmlConstants.SVN_PREFIX, XmlConstants.SVN_NAMESPACE);
-                for (final Info info : infos) {
+                for (final Info info : infoSet) {
                     final String lockToken = info.getLockToken();
                     assert (lockToken != null) : "must not be null";
                     final Resource infoResource = info.getResource();

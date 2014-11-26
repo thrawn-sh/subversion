@@ -121,9 +121,9 @@ class RepositoryImpl extends AbstractBaseRepository {
         final CommitMessageOperation cmo = new CommitMessageOperation(repository, messageResource, message);
         cmo.execute(client, context);
 
-        final Set<Info> lockTokenInfos = getInfoSetWithLockTokens(transaction);
+        final Set<Info> lockTokenInfoSet = getInfoSetWithLockTokens(transaction);
         final Resource mergeResource = config.getTransactionResource(transaction);
-        final MergeOperation mo = new MergeOperation(repository, mergeResource, lockTokenInfos);
+        final MergeOperation mo = new MergeOperation(repository, mergeResource, lockTokenInfoSet);
         mo.execute(client, context);
         transaction.invalidate(); // only invalidate after successful commit to allow rollback
     }
