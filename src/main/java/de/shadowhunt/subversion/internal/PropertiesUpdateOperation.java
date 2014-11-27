@@ -67,8 +67,7 @@ class PropertiesUpdateOperation extends AbstractVoidOperation {
         final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH", uri);
 
         if ((info != null) && info.isLocked()) {
-            final URI lockTarget = URIUtils.createURI(repository, info.getResource());
-            request.addHeader("If", '<' + lockTarget.toASCIIString() + "> (<" + info.getLockToken() + ">)");
+            request.addHeader("If", "<" + uri + "> (<" + info.getLockToken() + ">)");
         }
 
         final Writer body = new StringBuilderWriter();

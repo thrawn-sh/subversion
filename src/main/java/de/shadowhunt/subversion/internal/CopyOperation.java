@@ -49,10 +49,11 @@ class CopyOperation extends AbstractVoidOperation {
         request.addHeader("Destination", targetUri.toASCIIString());
         request.addHeader("Depth", Depth.INFINITY.value);
         request.addHeader("Override", "T");
+
         if ((info != null) && info.isLocked()) {
-            final URI lockTarget = URIUtils.createURI(repository, info.getResource());
-            request.addHeader("If", '<' + lockTarget.toASCIIString() + "> (<" + info.getLockToken() + ">)");
+            request.addHeader("If", "<" + targetUri + "> (<" + info.getLockToken() + ">)");
         }
+        
         return request;
     }
 

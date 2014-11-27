@@ -42,10 +42,11 @@ class DeleteOperation extends AbstractVoidOperation {
     protected HttpUriRequest createRequest() {
         final URI uri = URIUtils.createURI(repository, resource);
         final HttpUriRequest request = new HttpDelete(uri);
+
         if ((info != null) && info.isLocked()) {
-            final URI lockTarget = URIUtils.createURI(repository, info.getResource());
-            request.addHeader("If", '<' + lockTarget.toASCIIString() + "> (<" + info.getLockToken() + ">)");
+            request.addHeader("If", "<" + uri + "> (<" + info.getLockToken() + ">)");
         }
+
         return request;
     }
 

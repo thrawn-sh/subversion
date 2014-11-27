@@ -51,8 +51,7 @@ class UploadOperation extends AbstractVoidOperation {
         final HttpPut request = new HttpPut(uri);
 
         if ((info != null) && info.isLocked()) {
-            final URI lockTarget = URIUtils.createURI(repository, info.getResource());
-            request.addHeader("If", '<' + lockTarget.toASCIIString() + "> (<" + info.getLockToken() + ">)");
+            request.addHeader("If", "<" + uri + "> (<" + info.getLockToken() + ">)");
         }
 
         request.setEntity(new InputStreamEntity(content, STREAM_WHOLE_CONTENT));
