@@ -49,7 +49,6 @@ class CheckoutOperation extends AbstractVoidOperation {
         final URI uri = URIUtils.createURI(repository, resource);
         final DavTemplateRequest request = new DavTemplateRequest("CHECKOUT", uri);
 
-        final URI transactionURI = URIUtils.createURI(repository, transaction);
         final Writer body = new StringBuilderWriter();
         try {
             final XMLStreamWriter writer = XML_OUTPUT_FACTORY.createXMLStreamWriter(body);
@@ -58,7 +57,8 @@ class CheckoutOperation extends AbstractVoidOperation {
             writer.writeDefaultNamespace(XmlConstants.DAV_NAMESPACE);
             writer.writeStartElement("activity-set");
             writer.writeStartElement("href");
-            writer.writeCharacters(transactionURI.toASCIIString());
+            final URI transactionURI = URIUtils.createURI(repository, transaction);
+            writer.writeCData(transactionURI.toString());
             writer.writeEndElement(); // href
             writer.writeEndElement(); // activity-set
             writer.writeEmptyElement("apply-to-version");

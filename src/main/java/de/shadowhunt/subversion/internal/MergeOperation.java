@@ -56,8 +56,7 @@ public class MergeOperation extends AbstractVoidOperation {
             writer.writeDefaultNamespace(XmlConstants.DAV_NAMESPACE);
             writer.writeStartElement("source");
             writer.writeStartElement("href");
-            writer.writeCharacters(repository.getPath());
-            writer.writeCharacters(resource.getValue());
+            writer.writeCData(repository.getPath() + resource.getValue());
             writer.writeEndElement(); // href
             writer.writeEndElement(); // source
             writer.writeEmptyElement("no-auto-merge");
@@ -80,7 +79,7 @@ public class MergeOperation extends AbstractVoidOperation {
 
                     writer.writeStartElement(XmlConstants.SVN_NAMESPACE, "lock");
                     writer.writeStartElement(XmlConstants.SVN_NAMESPACE, "lock-path");
-                    writer.writeCharacters(infoResource.getValueWithoutLeadingSeparator());
+                    writer.writeCData(infoResource.getValueWithoutLeadingSeparator());
                     writer.writeEndElement(); // lock-path
                     writer.writeStartElement(XmlConstants.SVN_NAMESPACE, "lock-token");
                     writer.writeCharacters(lockToken);
