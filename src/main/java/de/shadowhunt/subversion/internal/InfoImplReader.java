@@ -17,6 +17,8 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -184,9 +186,17 @@ final class InfoImplReader {
                 for (int i = 0; i < 2; i++) {
                     part = path.indexOf(Resource.SEPARATOR_CHAR, part) + 1;
                 }
-                resource = Resource.create(path.substring(part));
+                resource = createResource(path.substring(part));
             } else {
-                resource = Resource.create(path);
+                resource = createResource(path);
+            }
+        }
+
+        private static Resource createResource(final String escapedPath) {
+            try {
+                return Resource.create(URLDecoder.decode(escapedPath, "UTF-8"));
+            } catch (final UnsupportedEncodingException e) {
+                throw new SubversionException("UTF-8 encoding is not supported by the system", e);
             }
         }
 
