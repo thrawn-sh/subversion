@@ -41,13 +41,13 @@ create_file() { #{{{1
 
 	if [ "${delete}" -eq 1 ]; then
 		# copy
-		local copy=`echo "${file}" | sed 's:delete:copy:g'`
+		local copy="`echo ${file} | sed 's:delete:copy:g'`"
 		"${SVN}" copy "${file}"  "${copy}"
 		add                      "${copy}"
 		commit "copied ${file} -> ${copy}"
 		# move
-		local tmp=`echo ${file} | sed 's:delete:tmp:g'`
-		local move=`echo ${file} | sed 's:delete:move:g'`
+		local tmp="`echo ${file} | sed 's:delete:tmp:g'`"
+		local move="`echo ${file} | sed 's:delete:move:g'`"
 		"${SVN}" copy "${file}"  "${tmp}"
 		add                      "${tmp}"
 		commit "copied ${file} -> ${tmp}"
@@ -72,13 +72,13 @@ create_folder() { #{{{1
 
 	if [ "${delete}" -eq 1 ]; then
 		# copy
-		local copy=`echo "${folder}" | sed 's:delete:copy:g'`
+		local copy="`echo ${folder} | sed 's:delete:copy:g'`"
 		"${SVN}" copy "${folder}"  "${copy}"
 		add                        "${copy}"
 		commit "copied ${folder} -> ${copy}"
 		# move
-		local tmp=`echo ${folder} | sed 's:delete:tmp:g'`
-		local move=`echo ${folder} | sed 's:delete:move:g'`
+		local tmp="`echo ${folder} | sed 's:delete:tmp:g'`"
+		local move="`echo ${folder} | sed 's:delete:move:g'`"
 		"${SVN}" copy "${folder}"  "${tmp}"
 		add                        "${tmp}"
 		commit "copied ${folder} -> ${tmp}"
@@ -116,8 +116,8 @@ commit() { #{{{1
 
 	local version=`"${SVN}" info "file://${REPO}" | grep ^Revision: | awk '{print $2}'`
 	local src
-	for src in `find "${LOCAL}" -not -wholename "*/.svn*"`; do
-		local target=`echo "${src}" | sed "s:^${LOCAL}:${DUMP}/${version}:g"`
+	while IFS= read -r -d $'\0' src; do
+		local target="`echo "${src}" | sed "s:^${LOCAL}:${DUMP}/${version}:g"`"
 		if [ -d "${src}" ]; then
 			mkdir -p "${target}"
 		else
@@ -127,11 +127,11 @@ commit() { #{{{1
 			target="${target}/ROOT"
 		fi
 
-		local rsrc=`echo "${src}" | sed "s:^${LOCAL}:file\://${REPO}:g"`
+		local rsrc="`echo ${src} | sed 's:%:%25:g' | sed 's: :%20:g' | sed 's:\^:%5e:g' | sed "s:^${LOCAL}:file\://${REPO}:g"`"
 		"${SVN}" log --xml "${rsrc}" | xmllint --format - | sed "s:${REPO}::g" | sed -E "s:[0-9]{3}Z</date>:Z</date>:g" > "${target}.log"
 		info               "${rsrc}"                                                                                      "${target}.info"
 		proplist           "${rsrc}"                                                                                      "${target}.proplist"
-	done
+	done < <(find "${LOCAL}" -not -wholename "*/.svn*" -print0)
 } #}}}1
 info() { #{{{1
 	local resource="${1}"; shift
@@ -217,6 +217,19 @@ commit        "${BASE}/lock/file.txt with content: B + lock"
 # log {{{1
 create_file   "${BASE}/log/file.txt" 0
 create_file   "${BASE}/log/file_delete.txt" 1
+
+# encoding {{{1
+# utf8
+create_file   "${BASE}/encoding/file_日本国.txt" 0
+create_folder "${BASE}/encoding/folder_中华人民共和国" 0
+
+# xml
+create_file   "${BASE}/encoding/file_<&>'\".txt" 0
+create_folder "${BASE}/encoding/folder_<&>'\"" 0
+
+# uri
+create_file   "${BASE}/encoding/file ^%.txt" 0
+create_folder "${BASE}/encoding/folder ^%" 0
 
 ### package {{{1
 cd "${TMP_DIR}"
