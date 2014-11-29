@@ -160,6 +160,14 @@ final class InfoImplReader {
                 new QName(XmlConstants.DAV_NAMESPACE, "href") //
         };
 
+        private static Resource createResource(final String escapedPath) {
+            try {
+                return Resource.create(URLDecoder.decode(escapedPath, "UTF-8"));
+            } catch (final UnsupportedEncodingException e) {
+                throw new SubversionException("UTF-8 encoding is not supported by the system", e);
+            }
+        }
+
         private final String base;
 
         private final String marker;
@@ -189,14 +197,6 @@ final class InfoImplReader {
                 resource = createResource(path.substring(part));
             } else {
                 resource = createResource(path);
-            }
-        }
-
-        private static Resource createResource(final String escapedPath) {
-            try {
-                return Resource.create(URLDecoder.decode(escapedPath, "UTF-8"));
-            } catch (final UnsupportedEncodingException e) {
-                throw new SubversionException("UTF-8 encoding is not supported by the system", e);
             }
         }
 
