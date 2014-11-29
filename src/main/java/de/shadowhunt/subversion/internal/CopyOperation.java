@@ -23,22 +23,21 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 
 import de.shadowhunt.subversion.Depth;
-import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 
 class CopyOperation extends AbstractVoidOperation {
 
-    private final Info info;
+    private final String lockToken;
 
     private final Resource source;
 
     private final Resource target;
 
-    public CopyOperation(final URI repository, final Resource source, final Resource target, @CheckForNull final Info info) {
+    public CopyOperation(final URI repository, final Resource source, final Resource target, @CheckForNull final String lockToken) {
         super(repository);
         this.source = source;
         this.target = target;
-        this.info = info;
+        this.lockToken = lockToken;
     }
 
     @Override
@@ -50,10 +49,10 @@ class CopyOperation extends AbstractVoidOperation {
         request.addHeader("Depth", Depth.INFINITY.value);
         request.addHeader("Override", "T");
 
-        if ((info != null) && info.isLocked()) {
-            request.addHeader("If", "<" + targetUri + "> (<" + info.getLockToken() + ">)");
+        if (lockToken != null) {
+            request.addHeader("If", "<" + targetUri + "> (<" + lockToken + ">)");
         }
-        
+
         return request;
     }
 

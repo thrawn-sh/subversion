@@ -25,7 +25,6 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.InputStreamEntity;
 
-import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 
 class UploadOperation extends AbstractVoidOperation {
@@ -34,14 +33,14 @@ class UploadOperation extends AbstractVoidOperation {
 
     private final InputStream content;
 
-    private final Info info;
+    private final String lockToken;
 
     private final Resource resource;
 
-    UploadOperation(final URI repository, final Resource resource, @CheckForNull final Info info, final InputStream content) {
+    UploadOperation(final URI repository, final Resource resource, @CheckForNull final String lockToken, final InputStream content) {
         super(repository);
         this.resource = resource;
-        this.info = info;
+        this.lockToken = lockToken;
         this.content = content;
     }
 
@@ -50,8 +49,8 @@ class UploadOperation extends AbstractVoidOperation {
         final URI uri = URIUtils.createURI(repository, resource);
         final HttpPut request = new HttpPut(uri);
 
-        if ((info != null) && info.isLocked()) {
-            request.addHeader("If", "<" + uri + "> (<" + info.getLockToken() + ">)");
+        if (lockToken != null) {
+            request.addHeader("If", "<" + uri + "> (<" + lockToken + ">)");
         }
 
         request.setEntity(new InputStreamEntity(content, STREAM_WHOLE_CONTENT));

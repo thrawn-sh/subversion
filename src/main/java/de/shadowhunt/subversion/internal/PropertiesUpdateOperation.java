@@ -28,7 +28,6 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 
-import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.SubversionException;
@@ -45,7 +44,7 @@ class PropertiesUpdateOperation extends AbstractVoidOperation {
         }
     }
 
-    private final Info info;
+    private final String lockToken;
 
     private final ResourceProperty[] properties;
 
@@ -53,11 +52,11 @@ class PropertiesUpdateOperation extends AbstractVoidOperation {
 
     private final Type type;
 
-    PropertiesUpdateOperation(final URI repository, final Resource resource, final Type type, @CheckForNull final Info info, final ResourceProperty[] properties) {
+    PropertiesUpdateOperation(final URI repository, final Resource resource, final Type type, @CheckForNull final String lockToken, final ResourceProperty[] properties) {
         super(repository);
         this.resource = resource;
         this.type = type;
-        this.info = info;
+        this.lockToken = lockToken;
         this.properties = Arrays.copyOf(properties, properties.length);
     }
 
@@ -66,8 +65,8 @@ class PropertiesUpdateOperation extends AbstractVoidOperation {
         final URI uri = URIUtils.createURI(repository, resource);
         final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH", uri);
 
-        if ((info != null) && info.isLocked()) {
-            request.addHeader("If", "<" + uri + "> (<" + info.getLockToken() + ">)");
+        if (lockToken != null) {
+            request.addHeader("If", "<" + uri + "> (<" + lockToken + ">)");
         }
 
         final Writer body = new StringBuilderWriter();
