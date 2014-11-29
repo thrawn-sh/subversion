@@ -508,12 +508,13 @@ public abstract class AbstractBaseRepository implements Repository {
 
         // there can only be a lock token if the file is already in the repository
         final Info info = info0(transaction, resource, transaction.getHeadRevision(), true, LOCKING);
-        if (info == null) {
-            throw new SubversionException("Can't resolve: " + resource + '@' + Revision.HEAD);
+        String lockToken = null;
+        if (info != null) {
+            lockToken = info.getLockToken();
         }
 
         final Resource r = config.getWorkingResource(transaction).append(resource);
-        final PropertiesUpdateOperation operation = new PropertiesUpdateOperation(repository, r, type, info.getLockToken(), properties);
+        final PropertiesUpdateOperation operation = new PropertiesUpdateOperation(repository, r, type, lockToken, properties);
         operation.execute(client, context);
         transaction.register(resource, Status.MODIFIED);
     }
