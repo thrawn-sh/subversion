@@ -126,8 +126,12 @@ public abstract class AbstractBaseRepository implements Repository {
         }
 
         final Info info = info0(transaction, resource, transaction.getHeadRevision(), true, LOCKING);
+        String lockToken = null;
+        if (info != null) {
+            lockToken = info.getLockToken();
+        }
         final Resource uploadResource = config.getWorkingResource(transaction).append(resource);
-        final UploadOperation operation = new UploadOperation(repository, uploadResource, info.getLockToken(), content);
+        final UploadOperation operation = new UploadOperation(repository, uploadResource, lockToken, content);
         operation.execute(client, context);
         if (info == null) {
             transaction.register(resource, Status.ADDED);
@@ -158,10 +162,15 @@ public abstract class AbstractBaseRepository implements Repository {
         }
 
         final Info targetInfo = info0(transaction, targetResource, transaction.getHeadRevision(), true, LOCKING);
+        String lockToken = null;
+        if (targetInfo != null) {
+            lockToken = targetInfo.getLockToken();
+        }
+
         final Resource source = config.getVersionedResource(sourceInfo.getResource(), sourceInfo.getRevision());
         final Resource target = config.getWorkingResource(transaction).append(targetResource);
 
-        final CopyOperation operation = new CopyOperation(repository, source, target, targetInfo.getLockToken());
+        final CopyOperation operation = new CopyOperation(repository, source, target, lockToken);
         operation.execute(client, context);
 
         if (targetInfo == null) {
@@ -499,6 +508,9 @@ public abstract class AbstractBaseRepository implements Repository {
 
         // there can only be a lock token if the file is already in the repository
         final Info info = info0(transaction, resource, transaction.getHeadRevision(), true, LOCKING);
+        if (info == null) {
+            throw new SubversionException("Can't resolve: " + resource + '@' + Revision.HEAD);
+        }
 
         final Resource r = config.getWorkingResource(transaction).append(resource);
         final PropertiesUpdateOperation operation = new PropertiesUpdateOperation(repository, r, type, info.getLockToken(), properties);
