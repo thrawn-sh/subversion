@@ -21,6 +21,7 @@ import java.util.UUID;
 
 import javax.xml.parsers.SAXParser;
 
+import org.junit.Assert;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.xml.sax.Attributes;
@@ -96,6 +97,7 @@ public final class InfoLoader extends BaseLoader {
         }
 
         info.setProperties(resourcePropertyLoader.load(resource, revision));
+        Assert.assertEquals("resource must match", resource, info.getResource());
         return info;
     }
 }
