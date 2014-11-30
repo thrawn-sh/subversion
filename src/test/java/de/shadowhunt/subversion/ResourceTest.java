@@ -74,16 +74,16 @@ public class ResourceTest {
 
     @Test
     public void getValue() {
-        final String expexted = "/a/b/c/d.txt";
-        final Resource resource = Resource.create(expexted);
-        Assert.assertEquals("resource value must match", expexted, resource.getValue());
+        final String expected = "/a/b/c/d.txt";
+        final Resource resource = Resource.create(expected);
+        Assert.assertEquals("resource value must match", expected, resource.getValue());
     }
 
     @Test
     public void getValueWithoutLeadingSeparator() {
-        final String expexted = "a/b/c/d.txt";
-        final Resource resource = Resource.create(expexted);
-        Assert.assertEquals("resource value must match", expexted, resource.getValueWithoutLeadingSeparator());
+        final String expected = "a/b/c/d.txt";
+        final Resource resource = Resource.create(expected);
+        Assert.assertEquals("resource value must match", expected, resource.getValueWithoutLeadingSeparator());
         Assert.assertEquals("root resource value must match", "", Resource.ROOT.getValueWithoutLeadingSeparator());
     }
 
