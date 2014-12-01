@@ -45,6 +45,7 @@ import org.junit.runners.Suite.SuiteClasses;
         // other
         RepositoryFactory.class, // repository probing
         RepositoryPerformance.class, // count the number of requests
+        RepositoryEncoding.class, // check for various encoding problems
 })
 public class SuiteIT {
     // no code, just a placeholder class

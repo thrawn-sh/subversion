@@ -109,7 +109,7 @@ public abstract class AbstractRepositoryDelete {
             repository.rollback(transaction);
             throw e;
         }
-        Assert.assertFalse(resource + " must not exisit", repository.exists(resource, Revision.HEAD));
+        Assert.assertFalse(resource + " must not exist", repository.exists(resource, Revision.HEAD));
     }
 
     @Test

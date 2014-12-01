@@ -34,9 +34,17 @@ public abstract class AbstractRepositoryInfo {
 
     public static final Resource PREFIX = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/info");
 
-    public static void assertEquals(final String message, final Info expected, final Info actual) {
-        Assert.assertEquals(message, expected, actual);
+    public static void assertInfoEquals(final String message, final Info expected, final Info actual) {
+        // Assert.assertListEquals(message, expected.getCreationDate(), actual.getCreationDate()); FIXME
+        // Assert.assertListEquals(message, expected.getLastModifiedDate(), actual.getLastModifiedDate());
+        Assert.assertEquals(message, expected.getLockOwner(), actual.getLockOwner());
+        Assert.assertEquals(message, expected.getLockToken(), actual.getLockToken());
+        Assert.assertEquals(message, expected.getMd5(), actual.getMd5());
         Assert.assertArrayEquals(message, expected.getProperties(), actual.getProperties());
+        Assert.assertEquals(message, expected.getRepositoryId(), actual.getRepositoryId());
+        Assert.assertEquals(message, expected.getRevision(), actual.getRevision());
+
+        Assert.assertEquals(message, expected, actual);
     }
 
     private final InfoLoader infoLoader;
@@ -77,7 +85,7 @@ public abstract class AbstractRepositoryInfo {
 
         final Info expected = infoLoader.load(resource, revision);
         final String message = createMessage(resource, revision);
-        assertEquals(message, expected, repository.info(resource, revision));
+        assertInfoEquals(message, expected, repository.info(resource, revision));
     }
 
     @Test
@@ -87,7 +95,7 @@ public abstract class AbstractRepositoryInfo {
 
         final Info expected = infoLoader.load(resource, revision);
         final String message = createMessage(resource, revision);
-        assertEquals(message, expected, repository.info(resource, revision));
+        assertInfoEquals(message, expected, repository.info(resource, revision));
     }
 
     @Test
@@ -97,7 +105,7 @@ public abstract class AbstractRepositoryInfo {
 
         final Info expected = infoLoader.load(resource, revision);
         final String message = createMessage(resource, revision);
-        assertEquals(message, expected, repository.info(resource, revision));
+        assertInfoEquals(message, expected, repository.info(resource, revision));
     }
 
     @Test
@@ -107,7 +115,7 @@ public abstract class AbstractRepositoryInfo {
 
         final Info expected = infoLoader.load(resource, revision);
         final String message = createMessage(resource, revision);
-        assertEquals(message, expected, repository.info(resource, revision));
+        assertInfoEquals(message, expected, repository.info(resource, revision));
     }
 
     @Test
@@ -117,7 +125,7 @@ public abstract class AbstractRepositoryInfo {
 
         final Info expected = infoLoader.load(resource, revision);
         final String message = createMessage(resource, revision);
-        assertEquals(message, expected, repository.info(resource, revision));
+        assertInfoEquals(message, expected, repository.info(resource, revision));
     }
 
     @Test
@@ -127,7 +135,7 @@ public abstract class AbstractRepositoryInfo {
 
         final Info expected = infoLoader.load(resource, revision);
         final String message = createMessage(resource, revision);
-        assertEquals(message, expected, repository.info(resource, revision));
+        assertInfoEquals(message, expected, repository.info(resource, revision));
     }
 
     @Test
@@ -137,7 +145,7 @@ public abstract class AbstractRepositoryInfo {
 
         final Info expected = infoLoader.load(resource, revision);
         final String message = createMessage(resource, revision);
-        assertEquals(message, expected, repository.info(resource, revision));
+        assertInfoEquals(message, expected, repository.info(resource, revision));
     }
 
     @Test
@@ -147,6 +155,6 @@ public abstract class AbstractRepositoryInfo {
 
         final Info expected = infoLoader.load(resource, revision);
         final String message = createMessage(resource, revision);
-        assertEquals(message, expected, repository.info(resource, revision));
+        assertInfoEquals(message, expected, repository.info(resource, revision));
     }
 }
