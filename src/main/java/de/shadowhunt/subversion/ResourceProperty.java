@@ -41,6 +41,8 @@ public final class ResourceProperty {
 
     public static final ResourceProperty.Key RESOURCE_TYPE = new ResourceProperty.Key(Type.DAV, "resourcetype");
 
+    public static final ResourceProperty.Key RESOURCE = new ResourceProperty.Key(Type.SUBVERSION_DAV, "baseline-relative-path");
+
     /**
      * {@link Comparator} that compares {@link ResourceProperty} by their type and name
      */

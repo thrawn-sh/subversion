@@ -17,10 +17,8 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.UUID;
+import java.net.URI;
+import java.util.*;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
@@ -40,14 +38,14 @@ import de.shadowhunt.subversion.xml.SaxExpression;
 
 final class InfoImplReader {
 
-    private static class InfoExpression extends AbstractSaxExpression<SortedSet<Info>> {
+    private static class InfoExpression extends AbstractSaxExpression<List<Info>> {
 
         private static final QName[] PATH = { //
                 new QName(XmlConstants.DAV_NAMESPACE, "multistatus"), //
                 new QName(XmlConstants.DAV_NAMESPACE, "response") //
         };
 
-        private static SaxExpression[] createExpressions(final String base, final String marker) {
+        private static SaxExpression[] createExpressions() {
             return new SaxExpression[] { //
                     new StringExpression(new QName(XmlConstants.DAV_NAMESPACE, "creationdate")), //
                     new ResourceTypeExpression(),
@@ -56,21 +54,21 @@ final class InfoImplReader {
                     new StringExpression(new QName(XmlConstants.SUBVERSION_DAV_NAMESPACE, "md5-checksum")), //
                     new PropertyExpression(), //
                     new StringExpression(new QName(XmlConstants.SUBVERSION_DAV_NAMESPACE, "repository-uuid")), //
-                    new ResourceExpression(base, marker), //
+                    new ResourceExpression(), //
                     new StringExpression(new QName(XmlConstants.DAV_NAMESPACE, "version-name")), //
 
                     new StatusExpression(), // throws exception on error
             };
         }
 
-        private final SortedSet<Info> entries = new TreeSet<>(Info.RESOURCE_COMPARATOR);
+        private final List<Info> entries = new ArrayList<>();
 
-        InfoExpression(final String base, final String marker) {
-            super(PATH, createExpressions(base, marker));
+        InfoExpression() {
+            super(PATH, createExpressions());
         }
 
         @Override
-        public SortedSet<Info> getValue() {
+        public List<Info> getValue() {
             return entries;
         }
 
@@ -98,14 +96,14 @@ final class InfoImplReader {
         }
     }
 
-    private static class InfoHandler extends AbstractSaxExpressionHandler<SortedSet<Info>> {
+    private static class InfoHandler extends AbstractSaxExpressionHandler<List<Info>> {
 
-        InfoHandler(final String base, final String marker) {
-            super(new InfoExpression(base, marker));
+        InfoHandler() {
+            super(new InfoExpression());
         }
 
         @Override
-        public SortedSet<Info> getValue() {
+        public List<Info> getValue() {
             return ((InfoExpression) expressions[0]).getValue();
         }
     }
@@ -155,23 +153,19 @@ final class InfoImplReader {
     private static class ResourceExpression extends AbstractSaxExpression<Resource> {
 
         private static final QName[] PATH = { //
-                new QName(XmlConstants.DAV_NAMESPACE, "href") //
+                new QName(XmlConstants.DAV_NAMESPACE, "propstat"), //
+                new QName(XmlConstants.DAV_NAMESPACE, "prop"), //
+                new QName(XmlConstants.SUBVERSION_DAV_NAMESPACE, "baseline-relative-path") //
         };
 
         private static Resource createResource(final String escapedPath) {
             return Resource.create(escapedPath);
         }
 
-        private final String base;
-
-        private final String marker;
-
         private Resource resource = null;
 
-        ResourceExpression(final String base, final String marker) {
+        ResourceExpression() {
             super(PATH);
-            this.base = base;
-            this.marker = marker;
         }
 
         @Override
@@ -181,17 +175,7 @@ final class InfoImplReader {
 
         @Override
         protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
-            final String path = StringUtils.removeStart(text, base);
-
-            if (path.startsWith(marker)) {
-                int part = marker.length() + 1;
-                for (int i = 0; i < 2; i++) {
-                    part = path.indexOf(Resource.SEPARATOR_CHAR, part) + 1;
-                }
-                resource = createResource(path.substring(part));
-            } else {
-                resource = createResource(path);
-            }
+            resource = createResource(text);
         }
 
         @Override
@@ -298,30 +282,26 @@ final class InfoImplReader {
      * Reads status information for a single revision of a resource from the given {@link java.io.InputStream}
      *
      * @param in {@link java.io.InputStream} from which the status information is read (Note: will not be closed)
-     * @param base base path of the repository
-     * @param marker path marker for special subversion directory (default: !svn)
      *
      * @return {@link InfoImpl} for the resource
      */
-    static Info read(final InputStream in, final String base, final String marker) throws IOException {
-        final SortedSet<Info> infoSet = readAll(in, base, marker);
+    static Info read(final InputStream in) throws IOException {
+        final List<Info> infoSet = readAll(in);
         if (infoSet.isEmpty()) {
             throw new SubversionException("Invalid server response: expected content is missing");
         }
-        return infoSet.first();
+        return infoSet.get(0);
     }
 
     /**
      * Reads a {@link SortedSet} of status information for a single revision of various resources from the given {@link InputStream}
      *
      * @param inputStream {@link InputStream} from which the status information is read (Note: will not be closed)
-     * @param base base path of the repository
-     * @param marker path marker for special subversion directory (default: !svn)
      *
      * @return {@link InfoImpl} for the resources
      */
-    static SortedSet<Info> readAll(final InputStream inputStream, final String base, final String marker) throws IOException {
-        final InfoHandler handler = new InfoHandler(base, marker);
+    static List<Info> readAll(final InputStream inputStream) throws IOException {
+        final InfoHandler handler = new InfoHandler();
         try {
             return handler.parse(inputStream);
         } catch (final ParserConfigurationException | SAXException e) {

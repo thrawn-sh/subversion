@@ -50,15 +50,15 @@ import de.shadowhunt.subversion.View;
  */
 public abstract class AbstractBaseRepository implements Repository {
 
-    private static final ResourceProperty.Key[] LOCKING = new ResourceProperty.Key[] { ResourceProperty.LOCK_STATUS };
+    private static final ResourceProperty.Key[] LOCKING = new ResourceProperty.Key[] { ResourceProperty.RESOURCE, ResourceProperty.LOCK_STATUS };
 
     private static final Logger LOGGER = LoggerFactory.getLogger("de.shadowhunt.subversion.Repository");
 
     private static final ResourceProperty.Key[] REPOSITORY_UUID = new ResourceProperty.Key[] { ResourceProperty.REPOSITORY_ID };
 
-    private static final ResourceProperty.Key[] REVISION = new ResourceProperty.Key[] { ResourceProperty.VERSION };
+    private static final ResourceProperty.Key[] REVISION = new ResourceProperty.Key[] { ResourceProperty.RESOURCE, ResourceProperty.VERSION };
 
-    private static final ResourceProperty.Key[] TYPE = new ResourceProperty.Key[] { ResourceProperty.RESOURCE_TYPE };
+    private static final ResourceProperty.Key[] TYPE = new ResourceProperty.Key[] { ResourceProperty.RESOURCE, ResourceProperty.RESOURCE_TYPE };
 
     @CheckForNull
     private static UUID determineRepositoryId(final URI repository, final HttpClient client, final HttpContext context, final Resource marker) {

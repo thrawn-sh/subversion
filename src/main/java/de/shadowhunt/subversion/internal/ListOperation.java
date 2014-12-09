@@ -17,7 +17,9 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.annotation.CheckForNull;
 
@@ -41,7 +43,11 @@ class ListOperation extends PropfindOperation<Set<Info>> {
         if (getStatusCode(response) == HttpStatus.SC_NOT_FOUND) {
             return null;
         }
-        return InfoImplReader.readAll(getContent(response), repository.getPath(), marker.getValue());
+
+        final Set<Info> result = new TreeSet<>(Info.RESOURCE_COMPARATOR);
+        final List<Info> infoList = InfoImplReader.readAll(getContent(response));
+        result.addAll(infoList);
+        return result;
     }
 
 }

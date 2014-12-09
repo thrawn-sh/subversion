@@ -44,7 +44,7 @@ class InfoOperation extends PropfindOperation<Info> {
             return null;
         }
 
-        final Info info = InfoImplReader.read(getContent(response), repository.getPath(), marker.getValue());
+        final Info info = InfoImplReader.read(getContent(response));
         if (info.isLocked()) {
             final Header header = response.getFirstHeader(LOCK_OWNER_HEADER);
             ((InfoImpl) info).setLockOwner(header.getValue());
