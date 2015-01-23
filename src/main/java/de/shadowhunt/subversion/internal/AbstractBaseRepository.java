@@ -236,7 +236,11 @@ public abstract class AbstractBaseRepository implements Repository {
     protected Revision determineHeadRevision() {
         final InfoOperation operation = new InfoOperation(repository, Resource.ROOT, config.getPrefix(), REVISION);
         final Info info = operation.execute(client, context);
-        return info.getRevision();
+        final Revision revision = info.getRevision();
+        if (revision == null) {
+            throw new SubversionException("can not determine HEAD revision");
+        }
+        return revision;
     }
 
     @Override
