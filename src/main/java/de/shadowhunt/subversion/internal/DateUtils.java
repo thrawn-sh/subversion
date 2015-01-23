@@ -15,9 +15,9 @@
  */
 package de.shadowhunt.subversion.internal;
 
-import java.text.DateFormat;
+import org.apache.commons.lang3.time.FastDateFormat;
+
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -26,11 +26,16 @@ import javax.annotation.CheckForNull;
 
 final class DateUtils {
 
-    private static final String CREATED_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+    private static final FastDateFormat CREATED;
 
-    private static final String LAST_MODIFIED_PATTERN = "EEE, dd MMM yyyy HH:mm:ss 'GMT'";
+    private static final FastDateFormat LAST_MODIFIED;
 
-    private static final TimeZone ZULU = TimeZone.getTimeZone("ZULU");
+    static {
+        final TimeZone ZULU = TimeZone.getTimeZone("ZULU");
+
+        CREATED = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSS", ZULU, Locale.US);
+        LAST_MODIFIED = FastDateFormat.getInstance("EEE, dd MMM yyyy HH:mm:ss 'GMT'", ZULU, Locale.US);
+    }
 
     @CheckForNull
     static Date parseCreatedDate(@CheckForNull final String date) {
@@ -49,10 +54,8 @@ final class DateUtils {
             time = date;
         }
 
-        final DateFormat dateFormat = new SimpleDateFormat(CREATED_PATTERN, Locale.US);
         try {
-            dateFormat.setTimeZone(ZULU);
-            return dateFormat.parse(time);
+            return CREATED.parse(time);
         } catch (final ParseException e) {
             throw new IllegalArgumentException("given date '" + date + "' can not be parsed", e);
         }
@@ -63,9 +66,9 @@ final class DateUtils {
         if (date == null) {
             return null;
         }
-        final DateFormat dateFormat = new SimpleDateFormat(LAST_MODIFIED_PATTERN, Locale.US);
+
         try {
-            return dateFormat.parse(date);
+            return LAST_MODIFIED.parse(date);
         } catch (final ParseException e) {
             throw new IllegalArgumentException("given date '" + date + "' can not be parsed", e);
         }
