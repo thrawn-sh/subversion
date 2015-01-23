@@ -23,6 +23,8 @@ import javax.annotation.CheckForNull;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.protocol.HttpContext;
 
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Info;
@@ -35,6 +37,11 @@ class InfoOperation extends PropfindOperation<Info> {
 
     InfoOperation(final URI repository, final Resource resource, final Resource marker, @CheckForNull final ResourceProperty.Key[] requestedProperties) {
         super(repository, resource, marker, Depth.EMPTY, requestedProperties);
+    }
+
+    @CheckForNull
+    public Info execute(final HttpClient client, final HttpContext context) {
+        return super.execute(client, context);
     }
 
     @Override

@@ -25,6 +25,8 @@ import javax.annotation.CheckForNull;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.protocol.HttpContext;
 
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Info;
@@ -35,6 +37,12 @@ class ListOperation extends PropfindOperation<Set<Info>> {
 
     ListOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, final ResourceProperty.Key[] requestedProperties) {
         super(repository, resource, marker, depth, requestedProperties);
+    }
+
+    @Override
+    @CheckForNull
+    public Set<Info> execute(final HttpClient client, final HttpContext context) {
+        return super.execute(client, context);
     }
 
     @Override
