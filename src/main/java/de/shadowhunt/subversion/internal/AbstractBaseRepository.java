@@ -462,11 +462,7 @@ public abstract class AbstractBaseRepository implements Repository {
         final Resource resolved = resolve2(view, resource, resoledRevision, true);
 
         final LogOperation operation = new LogOperation(repository, resolved, concreteStartRevision, concreteEndRevision, limit);
-        final List<Log> logs = operation.execute(client, context);
-        if (logs == null) {
-            throw new SubversionException("Can't resolve: " + resource + '@' + resoledRevision);
-        }
-        return logs;
+        return operation.execute(client, context);
     }
 
     @Override
