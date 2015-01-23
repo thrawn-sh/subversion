@@ -21,9 +21,9 @@ import java.util.UUID;
 
 import javax.xml.parsers.SAXParser;
 
-import org.junit.Assert;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
+import org.junit.Assert;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 

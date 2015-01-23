@@ -18,7 +18,6 @@ package de.shadowhunt.subversion.internal;
 import java.net.URI;
 import java.util.UUID;
 
-import de.shadowhunt.subversion.SubversionException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 import org.junit.Assert;
@@ -28,6 +27,7 @@ import org.junit.runners.MethodSorters;
 
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.RepositoryFactory;
+import de.shadowhunt.subversion.SubversionException;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)

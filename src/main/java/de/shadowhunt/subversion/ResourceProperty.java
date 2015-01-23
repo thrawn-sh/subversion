@@ -39,9 +39,9 @@ public final class ResourceProperty {
 
     public static final ResourceProperty.Key REPOSITORY_ID = new ResourceProperty.Key(Type.SUBVERSION_DAV, "repository-uuid");
 
-    public static final ResourceProperty.Key RESOURCE_TYPE = new ResourceProperty.Key(Type.DAV, "resourcetype");
-
     public static final ResourceProperty.Key RESOURCE = new ResourceProperty.Key(Type.SUBVERSION_DAV, "baseline-relative-path");
+
+    public static final ResourceProperty.Key RESOURCE_TYPE = new ResourceProperty.Key(Type.DAV, "resourcetype");
 
     /**
      * {@link Comparator} that compares {@link ResourceProperty} by their type and name

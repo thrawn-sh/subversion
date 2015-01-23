@@ -434,7 +434,7 @@ public abstract class AbstractRepositoryEncoding {
         try {
             repository.copy(transaction, source, Revision.HEAD, target, false);
             repository.commit(transaction, "copy");
-        } catch(final Exception e) {
+        } catch (final Exception e) {
             repository.rollback(transaction);
             throw e;
         }
@@ -447,7 +447,7 @@ public abstract class AbstractRepositoryEncoding {
         try {
             repository.delete(transaction, resource);
             repository.commit(transaction, "delete");
-        } catch(final Exception e) {
+        } catch (final Exception e) {
             repository.rollback(transaction);
             throw e;
         }
@@ -498,7 +498,7 @@ public abstract class AbstractRepositoryEncoding {
         try {
             repository.mkdir(transaction, resource, true);
             repository.commit(transaction, "mkdir");
-        } catch(final Exception e) {
+        } catch (final Exception e) {
             repository.rollback(transaction);
             throw e;
         }
@@ -513,7 +513,7 @@ public abstract class AbstractRepositoryEncoding {
         try {
             repository.move(transaction, source, target, false);
             repository.commit(transaction, "move");
-        } catch(final Exception e) {
+        } catch (final Exception e) {
             repository.rollback(transaction);
             throw e;
         }

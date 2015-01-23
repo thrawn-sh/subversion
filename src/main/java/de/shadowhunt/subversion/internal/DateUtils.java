@@ -15,14 +15,14 @@
  */
 package de.shadowhunt.subversion.internal;
 
-import org.apache.commons.lang3.time.FastDateFormat;
-
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
 import javax.annotation.CheckForNull;
+
+import org.apache.commons.lang3.time.FastDateFormat;
 
 final class DateUtils {
 
@@ -31,10 +31,10 @@ final class DateUtils {
     private static final FastDateFormat LAST_MODIFIED;
 
     static {
-        final TimeZone ZULU = TimeZone.getTimeZone("ZULU");
+        final TimeZone zulu = TimeZone.getTimeZone("ZULU");
 
-        CREATED = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSS", ZULU, Locale.US);
-        LAST_MODIFIED = FastDateFormat.getInstance("EEE, dd MMM yyyy HH:mm:ss 'GMT'", ZULU, Locale.US);
+        CREATED = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSS", zulu, Locale.US);
+        LAST_MODIFIED = FastDateFormat.getInstance("EEE, dd MMM yyyy HH:mm:ss 'GMT'", zulu, Locale.US);
     }
 
     @CheckForNull
