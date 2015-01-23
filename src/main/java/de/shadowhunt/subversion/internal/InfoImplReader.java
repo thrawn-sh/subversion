@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
 
@@ -297,9 +296,9 @@ final class InfoImplReader {
     }
 
     /**
-     * Reads a {@link SortedSet} of status information for a single revision of various resources from the given {@link InputStream}
+     * Reads a {@link java.util.SortedSet} of status information for a single revision of various resources from the given {@link java.io.InputStream}
      *
-     * @param inputStream {@link InputStream} from which the status information is read (Note: will not be closed)
+     * @param inputStream {@link java.io.InputStream} from which the status information is read (Note: will not be closed)
      *
      * @return {@link InfoImpl} for the resources
      */
