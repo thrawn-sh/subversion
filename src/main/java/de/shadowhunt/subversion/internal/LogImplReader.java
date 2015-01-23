@@ -115,12 +115,14 @@ final class LogImplReader {
 
     private static class LogExpression extends AbstractSaxExpression<List<Log>> {
 
-        private static final SaxExpression[] CHILDREN = { //
-                new CommentExpression(), //
-                new CreatorExpression(), //
-                new DateExpression(), //
-                new RevisionExpression() //
-        };
+        private static SaxExpression[] createExpressions() {
+            return new SaxExpression[]{
+                    new CommentExpression(), //
+                    new CreatorExpression(), //
+                    new DateExpression(), //
+                    new RevisionExpression() //
+            };
+        }
 
         private static final QName[] PATH = { //
                 new QName(XmlConstants.SVN_NAMESPACE, "log-report"), //
@@ -130,7 +132,7 @@ final class LogImplReader {
         private List<Log> entries = new ArrayList<>();
 
         LogExpression() {
-            super(PATH, CHILDREN);
+            super(PATH, createExpressions());
         }
 
         @Override
