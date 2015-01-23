@@ -19,7 +19,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.shadowhunt</groupId>
-    <version>2.3.0</version>
+    <version>3.0.0-SNAPSHOT</version>
     <artifactId>subversion</artifactId>
     <packaging>jar</packaging>
 
