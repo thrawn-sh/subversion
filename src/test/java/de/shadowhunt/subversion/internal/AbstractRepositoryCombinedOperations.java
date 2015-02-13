@@ -16,21 +16,16 @@
 package de.shadowhunt.subversion.internal;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.UUID;
 
+import de.shadowhunt.subversion.*;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import de.shadowhunt.subversion.Info;
-import de.shadowhunt.subversion.Repository;
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.ResourceProperty.Type;
-import de.shadowhunt.subversion.Revision;
-import de.shadowhunt.subversion.SubversionException;
-import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.Transaction.Status;
 
 //Tests are independent from each other but go from simple to more complex
@@ -252,5 +247,35 @@ public abstract class AbstractRepositoryCombinedOperations {
         }
 
         Assert.assertFalse("must not exist", repository.exists(resource, Revision.HEAD));
+    }
+
+    @Test
+    public void test04_InfoOfMovedLockedResource() throws Exception {
+        final Resource resourceA = prefix.append(Resource.create("A_" + UUID.randomUUID().toString() + ".txt"));
+        final Resource resourceB = prefix.append(Resource.create("B_" + UUID.randomUUID().toString() + ".txt"));
+
+        AbstractRepositoryAdd.file(repository, resourceA, "infoOfMovedLocked", true);
+
+        final Transaction transaction = repository.createTransaction();
+        try {
+            repository.move(transaction, resourceA, resourceB, false);
+            repository.commit(transaction, "move");
+        } catch (final Exception e) {
+            repository.rollback(transaction);
+            throw e;
+        }
+
+        repository.lock(resourceB, true);
+
+        final List<Log> logs = repository.log(resourceB, Revision.HEAD, Revision.INITIAL, 0);
+        Assert.assertEquals("there must be 2 log entries", 2, logs.size());
+
+        final Revision revisionB = logs.get(0).getRevision();
+        final Revision revisionA = logs.get(1).getRevision();
+
+        final Info infoB = repository.info(resourceB, revisionB);
+        Assert.assertEquals("resource must match", resourceB, infoB.getResource());
+        final Info infoA = repository.info(resourceB, revisionA);
+        Assert.assertEquals("resource must match", resourceA, infoA.getResource());
     }
 }
