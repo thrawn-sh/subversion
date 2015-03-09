@@ -19,13 +19,20 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
 
-import de.shadowhunt.subversion.*;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import de.shadowhunt.subversion.Info;
+import de.shadowhunt.subversion.Log;
+import de.shadowhunt.subversion.Repository;
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.ResourceProperty.Type;
+import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.SubversionException;
+import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.Transaction.Status;
 
 //Tests are independent from each other but go from simple to more complex

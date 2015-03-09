@@ -15,13 +15,13 @@
  */
 package de.shadowhunt.subversion.internal;
 
-import org.apache.commons.io.IOUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.io.IOUtils;
 
 /**
  * SVN as support for properties that have a namespace and contain a colon in their name.
@@ -31,31 +31,15 @@ import java.util.regex.Pattern;
  */
 final class ResourcePropertyUtils {
 
-    private ResourcePropertyUtils() {
-        // prevent instantiation
-    }
+    static final String COLON = ":";
+
+    static final String MARKER = "__ILLEGAL_COLON_IN_TAG_NAME__";
 
     private static final String REGEX = "<(/?)(\\s*)([\\w\\d]+):([\\w\\d]+):([\\w\\d]+)((?:\\s*[\\w\\d=\"]*\\s*)*)(/?)>";
 
     private static final Pattern PATTERN = Pattern.compile(REGEX);
 
-    static final String COLON = ":";
-
-    static final String MARKER = "__ILLEGAL_COLON_IN_TAG_NAME__";
-
     static final Charset UTF8 = Charset.forName("UTF-8");
-
-    static String escapedKeyNameXml(final String name) {
-        return name.replace(COLON, MARKER);
-    }
-
-    static String unescapedKeyNameXml(final String name) {
-        return name.replace(MARKER, COLON);
-    }
-
-    static String filterMarker(final String xml) {
-        return xml.replaceAll(MARKER, COLON);
-    }
 
     static InputStream escapedInputStream(final InputStream inputStream) throws IOException {
         final String rawData = IOUtils.toString(inputStream, UTF8);
@@ -64,6 +48,22 @@ final class ResourcePropertyUtils {
         final Matcher matcher = PATTERN.matcher(rawData);
         final String escapedData = matcher.replaceAll("<$1$2$3:$4" + MARKER + "$5$6$7>");
         return IOUtils.toInputStream(escapedData, UTF8);
+    }
+
+    static String escapedKeyNameXml(final String name) {
+        return name.replace(COLON, MARKER);
+    }
+
+    static String filterMarker(final String xml) {
+        return xml.replaceAll(MARKER, COLON);
+    }
+
+    static String unescapedKeyNameXml(final String name) {
+        return name.replace(MARKER, COLON);
+    }
+
+    private ResourcePropertyUtils() {
+        // prevent instantiation
     }
 
 }
