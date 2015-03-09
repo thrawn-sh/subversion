@@ -28,9 +28,9 @@ create_file() { #{{{1
 	local delete="${1}"; shift
 
 	mkdir -p `dirname "${file}"`
-	local content
 	touch "${file}"
 	add   "${file}"
+	local content
 	for content in A B C; do
 		echo "${content}" >                                        "${file}"
 		"${SVN}" propset --quiet svn:mime-type        text/plain   "${file}"
@@ -234,6 +234,13 @@ create_folder "${BASE}/encoding/folder ^%" 0
 # combinded
 create_file   "${BASE}/encoding/file_日本国_<&>'\"_ ^%.txt" 0
 create_folder "${BASE}/encoding/folder_中华人民共和国_<&>'\"_ ^%" 0
+
+# custom properties with namespace name {{{1
+mkdir -p                                          "${BASE}/namespace_properties"
+touch                                             "${BASE}/namespace_properties/file.txt"
+add                                               "${BASE}/namespace_properties/file.txt"
+"${SVN}" propset --quiet "namespace:name" "value" "${BASE}/namespace_properties/file.txt"
+commit                                            "${BASE}/namespace_properties/file.txt with namespace:name property"
 
 ### package {{{1
 cd "${TMP_DIR}"

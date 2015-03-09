@@ -140,13 +140,14 @@ final class InfoImplReader {
 
         @Override
         protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
+            final String propertyName = ResourcePropertyUtils.unescapedKeyNameXml(localName);
             if (XmlConstants.SUBVERSION_CUSTOM_NAMESPACE.equals(nameSpaceUri)) {
-                properties.add(new ResourceProperty(ResourceProperty.Type.SUBVERSION_CUSTOM, localName, text));
+                properties.add(new ResourceProperty(ResourceProperty.Type.SUBVERSION_CUSTOM, propertyName, text));
                 return;
             }
 
             if (XmlConstants.SUBVERSION_SVN_NAMESPACE.equals(nameSpaceUri)) {
-                properties.add(new ResourceProperty(ResourceProperty.Type.SUBVERSION_SVN, localName, text));
+                properties.add(new ResourceProperty(ResourceProperty.Type.SUBVERSION_SVN, propertyName, text));
                 return;
             }
         }
@@ -305,7 +306,8 @@ final class InfoImplReader {
     static List<Info> readAll(final InputStream inputStream) throws IOException {
         final InfoHandler handler = new InfoHandler();
         try {
-            return handler.parse(inputStream);
+            final InputStream escapedStream = ResourcePropertyUtils.escapedInputStream(inputStream);
+            return handler.parse(escapedStream);
         } catch (final ParserConfigurationException | SAXException e) {
             throw new SubversionException("Invalid server response: could not parse response", e);
         }

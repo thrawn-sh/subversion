@@ -86,7 +86,7 @@ class PropertiesUpdateOperation extends AbstractVoidOperation {
             for (final ResourceProperty property : properties) {
                 final String prefix = property.getType().getPrefix();
                 if (type == Type.SET) {
-                    writer.writeStartElement(prefix, property.getName());
+                    writer.writeStartElement(prefix, ResourcePropertyUtils.escapedKeyNameXml(property.getName()));
                     writer.writeCharacters(property.getValue());
                     writer.writeEndElement();
                 } else {
@@ -102,7 +102,9 @@ class PropertiesUpdateOperation extends AbstractVoidOperation {
             throw new SubversionException("could not create request body", e);
         }
 
-        request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
+        final String bodyWithMakers = body.toString();
+        final String bodyWithoutMakers = ResourcePropertyUtils.filterMarker(bodyWithMakers);
+        request.setEntity(new StringEntity(bodyWithoutMakers, CONTENT_TYPE_XML));
         return request;
     }
 
