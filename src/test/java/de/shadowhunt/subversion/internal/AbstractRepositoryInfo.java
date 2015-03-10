@@ -47,6 +47,10 @@ public abstract class AbstractRepositoryInfo {
         Assert.assertEquals(message, expected, actual);
     }
 
+    static String createMessage(final Resource resource, final Revision revision) {
+        return resource + ": @" + revision;
+    }
+
     private final InfoLoader infoLoader;
 
     private final Repository repository;
@@ -54,10 +58,6 @@ public abstract class AbstractRepositoryInfo {
     protected AbstractRepositoryInfo(final Repository repository, final File root) {
         this.repository = repository;
         infoLoader = new InfoLoader(root);
-    }
-
-    private String createMessage(final Resource resource, final Revision revision) {
-        return resource + ": @" + revision;
     }
 
     @Test(expected = SubversionException.class)
