@@ -35,13 +35,6 @@ public final class ResourcePropertyLoader extends BaseLoader {
 
     static class ResourcePropertyHandler extends BasicHandler {
 
-        private static Type convert(final String prefix) {
-            if ("svn".equals(prefix)) {
-                return Type.SUBVERSION_SVN;
-            }
-            throw new IllegalArgumentException("prefix " + prefix + " not supported");
-        }
-
         private final Set<ResourceProperty> properties = new TreeSet<ResourceProperty>(ResourceProperty.TYPE_NAME_COMPARATOR);
 
         private String propertyName;
@@ -66,9 +59,9 @@ public final class ResourcePropertyLoader extends BaseLoader {
 
             if ("property".equals(localName)) {
                 final String value = attributes.getValue("name");
-                final int split = value.indexOf(':');
-                if (split >= 0) {
-                    propertyType = convert(value.substring(0, split));
+                if (value.startsWith("svn:")) {
+                    final int split = value.indexOf(':');
+                    propertyType = Type.SUBVERSION_SVN;
                     propertyName = value.substring(split + 1);
                 } else {
                     propertyType = Type.SUBVERSION_CUSTOM;
