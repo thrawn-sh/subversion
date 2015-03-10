@@ -236,11 +236,11 @@ create_file   "${BASE}/encoding/file_日本国_<&>'\"_ ^%.txt" 0
 create_folder "${BASE}/encoding/folder_中华人民共和国_<&>'\"_ ^%" 0
 
 # custom properties with namespace name {{{1
-mkdir -p                                          "${BASE}/namespace_properties"
+create_folder                                     "${BASE}/namespace_properties" 0
 touch                                             "${BASE}/namespace_properties/file.txt"
 add                                               "${BASE}/namespace_properties/file.txt"
 "${SVN}" propset --quiet "namespace:name" "value" "${BASE}/namespace_properties/file.txt"
-commit                                            "${BASE}/namespace_properties/file.txt with namespace:name property"
+commit                                            "${BASE}/namespace_properties/file.txt with namespace:name property" "${BASE}/namespace_properties/file.txt"
 
 ### package {{{1
 cd "${TMP_DIR}"
