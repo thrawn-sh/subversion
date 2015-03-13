@@ -20,18 +20,18 @@ import java.net.URI;
 
 import javax.annotation.CheckForNull;
 
+import de.shadowhunt.subversion.Depth;
+import de.shadowhunt.subversion.Info;
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.ResourceProperty;
+
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 
-import de.shadowhunt.subversion.Depth;
-import de.shadowhunt.subversion.Info;
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.ResourceProperty;
-
-class InfoOperation extends PropfindOperation<Info> {
+class InfoOperation extends AbstractPropfindOperation<Info> {
 
     private static final String LOCK_OWNER_HEADER = "X-SVN-Lock-Owner";
 

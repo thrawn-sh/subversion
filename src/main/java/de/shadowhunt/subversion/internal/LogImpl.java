@@ -21,7 +21,7 @@ import de.shadowhunt.subversion.Log;
 import de.shadowhunt.subversion.Revision;
 
 /**
- * Default implementation for {@link Log}
+ * Default implementation for {@link Log}.
  */
 final class LogImpl implements Log {
 

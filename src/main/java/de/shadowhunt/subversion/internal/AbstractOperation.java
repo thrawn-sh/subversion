@@ -21,6 +21,9 @@ import java.net.URI;
 
 import javax.xml.stream.XMLOutputFactory;
 
+import de.shadowhunt.subversion.SubversionException;
+import de.shadowhunt.subversion.TransmissionException;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -33,21 +36,14 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ContentType;
 import org.apache.http.protocol.HttpContext;
 
-import de.shadowhunt.subversion.SubversionException;
-import de.shadowhunt.subversion.TransmissionException;
-
 public abstract class AbstractOperation<T> implements ResponseHandler<T> {
-
-    protected static final ContentType CONTENT_TYPE_XML = ContentType.create("text/xml", XmlConstants.ENCODING);
-
-    protected static final XMLOutputFactory XML_OUTPUT_FACTORY = XMLOutputFactory.newInstance();
 
     protected static final class DavTemplateRequest extends HttpEntityEnclosingRequestBase {
 
         private final String method;
 
         /**
-         * Create a new {@link DavTemplateRequest}
+         * Create a new {@link DavTemplateRequest}.
          *
          * @param method HTTP method name
          * @param uri full qualified {@link URI} this {@link DavTemplateRequest} is directed to
@@ -62,6 +58,10 @@ public abstract class AbstractOperation<T> implements ResponseHandler<T> {
             return method;
         }
     }
+
+    protected static final ContentType CONTENT_TYPE_XML = ContentType.create("text/xml", XmlConstants.ENCODING);
+
+    protected static final XMLOutputFactory XML_OUTPUT_FACTORY = XMLOutputFactory.newInstance();
 
     static InputStream getContent(final HttpResponse response) throws IOException {
         final HttpEntity entity = response.getEntity();
@@ -112,13 +112,11 @@ public abstract class AbstractOperation<T> implements ResponseHandler<T> {
     }
 
     /**
-     * as the Resource can not differ between files and directories
-     * each request for an directory (without ending '/') will result
-     * in a redirect (with ending '/'), if another call to a redirected
-     * URI occurs a CircularRedirectException is thrown, as we can't
-     * determine the real target we can't prevent this from happening.
-     * Allowing circular redirects globally could lead to live locks on
-     * the other hand. Therefore we clear the redirection cache explicitly.
+     * as the Resource can not differ between files and directories each request for an directory (without ending '/')
+     * will result in a redirect (with ending '/'), if another call to a redirected URI occurs a
+     * CircularRedirectException is thrown, as we can't determine the real target we can't prevent this from happening.
+     * Allowing circular redirects globally could lead to live locks on the other hand. Therefore we clear the
+     * redirection cache explicitly.
      */
     final void clearRedirects(final HttpContext context) {
         context.removeAttribute(HttpClientContext.REDIRECT_LOCATIONS);
@@ -127,7 +125,7 @@ public abstract class AbstractOperation<T> implements ResponseHandler<T> {
     protected abstract HttpUriRequest createRequest();
 
     /**
-     * Run the {@link AbstractOperation} against the server
+     * Run the {@link AbstractOperation} against the server.
      *
      * @param client {@link HttpClient} to use for this {@link AbstractOperation}
      * @param context {@link HttpContext} to use for this {@link AbstractOperation}

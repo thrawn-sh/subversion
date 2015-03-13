@@ -18,12 +18,13 @@ package de.shadowhunt.subversion;
 import java.util.Map;
 
 /**
- * {@link Transaction} allows the application to define units of work, it can be created via {@link Repository#createTransaction()}
+ * {@link Transaction} allows the application to define units of work, it can be created via {@link
+ * Repository#createTransaction()}.
  */
 public interface Transaction extends View {
 
     /**
-     * Defines the status of each {@link Resource} that is part of the current active {@link Transaction}
+     * Defines the status of each {@link Resource} that is part of the current active {@link Transaction}.
      */
     public static enum Status {
         ADDED("A", 2),
@@ -34,7 +35,7 @@ public interface Transaction extends View {
         private final String abbreviation;
 
         /**
-         * priority of this {@link Status} compared to the other {@link Status}
+         * Priority of this {@link Status} compared to the other {@link Status}.
          */
         public final int order;
 
@@ -50,42 +51,47 @@ public interface Transaction extends View {
     }
 
     /**
-     * Returns a {@link Map} of {@link Resource}s (that are part of this {@link Transaction} and their {@link Status}
+     * Returns a {@link Map} of {@link Resource}s (that are part of this {@link Transaction} and their {@link Status}.
      *
      * @return the {@link Map} of {@link Resource}s and their {@link Status}
      */
     Map<Resource, Status> getChangeSet();
 
     /**
-     * Returns the identifier of the {@link Transaction} (unique for each {@link Repository}
+     * Returns the identifier of the {@link Transaction} (unique for each {@link Repository}.
      *
      * @return the identifier of the {@link Transaction}
      */
     String getId();
 
     /**
-     * After {@link Repository#commit(Transaction, String)} or {@link Repository#rollback(Transaction)} the {@link Transaction} is invalidated
+     * After {@link Repository#commit(Transaction, String)} or {@link Repository#rollback(Transaction)} the {@link
+     * Transaction} is invalidated.
      * <p/>
-     * For internal usage only. Use {@link Repository#commit(Transaction, String)} or {@link Repository#rollback(Transaction)} instead
+     * For internal usage only. Use {@link Repository#commit(Transaction, String)} or {@link
+     * Repository#rollback(Transaction)} instead
      */
     void invalidate();
 
     /**
-     * Determines whether the {@link Transaction} can still be used. It cannot be used after {@link Repository#commit(Transaction, String)} or {@link Repository#rollback(Transaction)} where called
+     * Determines whether the {@link Transaction} can still be used. It cannot be used after {@link
+     * Repository#commit(Transaction, String)} or {@link Repository#rollback(Transaction)} where called.
      *
      * @return {@code true} if the {@link Transaction} can still be used otherwise {@code false}
      */
     boolean isActive();
 
     /**
-     * Whether there are any {@link Resource}s that are affected by the {@link Transaction}
+     * Whether there are any {@link Resource}s that are affected by the {@link Transaction}.
      *
-     * @return {@code true} if there are no {@link Resource}s affected by the {@link Transaction}, otherwise {@code false}
+     * @return {@code true} if there are no {@link Resource}s affected by the {@link Transaction}, otherwise {@code
+     * false}
      */
     boolean isChangeSetEmpty();
 
     /**
-     * Tell the {@link Transaction} the specified {@link Resource} will be affected during {@link Repository#commit(Transaction, String)}
+     * Tell the {@link Transaction} the specified {@link Resource} will be affected during {@link
+     * Repository#commit(Transaction, String)}.
      * <p/>
      * For internal usage only. Use the methods from {@link Repository} instead
      *

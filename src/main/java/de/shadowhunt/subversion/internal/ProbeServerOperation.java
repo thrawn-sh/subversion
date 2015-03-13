@@ -24,6 +24,12 @@ import java.util.ServiceLoader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import de.shadowhunt.subversion.Repository;
+import de.shadowhunt.subversion.Repository.ProtocolVersion;
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.SubversionException;
+import de.shadowhunt.subversion.TransmissionException;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.http.Header;
@@ -33,12 +39,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
-
-import de.shadowhunt.subversion.Repository;
-import de.shadowhunt.subversion.Repository.ProtocolVersion;
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.SubversionException;
-import de.shadowhunt.subversion.TransmissionException;
 
 class ProbeServerOperation extends AbstractOperation<Repository> {
 

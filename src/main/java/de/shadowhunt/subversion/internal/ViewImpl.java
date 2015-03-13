@@ -17,10 +17,10 @@ package de.shadowhunt.subversion.internal;
 
 import java.util.UUID;
 
-import org.apache.commons.lang3.Validate;
-
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.View;
+
+import org.apache.commons.lang3.Validate;
 
 final class ViewImpl implements View {
 

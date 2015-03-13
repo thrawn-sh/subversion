@@ -24,23 +24,28 @@ import org.apache.http.annotation.Immutable;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 
 /**
- * A {@link SubversionRequestRetryHandler} which retires all requested
- * HTTP and DAV methods which should be idempotent according to RFC-2616.
+ * A {@link SubversionRequestRetryHandler} which retires all requested HTTP and DAV methods which should be idempotent
+ * according to RFC-2616.
  */
 @Immutable
 public class SubversionRequestRetryHandler extends DefaultHttpRequestRetryHandler {
 
+    /**
+     * Default value for retiring a request before giving up.
+     */
+    public static final int DEFAULT_RETRIES = 3;
+
     private final Map<String, Boolean> idempotentMethods;
 
     /**
-     * Create a {@link SubversionRequestRetryHandler} with default settings
+     * Create a {@link SubversionRequestRetryHandler} with default settings.
      */
     public SubversionRequestRetryHandler() {
-        this(3, true);
+        this(DEFAULT_RETRIES, true);
     }
 
     /**
-     * Create a {@link SubversionRequestRetryHandler}
+     * Create a {@link SubversionRequestRetryHandler}.
      *
      * @param retryCount number of times a method will be retried
      * @param requestSentRetryEnabled whether or not methods that have successfully sent their request will be retried

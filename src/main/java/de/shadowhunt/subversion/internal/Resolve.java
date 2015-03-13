@@ -21,14 +21,14 @@ import java.io.InputStream;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.xml.AbstractSaxExpression;
 import de.shadowhunt.subversion.xml.AbstractSaxExpressionHandler;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 
 final class Resolve {
 
@@ -80,7 +80,7 @@ final class Resolve {
     }
 
     /**
-     * Reads log information for a resource from the given {@link InputStream}
+     * Reads log information for a resource from the given {@link InputStream}.
      *
      * @param inputStream {@link InputStream} from which the status information is read (Note: will not be closed)
      *

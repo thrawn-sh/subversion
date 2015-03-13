@@ -29,12 +29,12 @@ import java.util.TimeZone;
 
 import javax.xml.parsers.SAXParser;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-
 import de.shadowhunt.subversion.Log;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 
 public final class LogLoader extends BaseLoader {
 

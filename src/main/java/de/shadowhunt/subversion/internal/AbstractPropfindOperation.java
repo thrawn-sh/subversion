@@ -23,17 +23,17 @@ import javax.annotation.CheckForNull;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.commons.io.output.StringBuilderWriter;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.entity.StringEntity;
-
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.SubversionException;
 
-abstract class PropfindOperation<T> extends AbstractOperation<T> {
+import org.apache.commons.io.output.StringBuilderWriter;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.StringEntity;
+
+abstract class AbstractPropfindOperation<T> extends AbstractOperation<T> {
 
     @CheckForNull
     private static ResourceProperty.Key[] filter(final ResourceProperty.Key[] requestedProperties) {
@@ -61,7 +61,7 @@ abstract class PropfindOperation<T> extends AbstractOperation<T> {
 
     protected final Resource resource;
 
-    PropfindOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, @CheckForNull final ResourceProperty.Key[] requestedProperties) {
+    AbstractPropfindOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, @CheckForNull final ResourceProperty.Key[] requestedProperties) {
         super(repository);
         this.resource = resource;
         this.marker = marker;

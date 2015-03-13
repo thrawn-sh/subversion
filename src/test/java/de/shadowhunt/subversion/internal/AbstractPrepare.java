@@ -24,11 +24,11 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import de.shadowhunt.subversion.Resource;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
-
-import de.shadowhunt.subversion.Resource;
 
 public abstract class AbstractPrepare {
 

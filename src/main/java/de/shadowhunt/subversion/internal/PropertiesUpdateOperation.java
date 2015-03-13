@@ -23,14 +23,14 @@ import javax.annotation.CheckForNull;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.ResourceProperty;
+import de.shadowhunt.subversion.SubversionException;
+
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
-
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.ResourceProperty;
-import de.shadowhunt.subversion.SubversionException;
 
 class PropertiesUpdateOperation extends AbstractVoidOperation {
 

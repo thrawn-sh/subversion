@@ -20,12 +20,12 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * {@link Resource} defines a resource location in the repository
+ * {@link Resource} defines a resource location in the repository.
  */
 public final class Resource implements Comparable<Resource> {
 
     /**
-     * Represents the base {@link Resource} in the repository
+     * Represents the base {@link Resource} in the repository.
      */
     public static final Resource ROOT = new Resource("");
 
@@ -36,7 +36,7 @@ public final class Resource implements Comparable<Resource> {
     public static final char SEPARATOR_CHAR = '/';
 
     /**
-     * Create a new {@link Resource} instance for the given value
+     * Create a new {@link Resource} instance for the given value.
      *
      * @param path value of the {@link Resource}
      *
@@ -65,12 +65,12 @@ public final class Resource implements Comparable<Resource> {
     }
 
     /**
-     * Appends the specified {@link Resource} to the end of this {@link Resource}
+     * Appends the specified {@link Resource} to the end of this {@link Resource}.
      *
-     * @param resource the {@link Resource} that is appended to the end
-     * of this {@link Resource}
+     * @param resource the {@link Resource} that is appended to the end of this {@link Resource}
      *
-     * @return a {@link Resource} that represents the combination of this {@link Resource} and the specified {@link Resource}
+     * @return a {@link Resource} that represents the combination of this {@link Resource} and the specified {@link
+     * Resource}
      */
     public Resource append(final Resource resource) {
         return new Resource(value + resource.value);
@@ -97,7 +97,7 @@ public final class Resource implements Comparable<Resource> {
     }
 
     /**
-     * Returns the parent {@link Resource} of the {@link Resource}, the parent of the ROOT element is the ROOT itself
+     * Returns the parent {@link Resource} of the {@link Resource}, the parent of the ROOT element is the ROOT itself.
      *
      * @return the parent {@link Resource} of the {@link Resource}
      */
@@ -110,7 +110,7 @@ public final class Resource implements Comparable<Resource> {
     }
 
     /**
-     * Returns a {@link String} representation of the {@link Resource}
+     * Returns a {@link String} representation of the {@link Resource}.
      *
      * @return the {@link String} representation of the {@link Resource}
      */
@@ -119,7 +119,7 @@ public final class Resource implements Comparable<Resource> {
     }
 
     /**
-     * Returns a {@link String} representation of the {@link Resource} without the leading slash
+     * Returns a {@link String} representation of the {@link Resource} without the leading slash.
      *
      * @return the {@link String} representation of the {@link Resource} without the leading slash
      */

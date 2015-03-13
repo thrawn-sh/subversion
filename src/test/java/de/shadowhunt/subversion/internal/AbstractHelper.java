@@ -22,6 +22,10 @@ import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.UUID;
 
+import de.shadowhunt.http.client.SubversionRequestRetryHandler;
+import de.shadowhunt.subversion.Repository;
+import de.shadowhunt.subversion.RepositoryFactory;
+
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
@@ -32,10 +36,6 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
-
-import de.shadowhunt.http.client.SubversionRequestRetryHandler;
-import de.shadowhunt.subversion.Repository;
-import de.shadowhunt.subversion.RepositoryFactory;
 
 public abstract class AbstractHelper {
 

@@ -15,10 +15,10 @@
  */
 package de.shadowhunt.subversion;
 
+import de.shadowhunt.subversion.ResourceProperty.Type;
+
 import org.junit.Assert;
 import org.junit.Test;
-
-import de.shadowhunt.subversion.ResourceProperty.Type;
 
 public class ResourcePropertyTest {
 

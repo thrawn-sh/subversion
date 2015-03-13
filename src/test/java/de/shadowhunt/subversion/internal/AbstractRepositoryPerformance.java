@@ -19,6 +19,14 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.UUID;
 
+import de.shadowhunt.subversion.Depth;
+import de.shadowhunt.subversion.Repository;
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.ResourceProperty;
+import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.Transaction;
+import de.shadowhunt.subversion.View;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
@@ -28,14 +36,6 @@ import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
-import de.shadowhunt.subversion.Depth;
-import de.shadowhunt.subversion.Repository;
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.ResourceProperty;
-import de.shadowhunt.subversion.Revision;
-import de.shadowhunt.subversion.Transaction;
-import de.shadowhunt.subversion.View;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)

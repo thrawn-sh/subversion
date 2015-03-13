@@ -21,13 +21,13 @@ import java.util.TreeSet;
 
 import javax.xml.parsers.SAXParser;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.ResourceProperty.Type;
 import de.shadowhunt.subversion.Revision;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 
 public final class ResourcePropertyLoader extends BaseLoader {
 

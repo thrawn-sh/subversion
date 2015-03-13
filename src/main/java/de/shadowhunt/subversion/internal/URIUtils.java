@@ -18,17 +18,17 @@ package de.shadowhunt.subversion.internal;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.http.client.utils.URIBuilder;
-
 import de.shadowhunt.subversion.Resource;
 
+import org.apache.http.client.utils.URIBuilder;
+
 /**
- * Helper class to construct valid {@link URI}s
+ * Helper class to construct valid {@link URI}s.
  */
 public final class URIUtils {
 
     /**
-     * Combine repository {@link URI} and {@link Resource}s to a valid {@link URI}
+     * Combine repository {@link URI} and {@link Resource}s to a valid {@link URI}.
      *
      * @param repository base {@link URI}, {@link Resource}s are appended to the path of the repository
      * @param resources {@link Resource}s to appended to the repository {@link URI}

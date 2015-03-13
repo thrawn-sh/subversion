@@ -27,8 +27,6 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.xml.sax.SAXException;
-
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
@@ -37,6 +35,8 @@ import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.xml.AbstractSaxExpression;
 import de.shadowhunt.subversion.xml.AbstractSaxExpressionHandler;
 import de.shadowhunt.subversion.xml.SaxExpression;
+
+import org.xml.sax.SAXException;
 
 final class InfoImplReader {
 
@@ -282,7 +282,7 @@ final class InfoImplReader {
     }
 
     /**
-     * Reads status information for a single revision of a resource from the given {@link java.io.InputStream}
+     * Reads status information for a single revision of a resource from the given {@link java.io.InputStream}.
      *
      * @param in {@link java.io.InputStream} from which the status information is read (Note: will not be closed)
      *
@@ -297,9 +297,11 @@ final class InfoImplReader {
     }
 
     /**
-     * Reads a {@link java.util.SortedSet} of status information for a single revision of various resources from the given {@link java.io.InputStream}
+     * Reads a {@link java.util.SortedSet} of status information for a single revision of various resources from the
+     * given {@link java.io.InputStream}.
      *
-     * @param inputStream {@link java.io.InputStream} from which the status information is read (Note: will not be closed)
+     * @param inputStream {@link java.io.InputStream} from which the status information is read (Note: will not be
+     * closed)
      *
      * @return {@link InfoImpl} for the resources
      */

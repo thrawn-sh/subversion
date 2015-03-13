@@ -21,15 +21,15 @@ import java.util.UUID;
 
 import javax.annotation.CheckForNull;
 
-import org.apache.commons.lang3.Validate;
-
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.View;
 
+import org.apache.commons.lang3.Validate;
+
 /**
- * Default implementation for {@link Transaction}
+ * Default implementation for {@link Transaction}.
  */
 public final class TransactionImpl implements Transaction, View {
 

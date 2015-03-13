@@ -27,7 +27,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 
 /**
- * {@link RepositoryFactory} creates a new {@link Repository}
+ * {@link RepositoryFactory} creates a new {@link Repository}.
  */
 @ThreadSafe
 public abstract class RepositoryFactory {
@@ -39,7 +39,7 @@ public abstract class RepositoryFactory {
     private static final String DEFAULT_USER_INFO = null;
 
     /**
-     * Create a new {@link RepositoryFactory} instance each time the method is called
+     * Create a new {@link RepositoryFactory} instance each time the method is called.
      *
      * @return the new {@link RepositoryFactory} instance
      *
@@ -77,7 +77,8 @@ public abstract class RepositoryFactory {
     }
 
     /**
-     * Create a new {@link Repository} for given {@link URI} and use the given {@link HttpClient} with the {@link HttpClient} to connect to the server
+     * Create a new {@link Repository} for given {@link URI} and use the given {@link HttpClient} with the {@link
+     * HttpClient} to connect to the server.
      *
      * @param repository {@link URI} to the root of the repository (e.g: http://repository.example.net/svn/test_repo)
      * @param client {@link HttpClient} that will handle all requests for this repository
@@ -87,7 +88,8 @@ public abstract class RepositoryFactory {
      *
      * @throws NullPointerException if any parameter is {@code null}
      * @throws SubversionException if no {@link Repository} can be created
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
+     * the server
      */
     public final Repository createRepository(final URI repository, final HttpClient client, final HttpContext context) {
         Validate.notNull(repository, "repository must not be null");
@@ -101,8 +103,9 @@ public abstract class RepositoryFactory {
     protected abstract Repository createRepository0(final URI saneUri, final HttpClient client, final HttpContext context);
 
     /**
-     * Create a new {@link Repository} for given {@link URI} and use the given {@link HttpClient} with the {@link HttpClient} to connect to the server.
-     * <p>To find the {@link Repository} root the path is tested folder by folder till the root of the {@link Repository} root is found or no folders are left</p>
+     * Create a new {@link Repository} for given {@link URI} and use the given {@link HttpClient} with the {@link
+     * HttpClient} to connect to the server. <p>To find the {@link Repository} root the path is tested folder by folder
+     * till the root of the {@link Repository} root is found or no folders are left</p>
      *
      * @param repository {@link URI} to any resource of the repository (e.g: http://repository.example.net/svn/test_repo/folderA/subFolderB)
      * @param client {@link HttpClient} that will handle all requests for this repository
@@ -111,8 +114,10 @@ public abstract class RepositoryFactory {
      * @return a new {@link Repository} for given {@link URI}
      *
      * @throws NullPointerException if any parameter is {@code null}
-     * @throws SubversionException if an error occurs during {@link Repository} probing and no {@link Repository} can be created
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
+     * @throws SubversionException if an error occurs during {@link Repository} probing and no {@link Repository} can be
+     * created
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
+     * the server
      */
     public Repository probeRepository(final URI repository, final HttpClient client, final HttpContext context) {
         Validate.notNull(repository, "repository must not be null");

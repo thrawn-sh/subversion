@@ -22,45 +22,13 @@ import javax.annotation.concurrent.Immutable;
 import org.apache.commons.lang3.Validate;
 
 /**
- * {@link ResourceProperty} represents a resource property
+ * {@link ResourceProperty} represents a resource property.
  */
 @Immutable
 public final class ResourceProperty {
 
-    public static final ResourceProperty.Key AUTHOR = new ResourceProperty.Key(Type.DAV, "creator-displayname");
-
-    public static final ResourceProperty.Key CREATION_DATE = new ResourceProperty.Key(Type.DAV, "creationdate");
-
-    public static final ResourceProperty.Key LAST_MODIFIED_DATE = new ResourceProperty.Key(Type.DAV, "getlastmodified");
-
-    public static final ResourceProperty.Key LOCK_STATUS = new ResourceProperty.Key(Type.DAV, "lockdiscovery");
-
-    public static final ResourceProperty.Key MD5_HASH = new ResourceProperty.Key(Type.SUBVERSION_DAV, "md5-checksum");
-
-    public static final ResourceProperty.Key REPOSITORY_ID = new ResourceProperty.Key(Type.SUBVERSION_DAV, "repository-uuid");
-
-    public static final ResourceProperty.Key RESOURCE = new ResourceProperty.Key(Type.SUBVERSION_DAV, "baseline-relative-path");
-
-    public static final ResourceProperty.Key RESOURCE_TYPE = new ResourceProperty.Key(Type.DAV, "resourcetype");
-
     /**
-     * {@link Comparator} that compares {@link ResourceProperty} by their type and name
-     */
-    public static final Comparator<ResourceProperty> TYPE_NAME_COMPARATOR = new Comparator<ResourceProperty>() {
-
-        @Override
-        public int compare(final ResourceProperty rp1, final ResourceProperty rp2) {
-            Validate.notNull(rp1, "rp1 must not be null");
-            Validate.notNull(rp2, "rp2 must not be null");
-
-            return rp1.getKey().compareTo(rp2.getKey());
-        }
-    };
-
-    public static final ResourceProperty.Key VERSION = new ResourceProperty.Key(Type.DAV, "version-name");
-
-    /**
-     * {@link Key} is the internal name a {@link ResourceProperty} is stored
+     * {@link Key} is the internal name a {@link ResourceProperty} is stored.
      */
     public static final class Key implements Comparable<Key> {
 
@@ -107,7 +75,7 @@ public final class ResourceProperty {
         }
 
         /**
-         * Returns the name of the {@link Key}
+         * Returns the name of the {@link Key}.
          *
          * @return the name of the {@link Key}
          */
@@ -116,7 +84,7 @@ public final class ResourceProperty {
         }
 
         /**
-         * Returns the {@link Type} of the {@link Key}
+         * Returns the {@link Type} of the {@link Key}.
          *
          * @return the {@link Type} of the {@link Key}
          */
@@ -137,8 +105,40 @@ public final class ResourceProperty {
         }
     }
 
+    public static final Key AUTHOR = new Key(Type.DAV, "creator-displayname");
+
+    public static final Key CREATION_DATE = new Key(Type.DAV, "creationdate");
+
+    public static final Key LAST_MODIFIED_DATE = new Key(Type.DAV, "getlastmodified");
+
+    public static final Key LOCK_STATUS = new Key(Type.DAV, "lockdiscovery");
+
+    public static final Key MD5_HASH = new Key(Type.SUBVERSION_DAV, "md5-checksum");
+
+    public static final Key REPOSITORY_ID = new Key(Type.SUBVERSION_DAV, "repository-uuid");
+
+    public static final Key RESOURCE = new Key(Type.SUBVERSION_DAV, "baseline-relative-path");
+
+    public static final Key RESOURCE_TYPE = new Key(Type.DAV, "resourcetype");
+
     /**
-     * {@link ResourceProperty} can have various types, depending of the context they are used
+     * {@link Comparator} that compares {@link ResourceProperty} by their type and name.
+     */
+    public static final Comparator<ResourceProperty> TYPE_NAME_COMPARATOR = new Comparator<ResourceProperty>() {
+
+        @Override
+        public int compare(final ResourceProperty rp1, final ResourceProperty rp2) {
+            Validate.notNull(rp1, "rp1 must not be null");
+            Validate.notNull(rp2, "rp2 must not be null");
+
+            return rp1.getKey().compareTo(rp2.getKey());
+        }
+    };
+
+    public static final Key VERSION = new Key(Type.DAV, "version-name");
+
+    /**
+     * {@link ResourceProperty} can have various types, depending of the context they are used.
      */
     public static enum Type {
         DAV("DAV:"),
@@ -154,7 +154,7 @@ public final class ResourceProperty {
         }
 
         /**
-         * Returns the prefix of the {@link Type}
+         * Returns the prefix of the {@link Type}.
          *
          * @return the prefix of the {@link Type}
          */
@@ -168,7 +168,7 @@ public final class ResourceProperty {
     private final String value;
 
     /**
-     * Create a new {@link ResourceProperty} with the given {@link Type}, name and value
+     * Create a new {@link ResourceProperty} with the given {@link Type}, name and value.
      *
      * @param type {@link Type} of the {@link ResourceProperty}
      * @param name name of the {@link ResourceProperty}
@@ -205,16 +205,18 @@ public final class ResourceProperty {
     }
 
     /**
-     * Returns the {@link de.shadowhunt.subversion.ResourceProperty.Key} of the {@link de.shadowhunt.subversion.ResourceProperty}
+     * Returns the {@link de.shadowhunt.subversion.ResourceProperty.Key} of the {@link
+     * de.shadowhunt.subversion.ResourceProperty}.
      *
-     * @return the {@link de.shadowhunt.subversion.ResourceProperty.Key} of the {@link de.shadowhunt.subversion.ResourceProperty}
+     * @return the {@link de.shadowhunt.subversion.ResourceProperty.Key} of the {@link
+     * de.shadowhunt.subversion.ResourceProperty}
      */
     public Key getKey() {
         return key;
     }
 
     /**
-     * Returns the name of the {@link de.shadowhunt.subversion.ResourceProperty.Key}
+     * Returns the name of the {@link de.shadowhunt.subversion.ResourceProperty.Key}.
      *
      * @return the name of the {@link de.shadowhunt.subversion.ResourceProperty.Key}
      */
@@ -223,7 +225,7 @@ public final class ResourceProperty {
     }
 
     /**
-     * Returns the {@link Type} of the {@link de.shadowhunt.subversion.ResourceProperty.Key}
+     * Returns the {@link Type} of the {@link de.shadowhunt.subversion.ResourceProperty.Key}.
      *
      * @return the {@link Type} of the {@link de.shadowhunt.subversion.ResourceProperty.Key}
      */
@@ -232,7 +234,7 @@ public final class ResourceProperty {
     }
 
     /**
-     * Returns the value of the {@link ResourceProperty}
+     * Returns the value of the {@link ResourceProperty}.
      *
      * @return the value of the {@link ResourceProperty}
      */

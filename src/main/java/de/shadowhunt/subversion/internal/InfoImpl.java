@@ -27,7 +27,7 @@ import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.Revision;
 
 /**
- * Default implementation for {@link Info}
+ * Default implementation for {@link Info}.
  */
 final class InfoImpl implements Info {
 

@@ -19,11 +19,11 @@ import java.net.URI;
 
 import javax.annotation.CheckForNull;
 
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpUriRequest;
-
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Resource;
+
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpUriRequest;
 
 class CopyOperation extends AbstractVoidOperation {
 

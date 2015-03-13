@@ -23,17 +23,17 @@ import java.util.TreeSet;
 
 import javax.annotation.CheckForNull;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.protocol.HttpContext;
-
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
 
-class ListOperation extends PropfindOperation<Set<Info>> {
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.protocol.HttpContext;
+
+class ListOperation extends AbstractPropfindOperation<Set<Info>> {
 
     ListOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, final ResourceProperty.Key[] requestedProperties) {
         super(repository, resource, marker, depth, requestedProperties);

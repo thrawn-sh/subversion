@@ -18,16 +18,16 @@ package de.shadowhunt.subversion.internal;
 import java.io.File;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
-
 import de.shadowhunt.subversion.Log;
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
+
+import org.junit.Assert;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)

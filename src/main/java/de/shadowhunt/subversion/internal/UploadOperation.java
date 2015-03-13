@@ -20,12 +20,12 @@ import java.net.URI;
 
 import javax.annotation.CheckForNull;
 
+import de.shadowhunt.subversion.Resource;
+
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.InputStreamEntity;
-
-import de.shadowhunt.subversion.Resource;
 
 class UploadOperation extends AbstractVoidOperation {
 

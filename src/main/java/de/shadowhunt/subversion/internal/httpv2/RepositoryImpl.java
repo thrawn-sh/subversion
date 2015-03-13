@@ -20,11 +20,6 @@ import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.protocol.HttpContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
@@ -35,9 +30,12 @@ import de.shadowhunt.subversion.internal.AbstractBaseRepository;
 import de.shadowhunt.subversion.internal.CommitMessageOperation;
 import de.shadowhunt.subversion.internal.MergeOperation;
 
-class RepositoryImpl extends AbstractBaseRepository {
+import org.apache.http.client.HttpClient;
+import org.apache.http.protocol.HttpContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("de.shadowhunt.subversion.Repository");
+class RepositoryImpl extends AbstractBaseRepository {
 
     private static class ResourceMapperImpl implements ResourceMapper {
 
@@ -95,6 +93,8 @@ class RepositoryImpl extends AbstractBaseRepository {
             return prefix.append(suffix);
         }
     }
+
+    private static final Logger LOGGER = LoggerFactory.getLogger("de.shadowhunt.subversion.Repository");
 
     RepositoryImpl(final URI repository, final Resource prefix, final HttpClient client, final HttpContext context) {
         super(repository, new ResourceMapperImpl(prefix), client, context);

@@ -19,11 +19,11 @@ import java.net.URI;
 
 import javax.annotation.CheckForNull;
 
+import de.shadowhunt.subversion.Resource;
+
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpUriRequest;
-
-import de.shadowhunt.subversion.Resource;
 
 class DeleteOperation extends AbstractVoidOperation {
 

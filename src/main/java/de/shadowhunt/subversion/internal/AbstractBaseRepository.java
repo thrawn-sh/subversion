@@ -26,13 +26,6 @@ import java.util.UUID;
 
 import javax.annotation.CheckForNull;
 
-import org.apache.commons.lang3.Validate;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.protocol.HttpContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Log;
@@ -45,8 +38,15 @@ import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.Transaction.Status;
 import de.shadowhunt.subversion.View;
 
+import org.apache.commons.lang3.Validate;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.protocol.HttpContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
- * Base for all {@link de.shadowhunt.subversion.Repository}
+ * Base for all {@link de.shadowhunt.subversion.Repository}.
  */
 public abstract class AbstractBaseRepository implements Repository {
 
@@ -70,7 +70,7 @@ public abstract class AbstractBaseRepository implements Repository {
         return info.getRepositoryId();
     }
 
-    protected static interface ResourceMapper {
+    protected interface ResourceMapper {
 
         Resource getCommitMessageResource(Transaction transaction);
 

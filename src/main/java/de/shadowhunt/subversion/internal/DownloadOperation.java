@@ -21,15 +21,15 @@ import java.net.URI;
 
 import javax.annotation.CheckForNull;
 
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.TransmissionException;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.protocol.HttpContext;
-
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.TransmissionException;
 
 class DownloadOperation extends AbstractOperation<InputStream> {
 

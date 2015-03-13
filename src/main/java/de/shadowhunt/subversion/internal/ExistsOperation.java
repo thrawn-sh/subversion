@@ -17,13 +17,13 @@ package de.shadowhunt.subversion.internal;
 
 import java.net.URI;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Resource;
 
-class ExistsOperation extends PropfindOperation<Boolean> {
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+
+class ExistsOperation extends AbstractPropfindOperation<Boolean> {
 
     ExistsOperation(final URI repository, final Resource resource, final Resource marker) {
         super(repository, resource, marker, Depth.EMPTY, null);

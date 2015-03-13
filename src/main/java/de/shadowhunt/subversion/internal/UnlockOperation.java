@@ -17,10 +17,10 @@ package de.shadowhunt.subversion.internal;
 
 import java.net.URI;
 
+import de.shadowhunt.subversion.Resource;
+
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
-
-import de.shadowhunt.subversion.Resource;
 
 class UnlockOperation extends AbstractVoidOperation {
 

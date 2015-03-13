@@ -17,11 +17,6 @@ package de.shadowhunt.subversion.internal;
 
 import java.util.UUID;
 
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
-
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
@@ -30,6 +25,11 @@ import de.shadowhunt.subversion.ResourceProperty.Type;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction;
+
+import org.junit.Assert;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)

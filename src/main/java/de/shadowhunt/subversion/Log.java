@@ -18,33 +18,33 @@ package de.shadowhunt.subversion;
 import java.util.Date;
 
 /**
- * {@link Log} holds all log information for a single {@link Revision} of a {@link Resource}
+ * {@link Log} holds all log information for a single {@link Revision} of a {@link Resource}.
  */
 public interface Log {
 
     /**
-     * Returns the name of the author that committed changes to the repository
+     * Returns the name of the author that committed changes to the repository.
      *
      * @return the name of the author that committed changes to the repository
      */
     String getAuthor();
 
     /**
-     * Returns the time of the commit
+     * Returns the time of the commit.
      *
      * @return the time of the commit
      */
     Date getDate();
 
     /**
-     * Returns the commit message
+     * Returns the commit message.
      *
      * @return the commit message or an empty {@link String} if no commit message was specified
      */
     String getMessage();
 
     /**
-     * Returns the {@link Revision} that was created by the commit
+     * Returns the {@link Revision} that was created by the commit.
      *
      * @return the {@link Revision} that was created by the commit
      */

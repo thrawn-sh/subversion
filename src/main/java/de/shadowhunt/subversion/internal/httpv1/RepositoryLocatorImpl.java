@@ -17,12 +17,12 @@ package de.shadowhunt.subversion.internal.httpv1;
 
 import java.net.URI;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.protocol.HttpContext;
-
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.internal.RepositoryLocator;
+
+import org.apache.http.client.HttpClient;
+import org.apache.http.protocol.HttpContext;
 
 public class RepositoryLocatorImpl implements RepositoryLocator {
 

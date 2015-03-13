@@ -16,32 +16,32 @@
 package de.shadowhunt.subversion;
 
 /**
- * {@link Depth} defines the recursion level for the listing call {@link Repository #list(Resource, Revision, Depth)}
+ * {@link Depth} defines the recursion level for the listing call {@link Repository #list(Resource, Revision, Depth)}.
  */
 public enum Depth {
 
     /**
-     * only list the resources itself, no sub-resources
+     * Only list the resources itself, no sub-resources.
      */
     EMPTY("0"),
 
     /**
-     * only list all direct file sub-resources
+     * Only list all direct file sub-resources.
      */
     FILES("1"),
 
     /**
-     * only list all direct sub-resources (files and directories)
+     * Only list all direct sub-resources (files and directories).
      */
     IMMEDIATES("1"),
 
     /**
-     * recursively list all sub-resources (files and directories)
+     * Recursively list all sub-resources (files and directories).
      */
     INFINITY("infinity");
 
     /**
-     * recursion level
+     * Recursion level.
      */
     public final String value;
 

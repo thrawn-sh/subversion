@@ -23,16 +23,16 @@ import javax.annotation.CheckForNull;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.SubversionException;
+import de.shadowhunt.subversion.internal.AbstractBaseRepository.ResourceMapper;
+
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
-
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.Revision;
-import de.shadowhunt.subversion.SubversionException;
-import de.shadowhunt.subversion.internal.AbstractBaseRepository.ResourceMapper;
 
 class ResolveOperation extends AbstractOperation<Resource> {
 

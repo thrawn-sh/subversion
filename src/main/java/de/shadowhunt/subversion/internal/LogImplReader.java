@@ -24,14 +24,14 @@ import java.util.List;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.xml.sax.SAXException;
-
 import de.shadowhunt.subversion.Log;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.xml.AbstractSaxExpression;
 import de.shadowhunt.subversion.xml.AbstractSaxExpressionHandler;
 import de.shadowhunt.subversion.xml.SaxExpression;
+
+import org.xml.sax.SAXException;
 
 final class LogImplReader {
 
@@ -199,9 +199,10 @@ final class LogImplReader {
     }
 
     /**
-     * Reads log information for a resource from the given {@link java.io.InputStream}
+     * Reads log information for a resource from the given {@link java.io.InputStream}.
      *
-     * @param inputStream {@link java.io.InputStream} from which the status information is read (Note: will not be closed)
+     * @param inputStream {@link java.io.InputStream} from which the status information is read (Note: will not be
+     * closed)
      *
      * @return {@link Log} for the resource
      */

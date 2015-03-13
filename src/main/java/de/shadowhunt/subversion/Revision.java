@@ -20,29 +20,29 @@ import java.io.Serializable;
 import org.apache.commons.lang3.Validate;
 
 /**
- * {@link Revision} defines the revision of a repository or a resource in that repository
+ * {@link Revision} defines the revision of a repository or a resource in that repository.
  */
 public final class Revision implements Comparable<Revision>, Serializable {
 
     /**
-     * Represents the {@link Revision} of an empty repository
+     * Represents the {@link Revision} of an empty repository.
      */
     public static final Revision EMPTY = new Revision(0L);
 
     /**
-     * Represents the newest {@link Revision} in the repository
+     * Represents the newest {@link Revision} in the repository.
      */
     public static final Revision HEAD = new Revision(Long.MAX_VALUE);
 
     /**
-     * Represents the first {@link Revision} in the repository
+     * Represents the first {@link Revision} in the repository.
      */
     public static final Revision INITIAL = new Revision(1L);
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * Create a new {@link Revision} instance for the given value
+     * Create a new {@link Revision} instance for the given value.
      *
      * @param revision value of the {@link Revision} must be greater or equal than {@code 1}
      *

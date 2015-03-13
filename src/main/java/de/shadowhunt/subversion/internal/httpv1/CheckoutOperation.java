@@ -21,16 +21,16 @@ import java.net.URI;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.commons.io.output.StringBuilderWriter;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.entity.StringEntity;
-
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.internal.AbstractVoidOperation;
 import de.shadowhunt.subversion.internal.URIUtils;
 import de.shadowhunt.subversion.internal.XmlConstants;
+
+import org.apache.commons.io.output.StringBuilderWriter;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.StringEntity;
 
 class CheckoutOperation extends AbstractVoidOperation {
 

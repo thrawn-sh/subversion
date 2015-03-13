@@ -20,11 +20,6 @@ import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.protocol.HttpContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
@@ -34,11 +29,13 @@ import de.shadowhunt.subversion.Transaction.Status;
 import de.shadowhunt.subversion.internal.AbstractBaseRepository;
 import de.shadowhunt.subversion.internal.CommitMessageOperation;
 import de.shadowhunt.subversion.internal.MergeOperation;
-import de.shadowhunt.subversion.internal.TransactionImpl;
+
+import org.apache.http.client.HttpClient;
+import org.apache.http.protocol.HttpContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class RepositoryImpl extends AbstractBaseRepository {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger("de.shadowhunt.subversion.Repository");
 
     private static class ResourceMapperImpl implements ResourceMapper {
 
@@ -104,6 +101,8 @@ class RepositoryImpl extends AbstractBaseRepository {
         }
     }
 
+    private static final Logger LOGGER = LoggerFactory.getLogger("de.shadowhunt.subversion.Repository");
+
     RepositoryImpl(final URI repository, final Resource prefix, final HttpClient client, final HttpContext context) {
         super(repository, new ResourceMapperImpl(prefix), client, context);
     }
@@ -134,25 +133,20 @@ class RepositoryImpl extends AbstractBaseRepository {
 
     @Override
     public Transaction createTransaction() {
-        final TransactionImpl transaction;
-
         LOGGER.trace("creating new transaction");
+        final Transaction transaction = createTransaction0();
 
-        { // create transaction
-            final Resource resource = config.getCreateTransactionResource();
-            final Revision headRevision = determineHeadRevision();
-            final CreateTransactionOperation cto = new CreateTransactionOperation(repository, repositoryId, resource, headRevision);
-            transaction = cto.execute(client, context);
-        }
-
-        {// transaction resource must be explicitly registered
-            final Resource resource = config.getRegisterTransactionResource(transaction);
-            final Resource transactionResource = config.getTransactionResource(transaction);
-            final CheckoutOperation co = new CheckoutOperation(repository, resource, transactionResource);
-            co.execute(client, context);
-        }
+        // transaction resource must be explicitly registere
+        registerTransaction(transaction);
 
         return transaction;
+    }
+
+    private Transaction createTransaction0() {
+        final Resource resource = config.getCreateTransactionResource();
+        final Revision headRevision = determineHeadRevision();
+        final CreateTransactionOperation cto = new CreateTransactionOperation(repository, repositoryId, resource, headRevision);
+        return cto.execute(client, context);
     }
 
     @Override
@@ -170,5 +164,12 @@ class RepositoryImpl extends AbstractBaseRepository {
         final CheckoutOperation co = new CheckoutOperation(repository, existingResource, transactionResource);
         co.execute(client, context);
         transaction.register(resource, Status.EXISTS);
+    }
+
+    private void registerTransaction(final Transaction transaction) {
+        final Resource resource = config.getRegisterTransactionResource(transaction);
+        final Resource transactionResource = config.getTransactionResource(transaction);
+        final CheckoutOperation co = new CheckoutOperation(repository, resource, transactionResource);
+        co.execute(client, context);
     }
 }
