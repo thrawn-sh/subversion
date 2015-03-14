@@ -33,8 +33,6 @@ import org.xml.sax.SAXException;
 
 public final class InfoLoader extends AbstractBaseLoader {
 
-    public static final String SUFFIX = ".info";
-
     static class InfoHandler extends BasicHandler {
 
         private InfoImpl current = new InfoImpl();
@@ -67,6 +65,8 @@ public final class InfoLoader extends AbstractBaseLoader {
             }
         }
     }
+
+    public static final String SUFFIX = ".info";
 
     private final ResourcePropertyLoader resourcePropertyLoader;
 

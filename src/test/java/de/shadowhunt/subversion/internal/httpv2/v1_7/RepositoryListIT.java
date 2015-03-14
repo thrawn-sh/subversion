@@ -17,9 +17,16 @@ package de.shadowhunt.subversion.internal.httpv2.v1_7;
 
 import de.shadowhunt.subversion.internal.AbstractRepositoryListIT;
 
+import org.junit.BeforeClass;
+
 public class RepositoryListIT extends AbstractRepositoryListIT {
 
     private static final Helper HELPER = new Helper();
+
+    @BeforeClass
+    public static void prepare() throws Exception {
+        HELPER.pullCurrentDumpData();
+    }
 
     public RepositoryListIT() {
         super(HELPER.getRepositoryA(), HELPER.getRoot());

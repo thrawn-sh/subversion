@@ -17,9 +17,16 @@ package de.shadowhunt.subversion.internal.httpv1.v1_5;
 
 import de.shadowhunt.subversion.internal.AbstractRepositoryNamespacePropertiesIT;
 
+import org.junit.BeforeClass;
+
 public class RepositoryNamespacePropertiesIT extends AbstractRepositoryNamespacePropertiesIT {
 
     private static final Helper HELPER = new Helper();
+
+    @BeforeClass
+    public static void prepare() throws Exception {
+        HELPER.pullCurrentDumpData();
+    }
 
     public RepositoryNamespacePropertiesIT() {
         super(HELPER.getRepositoryA(), HELPER.getRoot(), HELPER.getTestId());

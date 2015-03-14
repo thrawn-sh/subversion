@@ -23,12 +23,12 @@ public class RepositoryNamespacePropertiesIT extends AbstractRepositoryNamespace
 
     private static final Helper HELPER = new Helper();
 
-    public RepositoryNamespacePropertiesIT() {
-        super(HELPER.getRepositoryA(), HELPER.getRoot(), HELPER.getTestId());
-    }
-
     @BeforeClass
     public static void prepare() throws Exception {
         HELPER.pullCurrentDumpData();
+    }
+
+    public RepositoryNamespacePropertiesIT() {
+        super(HELPER.getRepositoryA(), HELPER.getRoot(), HELPER.getTestId());
     }
 }

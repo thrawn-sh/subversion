@@ -553,7 +553,6 @@ public abstract class AbstractBaseRepository implements Repository {
         }
     }
 
-
     @Override
     public final void unlock(final Resource resource, final boolean force) {
         Validate.notNull(resource, "resource must not be null");

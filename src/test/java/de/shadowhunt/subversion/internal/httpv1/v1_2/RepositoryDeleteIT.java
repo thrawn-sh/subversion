@@ -17,16 +17,9 @@ package de.shadowhunt.subversion.internal.httpv1.v1_2;
 
 import de.shadowhunt.subversion.internal.AbstractRepositoryDeleteIT;
 
-import org.junit.BeforeClass;
-
 public class RepositoryDeleteIT extends AbstractRepositoryDeleteIT {
 
     private static final Helper HELPER = new Helper();
-
-    @BeforeClass
-    public static void prepare() throws Exception {
-        HELPER.pullCurrentDumpData();
-    }
 
     public RepositoryDeleteIT() {
         super(HELPER.getRepositoryA(), HELPER.getTestId());

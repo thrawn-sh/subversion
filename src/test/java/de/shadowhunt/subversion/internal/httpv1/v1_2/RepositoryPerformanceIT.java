@@ -17,18 +17,11 @@ package de.shadowhunt.subversion.internal.httpv1.v1_2;
 
 import de.shadowhunt.subversion.internal.AbstractRepositoryPerformanceIT;
 
-import org.junit.BeforeClass;
-
 public class RepositoryPerformanceIT extends AbstractRepositoryPerformanceIT {
 
     private static final Helper HELPER = new Helper();
 
     private static final CountingHttpRequestInterceptor INTERCEPTOR = new CountingHttpRequestInterceptor();
-
-    @BeforeClass
-    public static void prepare() throws Exception {
-        HELPER.pullCurrentDumpData();
-    }
 
     public RepositoryPerformanceIT() {
         super(HELPER.getRepositoryA(INTERCEPTOR), INTERCEPTOR, HELPER.getTestId());

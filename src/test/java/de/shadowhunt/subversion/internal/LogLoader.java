@@ -38,8 +38,6 @@ import org.xml.sax.SAXException;
 
 public final class LogLoader extends AbstractBaseLoader {
 
-    public static final String SUFFIX = ".log";
-
     static class LogHandler extends BasicHandler {
 
         private static TimeZone ZULU = TimeZone.getTimeZone("ZULU");
@@ -100,6 +98,8 @@ public final class LogLoader extends AbstractBaseLoader {
             }
         }
     }
+
+    public static final String SUFFIX = ".log";
 
     LogLoader(final File root) {
         super(root);

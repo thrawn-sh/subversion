@@ -31,8 +31,6 @@ import org.xml.sax.SAXException;
 
 public final class ResourcePropertyLoader extends AbstractBaseLoader {
 
-    public static final String SUFFIX = ".proplist";
-
     static class ResourcePropertyHandler extends BasicHandler {
 
         private final Set<ResourceProperty> properties = new TreeSet<ResourceProperty>(ResourceProperty.TYPE_NAME_COMPARATOR);
@@ -71,6 +69,8 @@ public final class ResourcePropertyLoader extends AbstractBaseLoader {
             }
         }
     }
+
+    public static final String SUFFIX = ".proplist";
 
     ResourcePropertyLoader(final File root) {
         super(root);

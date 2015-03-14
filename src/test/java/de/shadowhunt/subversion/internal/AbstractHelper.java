@@ -127,14 +127,6 @@ public abstract class AbstractHelper {
         zipFile.close();
     }
 
-    public File getBase() {
-        return base;
-    }
-
-    public URI getDumpUri() {
-        return dumpUri;
-    }
-
     public HttpClient getHttpClient(final String username, final HttpRequestInterceptor... interceptors) {
         final HttpClientBuilder builder = HttpClientBuilder.create();
 
@@ -173,10 +165,6 @@ public abstract class AbstractHelper {
             repositoryB = RepositoryFactory.getInstance().createRepository(repositoryUri, client, context);
         }
         return repositoryB;
-    }
-
-    public URI getRepositoryUri() {
-        return repositoryUri;
     }
 
     public File getRoot() {

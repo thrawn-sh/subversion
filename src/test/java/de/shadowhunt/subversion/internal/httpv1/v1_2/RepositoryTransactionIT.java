@@ -17,16 +17,9 @@ package de.shadowhunt.subversion.internal.httpv1.v1_2;
 
 import de.shadowhunt.subversion.internal.AbstractRepositoryTransactionIT;
 
-import org.junit.BeforeClass;
-
 public class RepositoryTransactionIT extends AbstractRepositoryTransactionIT {
 
     private static final Helper HELPER = new Helper();
-
-    @BeforeClass
-    public static void prepare() throws Exception {
-        HELPER.pullCurrentDumpData();
-    }
 
     public RepositoryTransactionIT() {
         super(HELPER.getRepositoryA());

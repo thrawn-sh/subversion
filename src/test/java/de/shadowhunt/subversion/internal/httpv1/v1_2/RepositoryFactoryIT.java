@@ -18,16 +18,9 @@ package de.shadowhunt.subversion.internal.httpv1.v1_2;
 import de.shadowhunt.subversion.internal.AbstractHelper;
 import de.shadowhunt.subversion.internal.AbstractRepositoryFactoryIT;
 
-import org.junit.BeforeClass;
-
 public class RepositoryFactoryIT extends AbstractRepositoryFactoryIT {
 
     private static final Helper HELPER = new Helper();
-
-    @BeforeClass
-    public static void prepare() throws Exception {
-        HELPER.pullCurrentDumpData();
-    }
 
     public RepositoryFactoryIT() {
         super(HELPER.getRepositoryA(), HELPER.getHttpClient(AbstractHelper.USERNAME_A), HELPER.getHttpContext());

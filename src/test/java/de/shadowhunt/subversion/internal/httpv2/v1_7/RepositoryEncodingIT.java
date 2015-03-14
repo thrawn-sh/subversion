@@ -17,9 +17,16 @@ package de.shadowhunt.subversion.internal.httpv2.v1_7;
 
 import de.shadowhunt.subversion.internal.AbstractRepositoryEncodingIT;
 
+import org.junit.BeforeClass;
+
 public class RepositoryEncodingIT extends AbstractRepositoryEncodingIT {
 
     private static final Helper HELPER = new Helper();
+
+    @BeforeClass
+    public static void prepare() throws Exception {
+        HELPER.pullCurrentDumpData();
+    }
 
     public RepositoryEncodingIT() {
         super(HELPER.getRepositoryA(), HELPER.getTestId(), HELPER.getRoot());
