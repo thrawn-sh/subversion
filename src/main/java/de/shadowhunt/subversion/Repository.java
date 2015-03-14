@@ -434,6 +434,18 @@ public interface Repository {
     void rollback(Transaction transaction);
 
     /**
+     * Abort the current running {@link Transaction} and revert all modifications if the transaction is not committed.
+     *
+     * @param transaction the current running {@link Transaction}
+     *
+     * @throws java.lang.NullPointerException if the transaction parameter is {@code null}
+     * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
+     * the server
+     */
+    void rollbackIfNotCommitted(Transaction transaction);
+
+    /**
      * Remove the lock on the expected revision of the resource.
      *
      * @param resource the {@link Resource} of the resource (relative to the repository root)

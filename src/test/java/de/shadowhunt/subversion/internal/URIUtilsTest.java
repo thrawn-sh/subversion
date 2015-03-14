@@ -38,9 +38,7 @@ public class URIUtilsTest {
         Assert.assertEquals("escaped special chars uri", "http://www.example.net/foo/%5E%C2%B0%C2%B2%C2%B3%22%C2%A7$%25&%7B(%5B)%5D%7D=%3F%5C%C2%B4%60~+*'%23,;.:-_%C2%B5@%E2%82%AC%3C%3E%7C%20.txt", specialCharsURI.toString());
 
         final URI utf8URI = URIUtils.createURI(BASE, Resource.create("/ジャワ.txt")); // java
-        final URI utf8encodedURI = URIUtils.createURI(BASE, Resource.create("/\u30b8\u30e3\u30ef.txt")); // java
         Assert.assertEquals("escaped utf8 uri", "http://www.example.net/foo/%E3%82%B8%E3%83%A3%E3%83%AF.txt", utf8URI.toString());
-        Assert.assertEquals("escaped utf8 uri", "http://www.example.net/foo/%E3%82%B8%E3%83%A3%E3%83%AF.txt", utf8encodedURI.toString());
     }
 
     @Test
@@ -52,9 +50,7 @@ public class URIUtilsTest {
         Assert.assertEquals("escaped special chars uri", "http://www.example.net/subversion%20repository/%5E%C2%B0%C2%B2%C2%B3%22%C2%A7$%25&%7B(%5B)%5D%7D=%3F%5C%C2%B4%60~+*'%23,;.:-_%C2%B5@%E2%82%AC%3C%3E%7C%20.txt", specialCharsURI.toString());
 
         final URI utf8URI = URIUtils.createURI(ESCAPED_BASE, Resource.create("/ジャワ.txt")); // java
-        final URI utf8EncodedURI = URIUtils.createURI(ESCAPED_BASE, Resource.create("/\u30b8\u30e3\u30ef.txt")); // java
         Assert.assertEquals("escaped utf8 uri", "http://www.example.net/subversion%20repository/%E3%82%B8%E3%83%A3%E3%83%AF.txt", utf8URI.toString());
-        Assert.assertEquals("escaped utf8 uri", "http://www.example.net/subversion%20repository/%E3%82%B8%E3%83%A3%E3%83%AF.txt", utf8EncodedURI.toString());
     }
 
     @Test(expected = IllegalArgumentException.class)

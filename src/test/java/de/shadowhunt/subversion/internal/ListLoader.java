@@ -26,7 +26,7 @@ import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 
-public final class ListLoader extends BaseLoader {
+public final class ListLoader extends AbstractBaseLoader {
 
     private static final FilenameFilter NO_META = new FilenameFilter() {
 

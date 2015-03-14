@@ -29,7 +29,7 @@ import de.shadowhunt.subversion.Revision;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-public final class ResourcePropertyLoader extends BaseLoader {
+public final class ResourcePropertyLoader extends AbstractBaseLoader {
 
     public static final String SUFFIX = ".proplist";
 

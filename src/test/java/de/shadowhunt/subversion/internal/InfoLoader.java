@@ -31,7 +31,7 @@ import org.junit.Assert;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-public final class InfoLoader extends BaseLoader {
+public final class InfoLoader extends AbstractBaseLoader {
 
     public static final String SUFFIX = ".info";
 

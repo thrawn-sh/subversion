@@ -27,11 +27,13 @@ final class Helper extends AbstractHelper {
 
     private static final URI DUMP_URI = URI.create("http://subversion.vm.shadowhunt.de/1.3.0/dump.zip");
 
+    private static final URI MD5_URI = URI.create("http://subversion.vm.shadowhunt.de/1.3.0/dump.zip.md5");
+
     private static final URI REPOSITORY_URI = URI.create("http://subversion.vm.shadowhunt.de/1.3.0/svn-basic/test");
 
     private static final UUID TEST_ID = UUID.randomUUID();
 
     Helper() {
-        super(BASE, DUMP_URI, REPOSITORY_URI, TEST_ID);
+        super(BASE, DUMP_URI, MD5_URI, REPOSITORY_URI, TEST_ID);
     }
 }

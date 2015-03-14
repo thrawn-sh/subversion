@@ -16,21 +16,26 @@
 package de.shadowhunt.subversion.internal;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import de.shadowhunt.subversion.Resource;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.apache.commons.io.IOUtils;
 
 public abstract class AbstractPrepare {
+
+    public static final Charset UTF8 = Charset.forName("UTF-8");
 
     private static boolean extractArchive(final File zip, final File prefix) throws Exception {
         final ZipFile zipFile = new ZipFile(zip);
@@ -74,23 +79,39 @@ public abstract class AbstractPrepare {
 
     private final URI dumpUri;
 
-    protected AbstractPrepare(final URI dumpUri, final File base) {
+    private final URI md5Uri;
+
+    protected AbstractPrepare(final URI dumpUri, final URI md5Uri, final File base) {
         this.dumpUri = dumpUri;
+        this.md5Uri = md5Uri;
         this.base = base;
     }
 
-    @Test
+    private String calculateMd5(final File zip) throws IOException {
+        try (final InputStream is = new FileInputStream(zip)) {
+            return DigestUtils.md5Hex(is);
+        }
+    }
+
+    private String copyUrlToString(final URL source) throws IOException {
+        try (final InputStream is = source.openStream()) {
+            return IOUtils.toString(is, UTF8);
+        }
+    }
+
     public void pullCurrentDumpData() throws Exception {
+        final File zip = new File(base, "dump.zip");
+        if (zip.exists()) {
+            final String localMD5 = calculateMd5(zip);
+            final String remoteMD5 = copyUrlToString(md5Uri.toURL());
+            if (localMD5.equals(remoteMD5)) {
+                return;
+            }
+        }
         FileUtils.deleteQuietly(base);
 
-        final boolean created = base.mkdirs();
-        Assert.assertTrue(base + " could not be created", created);
-
-        final File zip = new File(base, "dump.zip");
+        base.mkdirs();
         FileUtils.copyURLToFile(dumpUri.toURL(), zip);
-        Assert.assertTrue("could not download " + zip, zip.isFile());
-
-        final boolean extracted = extractArchive(zip, base);
-        Assert.assertTrue("could not extract " + zip, extracted);
+        extractArchive(zip, base);
     }
 }

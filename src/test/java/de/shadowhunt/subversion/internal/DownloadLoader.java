@@ -22,7 +22,7 @@ import java.io.InputStream;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 
-public final class DownloadLoader extends BaseLoader {
+public final class DownloadLoader extends AbstractBaseLoader {
 
     DownloadLoader(final File root) {
         super(root);

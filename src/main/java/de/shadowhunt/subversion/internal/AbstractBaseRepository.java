@@ -545,6 +545,16 @@ public abstract class AbstractBaseRepository implements Repository {
     }
 
     @Override
+    public void rollbackIfNotCommitted(final Transaction transaction) {
+        Validate.notNull(transaction, "transaction must not be null");
+
+        if (transaction.isActive()) {
+            rollback(transaction);
+        }
+    }
+
+
+    @Override
     public final void unlock(final Resource resource, final boolean force) {
         Validate.notNull(resource, "resource must not be null");
 

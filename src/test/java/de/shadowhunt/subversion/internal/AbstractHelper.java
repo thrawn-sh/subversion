@@ -15,17 +15,28 @@
  */
 package de.shadowhunt.subversion.internal;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
+import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Enumeration;
 import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import de.shadowhunt.http.client.SubversionRequestRetryHandler;
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.RepositoryFactory;
+import de.shadowhunt.subversion.Resource;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
@@ -45,17 +56,17 @@ public abstract class AbstractHelper {
 
     public static final String USERNAME_B = "svnuser2";
 
-    public static final Charset UTF8_CHARSET = Charset.forName("UTF-8");
-
-    public static InputStream getInputStream(final String s) {
-        return new ByteArrayInputStream(s.getBytes(UTF8_CHARSET));
-    }
+    public static final Charset UTF8 = Charset.forName("UTF-8");
 
     private final File base;
 
     private final URI dumpUri;
 
-    private Repository repositoryA, repositoryB;
+    private final URI md5Uri;
+
+    private Repository repositoryA;
+
+    private Repository repositoryB;
 
     private final URI repositoryUri;
 
@@ -63,12 +74,57 @@ public abstract class AbstractHelper {
 
     private final UUID testId;
 
-    protected AbstractHelper(final File base, final URI dumpUri, final URI repositoryUri, final UUID testId) {
+    protected AbstractHelper(final File base, final URI dumpUri, final URI md5Uri, final URI repositoryUri, final UUID testId) {
         this.base = base;
         this.root = new File(base, "dump");
         this.dumpUri = dumpUri;
+        this.md5Uri = md5Uri;
         this.repositoryUri = repositoryUri;
         this.testId = testId;
+    }
+
+    private String calculateMd5(final File zip) throws IOException {
+        try (final InputStream is = new FileInputStream(zip)) {
+            return DigestUtils.md5Hex(is);
+        }
+    }
+
+    private String copyUrlToString(final URL source) throws IOException {
+        try (final InputStream is = source.openStream()) {
+            return IOUtils.toString(is, UTF8);
+        }
+    }
+
+    private void extractArchive(final File zip, final File prefix) throws Exception {
+        final ZipFile zipFile = new ZipFile(zip);
+        final Enumeration<? extends ZipEntry> enu = zipFile.entries();
+        while (enu.hasMoreElements()) {
+            final ZipEntry zipEntry = enu.nextElement();
+
+            final String name = zipEntry.getName();
+
+            final File file = new File(prefix, name);
+            if (name.charAt(name.length() - 1) == Resource.SEPARATOR_CHAR) {
+                if (!file.isDirectory() && !file.mkdirs()) {
+                    throw new IOException("can not create directory structure: " + file);
+                }
+                continue;
+            }
+
+            final File parent = file.getParentFile();
+            if (parent != null) {
+                if (!parent.isDirectory() && !parent.mkdirs()) {
+                    throw new IOException("can not create directory structure: " + parent);
+                }
+            }
+
+            try (final InputStream is = zipFile.getInputStream(zipEntry)) {
+                try (final OutputStream os = new FileOutputStream(file)) {
+                    IOUtils.copy(is, os);
+                }
+            }
+        }
+        zipFile.close();
     }
 
     public File getBase() {
@@ -129,5 +185,22 @@ public abstract class AbstractHelper {
 
     public UUID getTestId() {
         return testId;
+    }
+
+    public void pullCurrentDumpData() throws Exception {
+        final File zip = new File(base, "dump.zip");
+        if (zip.exists()) {
+            final String localMD5 = calculateMd5(zip);
+            final String hashContent = copyUrlToString(md5Uri.toURL());
+            final String remoteMD5 = hashContent.substring(0, 32);
+            if (localMD5.equals(remoteMD5)) {
+                return;
+            }
+        }
+        FileUtils.deleteQuietly(base);
+
+        base.mkdirs();
+        FileUtils.copyURLToFile(dumpUri.toURL(), zip);
+        extractArchive(zip, base);
     }
 }

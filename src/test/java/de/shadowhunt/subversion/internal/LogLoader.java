@@ -36,7 +36,7 @@ import de.shadowhunt.subversion.Revision;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-public final class LogLoader extends BaseLoader {
+public final class LogLoader extends AbstractBaseLoader {
 
     public static final String SUFFIX = ".log";
 
