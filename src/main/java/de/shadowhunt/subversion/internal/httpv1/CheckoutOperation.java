@@ -46,9 +46,6 @@ class CheckoutOperation extends AbstractVoidOperation {
 
     @Override
     protected HttpUriRequest createRequest() {
-        final URI uri = URIUtils.createURI(repository, resource);
-        final DavTemplateRequest request = new DavTemplateRequest("CHECKOUT", uri);
-
         final Writer body = new StringBuilderWriter();
         try {
             final XMLStreamWriter writer = XML_OUTPUT_FACTORY.createXMLStreamWriter(body);
@@ -69,6 +66,8 @@ class CheckoutOperation extends AbstractVoidOperation {
             throw new SubversionException("could not create request body", e);
         }
 
+        final URI uri = URIUtils.createURI(repository, resource);
+        final DavTemplateRequest request = new DavTemplateRequest("CHECKOUT", uri);
         request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
         return request;
     }

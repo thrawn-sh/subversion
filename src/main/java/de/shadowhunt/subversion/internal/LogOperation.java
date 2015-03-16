@@ -57,9 +57,6 @@ class LogOperation extends AbstractOperation<List<Log>> {
 
     @Override
     protected HttpUriRequest createRequest() {
-        final URI uri = URIUtils.createURI(repository, resource);
-        final DavTemplateRequest request = new DavTemplateRequest("REPORT", uri);
-
         final Writer body = new StringBuilderWriter();
         try {
             final XMLStreamWriter writer = XML_OUTPUT_FACTORY.createXMLStreamWriter(body);
@@ -90,6 +87,8 @@ class LogOperation extends AbstractOperation<List<Log>> {
             throw new SubversionException("could not create request body", e);
         }
 
+        final URI uri = URIUtils.createURI(repository, resource);
+        final DavTemplateRequest request = new DavTemplateRequest("REPORT", uri);
         request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
         return request;
     }

@@ -378,7 +378,7 @@ public abstract class AbstractBaseRepository implements Repository {
     }
 
     @CheckForNull
-    private Info info0(final View view, final Resource resource, final Revision revision, final boolean resolve, @CheckForNull final ResourceProperty.Key[] keys) {
+    private Info info0(final View view, final Resource resource, final Revision revision, final boolean resolve, @CheckForNull final ResourceProperty.Key... keys) {
         final Resource resolved = resolve2(view, resource, revision, resolve);
         final InfoOperation operation = new InfoOperation(repository, resolved, config.getPrefix(), keys);
         return operation.execute(client, context);
@@ -402,7 +402,7 @@ public abstract class AbstractBaseRepository implements Repository {
         return list0(view, resource, revision, depth, keys);
     }
 
-    private Set<Info> list0(final View view, final Resource resource, final Revision revision, final Depth depth, @CheckForNull final ResourceProperty.Key[] keys) {
+    private Set<Info> list0(final View view, final Resource resource, final Revision revision, final Depth depth, @CheckForNull final ResourceProperty.Key... keys) {
         if (Depth.INFINITY == depth) {
             final Set<Info> result = new TreeSet<>(Info.RESOURCE_COMPARATOR);
             listRecursively0(view, resource, revision, result, keys);
@@ -418,7 +418,7 @@ public abstract class AbstractBaseRepository implements Repository {
         return infoSet;
     }
 
-    private void listRecursively0(final View view, final Resource resource, final Revision revision, final Set<Info> result, @CheckForNull final ResourceProperty.Key[] keys) {
+    private void listRecursively0(final View view, final Resource resource, final Revision revision, final Set<Info> result, @CheckForNull final ResourceProperty.Key... keys) {
         for (final Info info : list0(view, resource, revision, Depth.IMMEDIATES, keys)) {
             if (!result.add(info)) {
                 continue;

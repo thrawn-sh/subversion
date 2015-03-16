@@ -35,7 +35,7 @@ import org.apache.http.protocol.HttpContext;
 
 class ListOperation extends AbstractPropfindOperation<Set<Info>> {
 
-    ListOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, final ResourceProperty.Key[] requestedProperties) {
+    ListOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, final ResourceProperty.Key... requestedProperties) {
         super(repository, resource, marker, depth, requestedProperties);
     }
 

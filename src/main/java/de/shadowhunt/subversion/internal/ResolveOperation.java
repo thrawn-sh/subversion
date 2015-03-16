@@ -54,9 +54,6 @@ class ResolveOperation extends AbstractOperation<Resource> {
 
     @Override
     protected HttpUriRequest createRequest() {
-        final URI uri = URIUtils.createURI(repository, resource);
-        final DavTemplateRequest request = new DavTemplateRequest("REPORT", uri);
-
         final Writer body = new StringBuilderWriter();
         try {
             final XMLStreamWriter writer = XML_OUTPUT_FACTORY.createXMLStreamWriter(body);
@@ -77,6 +74,8 @@ class ResolveOperation extends AbstractOperation<Resource> {
             throw new SubversionException("could not create request body", e);
         }
 
+        final URI uri = URIUtils.createURI(repository, resource);
+        final DavTemplateRequest request = new DavTemplateRequest("REPORT", uri);
         request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
         return request;
     }

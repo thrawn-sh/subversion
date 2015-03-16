@@ -173,7 +173,7 @@ final class InfoImpl implements Info {
         this.md5 = md5;
     }
 
-    void setProperties(@CheckForNull final ResourceProperty[] properties) {
+    void setProperties(@CheckForNull final ResourceProperty... properties) {
         if ((properties == null) || (properties.length == 0)) {
             this.properties = EMPTY;
         } else {

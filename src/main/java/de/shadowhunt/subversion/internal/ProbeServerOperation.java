@@ -57,8 +57,6 @@ class ProbeServerOperation extends AbstractOperation<Repository> {
 
     @Override
     protected HttpUriRequest createRequest() {
-        final DavTemplateRequest request = new DavTemplateRequest("OPTIONS", repository);
-
         final Writer body = new StringBuilderWriter();
         try {
             final XMLStreamWriter writer = XML_OUTPUT_FACTORY.createXMLStreamWriter(body);
@@ -72,8 +70,9 @@ class ProbeServerOperation extends AbstractOperation<Repository> {
         } catch (final XMLStreamException e) {
             throw new SubversionException("could not create request body: " + e.getMessage(), e);
         }
-        request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
 
+        final DavTemplateRequest request = new DavTemplateRequest("OPTIONS", repository);
+        request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
         return request;
     }
 

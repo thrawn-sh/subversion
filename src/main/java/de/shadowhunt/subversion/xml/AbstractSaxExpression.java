@@ -48,7 +48,7 @@ public abstract class AbstractSaxExpression<V> implements SaxExpression<V> {
 
     private int position = 0;
 
-    protected AbstractSaxExpression(final QName[] path) {
+    protected AbstractSaxExpression(final QName... path) {
         this(path, NO_CHILDREN);
     }
 

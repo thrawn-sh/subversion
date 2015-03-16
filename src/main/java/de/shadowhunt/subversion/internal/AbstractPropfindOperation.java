@@ -36,21 +36,22 @@ import org.apache.http.entity.StringEntity;
 abstract class AbstractPropfindOperation<T> extends AbstractOperation<T> {
 
     @CheckForNull
-    private static ResourceProperty.Key[] filter(final ResourceProperty.Key[] requestedProperties) {
+    private static ResourceProperty.Key[] filter(final ResourceProperty.Key... requestedProperties) {
         if (requestedProperties == null) {
             return null;
         }
 
         int w = 0;
         int r = 0;
+        final ResourceProperty.Key[] filteredKeys = new ResourceProperty.Key[requestedProperties.length];
         while (r < requestedProperties.length) {
             if (ResourceProperty.Type.SUBVERSION_CUSTOM.equals(requestedProperties[r].getType())) {
                 r++;
                 continue;
             }
-            requestedProperties[w++] = requestedProperties[r++];
+            filteredKeys[w++] = requestedProperties[r++];
         }
-        return Arrays.copyOf(requestedProperties, w);
+        return Arrays.copyOf(filteredKeys, w);
     }
 
     protected final Depth depth;
@@ -61,7 +62,7 @@ abstract class AbstractPropfindOperation<T> extends AbstractOperation<T> {
 
     protected final Resource resource;
 
-    AbstractPropfindOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, @CheckForNull final ResourceProperty.Key[] requestedProperties) {
+    AbstractPropfindOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, @CheckForNull final ResourceProperty.Key... requestedProperties) {
         super(repository);
         this.resource = resource;
         this.marker = marker;
