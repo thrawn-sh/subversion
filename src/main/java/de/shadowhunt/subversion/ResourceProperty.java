@@ -124,15 +124,11 @@ public final class ResourceProperty {
     /**
      * {@link Comparator} that compares {@link ResourceProperty} by their type and name.
      */
-    public static final Comparator<ResourceProperty> TYPE_NAME_COMPARATOR = new Comparator<ResourceProperty>() {
+    public static final Comparator<ResourceProperty> TYPE_NAME_COMPARATOR = (rp1, rp2) -> {
+        Validate.notNull(rp1, "rp1 must not be null");
+        Validate.notNull(rp2, "rp2 must not be null");
 
-        @Override
-        public int compare(final ResourceProperty rp1, final ResourceProperty rp2) {
-            Validate.notNull(rp1, "rp1 must not be null");
-            Validate.notNull(rp2, "rp2 must not be null");
-
-            return rp1.getKey().compareTo(rp2.getKey());
-        }
+        return rp1.getKey().compareTo(rp2.getKey());
     };
 
     public static final Key VERSION = new Key(Type.DAV, "version-name");

@@ -31,15 +31,11 @@ public interface Info {
     /**
      * {@link java.util.Comparator} orders {@link de.shadowhunt.subversion.Info}s by their relative {@link Resource}.
      */
-    Comparator<Info> RESOURCE_COMPARATOR = new Comparator<Info>() {
+    Comparator<Info> RESOURCE_COMPARATOR = (i1, i2) -> {
+        Validate.notNull(i1, "i1 must not be null");
+        Validate.notNull(i2, "i2 must not be null");
 
-        @Override
-        public int compare(final Info i1, final Info i2) {
-            Validate.notNull(i1, "i1 must not be null");
-            Validate.notNull(i2, "i2 must not be null");
-
-            return i1.getResource().compareTo(i2.getResource());
-        }
+        return i1.getResource().compareTo(i2.getResource());
     };
 
     /**
