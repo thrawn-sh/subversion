@@ -18,8 +18,6 @@ package de.shadowhunt.subversion.internal.httpv2;
 import java.net.URI;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
-
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
@@ -30,6 +28,7 @@ import de.shadowhunt.subversion.internal.AbstractBaseRepository;
 import de.shadowhunt.subversion.internal.CommitMessageOperation;
 import de.shadowhunt.subversion.internal.MergeOperation;
 
+import org.apache.commons.lang3.Validate;
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
@@ -101,8 +100,9 @@ class RepositoryImpl extends AbstractBaseRepository {
     }
 
     @Override
-    public void commit(final Transaction transaction, @CheckForNull final String message) {
+    public void commit(final Transaction transaction, final String message) {
         validateTransaction(transaction);
+        Validate.notNull(message, "message must not be null");
 
         LOGGER.trace("committing {} with message {}", transaction.getId(), message);
 

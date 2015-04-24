@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.ThreadSafe;
 
 /**
@@ -61,11 +60,12 @@ public interface Repository {
      * @param message the commit message for the expected operation
      *
      * @throws java.lang.NullPointerException if the transaction parameter is {@code null}
+     * @throws java.lang.NullPointerException if the message parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
      * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
      * the server
      */
-    void commit(Transaction transaction, @CheckForNull String message);
+    void commit(Transaction transaction, String message);
 
     /**
      * Recursively copy a resource in the given revision.
