@@ -15,8 +15,6 @@
  */
 package de.shadowhunt.subversion;
 
-import javax.annotation.CheckForNull;
-
 /**
  * {@link SubversionException} is the superclass of those exceptions that can be thrown in the subversion module.
  */
@@ -34,7 +32,7 @@ public class SubversionException extends RuntimeException {
      * method
      */
     public SubversionException(final String message) {
-        this(message, null, 0);
+        this(message, 0);
     }
 
     /**
@@ -47,7 +45,8 @@ public class SubversionException extends RuntimeException {
      * is reported
      */
     public SubversionException(final String message, final int httpStatusCode) {
-        this(message, null, httpStatusCode);
+        super(message);
+        this.httpStatusCode = httpStatusCode;
     }
 
     /**
@@ -59,7 +58,7 @@ public class SubversionException extends RuntimeException {
      * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method).  (A {@code null}
      * value is permitted, and indicates that the cause is nonexistent or unknown.)
      */
-    public SubversionException(final String message, @CheckForNull final Throwable cause) {
+    public SubversionException(final String message, final Throwable cause) {
         this(message, cause, 0);
     }
 
@@ -74,7 +73,7 @@ public class SubversionException extends RuntimeException {
      * @param httpStatusCode for each error that is reported by the underlying subversion server, the HTTP status code
      * is reported, for internal error this is {@code 0}
      */
-    public SubversionException(final String message, @CheckForNull final Throwable cause, final int httpStatusCode) {
+    public SubversionException(final String message, final Throwable cause, final int httpStatusCode) {
         super(message, cause);
         this.httpStatusCode = httpStatusCode;
     }
