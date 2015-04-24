@@ -52,7 +52,11 @@ class PropertiesUpdateOperation extends AbstractVoidOperation {
 
     private final Type type;
 
+<<<<<<< HEAD
+    PropertiesUpdateOperation(final URI repository, final Resource resource, final Type type, @CheckForNull final String lockToken, final ResourceProperty... properties) {
+=======
     PropertiesUpdateOperation(final URI repository, final Resource resource, final Type type, final Optional<String>  lockToken, final ResourceProperty[] properties) {
+>>>>>>> make lockToken optional
         super(repository);
         this.resource = resource;
         this.type = type;

@@ -20,6 +20,7 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -126,10 +127,8 @@ public abstract class AbstractBaseRepository implements Repository {
         }
 
         final Info info = info0(transaction, resource, transaction.getHeadRevision(), true, LOCKING);
-        String lockToken = null;
-        if (info != null) {
-            lockToken = info.getLockToken();
-        }
+        final Optional<String> lockToken = info.getLockToken();
+
         final Resource uploadResource = config.getWorkingResource(transaction).append(resource);
         final UploadOperation operation = new UploadOperation(repository, uploadResource, lockToken, content);
         operation.execute(client, context);
@@ -162,10 +161,7 @@ public abstract class AbstractBaseRepository implements Repository {
         }
 
         final Info targetInfo = info0(transaction, targetResource, transaction.getHeadRevision(), true, LOCKING);
-        String lockToken = null;
-        if (targetInfo != null) {
-            lockToken = targetInfo.getLockToken();
-        }
+        final Optional<String> lockToken = targetInfo.getLockToken();
 
         final Resource source = config.getVersionedResource(sourceInfo.getResource(), sourceInfo.getRevision());
         final Resource target = config.getWorkingResource(transaction).append(targetResource);
@@ -507,10 +503,7 @@ public abstract class AbstractBaseRepository implements Repository {
 
         // there can only be a lock token if the file is already in the repository
         final Info info = info0(transaction, resource, transaction.getHeadRevision(), true, LOCKING);
-        String lockToken = null;
-        if (info != null) {
-            lockToken = info.getLockToken();
-        }
+        final Optional<String> lockToken = info.getLockToken();
 
         final Resource r = config.getWorkingResource(transaction).append(resource);
         final PropertiesUpdateOperation operation = new PropertiesUpdateOperation(repository, r, type, lockToken, properties);
@@ -567,11 +560,11 @@ public abstract class AbstractBaseRepository implements Repository {
             throw new SubversionException("Can't resolve: " + resource + '@' + view.getHeadRevision());
         }
 
-        final String lockToken = info.getLockToken();
-        if (lockToken == null) {
+        final Optional<String> lockToken = info.getLockToken();
+        if (!lockToken.isPresent()) {
             return;
         }
-        final UnlockOperation operation = new UnlockOperation(repository, resource, lockToken, force);
+        final UnlockOperation operation = new UnlockOperation(repository, resource, lockToken.get(), force);
         operation.execute(client, context);
     }
 

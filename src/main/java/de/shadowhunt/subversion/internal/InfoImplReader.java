@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -80,7 +81,7 @@ final class InfoImplReader {
             info.setCreationDate(DateUtils.parseCreatedDate(((StringExpression) children[0]).getValue()));
             info.setDirectory(((ResourceTypeExpression) children[1]).getValue());
             info.setLastModifiedDate(DateUtils.parseLastModifiedDate(((StringExpression) children[2]).getValue()));
-            info.setLockToken(((StringExpression) children[3]).getValue());
+            info.setLockToken(Optional.ofNullable(((StringExpression) children[3]).getValue()));
             info.setMd5(((StringExpression) children[4]).getValue());
             info.setProperties(((PropertyExpression) children[5]).getValue());
             final String uuid = ((StringExpression) children[6]).getValue();

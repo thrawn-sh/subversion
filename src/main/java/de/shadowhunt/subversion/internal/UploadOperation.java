@@ -17,8 +17,7 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.InputStream;
 import java.net.URI;
-
-import javax.annotation.CheckForNull;
+import java.util.Optional;
 
 import de.shadowhunt.subversion.Resource;
 
@@ -33,11 +32,11 @@ class UploadOperation extends AbstractVoidOperation {
 
     private final InputStream content;
 
-    private final String lockToken;
+    private final Optional<String> lockToken;
 
     private final Resource resource;
 
-    UploadOperation(final URI repository, final Resource resource, @CheckForNull final String lockToken, final InputStream content) {
+    UploadOperation(final URI repository, final Resource resource, final Optional<String>  lockToken, final InputStream content) {
         super(repository);
         this.resource = resource;
         this.lockToken = lockToken;
@@ -49,8 +48,8 @@ class UploadOperation extends AbstractVoidOperation {
         final URI uri = URIUtils.createURI(repository, resource);
         final HttpPut request = new HttpPut(uri);
 
-        if (lockToken != null) {
-            request.addHeader("If", "<" + uri + "> (<" + lockToken + ">)");
+        if (lockToken.isPresent()) {
+            request.addHeader("If", "<" + uri + "> (<" + lockToken.get() + ">)");
         }
 
         request.setEntity(new InputStreamEntity(content, STREAM_WHOLE_CONTENT));

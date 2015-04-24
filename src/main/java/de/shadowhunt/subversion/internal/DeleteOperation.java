@@ -16,8 +16,7 @@
 package de.shadowhunt.subversion.internal;
 
 import java.net.URI;
-
-import javax.annotation.CheckForNull;
+import java.util.Optional;
 
 import de.shadowhunt.subversion.Resource;
 
@@ -27,11 +26,11 @@ import org.apache.http.client.methods.HttpUriRequest;
 
 class DeleteOperation extends AbstractVoidOperation {
 
-    private final String lockToken;
+    private final Optional<String>  lockToken;
 
     private final Resource resource;
 
-    public DeleteOperation(final URI repository, final Resource resource, @CheckForNull final String lockToken) {
+    public DeleteOperation(final URI repository, final Resource resource, final Optional<String> lockToken) {
         super(repository);
         this.resource = resource;
         this.lockToken = lockToken;
@@ -42,8 +41,8 @@ class DeleteOperation extends AbstractVoidOperation {
         final URI uri = URIUtils.createURI(repository, resource);
         final HttpUriRequest request = new HttpDelete(uri);
 
-        if (lockToken != null) {
-            request.addHeader("If", "<" + uri + "> (<" + lockToken + ">)");
+        if (lockToken.isPresent()) {
+            request.addHeader("If", "<" + uri + "> (<" + lockToken.get() + ">)");
         }
 
         return request;

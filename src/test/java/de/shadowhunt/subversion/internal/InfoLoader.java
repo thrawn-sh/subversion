@@ -17,6 +17,7 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.xml.parsers.SAXParser;
@@ -41,7 +42,7 @@ public final class InfoLoader extends AbstractBaseLoader {
         public void endElement(final String uri, final String localName, final String qName) throws SAXException {
             if ("token".equals(localName)) {
                 final String text = getText();
-                current.setLockToken(text.substring(16));
+                current.setLockToken(Optional.ofNullable(text.substring(16)));
                 return;
             }
 

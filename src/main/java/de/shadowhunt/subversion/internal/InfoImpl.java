@@ -17,6 +17,7 @@ package de.shadowhunt.subversion.internal;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.annotation.CheckForNull;
@@ -42,7 +43,7 @@ final class InfoImpl implements Info {
     // NOTE: not part of xml response but determined by a response header
     private String lockOwner = null;
 
-    private String lockToken = null;
+    private Optional<String> lockToken = Optional.empty();
 
     private String md5 = null;
 
@@ -97,7 +98,7 @@ final class InfoImpl implements Info {
     }
 
     @Override
-    public String getLockToken() {
+    public Optional<String> getLockToken() {
         return lockToken;
     }
 
@@ -165,7 +166,7 @@ final class InfoImpl implements Info {
         this.lockOwner = lockOwner;
     }
 
-    void setLockToken(@CheckForNull final String lockToken) {
+    void setLockToken(final Optional<String> lockToken) {
         this.lockToken = lockToken;
     }
 

@@ -17,6 +17,7 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.Writer;
 import java.net.URI;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
@@ -73,8 +74,7 @@ public class MergeOperation extends AbstractVoidOperation {
                 writer.writeStartElement(XmlConstants.SVN_NAMESPACE, "lock-token-list");
                 writer.writeNamespace(XmlConstants.SVN_PREFIX, XmlConstants.SVN_NAMESPACE);
                 for (final Info info : infoSet) {
-                    final String lockToken = info.getLockToken();
-                    assert (lockToken != null) : "must not be null";
+                    final Optional<String> lockToken = info.getLockToken();
                     final Resource infoResource = info.getResource();
 
                     writer.writeStartElement(XmlConstants.SVN_NAMESPACE, "lock");
@@ -82,7 +82,7 @@ public class MergeOperation extends AbstractVoidOperation {
                     writer.writeCData(infoResource.getValueWithoutLeadingSeparator());
                     writer.writeEndElement(); // lock-path
                     writer.writeStartElement(XmlConstants.SVN_NAMESPACE, "lock-token");
-                    writer.writeCharacters(lockToken);
+                    writer.writeCharacters(lockToken.get());
                     writer.writeEndElement(); // lock-token
                     writer.writeEndElement(); // lock
                 }

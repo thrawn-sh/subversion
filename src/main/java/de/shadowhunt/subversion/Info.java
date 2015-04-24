@@ -17,6 +17,7 @@ package de.shadowhunt.subversion;
 
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.annotation.CheckForNull;
@@ -65,10 +66,9 @@ public interface Info {
     /**
      * Returns a lock-token.
      *
-     * @return the lock-token or {@code null} if the resource is not locked
+     * @return the lock-token if the resource is not locked
      */
-    @CheckForNull
-    String getLockToken();
+    Optional<String> getLockToken();
 
     /**
      * Returns a MD5 checksum of the resource.

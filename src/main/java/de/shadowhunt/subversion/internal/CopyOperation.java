@@ -16,8 +16,7 @@
 package de.shadowhunt.subversion.internal;
 
 import java.net.URI;
-
-import javax.annotation.CheckForNull;
+import java.util.Optional;
 
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Resource;
@@ -27,13 +26,13 @@ import org.apache.http.client.methods.HttpUriRequest;
 
 class CopyOperation extends AbstractVoidOperation {
 
-    private final String lockToken;
+    private final Optional<String> lockToken;
 
     private final Resource source;
 
     private final Resource target;
 
-    public CopyOperation(final URI repository, final Resource source, final Resource target, @CheckForNull final String lockToken) {
+    public CopyOperation(final URI repository, final Resource source, final Resource target, final Optional<String>  lockToken) {
         super(repository);
         this.source = source;
         this.target = target;
@@ -49,8 +48,8 @@ class CopyOperation extends AbstractVoidOperation {
         request.addHeader("Depth", Depth.INFINITY.value);
         request.addHeader("Override", "T");
 
-        if (lockToken != null) {
-            request.addHeader("If", "<" + targetUri + "> (<" + lockToken + ">)");
+        if (lockToken.isPresent()) {
+            request.addHeader("If", "<" + targetUri + "> (<" + lockToken.get() + ">)");
         }
 
         return request;
