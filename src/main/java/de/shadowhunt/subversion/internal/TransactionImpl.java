@@ -19,8 +19,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 
-import javax.annotation.CheckForNull;
-
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
@@ -146,11 +144,14 @@ public final class TransactionImpl implements Transaction, View {
         return true;
     }
 
-    @CheckForNull
     public Status status(final Resource resource) {
         Validate.notNull(resource, "resource must not be null");
 
-        return changeSet.get(resource);
+        final Status status = changeSet.get(resource);
+        if (status != null) {
+            return status;
+        }
+        return Status.NOT_TRACKED;
     }
 
     @Override

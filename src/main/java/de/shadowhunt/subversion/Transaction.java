@@ -30,7 +30,8 @@ public interface Transaction extends View {
         ADDED("A", 2),
         DELETED("D", 3),
         EXISTS("E", -1),
-        MODIFIED("M", 1);
+        MODIFIED("M", 1),
+        NOT_TRACKED("?", Integer.MIN_VALUE);
 
         private final String abbreviation;
 
