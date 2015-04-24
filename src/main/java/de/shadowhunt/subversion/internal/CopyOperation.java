@@ -19,6 +19,7 @@ import java.net.URI;
 import java.util.Optional;
 
 import de.shadowhunt.subversion.Depth;
+import de.shadowhunt.subversion.LockToken;
 import de.shadowhunt.subversion.Resource;
 
 import org.apache.http.HttpStatus;
@@ -26,13 +27,13 @@ import org.apache.http.client.methods.HttpUriRequest;
 
 class CopyOperation extends AbstractVoidOperation {
 
-    private final Optional<String> lockToken;
+    private final Optional<LockToken> lockToken;
 
     private final Resource source;
 
     private final Resource target;
 
-    public CopyOperation(final URI repository, final Resource source, final Resource target, final Optional<String>  lockToken) {
+    public CopyOperation(final URI repository, final Resource source, final Resource target, final Optional<LockToken>  lockToken) {
         super(repository);
         this.source = source;
         this.target = target;

@@ -17,6 +17,7 @@ package de.shadowhunt.subversion.internal;
 
 import java.net.URI;
 
+import de.shadowhunt.subversion.LockToken;
 import de.shadowhunt.subversion.Resource;
 
 import org.apache.http.HttpStatus;
@@ -26,11 +27,11 @@ class UnlockOperation extends AbstractVoidOperation {
 
     private final boolean force;
 
-    private final String lockToken;
+    private final LockToken lockToken;
 
     private final Resource resource;
 
-    UnlockOperation(final URI repository, final Resource resource, final String lockToken, final boolean force) {
+    UnlockOperation(final URI repository, final Resource resource, final LockToken lockToken, final boolean force) {
         super(repository);
         this.resource = resource;
         this.lockToken = lockToken;
@@ -41,7 +42,7 @@ class UnlockOperation extends AbstractVoidOperation {
     protected HttpUriRequest createRequest() {
         final URI uri = URIUtils.createURI(repository, resource);
         final DavTemplateRequest request = new DavTemplateRequest("UNLOCK", uri);
-        request.addHeader("Lock-Token", '<' + lockToken + '>');
+        request.addHeader("Lock-Token", '<' + lockToken.toString() + '>');
         if (force) {
             request.addHeader("X-SVN-Options", "lock-break");
         }

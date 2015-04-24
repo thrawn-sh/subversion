@@ -58,7 +58,7 @@ public interface Info {
     /**
      * Returns a name of the lock owner.
      *
-     * @return the name of the lock owner or {@code null} if the resource is not locked
+     * @return the name of the lock owner if the resource is locked
      */
     @CheckForNull
     String getLockOwner();
@@ -66,9 +66,9 @@ public interface Info {
     /**
      * Returns a lock-token.
      *
-     * @return the lock-token if the resource is not locked
+     * @return the lock-token if the resource is locked
      */
-    Optional<String> getLockToken();
+    Optional<LockToken> getLockToken();
 
     /**
      * Returns a MD5 checksum of the resource.

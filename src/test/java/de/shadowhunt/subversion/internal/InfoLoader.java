@@ -23,6 +23,7 @@ import java.util.UUID;
 import javax.xml.parsers.SAXParser;
 
 import de.shadowhunt.subversion.Info;
+import de.shadowhunt.subversion.LockToken;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 
@@ -42,7 +43,7 @@ public final class InfoLoader extends AbstractBaseLoader {
         public void endElement(final String uri, final String localName, final String qName) throws SAXException {
             if ("token".equals(localName)) {
                 final String text = getText();
-                current.setLockToken(Optional.ofNullable(text.substring(16)));
+                current.setLockToken(Optional.of(new LockToken(text.substring(16))));
                 return;
             }
 

@@ -29,6 +29,7 @@ import javax.annotation.CheckForNull;
 
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Info;
+import de.shadowhunt.subversion.LockToken;
 import de.shadowhunt.subversion.Log;
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
@@ -127,7 +128,7 @@ public abstract class AbstractBaseRepository implements Repository {
         }
 
         final Info info = info0(transaction, resource, transaction.getHeadRevision(), true, LOCKING);
-        final Optional<String> lockToken = info.getLockToken();
+        final Optional<LockToken> lockToken = info.getLockToken();
 
         final Resource uploadResource = config.getWorkingResource(transaction).append(resource);
         final UploadOperation operation = new UploadOperation(repository, uploadResource, lockToken, content);
@@ -161,7 +162,7 @@ public abstract class AbstractBaseRepository implements Repository {
         }
 
         final Info targetInfo = info0(transaction, targetResource, transaction.getHeadRevision(), true, LOCKING);
-        final Optional<String> lockToken = targetInfo.getLockToken();
+        final Optional<LockToken> lockToken = targetInfo.getLockToken();
 
         final Resource source = config.getVersionedResource(sourceInfo.getResource(), sourceInfo.getRevision());
         final Resource target = config.getWorkingResource(transaction).append(targetResource);
@@ -503,7 +504,7 @@ public abstract class AbstractBaseRepository implements Repository {
 
         // there can only be a lock token if the file is already in the repository
         final Info info = info0(transaction, resource, transaction.getHeadRevision(), true, LOCKING);
-        final Optional<String> lockToken = info.getLockToken();
+        final Optional<LockToken> lockToken = info.getLockToken();
 
         final Resource r = config.getWorkingResource(transaction).append(resource);
         final PropertiesUpdateOperation operation = new PropertiesUpdateOperation(repository, r, type, lockToken, properties);
@@ -560,7 +561,7 @@ public abstract class AbstractBaseRepository implements Repository {
             throw new SubversionException("Can't resolve: " + resource + '@' + view.getHeadRevision());
         }
 
-        final Optional<String> lockToken = info.getLockToken();
+        final Optional<LockToken> lockToken = info.getLockToken();
         if (!lockToken.isPresent()) {
             return;
         }

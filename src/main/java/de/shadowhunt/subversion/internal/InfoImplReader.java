@@ -29,6 +29,7 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 
 import de.shadowhunt.subversion.Info;
+import de.shadowhunt.subversion.LockToken;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.Revision;
@@ -81,7 +82,12 @@ final class InfoImplReader {
             info.setCreationDate(DateUtils.parseCreatedDate(((StringExpression) children[0]).getValue()));
             info.setDirectory(((ResourceTypeExpression) children[1]).getValue());
             info.setLastModifiedDate(DateUtils.parseLastModifiedDate(((StringExpression) children[2]).getValue()));
-            info.setLockToken(Optional.ofNullable(((StringExpression) children[3]).getValue()));
+            final String token = ((StringExpression) children[3]).getValue();
+            if (token == null) {
+                info.setLockToken(Optional.<LockToken>empty());
+            } else {
+                info.setLockToken(Optional.of(new LockToken(token)));
+            }
             info.setMd5(((StringExpression) children[4]).getValue());
             info.setProperties(((PropertyExpression) children[5]).getValue());
             final String uuid = ((StringExpression) children[6]).getValue();

@@ -23,6 +23,7 @@ import java.util.UUID;
 import javax.annotation.CheckForNull;
 
 import de.shadowhunt.subversion.Info;
+import de.shadowhunt.subversion.LockToken;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.Revision;
@@ -43,7 +44,7 @@ final class InfoImpl implements Info {
     // NOTE: not part of xml response but determined by a response header
     private String lockOwner = null;
 
-    private Optional<String> lockToken = Optional.empty();
+    private Optional<LockToken> lockToken = Optional.empty();
 
     private String md5 = null;
 
@@ -98,7 +99,7 @@ final class InfoImpl implements Info {
     }
 
     @Override
-    public Optional<String> getLockToken() {
+    public Optional<LockToken> getLockToken() {
         return lockToken;
     }
 
@@ -166,7 +167,7 @@ final class InfoImpl implements Info {
         this.lockOwner = lockOwner;
     }
 
-    void setLockToken(final Optional<String> lockToken) {
+    void setLockToken(final Optional<LockToken> lockToken) {
         this.lockToken = lockToken;
     }
 
