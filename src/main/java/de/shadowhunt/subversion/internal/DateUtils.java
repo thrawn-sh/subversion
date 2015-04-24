@@ -20,8 +20,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.commons.lang3.time.FastDateFormat;
 
 final class DateUtils {
@@ -37,11 +35,7 @@ final class DateUtils {
         LAST_MODIFIED = FastDateFormat.getInstance("EEE, dd MMM yyyy HH:mm:ss 'GMT'", zulu, Locale.US);
     }
 
-    @CheckForNull
-    static Date parseCreatedDate(@CheckForNull final String date) {
-        if (date == null) {
-            return null;
-        }
+    static Date parseCreatedDate(final String date) {
         if ('Z' != date.charAt(date.length() - 1)) {
             throw new IllegalArgumentException("date '" + date + "'is not in Zulu timezone");
         }
@@ -61,12 +55,7 @@ final class DateUtils {
         }
     }
 
-    @CheckForNull
-    static Date parseLastModifiedDate(@CheckForNull final String date) {
-        if (date == null) {
-            return null;
-        }
-
+    static Date parseLastModifiedDate(final String date) {
         try {
             return LAST_MODIFIED.parse(date);
         } catch (final ParseException e) {
