@@ -18,7 +18,6 @@ package de.shadowhunt.subversion.internal;
 import java.io.Writer;
 import java.net.URI;
 
-import javax.annotation.CheckForNull;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -36,7 +35,7 @@ public class CommitMessageOperation extends AbstractVoidOperation {
 
     private final Resource resource;
 
-    public CommitMessageOperation(final URI repository, final Resource resource, @CheckForNull final String message) {
+    public CommitMessageOperation(final URI repository, final Resource resource, final String message) {
         super(repository);
         this.resource = resource;
         this.message = message;
