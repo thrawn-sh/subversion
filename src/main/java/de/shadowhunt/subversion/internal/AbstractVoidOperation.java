@@ -16,21 +16,19 @@
 package de.shadowhunt.subversion.internal;
 
 import java.net.URI;
-
-import javax.annotation.CheckForNull;
+import java.util.Optional;
 
 import org.apache.http.HttpResponse;
 
-public abstract class AbstractVoidOperation extends AbstractOperation<Void> {
+public abstract class AbstractVoidOperation extends AbstractOperation<Optional<Void>> {
 
     protected AbstractVoidOperation(final URI repository) {
         super(repository);
     }
 
     @Override
-    @CheckForNull
-    protected final Void processResponse(final HttpResponse response) {
-        return null;
+    protected final Optional<Void> processResponse(final HttpResponse response) {
+        return Optional.empty();
     }
 
 }

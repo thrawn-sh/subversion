@@ -18,10 +18,9 @@ package de.shadowhunt.subversion.internal;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
-
-import javax.annotation.CheckForNull;
 
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Info;
@@ -30,32 +29,29 @@ import de.shadowhunt.subversion.ResourceProperty;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.protocol.HttpContext;
 
-class ListOperation extends AbstractPropfindOperation<Set<Info>> {
-
+<<<<<<< Updated upstream
     ListOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, final ResourceProperty.Key... requestedProperties) {
         super(repository, resource, marker, depth, requestedProperties);
     }
+=======
+class ListOperation extends AbstractPropfindOperation<Optional<Set<Info>>> {
+>>>>>>> Stashed changes
 
-    @Override
-    @CheckForNull
-    public Set<Info> execute(final HttpClient client, final HttpContext context) {
-        return super.execute(client, context);
+    ListOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, final ResourceProperty.Key[] keys) {
+        super(repository, resource, marker, depth, Optional.of(keys));
     }
 
     @Override
-    @CheckForNull
-    protected Set<Info> processResponse(final HttpResponse response) throws IOException {
+    protected Optional<Set<Info>> processResponse(final HttpResponse response) throws IOException {
         if (getStatusCode(response) == HttpStatus.SC_NOT_FOUND) {
-            return null;
+            return Optional.empty();
         }
 
         final Set<Info> result = new TreeSet<>(Info.RESOURCE_COMPARATOR);
         final List<Info> infoList = InfoImplReader.readAll(getContent(response));
         result.addAll(infoList);
-        return result;
+        return Optional.of(result);
     }
 
 }

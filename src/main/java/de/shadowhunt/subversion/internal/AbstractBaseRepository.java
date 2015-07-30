@@ -65,11 +65,11 @@ public abstract class AbstractBaseRepository implements Repository {
     @CheckForNull
     private static UUID determineRepositoryId(final URI repository, final HttpClient client, final HttpContext context, final Resource marker) {
         final InfoOperation operation = new InfoOperation(repository, Resource.ROOT, marker, REPOSITORY_UUID);
-        final Info info = operation.execute(client, context);
-        if (info == null) {
-            throw new SubversionException("No repository found at " + repository, HttpStatus.SC_BAD_REQUEST);
+        final Optional<Info> info = operation.execute(client, context);
+        if (info.isPresent()) {
+            return info.get().getRepositoryId();
         }
-        return info.getRepositoryId();
+        throw new SubversionException("No repository found at " + repository, HttpStatus.SC_BAD_REQUEST);
     }
 
     protected interface ResourceMapper {
@@ -127,17 +127,17 @@ public abstract class AbstractBaseRepository implements Repository {
             mkdir(transaction, resource.getParent(), true);
         }
 
-        final Info info = info0(transaction, resource, transaction.getHeadRevision(), true, LOCKING);
-        final Optional<LockToken> lockToken = info.getLockToken();
+        final Optional<Info> info = info0(transaction, resource, transaction.getHeadRevision(), true, LOCKING);
+        final Optional<LockToken> lockToken = info.flatMap(Info::getLockToken);
 
         final Resource uploadResource = config.getWorkingResource(transaction).append(resource);
         final UploadOperation operation = new UploadOperation(repository, uploadResource, lockToken, content);
         operation.execute(client, context);
-        if (info == null) {
-            transaction.register(resource, Status.ADDED);
-        } else {
+        if (info.isPresent()) {
             // file existed already
             transaction.register(resource, Status.MODIFIED);
+        } else {
+            transaction.register(resource, Status.ADDED);
         }
     }
 
@@ -156,47 +156,47 @@ public abstract class AbstractBaseRepository implements Repository {
             registerResource(transaction, targetResource.getParent(), transaction.getHeadRevision());
         }
 
-        final Info sourceInfo = info0(transaction, sourceResource, sourceRevision, true, REVISION);
-        if (sourceInfo == null) {
-            throw new SubversionException("Can't resolve: " + sourceResource + '@' + sourceRevision);
-        }
+        final Optional<Info> sourceInfo = info0(transaction, sourceResource, sourceRevision, true, REVISION);
+        final Info sourceInfoValue = sourceInfo.orElseThrow(() -> new SubversionException("Can't resolve: " + sourceResource + '@' + sourceRevision));
 
-        final Info targetInfo = info0(transaction, targetResource, transaction.getHeadRevision(), true, LOCKING);
-        final Optional<LockToken> lockToken = targetInfo.getLockToken();
+        final Optional<Info> targetInfo = info0(transaction, targetResource, transaction.getHeadRevision(), true, LOCKING);
+        final Optional<LockToken> lockToken = targetInfo.flatMap(Info::getLockToken);
 
-        final Resource source = config.getVersionedResource(sourceInfo.getResource(), sourceInfo.getRevision());
+        final Resource source = config.getVersionedResource(sourceInfoValue.getResource(), sourceInfoValue.getRevision());
         final Resource target = config.getWorkingResource(transaction).append(targetResource);
 
         final CopyOperation operation = new CopyOperation(repository, source, target, lockToken);
         operation.execute(client, context);
 
-        if (targetInfo == null) {
-            transaction.register(targetResource, Status.ADDED);
-        } else {
+        if (targetInfo.isPresent()) {
             transaction.register(targetResource, Status.MODIFIED);
+        } else {
+            transaction.register(targetResource, Status.ADDED);
         }
     }
 
     private void createFolder(final Transaction transaction, final Resource resource, final boolean parents) {
-        final Info info = info0(transaction, resource, transaction.getHeadRevision(), true, TYPE); // null if resource does not exists
+        final Revision headRevision = transaction.getHeadRevision();
+        final Optional<Info> info = info0(transaction, resource, headRevision, true, TYPE); // null if resource does not exists
 
-        if (parents && (info == null) && !Resource.ROOT.equals(resource)) {
+        if (parents && !info.isPresent() && !Resource.ROOT.equals(resource)) {
             createFolder(transaction, resource.getParent(), true);
         }
 
-        if (info == null) {
+        if (info.isPresent()) {
+            if (info.get().isFile()) {
+                throw new SubversionException("Can not create folder. File with same name already exists: " + resource);
+            }
+            final Map<Resource, Status> changeSet = transaction.getChangeSet();
+            final Status status = changeSet.get(resource);
+            if (status == null) {
+                registerResource(transaction, resource, headRevision);
+            }
+        } else {
             final Resource folder = config.getWorkingResource(transaction).append(resource);
             final CreateFolderOperation operation = new CreateFolderOperation(repository, folder);
             operation.execute(client, context);
             transaction.register(resource, Status.ADDED);
-        } else {
-            if (info.isFile()) {
-                throw new SubversionException("Can not create folder. File with same name already exists: " + resource);
-            }
-            final Status status = transaction.getChangeSet().get(resource);
-            if (status == null) {
-                registerResource(transaction, resource, transaction.getHeadRevision());
-            }
         }
 
         Resource current = resource.getParent();
@@ -220,23 +220,25 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.notNull(resource, "resource must not be null");
 
         LOGGER.trace("deleting resource {} during transaction {}", resource, transaction.getId());
-        final Info info = info0(transaction, resource, transaction.getHeadRevision(), true, LOCKING);
+        final Optional<Info> info = info0(transaction, resource, transaction.getHeadRevision(), true, LOCKING);
         if (info == null) {
             throw new SubversionException("Can't resolve: " + resource + '@' + Revision.HEAD);
         }
 
-        final DeleteOperation operation = new DeleteOperation(repository, config.getWorkingResource(transaction).append(resource), info.getLockToken());
+        final Resource deleteResource = config.getWorkingResource(transaction).append(resource);
+        final Optional<LockToken> lockToken = info.flatMap(Info::getLockToken);
+        final DeleteOperation operation = new DeleteOperation(repository, deleteResource, lockToken);
         operation.execute(client, context);
         transaction.register(resource, Status.DELETED);
     }
 
     protected Revision determineHeadRevision() {
         final InfoOperation operation = new InfoOperation(repository, Resource.ROOT, config.getPrefix(), REVISION);
-        final Info info = operation.execute(client, context);
-        if (info == null) {
-            throw new SubversionException("can not determine HEAD revision");
+        final Optional<Info> info = operation.execute(client, context);
+        if (info.isPresent()) {
+            return info.get().getRevision();
         }
-        return info.getRevision();
+        throw new SubversionException("can not determine HEAD revision");
     }
 
     @Override
@@ -258,11 +260,8 @@ public abstract class AbstractBaseRepository implements Repository {
     private InputStream download0(final View view, final Resource resource, final Revision revision) {
         final Resource resolved = resolve2(view, resource, revision, false);
         final DownloadOperation operation = new DownloadOperation(repository, resolved);
-        final InputStream is = operation.execute(client, context);
-        if (is == null) {
-            throw new SubversionException("Can't resolve: " + resource + '@' + revision);
-        }
-        return is;
+        final Optional<InputStream> is = operation.execute(client, context);
+        return is.orElseThrow(() -> new SubversionException("Can't resolve: " + resource + '@' + revision)); // FIXME
     }
 
     @Override
@@ -340,9 +339,9 @@ public abstract class AbstractBaseRepository implements Repository {
             }
 
             final Resource resource = entry.getKey();
-            final Info info = info0(transaction, resource, transaction.getHeadRevision(), false, LOCKING);
-            if ((info != null) && info.isLocked()) {
-                infoSet.add(info);
+            final Optional<Info> info = info0(transaction, resource, transaction.getHeadRevision(), false, LOCKING);
+            if (info.isPresent() && info.get().isLocked()) {
+                infoSet.add(info.get());
             }
         }
         return infoSet;
@@ -367,15 +366,16 @@ public abstract class AbstractBaseRepository implements Repository {
         validateRevision(view, revision);
 
         LOGGER.trace("retrieving info for resource {}@{}", resource, revision);
-        final Info info = info0(view, resource, revision, true, keys);
-        if (info == null) {
-            throw new SubversionException("Can't resolve: " + resource + '@' + revision);
-        }
-        return info;
+        final Optional<Info> info = info0(view, resource, revision, true, keys);
+        return info.orElseThrow(() -> new SubversionException("Can't resolve: " + resource + '@' + revision));
     }
 
+<<<<<<< Updated upstream
     @CheckForNull
     private Info info0(final View view, final Resource resource, final Revision revision, final boolean resolve, @CheckForNull final ResourceProperty.Key... keys) {
+=======
+    private Optional<Info> info0(final View view, final Resource resource, final Revision revision, final boolean resolve, final ResourceProperty.Key[] keys) {
+>>>>>>> Stashed changes
         final Resource resolved = resolve2(view, resource, revision, resolve);
         final InfoOperation operation = new InfoOperation(repository, resolved, config.getPrefix(), keys);
         return operation.execute(client, context);
@@ -399,7 +399,11 @@ public abstract class AbstractBaseRepository implements Repository {
         return list0(view, resource, revision, depth, keys);
     }
 
+<<<<<<< Updated upstream
     private Set<Info> list0(final View view, final Resource resource, final Revision revision, final Depth depth, @CheckForNull final ResourceProperty.Key... keys) {
+=======
+    private Set<Info> list0(final View view, final Resource resource, final Revision revision, final Depth depth, final ResourceProperty.Key[] keys) {
+>>>>>>> Stashed changes
         if (Depth.INFINITY == depth) {
             final Set<Info> result = new TreeSet<>(Info.RESOURCE_COMPARATOR);
             listRecursively0(view, resource, revision, result, keys);
@@ -408,14 +412,15 @@ public abstract class AbstractBaseRepository implements Repository {
 
         final Resource resolved = resolve2(view, resource, revision, true);
         final ListOperation operation = new ListOperation(repository, resolved, config.getPrefix(), depth, keys);
-        final Set<Info> infoSet = operation.execute(client, context);
-        if (infoSet == null) {
-            throw new SubversionException("Can't resolve: " + resource + '@' + revision);
-        }
-        return infoSet;
+        final Optional<Set<Info>> infoSet = operation.execute(client, context);
+        return infoSet.orElseThrow(() -> new SubversionException("Can't resolve: " + resource + '@' + revision));
     }
 
+<<<<<<< Updated upstream
     private void listRecursively0(final View view, final Resource resource, final Revision revision, final Set<Info> result, @CheckForNull final ResourceProperty.Key... keys) {
+=======
+    private void listRecursively0(final View view, final Resource resource, final Revision revision, final Set<Info> result, final ResourceProperty.Key[] keys) {
+>>>>>>> Stashed changes
         for (final Info info : list0(view, resource, revision, Depth.IMMEDIATES, keys)) {
             if (!result.add(info)) {
                 continue;
@@ -503,8 +508,8 @@ public abstract class AbstractBaseRepository implements Repository {
         LOGGER.trace("updating properties {} on {} during {}", properties, resource, transaction.getId());
 
         // there can only be a lock token if the file is already in the repository
-        final Info info = info0(transaction, resource, transaction.getHeadRevision(), true, LOCKING);
-        final Optional<LockToken> lockToken = info.getLockToken();
+        final Optional<Info> info = info0(transaction, resource, transaction.getHeadRevision(), true, LOCKING);
+        final Optional<LockToken> lockToken = info.flatMap(Info::getLockToken);
 
         final Resource r = config.getWorkingResource(transaction).append(resource);
         final PropertiesUpdateOperation operation = new PropertiesUpdateOperation(repository, r, type, lockToken, properties);
@@ -556,12 +561,9 @@ public abstract class AbstractBaseRepository implements Repository {
     }
 
     private void unlock0(final View view, final Resource resource, final boolean force) {
-        final Info info = info0(view, resource, view.getHeadRevision(), true, LOCKING);
-        if (info == null) {
-            throw new SubversionException("Can't resolve: " + resource + '@' + view.getHeadRevision());
-        }
+        final Optional<Info> info = info0(view, resource, view.getHeadRevision(), true, LOCKING);
+        final Optional<LockToken> lockToken = info.orElseThrow(() -> new SubversionException("Can't resolve: " + resource + '@' + view.getHeadRevision())).getLockToken();
 
-        final Optional<LockToken> lockToken = info.getLockToken();
         if (!lockToken.isPresent()) {
             return;
         }

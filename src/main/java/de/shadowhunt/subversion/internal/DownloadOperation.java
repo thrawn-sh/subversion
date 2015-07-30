@@ -18,8 +18,7 @@ package de.shadowhunt.subversion.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-
-import javax.annotation.CheckForNull;
+import java.util.Optional;
 
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.TransmissionException;
@@ -31,7 +30,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.protocol.HttpContext;
 
-class DownloadOperation extends AbstractOperation<InputStream> {
+class DownloadOperation extends AbstractOperation<Optional<InputStream>> {
 
     private final Resource resource;
 
@@ -47,25 +46,24 @@ class DownloadOperation extends AbstractOperation<InputStream> {
     }
 
     @Override
-    @CheckForNull
-    public InputStream execute(final HttpClient client, final HttpContext context) {
+    public Optional<InputStream> execute(final HttpClient client, final HttpContext context) {
         final HttpUriRequest request = createRequest();
 
         try {
             final HttpResponse response = client.execute(request, context);
             if (getStatusCode(response) == HttpStatus.SC_NOT_FOUND) {
-                return null;
+                return Optional.empty();
             }
             final InputStream content = getContent(response);
             check(response);
-            return content;
+            return Optional.of(content);
         } catch (final IOException e) {
             throw new TransmissionException(e);
         }
     }
 
     @Override
-    public InputStream handleResponse(final HttpResponse response) {
+    public Optional<InputStream> handleResponse(final HttpResponse response) {
         return processResponse(response);
     }
 
@@ -75,7 +73,7 @@ class DownloadOperation extends AbstractOperation<InputStream> {
     }
 
     @Override
-    protected InputStream processResponse(final HttpResponse response) {
+    protected Optional<InputStream> processResponse(final HttpResponse response) {
         // we return the content stream
         throw new UnsupportedOperationException();
     }

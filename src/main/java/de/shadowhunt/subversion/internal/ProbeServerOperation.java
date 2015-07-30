@@ -30,7 +30,6 @@ import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.TransmissionException;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -82,18 +81,16 @@ class ProbeServerOperation extends AbstractOperation<Repository> {
 
         final ProtocolVersion version;
         final Resource prefix;
-        InputStream in = null;
         try {
             final HttpResponse response = client.execute(request, context);
-            in = getContent(response);
-            check(response);
+            try (final InputStream in = getContent(response)) {
+                check(response);
 
-            version = determineVersion(response.getAllHeaders());
-            prefix = Prefix.read(in, version);
+                version = determineVersion(response.getAllHeaders());
+                prefix = Prefix.read(in, version);
+            }
         } catch (final IOException e) {
             throw new TransmissionException(e);
-        } finally {
-            IOUtils.closeQuietly(in);
         }
 
         for (final RepositoryLocator repositoryLocator : ServiceLoader.load(RepositoryLocator.class)) {

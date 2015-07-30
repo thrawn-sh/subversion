@@ -17,8 +17,7 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.IOException;
 import java.net.URI;
-
-import javax.annotation.CheckForNull;
+import java.util.Optional;
 
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Info;
@@ -28,13 +27,12 @@ import de.shadowhunt.subversion.ResourceProperty;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.protocol.HttpContext;
 
-class InfoOperation extends AbstractPropfindOperation<Info> {
+class InfoOperation extends AbstractPropfindOperation<Optional<Info>> {
 
     private static final String LOCK_OWNER_HEADER = "X-SVN-Lock-Owner";
 
+<<<<<<< Updated upstream
     InfoOperation(final URI repository, final Resource resource, final Resource marker, @CheckForNull final ResourceProperty.Key... requestedProperties) {
         super(repository, resource, marker, Depth.EMPTY, requestedProperties);
     }
@@ -42,13 +40,16 @@ class InfoOperation extends AbstractPropfindOperation<Info> {
     @CheckForNull
     public Info execute(final HttpClient client, final HttpContext context) {
         return super.execute(client, context);
+=======
+    InfoOperation(final URI repository, final Resource resource, final Resource marker, final ResourceProperty.Key[] keys) {
+        super(repository, resource, marker, Depth.EMPTY, Optional.of(keys));
+>>>>>>> Stashed changes
     }
 
     @Override
-    @CheckForNull
-    protected Info processResponse(final HttpResponse response) throws IOException {
+    protected Optional<Info> processResponse(final HttpResponse response) throws IOException {
         if (getStatusCode(response) == HttpStatus.SC_NOT_FOUND) {
-            return null;
+            return Optional.empty();
         }
 
         final Info info = InfoImplReader.read(getContent(response));
@@ -56,6 +57,6 @@ class InfoOperation extends AbstractPropfindOperation<Info> {
             final Header header = response.getFirstHeader(LOCK_OWNER_HEADER);
             ((InfoImpl) info).setLockOwner(header.getValue());
         }
-        return info;
+        return Optional.of(info);
     }
 }
