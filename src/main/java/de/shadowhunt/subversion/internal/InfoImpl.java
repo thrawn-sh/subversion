@@ -147,7 +147,7 @@ final class InfoImpl implements Info {
 
     @Override
     public boolean isLocked() {
-        return lockToken != null;
+        return lockToken.isPresent();
     }
 
     void setCreationDate(final Date creationDate) {
