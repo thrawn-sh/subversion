@@ -35,32 +35,14 @@ import org.apache.http.entity.StringEntity;
 
 abstract class AbstractPropfindOperation<T> extends AbstractOperation<T> {
 
-<<<<<<< Updated upstream
-    @CheckForNull
-    private static ResourceProperty.Key[] filter(final ResourceProperty.Key... requestedProperties) {
-        if (requestedProperties == null) {
-            return null;
-=======
     private static Optional<ResourceProperty.Key[]> filter(final Optional<ResourceProperty.Key[]> propertyKeys) {
         if (!propertyKeys.isPresent()) {
             return Optional.empty();
->>>>>>> Stashed changes
         }
 
         final ResourceProperty.Key[] keys = propertyKeys.get();
         int w = 0;
         int r = 0;
-<<<<<<< Updated upstream
-        final ResourceProperty.Key[] filteredKeys = new ResourceProperty.Key[requestedProperties.length];
-        while (r < requestedProperties.length) {
-            if (ResourceProperty.Type.SUBVERSION_CUSTOM.equals(requestedProperties[r].getType())) {
-                r++;
-                continue;
-            }
-            filteredKeys[w++] = requestedProperties[r++];
-        }
-        return Arrays.copyOf(filteredKeys, w);
-=======
         while (r < keys.length) {
             if (ResourceProperty.Type.SUBVERSION_CUSTOM.equals(keys[r].getType())) {
                 r++;
@@ -69,7 +51,6 @@ abstract class AbstractPropfindOperation<T> extends AbstractOperation<T> {
             keys[w++] = keys[r++];
         }
         return Optional.of(Arrays.copyOf(keys, w));
->>>>>>> Stashed changes
     }
 
     protected final Depth depth;
@@ -80,11 +61,7 @@ abstract class AbstractPropfindOperation<T> extends AbstractOperation<T> {
 
     protected final Resource resource;
 
-<<<<<<< Updated upstream
-    AbstractPropfindOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, @CheckForNull final ResourceProperty.Key... requestedProperties) {
-=======
     AbstractPropfindOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, final Optional<ResourceProperty.Key[]> propertyKeys) {
->>>>>>> Stashed changes
         super(repository);
         this.resource = resource;
         this.marker = marker;

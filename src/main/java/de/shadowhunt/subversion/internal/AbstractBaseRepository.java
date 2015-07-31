@@ -370,12 +370,7 @@ public abstract class AbstractBaseRepository implements Repository {
         return info.orElseThrow(() -> new SubversionException("Can't resolve: " + resource + '@' + revision));
     }
 
-<<<<<<< Updated upstream
-    @CheckForNull
-    private Info info0(final View view, final Resource resource, final Revision revision, final boolean resolve, @CheckForNull final ResourceProperty.Key... keys) {
-=======
     private Optional<Info> info0(final View view, final Resource resource, final Revision revision, final boolean resolve, final ResourceProperty.Key[] keys) {
->>>>>>> Stashed changes
         final Resource resolved = resolve2(view, resource, revision, resolve);
         final InfoOperation operation = new InfoOperation(repository, resolved, config.getPrefix(), keys);
         return operation.execute(client, context);
@@ -399,11 +394,7 @@ public abstract class AbstractBaseRepository implements Repository {
         return list0(view, resource, revision, depth, keys);
     }
 
-<<<<<<< Updated upstream
-    private Set<Info> list0(final View view, final Resource resource, final Revision revision, final Depth depth, @CheckForNull final ResourceProperty.Key... keys) {
-=======
     private Set<Info> list0(final View view, final Resource resource, final Revision revision, final Depth depth, final ResourceProperty.Key[] keys) {
->>>>>>> Stashed changes
         if (Depth.INFINITY == depth) {
             final Set<Info> result = new TreeSet<>(Info.RESOURCE_COMPARATOR);
             listRecursively0(view, resource, revision, result, keys);
@@ -416,11 +407,7 @@ public abstract class AbstractBaseRepository implements Repository {
         return infoSet.orElseThrow(() -> new SubversionException("Can't resolve: " + resource + '@' + revision));
     }
 
-<<<<<<< Updated upstream
-    private void listRecursively0(final View view, final Resource resource, final Revision revision, final Set<Info> result, @CheckForNull final ResourceProperty.Key... keys) {
-=======
     private void listRecursively0(final View view, final Resource resource, final Revision revision, final Set<Info> result, final ResourceProperty.Key[] keys) {
->>>>>>> Stashed changes
         for (final Info info : list0(view, resource, revision, Depth.IMMEDIATES, keys)) {
             if (!result.add(info)) {
                 continue;

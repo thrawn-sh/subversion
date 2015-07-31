@@ -32,18 +32,8 @@ class InfoOperation extends AbstractPropfindOperation<Optional<Info>> {
 
     private static final String LOCK_OWNER_HEADER = "X-SVN-Lock-Owner";
 
-<<<<<<< Updated upstream
-    InfoOperation(final URI repository, final Resource resource, final Resource marker, @CheckForNull final ResourceProperty.Key... requestedProperties) {
-        super(repository, resource, marker, Depth.EMPTY, requestedProperties);
-    }
-
-    @CheckForNull
-    public Info execute(final HttpClient client, final HttpContext context) {
-        return super.execute(client, context);
-=======
     InfoOperation(final URI repository, final Resource resource, final Resource marker, final ResourceProperty.Key[] keys) {
         super(repository, resource, marker, Depth.EMPTY, Optional.of(keys));
->>>>>>> Stashed changes
     }
 
     @Override

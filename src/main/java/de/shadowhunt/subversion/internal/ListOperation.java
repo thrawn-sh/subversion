@@ -30,13 +30,7 @@ import de.shadowhunt.subversion.ResourceProperty;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 
-<<<<<<< Updated upstream
-    ListOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, final ResourceProperty.Key... requestedProperties) {
-        super(repository, resource, marker, depth, requestedProperties);
-    }
-=======
 class ListOperation extends AbstractPropfindOperation<Optional<Set<Info>>> {
->>>>>>> Stashed changes
 
     ListOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, final ResourceProperty.Key[] keys) {
         super(repository, resource, marker, depth, Optional.of(keys));
