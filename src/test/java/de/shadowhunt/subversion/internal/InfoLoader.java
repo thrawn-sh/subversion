@@ -92,7 +92,7 @@ public final class InfoLoader extends AbstractBaseLoader {
         if (info.isFile()) {
             final FileInputStream fis = new FileInputStream(f);
             try {
-                info.setMd5(DigestUtils.md5Hex(fis));
+                info.setMd5(Optional.ofNullable(DigestUtils.md5Hex(fis)));
             } finally {
                 IOUtils.closeQuietly(fis);
             }

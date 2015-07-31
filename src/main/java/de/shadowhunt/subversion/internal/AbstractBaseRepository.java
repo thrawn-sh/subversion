@@ -25,8 +25,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 
-import javax.annotation.CheckForNull;
-
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.LockToken;
@@ -62,7 +60,6 @@ public abstract class AbstractBaseRepository implements Repository {
 
     private static final ResourceProperty.Key[] TYPE = new ResourceProperty.Key[] { ResourceProperty.RESOURCE, ResourceProperty.RESOURCE_TYPE };
 
-    @CheckForNull
     private static UUID determineRepositoryId(final URI repository, final HttpClient client, final HttpContext context, final Resource marker) {
         final InfoOperation operation = new InfoOperation(repository, Resource.ROOT, marker, REPOSITORY_UUID);
         final Optional<Info> info = operation.execute(client, context);
@@ -221,7 +218,7 @@ public abstract class AbstractBaseRepository implements Repository {
 
         LOGGER.trace("deleting resource {} during transaction {}", resource, transaction.getId());
         final Optional<Info> info = info0(transaction, resource, transaction.getHeadRevision(), true, LOCKING);
-        if (info == null) {
+        if (!info.isPresent()) {
             throw new SubversionException("Can't resolve: " + resource + '@' + Revision.HEAD);
         }
 
@@ -523,7 +520,7 @@ public abstract class AbstractBaseRepository implements Repository {
         LOGGER.trace("rolling transaction {} back", transaction.getId());
         try {
             final Resource resource = config.getTransactionResource(transaction);
-            final DeleteOperation operation = new DeleteOperation(repository, resource, null);
+            final DeleteOperation operation = new DeleteOperation(repository, resource, Optional.<LockToken>empty());
             operation.execute(client, context);
         } finally {
             transaction.invalidate();

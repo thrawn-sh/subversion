@@ -20,8 +20,6 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.commons.lang3.Validate;
 
 /**
@@ -42,17 +40,15 @@ public interface Info {
     /**
      * Returns the {@link Date} when the resource was created.
      *
-     * @return the {@link Date} when the resource was created or {@code null} if the {@link Date} is unknown
+     * @return the {@link Date} when the resource was created
      */
-    @CheckForNull
     Date getCreationDate();
 
     /**
      * Returns the {@link Date} when the resource was last modified.
      *
-     * @return the {@link Date} when the resource was last modified or {@code null} if the {@link Date} is unknown
+     * @return the {@link Date} when the resource was last modified
      */
-    @CheckForNull
     Date getLastModifiedDate();
 
     /**
@@ -60,8 +56,7 @@ public interface Info {
      *
      * @return the name of the lock owner if the resource is locked
      */
-    @CheckForNull
-    String getLockOwner();
+    Optional<String> getLockOwner();
 
     /**
      * Returns a lock-token.
@@ -73,10 +68,9 @@ public interface Info {
     /**
      * Returns a MD5 checksum of the resource.
      *
-     * @return the MD5 checksum of the resource or {@code null} if the resource is a directory
+     * @return the MD5 checksum of the resource if the resource is a file
      */
-    @CheckForNull
-    String getMd5();
+    Optional<String> getMd5();
 
     /**
      * Returns an array of the custom {@link ResourceProperty}.

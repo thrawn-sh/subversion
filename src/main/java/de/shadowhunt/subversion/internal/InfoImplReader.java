@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
@@ -88,7 +89,7 @@ final class InfoImplReader {
             } else {
                 info.setLockToken(Optional.of(new LockToken(token)));
             }
-            info.setMd5(((StringExpression) children[4]).getValue());
+            info.setMd5(Optional.ofNullable(((StringExpression) children[4]).getValue()));
             info.setProperties(((PropertyExpression) children[5]).getValue());
             final String uuid = ((StringExpression) children[6]).getValue();
             if (uuid != null) {
@@ -273,6 +274,7 @@ final class InfoImplReader {
         }
 
         @Override
+        @Nullable
         public String getValue() {
             return value;
         }

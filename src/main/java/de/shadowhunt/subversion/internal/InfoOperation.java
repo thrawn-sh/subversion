@@ -45,7 +45,7 @@ class InfoOperation extends AbstractPropfindOperation<Optional<Info>> {
         final Info info = InfoImplReader.read(getContent(response));
         if (info.isLocked()) {
             final Header header = response.getFirstHeader(LOCK_OWNER_HEADER);
-            ((InfoImpl) info).setLockOwner(header.getValue());
+            ((InfoImpl) info).setLockOwner(Optional.of(header.getValue()));
         }
         return Optional.of(info);
     }

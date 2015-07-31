@@ -20,8 +20,6 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.annotation.CheckForNull;
-
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.LockToken;
 import de.shadowhunt.subversion.Resource;
@@ -42,11 +40,11 @@ final class InfoImpl implements Info {
     private Date lastModifiedDate = null;
 
     // NOTE: not part of xml response but determined by a response header
-    private String lockOwner = null;
+    private Optional<String> lockOwner = Optional.empty();
 
     private Optional<LockToken> lockToken = Optional.empty();
 
-    private String md5 = null;
+    private Optional<String> md5 = Optional.empty();
 
     private ResourceProperty[] properties = EMPTY;
 
@@ -86,15 +84,16 @@ final class InfoImpl implements Info {
 
     @Override
     public Date getCreationDate() {
-        return (creationDate == null) ? null : new Date(creationDate.getTime());
-    }
-
-    public Date getLastModifiedDate() {
-        return (lastModifiedDate == null) ? null : new Date(lastModifiedDate.getTime());
+        return new Date(creationDate.getTime());
     }
 
     @Override
-    public String getLockOwner() {
+    public Date getLastModifiedDate() {
+        return new Date(lastModifiedDate.getTime());
+    }
+
+    @Override
+    public Optional<String> getLockOwner() {
         return lockOwner;
     }
 
@@ -104,7 +103,7 @@ final class InfoImpl implements Info {
     }
 
     @Override
-    public String getMd5() {
+    public Optional<String> getMd5() {
         return md5;
     }
 
@@ -151,7 +150,7 @@ final class InfoImpl implements Info {
         return lockToken != null;
     }
 
-    void setCreationDate(@CheckForNull final Date creationDate) {
+    void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -159,11 +158,11 @@ final class InfoImpl implements Info {
         this.directory = directory;
     }
 
-    void setLastModifiedDate(@CheckForNull final Date lastModifiedDate) {
+    void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
-    void setLockOwner(@CheckForNull final String lockOwner) {
+    void setLockOwner(final Optional<String> lockOwner) {
         this.lockOwner = lockOwner;
     }
 
@@ -171,12 +170,12 @@ final class InfoImpl implements Info {
         this.lockToken = lockToken;
     }
 
-    void setMd5(@CheckForNull final String md5) {
+    void setMd5(final Optional<String> md5) {
         this.md5 = md5;
     }
 
-    void setProperties(@CheckForNull final ResourceProperty... properties) {
-        if ((properties == null) || (properties.length == 0)) {
+    void setProperties(final ResourceProperty... properties) {
+        if (properties.length == 0) {
             this.properties = EMPTY;
         } else {
             this.properties = Arrays.copyOf(properties, properties.length);

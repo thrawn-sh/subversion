@@ -35,6 +35,15 @@ import org.apache.http.entity.StringEntity;
 
 abstract class AbstractPropfindOperation<T> extends AbstractOperation<T> {
 
+    private static boolean contains(final ResourceProperty.Key[] propertyKeys, final String namespace) {
+        for (final ResourceProperty.Key requestedProperty : propertyKeys) {
+            if (namespace.equals(requestedProperty.getType().getPrefix())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static Optional<ResourceProperty.Key[]> filter(final Optional<ResourceProperty.Key[]> propertyKeys) {
         if (!propertyKeys.isPresent()) {
             return Optional.empty();
@@ -67,15 +76,6 @@ abstract class AbstractPropfindOperation<T> extends AbstractOperation<T> {
         this.marker = marker;
         this.depth = depth;
         this.propertyKeys = filter(propertyKeys);
-    }
-
-    private boolean contains(final ResourceProperty.Key[] propertyKeys, final String namespace) {
-        for (final ResourceProperty.Key requestedProperty : propertyKeys) {
-            if (namespace.equals(requestedProperty.getType().getPrefix())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
