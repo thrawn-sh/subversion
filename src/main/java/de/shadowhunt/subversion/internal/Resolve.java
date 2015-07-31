@@ -17,6 +17,7 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
@@ -32,6 +33,11 @@ import org.xml.sax.SAXException;
 
 final class Resolve {
 
+    private Resolve(final Resource resource, final Revision revision) {
+        this.resource = resource;
+        this.revision = revision;
+    }
+
     private static class ResolveExpression extends AbstractSaxExpression<Resolve> {
 
         private static final QName[] PATH = { //
@@ -39,31 +45,32 @@ final class Resolve {
                 new QName(XmlConstants.SVN_NAMESPACE, "location") //
         };
 
-        private Resolve entry = null;
+        private Optional<Resolve> entry = Optional.empty();
 
         ResolveExpression() {
             super(PATH);
         }
 
         @Override
-        public Resolve getValue() {
+        public Optional<Resolve> getValue() {
             return entry;
         }
 
         @Override
         protected void processStart(final String nameSpaceUri, final String localName, final Attributes attributes) {
-            entry = new Resolve();
+            final String path = attributes.getValue("path");
+            final Resource resource = Resource.create(path);
 
             final String version = attributes.getValue("rev");
-            entry.setRevision(Revision.create(Integer.parseInt(version)));
-            final String path = attributes.getValue("path");
-            entry.setResource(Resource.create(path));
+            final Revision revision = Revision.create(Integer.parseInt(version));
+
+            entry = Optional.of(new Resolve(resource, revision));
         }
 
         @Override
         public void resetHandler() {
             super.resetHandler();
-            entry = null;
+            entry = Optional.empty();
         }
     }
 
@@ -74,7 +81,7 @@ final class Resolve {
         }
 
         @Override
-        public Resolve getValue() {
+        public Optional<Resolve> getValue() {
             return ((ResolveExpression) expressions[0]).getValue();
         }
     }
@@ -88,22 +95,22 @@ final class Resolve {
      */
     static Resolve read(final InputStream inputStream) throws IOException {
         final ResolveHandler handler = new ResolveHandler();
-        final Resolve resolve;
+        final Optional<Resolve> resolve;
         try {
             resolve = handler.parse(inputStream);
         } catch (final ParserConfigurationException | SAXException e) {
             throw new SubversionException("Invalid server response: could not parse response", e);
         }
 
-        if (resolve == null) {
-            throw new SubversionException("Invalid server response: could not parse response");
+        if (resolve.isPresent()) {
+            return resolve.get();
         }
-        return resolve;
+        throw new SubversionException("Invalid server response: could not parse response");
     }
 
-    private Resource resource = null;
+    private final Resource resource;
 
-    private Revision revision = null;
+    private final Revision revision;
 
     @Override
     public boolean equals(final Object obj) {
@@ -149,14 +156,6 @@ final class Resolve {
         result = (prime * result) + ((resource == null) ? 0 : resource.hashCode());
         result = (prime * result) + ((revision == null) ? 0 : revision.hashCode());
         return result;
-    }
-
-    void setResource(final Resource resource) {
-        this.resource = resource;
-    }
-
-    void setRevision(final Revision revision) {
-        this.revision = revision;
     }
 
     @Override

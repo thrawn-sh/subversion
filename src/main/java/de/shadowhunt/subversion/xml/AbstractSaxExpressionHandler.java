@@ -17,6 +17,7 @@ package de.shadowhunt.subversion.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -75,9 +76,9 @@ public abstract class AbstractSaxExpressionHandler<V> extends DefaultHandler {
         return StringEscapeUtils.unescapeXml(buffer.toString());
     }
 
-    public abstract V getValue();
+    public abstract Optional<V> getValue();
 
-    public V parse(final InputStream inputStream) throws ParserConfigurationException, SAXException, IOException {
+    public Optional<V> parse(final InputStream inputStream) throws ParserConfigurationException, SAXException, IOException {
         final SAXParser saxParser = FACTORY.newSAXParser();
         saxParser.parse(inputStream, this);
         return getValue();

@@ -17,13 +17,15 @@ package de.shadowhunt.subversion.xml;
 
 import org.xml.sax.Attributes;
 
+import java.util.Optional;
+
 public interface SaxExpression<V> {
 
     void clear();
 
     void end(String nameSpaceUri, String localName, int depth, String text);
 
-    V getValue();
+    Optional<V> getValue();
 
     void reset();
 

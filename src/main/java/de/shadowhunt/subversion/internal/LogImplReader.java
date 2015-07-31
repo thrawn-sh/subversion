@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
@@ -37,27 +38,29 @@ final class LogImplReader {
 
     private static class CommentExpression extends AbstractSaxExpression<String> {
 
+        private static final Optional<String> EMPTY = Optional.of("");
+
         private static final QName[] PATH = { new QName(XmlConstants.DAV_NAMESPACE, "comment") };
 
-        private String comment = "";
+        private Optional<String> comment = EMPTY;
 
         CommentExpression() {
             super(PATH);
         }
 
         @Override
-        public String getValue() {
+        public Optional<String> getValue() {
             return comment;
         }
 
         @Override
         protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
-            comment = text;
+            comment = Optional.of(text);
         }
 
         @Override
         public void resetHandler() {
-            comment = "";
+            comment = EMPTY;
         }
     }
 
@@ -65,25 +68,25 @@ final class LogImplReader {
 
         private static final QName[] PATH = { new QName(XmlConstants.DAV_NAMESPACE, "creator-displayname") };
 
-        private String creator = "";
+        private Optional<String> creator = Optional.empty();
 
         CreatorExpression() {
             super(PATH);
         }
 
         @Override
-        public String getValue() {
+        public Optional<String> getValue() {
             return creator;
         }
 
         @Override
         protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
-            creator = text;
+            creator = Optional.of(text);
         }
 
         @Override
         public void resetHandler() {
-            creator = "";
+            creator = Optional.empty();
         }
     }
 
@@ -91,25 +94,25 @@ final class LogImplReader {
 
         public static final QName[] PATH = { new QName(XmlConstants.SVN_NAMESPACE, "date") };
 
-        private Date date = null;
+        private Optional<Date> date = Optional.empty();
 
         DateExpression() {
             super(PATH);
         }
 
         @Override
-        public Date getValue() {
+        public Optional<Date> getValue() {
             return date;
         }
 
         @Override
         protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
-            date = DateUtils.parseCreatedDate(text);
+            date = Optional.of(DateUtils.parseCreatedDate(text));
         }
 
         @Override
         public void resetHandler() {
-            date = null;
+            date = Optional.empty();
         }
     }
 
@@ -141,17 +144,17 @@ final class LogImplReader {
         }
 
         @Override
-        public List<Log> getValue() {
-            return entries;
+        public Optional<List<Log>> getValue() {
+            return Optional.of(entries);
         }
 
         @Override
         protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
             final LogImpl log = new LogImpl();
-            log.setMessage(((CommentExpression) children[0]).getValue());
-            log.setAuthor(((CreatorExpression) children[1]).getValue());
-            log.setDate(((DateExpression) children[2]).getValue());
-            log.setRevision(((RevisionExpression) children[3]).getValue());
+            log.setMessage(((CommentExpression) children[0]).getValue().get());
+            log.setAuthor(((CreatorExpression) children[1]).getValue().get());
+            log.setDate(((DateExpression) children[2]).getValue().get());
+            log.setRevision(((RevisionExpression) children[3]).getValue().get());
             entries.add(log);
         }
     }
@@ -163,9 +166,9 @@ final class LogImplReader {
         }
 
         @Override
-        public List<Log> getValue() {
+        public Optional<List<Log>> getValue() {
             final LogExpression expression = (LogExpression) expressions[0];
-            final List<Log> logs = expression.getValue();
+            final Optional<List<Log>> logs = expression.getValue();
             expression.clear();
             return logs;
         }
@@ -175,26 +178,26 @@ final class LogImplReader {
 
         public static final QName[] PATH = { new QName(XmlConstants.DAV_NAMESPACE, "version-name") };
 
-        private Revision revision = null;
+        private Optional<Revision> revision = Optional.empty();
 
         RevisionExpression() {
             super(PATH);
         }
 
         @Override
-        public Revision getValue() {
+        public Optional<Revision> getValue() {
             return revision;
         }
 
         @Override
         protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
             final int version = Integer.parseInt(text);
-            revision = Revision.create(version);
+            revision = Optional.of(Revision.create(version));
         }
 
         @Override
         public void resetHandler() {
-            revision = null;
+            revision = Optional.empty();
         }
     }
 
@@ -209,7 +212,8 @@ final class LogImplReader {
     static List<Log> read(final InputStream inputStream) throws IOException {
         final LogHandler handler = new LogHandler();
         try {
-            return handler.parse(inputStream);
+            final Optional<List<Log>> logs = handler.parse(inputStream);
+            return logs.get();
         } catch (final ParserConfigurationException | SAXException e) {
             throw new SubversionException("Invalid server response: could not parse response", e);
         }

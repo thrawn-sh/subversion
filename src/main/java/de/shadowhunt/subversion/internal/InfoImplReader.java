@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 
-import javax.annotation.Nullable;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
@@ -73,33 +72,38 @@ final class InfoImplReader {
         }
 
         @Override
-        public List<Info> getValue() {
-            return entries;
+        public Optional<List<Info>> getValue() {
+            return Optional.of(entries);
         }
 
         @Override
         protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
             final InfoImpl info = new InfoImpl();
-            info.setCreationDate(DateUtils.parseCreatedDate(((StringExpression) children[0]).getValue()));
-            info.setDirectory(((ResourceTypeExpression) children[1]).getValue());
-            info.setLastModifiedDate(DateUtils.parseLastModifiedDate(((StringExpression) children[2]).getValue()));
-            final String token = ((StringExpression) children[3]).getValue();
-            if (token == null) {
-                info.setLockToken(Optional.<LockToken>empty());
-            } else {
-                info.setLockToken(Optional.of(new LockToken(token)));
-            }
-            info.setMd5(Optional.ofNullable(((StringExpression) children[4]).getValue()));
-            info.setProperties(((PropertyExpression) children[5]).getValue());
-            final String uuid = ((StringExpression) children[6]).getValue();
-            if (uuid != null) {
-                info.setRepositoryId(UUID.fromString(uuid));
-            }
-            info.setResource(((ResourceExpression) children[7]).getValue());
-            final String revision = ((StringExpression) children[8]).getValue();
-            if (revision != null) {
-                info.setRevision(Revision.create(Integer.parseInt(revision)));
-            }
+
+            final Optional<String> creationDate = ((StringExpression) children[0]).getValue();
+            creationDate.ifPresent(x -> info.setCreationDate(DateUtils.parseCreatedDate(x)));
+
+            info.setDirectory(((ResourceTypeExpression) children[1]).getValue().get());
+
+            final Optional<String> modificationDate = ((StringExpression) children[2]).getValue();
+            modificationDate.ifPresent(x -> info.setLastModifiedDate(DateUtils.parseLastModifiedDate(x)));
+
+            final Optional<String> token = ((StringExpression) children[3]).getValue();
+            token.ifPresent(x -> info.setLockToken(Optional.of(new LockToken(x))));
+
+            info.setMd5(((StringExpression) children[4]).getValue());
+
+            info.setProperties(((PropertyExpression) children[5]).getValue().get());
+
+            final Optional<String> uuid = ((StringExpression) children[6]).getValue();
+            uuid.ifPresent(x -> info.setRepositoryId(UUID.fromString(x)));
+
+            final Optional<Resource> resource = ((ResourceExpression) children[7]).getValue();
+            resource.ifPresent(x -> info.setResource(x));
+
+            final Optional<String> revision = ((StringExpression) children[8]).getValue();
+            revision.ifPresent(x -> info.setRevision(Revision.create(Integer.parseInt(x))));
+
             entries.add(info);
 
             children[5].clear();
@@ -113,7 +117,7 @@ final class InfoImplReader {
         }
 
         @Override
-        public List<Info> getValue() {
+        public Optional<List<Info>> getValue() {
             return ((InfoExpression) expressions[0]).getValue();
         }
     }
@@ -137,13 +141,13 @@ final class InfoImplReader {
         }
 
         @Override
-        public ResourceProperty[] getValue() {
+        public Optional<ResourceProperty[]> getValue() {
             final ResourceProperty[] resourceProperties = new ResourceProperty[properties.size()];
             int i = 0;
             for (final ResourceProperty property : properties) {
                 resourceProperties[i++] = property;
             }
-            return resourceProperties;
+            return Optional.of(resourceProperties);
         }
 
         @Override
@@ -169,29 +173,25 @@ final class InfoImplReader {
                 new QName(XmlConstants.SUBVERSION_DAV_NAMESPACE, "baseline-relative-path") //
         };
 
-        private static Resource createResource(final String escapedPath) {
-            return Resource.create(escapedPath);
-        }
-
-        private Resource resource = null;
+        private Optional<Resource> resource = Optional.empty();
 
         ResourceExpression() {
             super(PATH);
         }
 
         @Override
-        public Resource getValue() {
+        public Optional<Resource> getValue() {
             return resource;
         }
 
         @Override
         protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
-            resource = createResource(text);
+            resource = Optional.of(Resource.create(text));
         }
 
         @Override
         public void resetHandler() {
-            resource = null;
+            resource = Optional.empty();
         }
     }
 
@@ -211,8 +211,8 @@ final class InfoImplReader {
         }
 
         @Override
-        public Boolean getValue() {
-            return folder;
+        public Optional<Boolean> getValue() {
+            return Optional.of(folder);
         }
 
         @Override
@@ -238,7 +238,7 @@ final class InfoImplReader {
         }
 
         @Override
-        public Void getValue() {
+        public Optional<Void> getValue() {
             throw new UnsupportedOperationException("no value available");
         }
 
@@ -267,26 +267,25 @@ final class InfoImplReader {
             return prefixPath;
         }
 
-        private String value = null;
+        private Optional<String> value = Optional.empty();
 
         protected StringExpression(final QName... path) {
             super(prefix(path));
         }
 
         @Override
-        @Nullable
-        public String getValue() {
+        public Optional<String> getValue() {
             return value;
         }
 
         @Override
         protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
-            value = text;
+            value = Optional.ofNullable(text);
         }
 
         @Override
         public void resetHandler() {
-            value = null;
+            value = Optional.empty();
         }
     }
 
@@ -318,7 +317,8 @@ final class InfoImplReader {
         final InfoHandler handler = new InfoHandler();
         try {
             final InputStream escapedStream = ResourcePropertyUtils.escapedInputStream(inputStream);
-            return handler.parse(escapedStream);
+            final Optional<List<Info>> list = handler.parse(escapedStream);
+            return list.get();
         } catch (final ParserConfigurationException | SAXException e) {
             throw new SubversionException("Invalid server response: could not parse response", e);
         }

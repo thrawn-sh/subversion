@@ -33,7 +33,7 @@ import org.xml.sax.SAXException;
 
 final class Prefix {
 
-    private static class PrefixExpression extends AbstractSaxExpression<Optional<Resource>> {
+    private static class PrefixExpression extends AbstractSaxExpression<Resource> {
 
         private static final QName[] PATH = { //
                 new QName(XmlConstants.DAV_NAMESPACE, "options-response"), //
@@ -74,7 +74,7 @@ final class Prefix {
         }
     }
 
-    private static class PrefixHandler extends AbstractSaxExpressionHandler<Optional<Resource>> {
+    private static class PrefixHandler extends AbstractSaxExpressionHandler<Resource> {
 
         PrefixHandler(final ProtocolVersion version) {
             super(new PrefixExpression(version));
