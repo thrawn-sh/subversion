@@ -15,9 +15,9 @@
  */
 package de.shadowhunt.subversion.xml;
 
-import org.xml.sax.Attributes;
-
 import java.util.Optional;
+
+import org.xml.sax.Attributes;
 
 public interface SaxExpression<V> {
 
