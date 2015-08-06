@@ -25,7 +25,7 @@ function apr() { #{{{1
 	fi
 
 	local archive="/opt/download/apr-${version}.tar.gz"
-	if [ ! -f "${archive}" ]; then
+	if [ ! -s "${archive}" ]; then
 		wget "http://archive.apache.org/dist/apr/apr-${version}.tar.gz" -O "${archive}"
 	fi
 
@@ -53,7 +53,7 @@ function apr-util() { #{{{1
 	fi
 
 	local archive="/opt/download/apr-util-${version}.tar.gz"
-	if [ ! -f "${archive}" ]; then
+	if [ ! -s "${archive}" ]; then
 		wget "http://archive.apache.org/dist/apr/apr-util-${version}.tar.gz" -O "${archive}"
 	fi
 
@@ -90,7 +90,7 @@ function httpd() { #{{{1
 	fi
 
 	local archive="/opt/download/httpd-${version}.tar.gz"
-	if [ ! -f "${archive}" ]; then
+	if [ ! -s "${archive}" ]; then
 		wget "http://archive.apache.org/dist/httpd/httpd-${version}.tar.gz" -O "${archive}"
 	fi
 
@@ -141,7 +141,7 @@ function neon() { #{{{1
 	fi
 
 	local archive="/opt/download/neon-${version}.tar.gz"
-	if [ ! -f "${archive}" ]; then
+	if [ ! -s "${archive}" ]; then
 		wget "http://www.webdav.org/neon/neon-${version}.tar.gz" -O "${archive}"
 	fi
 
@@ -174,7 +174,7 @@ function openssl() { #{{{1
 	fi
 
 	local archive="/opt/download/openssl-${version}.tar.gz"
-	if [ ! -f "${archive}" ]; then
+	if [ ! -s "${archive}" ]; then
 		wget "http://www.openssl.org/source/openssl-${version}.tar.gz" -O "${archive}"
 	fi
 
@@ -208,7 +208,7 @@ function scons() { #{{{1
 	fi
 
 	local archive="/opt/download/scons-local-${version}.tar.gz"
-	if [ ! -f "${archive}" ]; then
+	if [ ! -s "${archive}" ]; then
 		wget "http://prdownloads.sourceforge.net/scons/scons-local-${version}.tar.gz" -O "${archive}"
 	fi
 
@@ -232,8 +232,8 @@ function serf() { #{{{1
 	fi
 
 	local archive="/opt/download/serf-${version}.tar.bz2"
-	if [ ! -f "${archive}" ]; then
-		wget "http://serf.googlecode.com/files/serf-${version}.tar.bz2" -O "${archive}"
+	if [ ! -s "${archive}" ]; then
+		wget "http://serf.googlecode.com/svn/src_releases/serf-${version}.tar.bz2" -O "${archive}"
 	fi
 
 	cd "${directory}"
@@ -261,7 +261,7 @@ function sqllite() { #{{{1
 	fi
 
 	local archive="/opt/download/sqlite-autoconf-${version}.tar.gz"
-	if [ ! -f "${archive}" ]; then
+	if [ ! -s "${archive}" ]; then
 		wget "http://www.sqlite.org/2013/sqlite-autoconf-${version}.tar.gz" -O "${archive}"
 	fi
 
@@ -290,7 +290,7 @@ function pcre() { #{{{1
 	fi
 
 	local archive="/opt/download/ocre-${version}.tar.gz"
-	if [ ! -f "${archive}" ]; then
+	if [ ! -s "${archive}" ]; then
 		wget "http://sourceforge.net/projects/pcre/files/pcre/${version}/pcre-${version}.tar.gz" -O "${archive}"
 	fi
 
@@ -328,7 +328,7 @@ function subversion_1_0() { #{{{1
 	fi
 
 	local archive="/opt/download/subversion-${version}.tar.bz2"
-	if [ ! -f "${archive}" ]; then
+	if [ ! -s "${archive}" ]; then
 		wget "http://archive.apache.org/dist/subversion/subversion-${version}.tar.bz2" -O "${archive}"
 	fi
 
@@ -372,7 +372,7 @@ function subversion_1_1() { #{{{1
 	fi
 
 	local archive="/opt/download/subversion-${version}.tar.bz2"
-	if [ ! -f "${archive}" ]; then
+	if [ ! -s "${archive}" ]; then
 		wget "http://archive.apache.org/dist/subversion/subversion-${version}.tar.bz2" -O "${archive}"
 	fi
 
@@ -416,7 +416,7 @@ function subversion_1_2() { #{{{1
 	fi
 
 	local archive="/opt/download/subversion-${version}.tar.bz2"
-	if [ ! -f "${archive}" ]; then
+	if [ ! -s "${archive}" ]; then
 		wget "http://archive.apache.org/dist/subversion/subversion-${version}.tar.bz2" -O "${archive}"
 	fi
 
@@ -461,7 +461,7 @@ function subversion_1_3() { #{{{1
 	fi
 
 	local archive="/opt/download/subversion-${version}.tar.bz2"
-	if [ ! -f "${archive}" ]; then
+	if [ ! -s "${archive}" ]; then
 		wget "http://archive.apache.org/dist/subversion/subversion-${version}.tar.bz2" -O "${archive}"
 	fi
 
@@ -506,7 +506,7 @@ function subversion_1_4() { #{{{1
 	fi
 
 	local archive="/opt/download/subversion-${version}.tar.bz2"
-	if [ ! -f "${archive}" ]; then
+	if [ ! -s "${archive}" ]; then
 		wget "http://archive.apache.org/dist/subversion/subversion-${version}.tar.bz2" -O "${archive}"
 	fi
 
@@ -551,7 +551,7 @@ function subversion_1_5() { #{{{1
 	fi
 
 	local archive="/opt/download/subversion-${version}.tar.bz2"
-	if [ ! -f "${archive}" ]; then
+	if [ ! -s "${archive}" ]; then
 		wget "http://archive.apache.org/dist/subversion/subversion-${version}.tar.bz2" -O "${archive}"
 	fi
 
@@ -596,7 +596,7 @@ function subversion_1_6() { #{{{1
 	fi
 
 	local archive="/opt/download/subversion-${version}.tar.bz2"
-	if [ ! -f "${archive}" ]; then
+	if [ ! -s "${archive}" ]; then
 		wget "http://archive.apache.org/dist/subversion/subversion-${version}.tar.bz2" -O "${archive}"
 	fi
 
@@ -643,7 +643,7 @@ function subversion_1_7() { #{{{1
 	fi
 
 	local archive="/opt/download/subversion-${version}.tar.bz2"
-	if [ ! -f "${archive}" ]; then
+	if [ ! -s "${archive}" ]; then
 		wget "http://archive.apache.org/dist/subversion/subversion-${version}.tar.bz2" -O "${archive}"
 	fi
 
@@ -690,13 +690,63 @@ function subversion_1_8() { #{{{1
 	fi
 
 	local archive="/opt/download/subversion-${version}.tar.bz2"
-	if [ ! -f "${archive}" ]; then
+	if [ ! -s "${archive}" ]; then
 		wget "http://archive.apache.org/dist/subversion/subversion-${version}.tar.bz2" -O "${archive}"
 	fi
 
 	cd "${directory}"
 	tar -xjf "${archive}"
 	cd "subversion-${version}"
+
+	./configure \
+		--disable-keychain \
+		--prefix="${prefix}" \
+		--with-apache-libexecdir="${prefix}/modules" \
+		--with-apr-util="${prefix}" \
+		--with-apr="${prefix}" \
+		--with-apxs="${prefix}/bin/apxs" \
+		--with-serf="${prefix}" \
+		--with-sqlite="${prefix}" \
+		--without-berkeley-db \
+		--without-gpg-agent
+	make
+	make install
+
+	touch "${maker}"
+	rm -rf "${directory}"
+} #}}}1
+function subversion_1_9() { #{{{1
+	local version="1.9.0"
+	local directory=`mktemp -d`
+	local prefix="/opt/subversion-${version}"
+	mkdir -p "${prefix}/.install"
+
+	openssl  "${directory}" "${prefix}" 0.9.8g
+	apr      "${directory}" "${prefix}" 1.5.0
+	apr-util "${directory}" "${prefix}" 1.5.3
+	httpd    "${directory}" "${prefix}" 2.2.26
+	sqllite  "${directory}" "${prefix}" 3080100
+	scons    "${directory}" "${prefix}" 2.3.0
+	serf     "${directory}" "${prefix}" 1.3.4
+
+	local maker="${prefix}/.install/subversion"
+	if [ -f "${maker}" ]; then
+		echo "subversion already installed in ${prefix}"
+		rm -rf "${directory}"
+		return
+	fi
+
+	local archive="/opt/download/subversion-${version}.tar.bz2"
+	if [ ! -s "${archive}" ]; then
+		wget "http://archive.apache.org/dist/subversion/subversion-${version}.tar.bz2" -O "${archive}"
+	fi
+
+	local patch_file="${PWD}/patches/subversion-1.9.0.patch"
+
+	cd "${directory}"
+	tar -xjf "${archive}"
+	cd "subversion-${version}"
+	patch -p0 < "${patch_file}"
 
 	./configure \
 		--disable-keychain \
@@ -734,7 +784,7 @@ function frontend() { #{{{1
 	fi
 
 	local archive="/opt/download/httpd-${version}.tar.gz"
-	if [ ! -f "${archive}" ]; then
+	if [ ! -s "${archive}" ]; then
 		wget "http://archive.apache.org/dist/httpd/httpd-${version}.tar.gz" -O "${archive}"
 	fi
 
@@ -778,5 +828,6 @@ subversion_1_5
 subversion_1_6
 subversion_1_7
 subversion_1_8
+subversion_1_9
 
 frontend

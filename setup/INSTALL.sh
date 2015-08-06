@@ -27,6 +27,7 @@ chkconfig apache-subversion_1.5.0    on
 chkconfig apache-subversion_1.6.0    on
 chkconfig apache-subversion_1.7.0    on
 chkconfig apache-subversion_1.8.0    on
+chkconfig apache-subversion_1.9.0    on
 chkconfig apache-subversion_frontend on
 
 # start environment
