@@ -258,7 +258,7 @@ public abstract class AbstractBaseRepository implements Repository {
         final Resource resolved = resolve2(view, resource, revision, false);
         final DownloadOperation operation = new DownloadOperation(repository, resolved);
         final Optional<InputStream> is = operation.execute(client, context);
-        return is.orElseThrow(() -> new SubversionException("Can't resolve: " + resource + '@' + revision)); // FIXME
+        return is.orElseThrow(() -> new SubversionException("Can't resolve: " + resource + '@' + revision));
     }
 
     @Override

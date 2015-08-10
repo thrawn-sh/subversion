@@ -34,7 +34,6 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 
-// FIXME no usage???
 class ResolveOperation extends AbstractOperation<Optional<Resource>> {
 
     private final ResourceMapper config;
@@ -96,5 +95,4 @@ class ResolveOperation extends AbstractOperation<Optional<Resource>> {
         final Resolve resolve = Resolve.read(getContent(response));
         return Optional.of(config.getVersionedResource(resolve.getResource(), expected));
     }
-
 }
