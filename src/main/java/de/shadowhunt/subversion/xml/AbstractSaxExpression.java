@@ -24,7 +24,7 @@ import org.xml.sax.Attributes;
 
 public abstract class AbstractSaxExpression<V> implements SaxExpression<V> {
 
-    private static final SaxExpression[] NO_CHILDREN = new SaxExpression[0];
+    private static final SaxExpression<?>[] NO_CHILDREN = new SaxExpression[0];
 
     private static boolean doesElementMatch(final QName element, final String nameSpaceUri, final String localName) {
         return doesNameSpaceUriMatch(element, nameSpaceUri) && doesLocalNameMatch(element, localName);
@@ -42,7 +42,7 @@ public abstract class AbstractSaxExpression<V> implements SaxExpression<V> {
         return XMLConstants.NULL_NS_URI.equals(pNameSpaceUri) || (pNameSpaceUri.equals(nameSpaceUri));
     }
 
-    protected final SaxExpression[] children;
+    protected final SaxExpression<?>[] children;
 
     private final QName[] path;
 
@@ -52,7 +52,7 @@ public abstract class AbstractSaxExpression<V> implements SaxExpression<V> {
         this(path, NO_CHILDREN);
     }
 
-    protected AbstractSaxExpression(final QName[] path, final SaxExpression... children) {
+    protected AbstractSaxExpression(final QName[] path, final SaxExpression<?>... children) {
         this.path = Arrays.copyOf(path, path.length);
         this.children = children;
     }
@@ -66,7 +66,7 @@ public abstract class AbstractSaxExpression<V> implements SaxExpression<V> {
     public final void end(final String nameSpaceUri, final String localName, final int depth, final String text) {
         if ((depth > position) || ((position - 1) >= path.length)) {
             final int childDepth = depth - position;
-            for (final SaxExpression child : children) {
+            for (final SaxExpression<?> child : children) {
                 child.end(nameSpaceUri, localName, childDepth, text);
             }
             return;
@@ -93,14 +93,14 @@ public abstract class AbstractSaxExpression<V> implements SaxExpression<V> {
     @Override
     public final void reset() {
         position = 0;
-        for (final SaxExpression child : children) {
+        for (final SaxExpression<?> child : children) {
             child.reset();
         }
     }
 
     public void resetHandler() {
-        for (final SaxExpression child : children) {
-            ((AbstractSaxExpression) child).resetHandler();
+        for (final SaxExpression<?> child : children) {
+            ((AbstractSaxExpression<?>) child).resetHandler();
         }
     }
 
@@ -108,7 +108,7 @@ public abstract class AbstractSaxExpression<V> implements SaxExpression<V> {
     public final void start(final String nameSpaceUri, final String localName, final int depth, final Attributes attributes) {
         if ((depth > position) || (position >= path.length)) {
             final int childDepth = depth - position;
-            for (final SaxExpression child : children) {
+            for (final SaxExpression<?> child : children) {
                 child.start(nameSpaceUri, localName, childDepth, attributes);
             }
             return;

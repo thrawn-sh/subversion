@@ -42,9 +42,9 @@ public abstract class AbstractSaxExpressionHandler<V> extends DefaultHandler {
         FACTORY.setValidating(false);
     }
 
-    protected final SaxExpression[] expressions;
+    protected final SaxExpression<?>[] expressions;
 
-    protected AbstractSaxExpressionHandler(final SaxExpression... expressions) {
+    protected AbstractSaxExpressionHandler(final SaxExpression<?>... expressions) {
         this.expressions = expressions;
     }
 
@@ -66,7 +66,7 @@ public abstract class AbstractSaxExpressionHandler<V> extends DefaultHandler {
     @Override
     public void endElement(final String uri, final String localName, final String qName) {
         final String text = getText();
-        for (final SaxExpression expression : expressions) {
+        for (final SaxExpression<?> expression : expressions) {
             expression.end(uri, localName, depth--, text);
         }
         clearText();
@@ -92,7 +92,7 @@ public abstract class AbstractSaxExpressionHandler<V> extends DefaultHandler {
     @Override
     public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
         clearText();
-        for (final SaxExpression expression : expressions) {
+        for (final SaxExpression<?> expression : expressions) {
             expression.start(uri, localName, depth++, attributes);
         }
     }
