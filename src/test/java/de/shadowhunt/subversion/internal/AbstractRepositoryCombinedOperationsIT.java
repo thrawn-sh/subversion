@@ -207,7 +207,6 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
         final String content = "test";
         final Resource resource = prefix.append(Resource.create("delete.txt"));
 
-        final Info before = repository.info(Resource.ROOT, Revision.HEAD);
         final Transaction transaction = repository.createTransaction();
         try {
             repository.add(transaction, resource, true, IOUtils.toInputStream(content, AbstractHelper.UTF8));

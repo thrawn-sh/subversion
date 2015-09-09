@@ -60,7 +60,7 @@ public abstract class AbstractRepositoryFactoryIT {
     public void test01_create() {
         final RepositoryFactory factory = RepositoryFactory.getInstance();
         final URI uri = URI.create(repository.getBaseUri().toString() + "/" + UUID.randomUUID().toString());
-        final Repository probeRepository = factory.createRepository(uri, client, context);
+        factory.createRepository(uri, client, context);
         Assert.fail("must not complete");
     }
 
