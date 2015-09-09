@@ -38,40 +38,39 @@ public abstract class AbstractPrepare {
     public static final Charset UTF8 = Charset.forName("UTF-8");
 
     private static boolean extractArchive(final File zip, final File prefix) throws Exception {
-        final ZipFile zipFile = new ZipFile(zip);
-        final Enumeration<? extends ZipEntry> enu = zipFile.entries();
-        while (enu.hasMoreElements()) {
-            final ZipEntry zipEntry = enu.nextElement();
+        try (final ZipFile zipFile = new ZipFile(zip)) {
+            final Enumeration<? extends ZipEntry> enu = zipFile.entries();
+            while (enu.hasMoreElements()) {
+                final ZipEntry zipEntry = enu.nextElement();
 
-            final String name = zipEntry.getName();
+                final String name = zipEntry.getName();
 
-            final File file = new File(prefix, name);
-            if (name.charAt(name.length() - 1) == Resource.SEPARATOR_CHAR) {
-                if (!file.isDirectory() && !file.mkdirs()) {
-                    throw new IOException("can not create directory structure: " + file);
+                final File file = new File(prefix, name);
+                if (name.charAt(name.length() - 1) == Resource.SEPARATOR_CHAR) {
+                    if (!file.isDirectory() && !file.mkdirs()) {
+                        throw new IOException("can not create directory structure: " + file);
+                    }
+                    continue;
                 }
-                continue;
-            }
 
-            final File parent = file.getParentFile();
-            if (parent != null) {
-                if (!parent.isDirectory() && !parent.mkdirs()) {
-                    throw new IOException("can not create directory structure: " + parent);
+                final File parent = file.getParentFile();
+                if (parent != null) {
+                    if (!parent.isDirectory() && !parent.mkdirs()) {
+                        throw new IOException("can not create directory structure: " + parent);
+                    }
+                }
+
+                try (final InputStream is = zipFile.getInputStream(zipEntry)) {
+                    try (final FileOutputStream fos = new FileOutputStream(file)) {
+                        final byte[] bytes = new byte[1024];
+                        int length;
+                        while ((length = is.read(bytes)) >= 0) {
+                            fos.write(bytes, 0, length);
+                        }
+                    }
                 }
             }
-
-            final InputStream is = zipFile.getInputStream(zipEntry);
-            final FileOutputStream fos = new FileOutputStream(file);
-            final byte[] bytes = new byte[1024];
-            int length;
-            while ((length = is.read(bytes)) >= 0) {
-                fos.write(bytes, 0, length);
-            }
-            is.close();
-            fos.close();
-
         }
-        zipFile.close();
         return true;
     }
 

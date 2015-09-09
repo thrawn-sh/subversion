@@ -96,35 +96,35 @@ public abstract class AbstractHelper {
     }
 
     private void extractArchive(final File zip, final File prefix) throws Exception {
-        final ZipFile zipFile = new ZipFile(zip);
-        final Enumeration<? extends ZipEntry> enu = zipFile.entries();
-        while (enu.hasMoreElements()) {
-            final ZipEntry zipEntry = enu.nextElement();
+        try (final ZipFile zipFile = new ZipFile(zip)) {
+            final Enumeration<? extends ZipEntry> enu = zipFile.entries();
+            while (enu.hasMoreElements()) {
+                final ZipEntry zipEntry = enu.nextElement();
 
-            final String name = zipEntry.getName();
+                final String name = zipEntry.getName();
 
-            final File file = new File(prefix, name);
-            if (name.charAt(name.length() - 1) == Resource.SEPARATOR_CHAR) {
-                if (!file.isDirectory() && !file.mkdirs()) {
-                    throw new IOException("can not create directory structure: " + file);
+                final File file = new File(prefix, name);
+                if (name.charAt(name.length() - 1) == Resource.SEPARATOR_CHAR) {
+                    if (!file.isDirectory() && !file.mkdirs()) {
+                        throw new IOException("can not create directory structure: " + file);
+                    }
+                    continue;
                 }
-                continue;
-            }
 
-            final File parent = file.getParentFile();
-            if (parent != null) {
-                if (!parent.isDirectory() && !parent.mkdirs()) {
-                    throw new IOException("can not create directory structure: " + parent);
+                final File parent = file.getParentFile();
+                if (parent != null) {
+                    if (!parent.isDirectory() && !parent.mkdirs()) {
+                        throw new IOException("can not create directory structure: " + parent);
+                    }
                 }
-            }
 
-            try (final InputStream is = zipFile.getInputStream(zipEntry)) {
-                try (final OutputStream os = new FileOutputStream(file)) {
-                    IOUtils.copy(is, os);
+                try (final InputStream is = zipFile.getInputStream(zipEntry)) {
+                    try (final OutputStream os = new FileOutputStream(file)) {
+                        IOUtils.copy(is, os);
+                    }
                 }
             }
         }
-        zipFile.close();
     }
 
     public HttpClient getHttpClient(final String username, final HttpRequestInterceptor... interceptors) {
