@@ -123,7 +123,7 @@ final class LogImplReader {
                 new QName(XmlConstants.SVN_NAMESPACE, "log-item") //
         };
 
-        private static SaxExpression[] createExpressions() {
+        private static SaxExpression<?>[] createExpressions() {
             return new SaxExpression[] {
                     new CommentExpression(), //
                     new CreatorExpression(), //

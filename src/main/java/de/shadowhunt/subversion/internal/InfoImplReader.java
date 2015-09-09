@@ -49,7 +49,7 @@ final class InfoImplReader {
                 new QName(XmlConstants.DAV_NAMESPACE, "response") //
         };
 
-        private static SaxExpression[] createExpressions() {
+        private static SaxExpression<?>[] createExpressions() {
             return new SaxExpression[] { //
                     new StringExpression(new QName(XmlConstants.DAV_NAMESPACE, "creationdate")), //
                     new ResourceTypeExpression(),
