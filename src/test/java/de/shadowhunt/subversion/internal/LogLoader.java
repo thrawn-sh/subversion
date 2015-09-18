@@ -46,7 +46,7 @@ public final class LogLoader extends AbstractBaseLoader {
 
         private final DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US);
 
-        private final List<Log> logs = new ArrayList<Log>();
+        private final List<Log> logs = new ArrayList<>();
 
         @Override
         public void endElement(final String uri, final String localName, final String qName) throws SAXException {

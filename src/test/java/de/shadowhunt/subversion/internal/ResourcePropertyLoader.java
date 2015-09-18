@@ -33,7 +33,7 @@ public final class ResourcePropertyLoader extends AbstractBaseLoader {
 
     static class ResourcePropertyHandler extends BasicHandler {
 
-        private final Set<ResourceProperty> properties = new TreeSet<ResourceProperty>(ResourceProperty.TYPE_NAME_COMPARATOR);
+        private final Set<ResourceProperty> properties = new TreeSet<>(ResourceProperty.TYPE_NAME_COMPARATOR);
 
         private String propertyName;
 

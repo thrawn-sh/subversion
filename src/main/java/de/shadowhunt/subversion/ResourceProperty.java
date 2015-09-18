@@ -136,7 +136,7 @@ public final class ResourceProperty {
     /**
      * {@link ResourceProperty} can have various types, depending of the context they are used.
      */
-    public static enum Type {
+    public enum Type {
         DAV("DAV:"),
         SVN("svn:"),
         SUBVERSION_CUSTOM("http://subversion.tigris.org/xmlns/custom/"),
@@ -145,7 +145,7 @@ public final class ResourceProperty {
 
         private final String prefix;
 
-        private Type(final String prefix) {
+        Type(final String prefix) {
             this.prefix = prefix;
         }
 

@@ -32,7 +32,7 @@ public interface Repository {
     /**
      * {@link ProtocolVersion} that represents the version of the subversion server.
      */
-    public static enum ProtocolVersion {
+    enum ProtocolVersion {
 
         HTTP_V1,
         HTTP_V2

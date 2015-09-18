@@ -26,7 +26,7 @@ public interface Transaction extends View {
     /**
      * Defines the status of each {@link Resource} that is part of the current active {@link Transaction}.
      */
-    public static enum Status {
+    public enum Status {
         ADDED("A", 2),
         DELETED("D", 3),
         EXISTS("E", -1),
@@ -40,7 +40,7 @@ public interface Transaction extends View {
          */
         public final int order;
 
-        private Status(final String abbreviation, final int order) {
+        Status(final String abbreviation, final int order) {
             this.abbreviation = abbreviation;
             this.order = order;
         }

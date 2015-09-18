@@ -89,9 +89,10 @@ final class InfoImplReader {
             modificationDate.ifPresent(x -> info.setLastModifiedDate(DateUtils.parseLastModifiedDate(x)));
 
             final Optional<String> token = ((StringExpression) children[3]).getValue();
-            token.ifPresent(x -> info.setLockToken(Optional.of(new LockToken(x))));
+            token.ifPresent(x -> info.setLockToken(new LockToken(x)));
 
-            info.setMd5(((StringExpression) children[4]).getValue());
+            final Optional<String> hash = ((StringExpression) children[4]).getValue();
+            hash.ifPresent(info::setMd5);
 
             info.setProperties(((PropertyExpression) children[5]).getValue().get());
 
@@ -99,7 +100,7 @@ final class InfoImplReader {
             uuid.ifPresent(x -> info.setRepositoryId(UUID.fromString(x)));
 
             final Optional<Resource> resource = ((ResourceExpression) children[7]).getValue();
-            resource.ifPresent(x -> info.setResource(x));
+            resource.ifPresent(info::setResource);
 
             final Optional<String> revision = ((StringExpression) children[8]).getValue();
             revision.ifPresent(x -> info.setRevision(Revision.create(Integer.parseInt(x))));

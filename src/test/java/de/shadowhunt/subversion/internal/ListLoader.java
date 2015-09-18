@@ -28,21 +28,17 @@ import de.shadowhunt.subversion.Revision;
 
 public final class ListLoader extends AbstractBaseLoader {
 
-    private static final FilenameFilter NO_META = new FilenameFilter() {
-
-        @Override
-        public boolean accept(final File dir, final String name) {
-            if (name.endsWith(InfoLoader.SUFFIX)) {
-                return false;
-            }
-            if (name.endsWith(LogLoader.SUFFIX)) {
-                return false;
-            }
-            if (name.endsWith(ResourcePropertyLoader.SUFFIX)) {
-                return false;
-            }
-            return true;
+    private static final FilenameFilter NO_META = (dir, name) -> {
+        if (name.endsWith(InfoLoader.SUFFIX)) {
+            return false;
         }
+        if (name.endsWith(LogLoader.SUFFIX)) {
+            return false;
+        }
+        if (name.endsWith(ResourcePropertyLoader.SUFFIX)) {
+            return false;
+        }
+        return true;
     };
 
     private final InfoLoader infoLoader;
@@ -55,7 +51,7 @@ public final class ListLoader extends AbstractBaseLoader {
     public Set<Info> load(final Resource resource, final Revision revision, final Depth depth) throws Exception {
         final File base = new File(root, resolve(revision) + resource.getValue());
 
-        final Set<Info> result = new TreeSet<Info>(Info.RESOURCE_COMPARATOR);
+        final Set<Info> result = new TreeSet<>(Info.RESOURCE_COMPARATOR);
         result.add(infoLoader.load(resource, revision));
 
         if ((depth != Depth.EMPTY) && base.isDirectory()) {

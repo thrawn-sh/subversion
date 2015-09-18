@@ -45,7 +45,7 @@ public enum Depth {
      */
     public final String value;
 
-    private Depth(final String value) {
+    Depth(final String value) {
         this.value = value;
     }
 }
