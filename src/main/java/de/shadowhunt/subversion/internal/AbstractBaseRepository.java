@@ -247,7 +247,7 @@ public abstract class AbstractBaseRepository implements Repository {
     }
 
     private InputStream download0(final View view, final Resource resource, final Revision revision) {
-        final Resource resolved = resolve2(view, resource, revision, false);
+        final Resource resolved = resolve(view, resource, revision, false);
         final DownloadOperation operation = new DownloadOperation(repository, resolved);
         final Optional<InputStream> is = operation.execute(client, context);
         return is.orElseThrow(() -> new SubversionException("Can't resolve: " + resource + '@' + revision));
@@ -273,7 +273,7 @@ public abstract class AbstractBaseRepository implements Repository {
         if (!exists0(view, resource, revision)) {
             throw new SubversionException("Can't resolve: " + resource + '@' + revision);
         }
-        final Resource resolved = resolve2(view, resource, revision, true);
+        final Resource resolved = resolve(view, resource, revision, true);
         return URIUtils.createURI(repository, resolved);
     }
 
@@ -295,7 +295,7 @@ public abstract class AbstractBaseRepository implements Repository {
 
     private boolean exists0(final View view, final Resource resource, final Revision revision) {
         // ask the server
-        final Resource resolved = resolve2(view, resource, revision, false);
+        final Resource resolved = resolve(view, resource, revision, false);
         final ExistsOperation operation = new ExistsOperation(repository, resolved, config.getPrefix());
         return operation.execute(client, context);
     }
@@ -360,7 +360,7 @@ public abstract class AbstractBaseRepository implements Repository {
     }
 
     private Optional<Info> info0(final View view, final Resource resource, final Revision revision, final boolean resolve, final ResourceProperty.Key[] keys) {
-        final Resource resolved = resolve2(view, resource, revision, resolve);
+        final Resource resolved = resolve(view, resource, revision, resolve);
         final InfoOperation operation = new InfoOperation(repository, resolved, config.getPrefix(), keys);
         return operation.execute(client, context);
     }
@@ -390,7 +390,7 @@ public abstract class AbstractBaseRepository implements Repository {
             return result;
         }
 
-        final Resource resolved = resolve2(view, resource, revision, true);
+        final Resource resolved = resolve(view, resource, revision, true);
         final ListOperation operation = new ListOperation(repository, resolved, config.getPrefix(), depth, keys);
         final Optional<Set<Info>> infoSet = operation.execute(client, context);
         return infoSet.orElseThrow(() -> new SubversionException("Can't resolve: " + resource + '@' + revision));
@@ -440,7 +440,7 @@ public abstract class AbstractBaseRepository implements Repository {
         final Revision concreteEndRevision = getConcreteRevision(view, endRevision);
 
         final Revision resoledRevision = (concreteStartRevision.compareTo(concreteEndRevision) > 0) ? concreteStartRevision : concreteEndRevision;
-        final Resource resolved = resolve2(view, resource, resoledRevision, true);
+        final Resource resolved = resolve(view, resource, resoledRevision, true);
 
         final LogOperation operation = new LogOperation(repository, resolved, concreteStartRevision, concreteEndRevision, limit, stopOnCopy);
         return operation.execute(client, context);
@@ -495,14 +495,29 @@ public abstract class AbstractBaseRepository implements Repository {
 
     protected abstract void registerResource(Transaction transaction, Resource resource, Revision revision);
 
-    protected Resource resolve2(final View view, final Resource resource, final Revision revision, final boolean resolve) {
+    protected Resource resolve(final View view, final Resource resource, final Revision revision, final boolean resolve) {
         if (Revision.HEAD.equals(revision)) {
             if (resolve) {
                 return config.getVersionedResource(resource, view.getHeadRevision());
             }
             return resource;
         }
-        return config.getVersionedResource(resource, revision);
+
+        final Resource expectedResource = config.getVersionedResource(resource, revision);
+        if (!resolve) {
+            return expectedResource;
+        }
+
+        { // check whether the expectedResource exists
+            final ExistsOperation operation = new ExistsOperation(repository, expectedResource, config.getPrefix());
+            if (operation.execute(client, context)) {
+                return expectedResource;
+            }
+        }
+
+        final Revision head = view.getHeadRevision();
+        final ResolveOperation operation = new ResolveOperation(repository, resource, head, revision, config);
+        return operation.execute(client, context);
     }
 
     @Override

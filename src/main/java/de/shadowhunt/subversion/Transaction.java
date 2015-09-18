@@ -26,7 +26,7 @@ public interface Transaction extends View {
     /**
      * Defines the status of each {@link Resource} that is part of the current active {@link Transaction}.
      */
-    public enum Status {
+    enum Status {
         ADDED("A", 2),
         DELETED("D", 3),
         EXISTS("E", -1),
