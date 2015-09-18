@@ -49,9 +49,7 @@ class UploadOperation extends AbstractVoidOperation {
         final URI uri = URIUtils.createURI(repository, resource);
         final HttpPut request = new HttpPut(uri);
 
-        if (lockToken.isPresent()) {
-            request.addHeader("If", "<" + uri + "> (<" + lockToken.get() + ">)");
-        }
+        lockToken.ifPresent(x -> request.addHeader("If", "<" + uri + "> (<" + x + ">)"));
 
         request.setEntity(new InputStreamEntity(content, STREAM_WHOLE_CONTENT));
         return request;

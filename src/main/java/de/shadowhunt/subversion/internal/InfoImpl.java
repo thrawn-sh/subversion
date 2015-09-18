@@ -40,11 +40,11 @@ final class InfoImpl implements Info {
     private Date lastModifiedDate = null;
 
     // NOTE: not part of xml response but determined by a response header
-    private Optional<String> lockOwner = Optional.empty();
+    private String lockOwner;
 
-    private Optional<LockToken> lockToken = Optional.empty();
+    private LockToken lockToken;
 
-    private Optional<String> md5 = Optional.empty();
+    private String md5;
 
     private ResourceProperty[] properties = EMPTY;
 
@@ -94,17 +94,17 @@ final class InfoImpl implements Info {
 
     @Override
     public Optional<String> getLockOwner() {
-        return lockOwner;
+        return Optional.ofNullable(lockOwner);
     }
 
     @Override
     public Optional<LockToken> getLockToken() {
-        return lockToken;
+        return Optional.ofNullable(lockToken);
     }
 
     @Override
     public Optional<String> getMd5() {
-        return md5;
+        return Optional.ofNullable(md5);
     }
 
     @Override
@@ -147,7 +147,7 @@ final class InfoImpl implements Info {
 
     @Override
     public boolean isLocked() {
-        return lockToken.isPresent();
+        return lockToken != null;
     }
 
     void setCreationDate(final Date creationDate) {
@@ -162,15 +162,15 @@ final class InfoImpl implements Info {
         this.lastModifiedDate = lastModifiedDate;
     }
 
-    void setLockOwner(final Optional<String> lockOwner) {
+    void setLockOwner(final String lockOwner) {
         this.lockOwner = lockOwner;
     }
 
-    void setLockToken(final Optional<LockToken> lockToken) {
+    void setLockToken(final LockToken lockToken) {
         this.lockToken = lockToken;
     }
 
-    void setMd5(final Optional<String> md5) {
+    void setMd5(final String md5) {
         this.md5 = md5;
     }
 

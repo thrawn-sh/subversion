@@ -49,9 +49,7 @@ class CopyOperation extends AbstractVoidOperation {
         request.addHeader("Depth", Depth.INFINITY.value);
         request.addHeader("Override", "T");
 
-        if (lockToken.isPresent()) {
-            request.addHeader("If", "<" + targetUri + "> (<" + lockToken.get() + ">)");
-        }
+        lockToken.ifPresent(x -> request.addHeader("If", "<" + targetUri + "> (<" + x + ">)"));
 
         return request;
     }

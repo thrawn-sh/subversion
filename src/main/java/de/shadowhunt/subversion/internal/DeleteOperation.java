@@ -42,9 +42,7 @@ class DeleteOperation extends AbstractVoidOperation {
         final URI uri = URIUtils.createURI(repository, resource);
         final HttpUriRequest request = new HttpDelete(uri);
 
-        if (lockToken.isPresent()) {
-            request.addHeader("If", "<" + uri + "> (<" + lockToken.get() + ">)");
-        }
+        lockToken.ifPresent(x -> request.addHeader("If", "<" + uri + "> (<" + x + ">)"));
 
         return request;
     }

@@ -43,7 +43,7 @@ final class Prefix {
 
         private static final Pattern PATH_PATTERN = Pattern.compile(Resource.SEPARATOR);
 
-        private Optional<Resource> prefix = Optional.empty();
+        private Resource prefix;
 
         private final ProtocolVersion version;
 
@@ -54,7 +54,7 @@ final class Prefix {
 
         @Override
         public Optional<Resource> getValue() {
-            return prefix;
+            return Optional.ofNullable(prefix);
         }
 
         @Override
@@ -63,14 +63,14 @@ final class Prefix {
                 // .../${svn}/act/
                 //     ^^^^^^ <- prefix
                 final String[] segments = PATH_PATTERN.split(text);
-                prefix = Optional.of(Resource.create(segments[segments.length - 2]));
+                prefix = Resource.create(segments[segments.length - 2]);
             }
         }
 
         @Override
         public void resetHandler() {
             super.resetHandler();
-            prefix = Optional.empty();
+            prefix = null;
         }
     }
 

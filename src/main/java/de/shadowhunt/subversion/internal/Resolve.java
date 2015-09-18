@@ -45,7 +45,7 @@ final class Resolve {
                 new QName(XmlConstants.SVN_NAMESPACE, "location") //
         };
 
-        private Optional<Resolve> entry = Optional.empty();
+        private Resolve entry;
 
         ResolveExpression() {
             super(PATH);
@@ -53,7 +53,7 @@ final class Resolve {
 
         @Override
         public Optional<Resolve> getValue() {
-            return entry;
+            return Optional.ofNullable(entry);
         }
 
         @Override
@@ -64,13 +64,13 @@ final class Resolve {
             final String version = attributes.getValue("rev");
             final Revision revision = Revision.create(Integer.parseInt(version));
 
-            entry = Optional.of(new Resolve(resource, revision));
+            entry = new Resolve(resource, revision);
         }
 
         @Override
         public void resetHandler() {
             super.resetHandler();
-            entry = Optional.empty();
+            entry = null;
         }
     }
 
@@ -102,10 +102,7 @@ final class Resolve {
             throw new SubversionException("Invalid server response: could not parse response", e);
         }
 
-        if (resolve.isPresent()) {
-            return resolve.get();
-        }
-        throw new SubversionException("Invalid server response: could not parse response");
+        return resolve.orElseThrow(() -> new SubversionException("Invalid server response: could not parse response"));
     }
 
     private final Resource resource;

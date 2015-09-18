@@ -35,12 +35,12 @@ import org.apache.http.entity.StringEntity;
 
 class PropertiesUpdateOperation extends AbstractVoidOperation {
 
-    static enum Type {
+    enum Type {
         SET("set"), DELETE("remove");
 
         final String action;
 
-        private Type(final String action) {
+        Type(final String action) {
             this.action = action;
         }
     }
@@ -66,9 +66,7 @@ class PropertiesUpdateOperation extends AbstractVoidOperation {
         final URI uri = URIUtils.createURI(repository, resource);
         final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH", uri);
 
-        if (lockToken.isPresent()) {
-            request.addHeader("If", "<" + uri + "> (<" + lockToken.get() + ">)");
-        }
+        lockToken.ifPresent(x -> request.addHeader("If", "<" + uri + "> (<" + x + ">)"));
 
         final Writer body = new StringBuilderWriter();
         try {
