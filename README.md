@@ -42,4 +42,4 @@ Its API is based on the command-lines client.
  }
 ```
 
-The GIT master is located at https://scm.shadowhunt.de/subversion
+The full documentation is located at https://dev.shadowhunt.de/subversion/
