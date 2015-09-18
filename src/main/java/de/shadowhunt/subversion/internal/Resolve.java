@@ -33,11 +33,6 @@ import org.xml.sax.SAXException;
 
 final class Resolve {
 
-    private Resolve(final Resource resource, final Revision revision) {
-        this.resource = resource;
-        this.revision = revision;
-    }
-
     private static class ResolveExpression extends AbstractSaxExpression<Resolve> {
 
         private static final QName[] PATH = { //
@@ -108,6 +103,11 @@ final class Resolve {
     private final Resource resource;
 
     private final Revision revision;
+
+    private Resolve(final Resource resource, final Revision revision) {
+        this.resource = resource;
+        this.revision = revision;
+    }
 
     @Override
     public boolean equals(final Object obj) {

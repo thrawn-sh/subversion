@@ -63,10 +63,7 @@ public abstract class AbstractBaseRepository implements Repository {
     private static UUID determineRepositoryId(final URI repository, final HttpClient client, final HttpContext context, final Resource marker) {
         final InfoOperation operation = new InfoOperation(repository, Resource.ROOT, marker, REPOSITORY_UUID);
         final Optional<Info> info = operation.execute(client, context);
-        if (info.isPresent()) {
-            return info.get().getRepositoryId();
-        }
-        throw new SubversionException("No repository found at " + repository, HttpStatus.SC_BAD_REQUEST);
+        return info.orElseThrow(() -> new SubversionException("No repository found at " + repository, HttpStatus.SC_BAD_REQUEST)).getRepositoryId();
     }
 
     protected interface ResourceMapper {
@@ -218,9 +215,7 @@ public abstract class AbstractBaseRepository implements Repository {
 
         LOGGER.trace("deleting resource {} during transaction {}", resource, transaction.getId());
         final Optional<Info> info = info0(transaction, resource, transaction.getHeadRevision(), true, LOCKING);
-        if (!info.isPresent()) {
-            throw new SubversionException("Can't resolve: " + resource + '@' + Revision.HEAD);
-        }
+        info.orElseThrow(() -> new SubversionException("Can't resolve: " + resource + '@' + Revision.HEAD));
 
         final Resource deleteResource = config.getWorkingResource(transaction).append(resource);
         final Optional<LockToken> lockToken = info.flatMap(Info::getLockToken);
@@ -232,10 +227,7 @@ public abstract class AbstractBaseRepository implements Repository {
     protected Revision determineHeadRevision() {
         final InfoOperation operation = new InfoOperation(repository, Resource.ROOT, config.getPrefix(), REVISION);
         final Optional<Info> info = operation.execute(client, context);
-        if (info.isPresent()) {
-            return info.get().getRevision();
-        }
-        throw new SubversionException("can not determine HEAD revision");
+        return info.orElseThrow(() -> new SubversionException("can not determine HEAD revision")).getRevision();
     }
 
     @Override

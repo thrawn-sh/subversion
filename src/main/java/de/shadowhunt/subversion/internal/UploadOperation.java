@@ -37,7 +37,7 @@ class UploadOperation extends AbstractVoidOperation {
 
     private final Resource resource;
 
-    UploadOperation(final URI repository, final Resource resource, final Optional<LockToken>  lockToken, final InputStream content) {
+    UploadOperation(final URI repository, final Resource resource, final Optional<LockToken> lockToken, final InputStream content) {
         super(repository);
         this.resource = resource;
         this.lockToken = lockToken;

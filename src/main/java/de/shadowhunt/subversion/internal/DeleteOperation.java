@@ -27,7 +27,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 
 class DeleteOperation extends AbstractVoidOperation {
 
-    private final Optional<LockToken>  lockToken;
+    private final Optional<LockToken> lockToken;
 
     private final Resource resource;
 

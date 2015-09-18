@@ -28,13 +28,6 @@ final class DateUtils {
 
     private static final FastDateFormat LAST_MODIFIED;
 
-    static {
-        final TimeZone zulu = TimeZone.getTimeZone("ZULU");
-
-        CREATED = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSS", zulu, Locale.US);
-        LAST_MODIFIED = FastDateFormat.getInstance("EEE, dd MMM yyyy HH:mm:ss 'GMT'", zulu, Locale.US);
-    }
-
     static Date parseCreatedDate(final String date) {
         if ('Z' != date.charAt(date.length() - 1)) {
             throw new IllegalArgumentException("date '" + date + "'is not in Zulu timezone");
@@ -65,5 +58,12 @@ final class DateUtils {
 
     private DateUtils() {
         // prevent instantiation
+    }
+
+    static {
+        final TimeZone zulu = TimeZone.getTimeZone("ZULU");
+
+        CREATED = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSS", zulu, Locale.US);
+        LAST_MODIFIED = FastDateFormat.getInstance("EEE, dd MMM yyyy HH:mm:ss 'GMT'", zulu, Locale.US);
     }
 }

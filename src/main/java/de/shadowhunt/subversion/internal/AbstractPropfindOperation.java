@@ -18,8 +18,8 @@ package de.shadowhunt.subversion.internal;
 import java.io.Writer;
 import java.net.URI;
 import java.util.Arrays;
-import java.util.Optional;
 
+import javax.annotation.CheckForNull;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -44,12 +44,12 @@ abstract class AbstractPropfindOperation<T> extends AbstractOperation<T> {
         return false;
     }
 
-    private static Optional<ResourceProperty.Key[]> filter(final Optional<ResourceProperty.Key[]> propertyKeys) {
-        if (!propertyKeys.isPresent()) {
-            return Optional.empty();
+    @CheckForNull
+    private static ResourceProperty.Key[] filter(final ResourceProperty.Key[] keys) {
+        if (keys == null) {
+            return null;
         }
 
-        final ResourceProperty.Key[] keys = propertyKeys.get();
         int w = 0;
         int r = 0;
         while (r < keys.length) {
@@ -59,23 +59,31 @@ abstract class AbstractPropfindOperation<T> extends AbstractOperation<T> {
             }
             keys[w++] = keys[r++];
         }
-        return Optional.of(Arrays.copyOf(keys, w));
+        return Arrays.copyOf(keys, w);
     }
 
     protected final Depth depth;
 
     protected final Resource marker;
 
-    protected final Optional<ResourceProperty.Key[]> propertyKeys;
+    protected final ResourceProperty.Key[] propertyKeys;
 
     protected final Resource resource;
 
-    AbstractPropfindOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, final Optional<ResourceProperty.Key[]> propertyKeys) {
+    AbstractPropfindOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, final ResourceProperty.Key[] propertyKeys) {
         super(repository);
         this.resource = resource;
         this.marker = marker;
         this.depth = depth;
         this.propertyKeys = filter(propertyKeys);
+    }
+
+    AbstractPropfindOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth) {
+        super(repository);
+        this.resource = resource;
+        this.marker = marker;
+        this.depth = depth;
+        this.propertyKeys = null;
     }
 
     @Override
@@ -90,21 +98,20 @@ abstract class AbstractPropfindOperation<T> extends AbstractOperation<T> {
             writer.writeStartDocument(XmlConstants.ENCODING, XmlConstants.VERSION_1_0);
             writer.writeStartElement("propfind");
             writer.writeDefaultNamespace(XmlConstants.DAV_NAMESPACE);
-            if (propertyKeys.isPresent()) {
-                final ResourceProperty.Key[] keys = propertyKeys.get();
-                if (keys.length == 0) {
+            if (propertyKeys != null) {
+                if (propertyKeys.length == 0) {
                     writer.writeEmptyElement("allprop");
                 } else {
                     writer.writeStartElement("prop");
-                    if (contains(keys, XmlConstants.SUBVERSION_DAV_NAMESPACE)) {
+                    if (contains(propertyKeys, XmlConstants.SUBVERSION_DAV_NAMESPACE)) {
                         writer.writeNamespace(XmlConstants.SUBVERSION_DAV_PREFIX, XmlConstants.SUBVERSION_DAV_NAMESPACE);
                         writer.setPrefix(XmlConstants.SUBVERSION_DAV_PREFIX, XmlConstants.SUBVERSION_DAV_NAMESPACE);
                     }
-                    if (contains(keys, XmlConstants.SUBVERSION_SVN_NAMESPACE)) {
+                    if (contains(propertyKeys, XmlConstants.SUBVERSION_SVN_NAMESPACE)) {
                         writer.writeNamespace(XmlConstants.SUBVERSION_SVN_PREFIX, XmlConstants.SUBVERSION_SVN_NAMESPACE);
                         writer.setPrefix(XmlConstants.SUBVERSION_SVN_PREFIX, XmlConstants.SUBVERSION_SVN_NAMESPACE);
                     }
-                    for (final ResourceProperty.Key requestedProperty : keys) {
+                    for (final ResourceProperty.Key requestedProperty : propertyKeys) {
                         writer.writeEmptyElement(requestedProperty.getType().getPrefix(), requestedProperty.getName());
                     }
                     writer.writeEndElement(); // prop
