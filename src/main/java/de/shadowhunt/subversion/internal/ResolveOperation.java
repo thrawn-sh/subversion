@@ -18,6 +18,7 @@ package de.shadowhunt.subversion.internal;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URI;
+import java.util.Optional;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -33,7 +34,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 
-class ResolveOperation extends AbstractOperation<Resource> {
+class ResolveOperation extends AbstractOperation<Optional<Resource>> {
 
     private final ResourceMapper config;
 
@@ -85,13 +86,13 @@ class ResolveOperation extends AbstractOperation<Resource> {
     }
 
     @Override
-    protected Resource processResponse(final HttpResponse response) throws IOException {
+    protected Optional<Resource> processResponse(final HttpResponse response) throws IOException {
         final int statusCode = getStatusCode(response);
         if (statusCode == HttpStatus.SC_NOT_FOUND) {
-            throw new SubversionException("TODO");
+            return Optional.empty();
         }
 
         final Resolve resolve = Resolve.read(getContent(response));
-        return config.getVersionedResource(resolve.getResource(), expected);
+        return Optional.of(config.getVersionedResource(resolve.getResource(), expected));
     }
 }
