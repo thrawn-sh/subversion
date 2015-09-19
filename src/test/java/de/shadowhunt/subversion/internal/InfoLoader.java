@@ -17,6 +17,7 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Date;
 import java.util.UUID;
 
 import javax.xml.parsers.SAXParser;
@@ -49,6 +50,12 @@ public final class InfoLoader extends AbstractBaseLoader {
             if ("uuid".equals(localName)) {
                 current.setRepositoryId(UUID.fromString(getText()));
                 return;
+            }
+
+            if ("date".equals(localName)) {
+                final Date date = DateUtils.parseCreatedDate(getText());
+                current.setCreationDate(date);
+                current.setLastModifiedDate(new Date((date.getTime() / 1000L) * 1000L));
             }
         }
 

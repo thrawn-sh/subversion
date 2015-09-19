@@ -35,8 +35,8 @@ public abstract class AbstractRepositoryInfoIT {
     public static final Resource PREFIX = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/info");
 
     public static void assertInfoEquals(final String message, final Info expected, final Info actual) {
-        // Assert.assertListEquals(message, expected.getCreationDate(), actual.getCreationDate()); FIXME
-        // Assert.assertListEquals(message, expected.getLastModifiedDate(), actual.getLastModifiedDate());
+        Assert.assertEquals(message, expected.getCreationDate(), actual.getCreationDate());
+        Assert.assertEquals(message, expected.getLastModifiedDate(), actual.getLastModifiedDate());
         Assert.assertEquals(message, expected.getLockOwner(), actual.getLockOwner());
         Assert.assertEquals(message, expected.getLockToken(), actual.getLockToken());
         Assert.assertEquals(message, expected.getMd5(), actual.getMd5());
