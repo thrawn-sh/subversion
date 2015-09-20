@@ -22,13 +22,13 @@ import javax.annotation.CheckForNull;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.SubversionException;
+
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
-
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.SubversionException;
 
 public class CommitMessageOperation extends AbstractVoidOperation {
 
@@ -55,9 +55,9 @@ public class CommitMessageOperation extends AbstractVoidOperation {
             writer.writeDefaultNamespace(XmlConstants.DAV_NAMESPACE);
             writer.writeStartElement("set");
             writer.writeStartElement("prop");
-            writer.setPrefix(XmlConstants.SUBVERSION_DAV_PREFIX, XmlConstants.SUBVERSION_DAV_NAMESPACE);
-            writer.writeStartElement(XmlConstants.SUBVERSION_DAV_NAMESPACE, "log");
-            writer.writeNamespace(XmlConstants.SUBVERSION_DAV_PREFIX, XmlConstants.SUBVERSION_DAV_NAMESPACE);
+            writer.setPrefix(XmlConstants.SUBVERSION_SVN_PREFIX, XmlConstants.SUBVERSION_SVN_NAMESPACE);
+            writer.writeStartElement(XmlConstants.SUBVERSION_SVN_NAMESPACE, "log");
+            writer.writeNamespace(XmlConstants.SUBVERSION_SVN_PREFIX, XmlConstants.SUBVERSION_SVN_NAMESPACE);
             writer.writeCharacters(message);
             writer.writeEndElement(); // log
             writer.writeEndElement(); // prop
