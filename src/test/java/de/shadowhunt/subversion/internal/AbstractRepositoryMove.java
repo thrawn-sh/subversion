@@ -91,7 +91,7 @@ public abstract class AbstractRepositoryMove {
         AbstractRepositoryAdd.file(repository, source, "B", false);
 
         final Info sInfo = repository.info(source, Revision.HEAD);
-        final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0);
+        final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0, false);
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -112,7 +112,7 @@ public abstract class AbstractRepositoryMove {
         final Info tInfo = repository.info(target, Revision.HEAD);
         Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
 
-        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0);
+        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
     }
@@ -143,7 +143,7 @@ public abstract class AbstractRepositoryMove {
         AbstractRepositoryMkdir.mkdir(repository, source, true);
 
         final Info sInfo = repository.info(source, Revision.HEAD);
-        final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0);
+        final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0, false);
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -164,7 +164,7 @@ public abstract class AbstractRepositoryMove {
         final Info tInfo = repository.info(target, Revision.HEAD);
         Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
 
-        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0);
+        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
     }
@@ -200,7 +200,7 @@ public abstract class AbstractRepositoryMove {
         AbstractRepositoryMkdir.mkdir(repository, source.append(subFolder), false);
 
         final Info sInfo = repository.info(source, Revision.HEAD);
-        final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0);
+        final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0, false);
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -221,7 +221,7 @@ public abstract class AbstractRepositoryMove {
         final Info tInfo = repository.info(target, Revision.HEAD);
         Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
 
-        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0);
+        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
 
@@ -238,7 +238,7 @@ public abstract class AbstractRepositoryMove {
         AbstractRepositoryAdd.file(repository, target, "target", true);
 
         final Info sInfo = repository.info(source, Revision.HEAD);
-        final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0);
+        final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0, false);
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -260,7 +260,7 @@ public abstract class AbstractRepositoryMove {
         final Info tInfo = repository.info(target, Revision.HEAD);
         Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
 
-        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0);
+        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
     }
@@ -274,7 +274,7 @@ public abstract class AbstractRepositoryMove {
         AbstractRepositoryMkdir.mkdir(repository, target, true);
 
         final Info sInfo = repository.info(source, Revision.HEAD);
-        final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0);
+        final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0, false);
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -296,7 +296,7 @@ public abstract class AbstractRepositoryMove {
         final Info tInfo = repository.info(target, Revision.HEAD);
         Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
 
-        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0);
+        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
     }

@@ -44,12 +44,15 @@ class LogOperation extends AbstractOperation<List<Log>> {
 
     private final Revision start;
 
-    public LogOperation(final URI repository, final Resource resource, final Revision start, final Revision end, final int limit) {
+    private final boolean stopOnCopy;
+
+    public LogOperation(final URI repository, final Resource resource, final Revision start, final Revision end, final int limit, final boolean stopOnCopy) {
         super(repository);
         this.resource = resource;
         this.start = start;
         this.end = end;
         this.limit = limit;
+        this.stopOnCopy = stopOnCopy;
     }
 
     @Override
@@ -69,6 +72,9 @@ class LogOperation extends AbstractOperation<List<Log>> {
             writer.writeStartElement("end-revision");
             writer.writeCharacters(end.toString());
             writer.writeEndElement(); // end-revision
+            if (stopOnCopy) {
+                writer.writeEmptyElement("strict-node-history");
+            }
             if (limit > 0) {
                 writer.writeStartElement("limit");
                 writer.writeCharacters(Integer.toString(limit));

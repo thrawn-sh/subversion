@@ -330,8 +330,8 @@ public abstract class AbstractRepositoryLocking {
         final Info tInfo = repositoryA.info(target, Revision.HEAD);
         Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
 
-        final List<Log> sLog = repositoryA.log(source, Revision.INITIAL, Revision.HEAD, 0);
-        final List<Log> tLog = repositoryA.log(target, Revision.INITIAL, Revision.HEAD, 0);
+        final List<Log> sLog = repositoryA.log(source, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<Log> tLog = repositoryA.log(target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
     }
@@ -369,7 +369,7 @@ public abstract class AbstractRepositoryLocking {
         repositoryA.lock(target, false);
 
         final Info sInfo = repositoryA.info(source, Revision.HEAD);
-        final List<Log> sLog = repositoryA.log(source, Revision.INITIAL, Revision.HEAD, 0);
+        final List<Log> sLog = repositoryA.log(source, Revision.INITIAL, Revision.HEAD, 0, false);
 
         final Transaction transaction = repositoryA.createTransaction();
         try {
@@ -391,7 +391,7 @@ public abstract class AbstractRepositoryLocking {
         final Info tInfo = repositoryA.info(target, Revision.HEAD);
         Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
 
-        final List<Log> tLog = repositoryA.log(target, Revision.INITIAL, Revision.HEAD, 0);
+        final List<Log> tLog = repositoryA.log(target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
     }

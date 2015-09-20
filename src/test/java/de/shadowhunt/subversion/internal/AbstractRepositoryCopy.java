@@ -110,8 +110,8 @@ public abstract class AbstractRepositoryCopy {
         final Info tInfo = repository.info(target, Revision.HEAD);
         Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
 
-        final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0);
-        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0);
+        final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
     }
@@ -157,8 +157,8 @@ public abstract class AbstractRepositoryCopy {
 
         Assert.assertTrue(target + " must exist", repository.exists(target, Revision.HEAD));
 
-        final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0);
-        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0);
+        final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
     }
@@ -209,8 +209,8 @@ public abstract class AbstractRepositoryCopy {
 
         Assert.assertTrue(target + " must exist", repository.exists(target, Revision.HEAD));
 
-        final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0);
-        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0);
+        final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
 
@@ -244,8 +244,8 @@ public abstract class AbstractRepositoryCopy {
         final Info tInfo = repository.info(target, Revision.HEAD);
         Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
 
-        final List<Log> sLog = repository.log(source, Revision.INITIAL, sourceRevision, 0);
-        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0);
+        final List<Log> sLog = repository.log(source, Revision.INITIAL, sourceRevision, 0, false);
+        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
     }
@@ -272,8 +272,8 @@ public abstract class AbstractRepositoryCopy {
 
         Assert.assertTrue(target + " must exist", repository.exists(target, Revision.HEAD));
 
-        final List<Log> sLog = repository.log(source, Revision.INITIAL, sourceRevision, 0);
-        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0);
+        final List<Log> sLog = repository.log(source, Revision.INITIAL, sourceRevision, 0, false);
+        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
     }
@@ -306,8 +306,8 @@ public abstract class AbstractRepositoryCopy {
         final Info tInfo = repository.info(target, Revision.HEAD);
         Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
 
-        final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0);
-        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0);
+        final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
     }
@@ -336,8 +336,8 @@ public abstract class AbstractRepositoryCopy {
 
         Assert.assertTrue(target + " must exist", repository.exists(target, Revision.HEAD));
 
-        final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0);
-        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0);
+        final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
     }

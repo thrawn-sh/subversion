@@ -57,7 +57,7 @@ public abstract class AbstractRepositoryLog {
         final Revision end = Revision.create(Integer.MAX_VALUE); // there should not be a such high revision
         final int limit = UNLIMITED;
 
-        repository.log(resource, start, end, limit);
+        repository.log(resource, start, end, limit, false);
         Assert.fail("log must not complete");
     }
 
@@ -68,7 +68,7 @@ public abstract class AbstractRepositoryLog {
         final Revision end = Revision.HEAD;
         final int limit = UNLIMITED;
 
-        repository.log(resource, start, end, limit);
+        repository.log(resource, start, end, limit, false);
         Assert.fail("log must not complete");
     }
 
@@ -79,7 +79,7 @@ public abstract class AbstractRepositoryLog {
         final Revision end = Revision.HEAD;
         final int limit = UNLIMITED;
 
-        repository.log(resource, start, end, limit);
+        repository.log(resource, start, end, limit, false);
         Assert.fail("log must not complete");
     }
 
@@ -92,7 +92,7 @@ public abstract class AbstractRepositoryLog {
 
         final List<Log> expected = logLoader.load(resource, start, end, limit);
         final String message = createMessage(resource, start, end, limit);
-        Assert.assertEquals(message, expected, repository.log(resource, start, end, limit));
+        Assert.assertEquals(message, expected, repository.log(resource, start, end, limit, false));
     }
 
     @Test
@@ -104,7 +104,7 @@ public abstract class AbstractRepositoryLog {
 
         final List<Log> expected = logLoader.load(resource, start, end, limit);
         final String message = createMessage(resource, start, end, limit);
-        Assert.assertEquals(message, expected, repository.log(resource, start, end, limit));
+        Assert.assertEquals(message, expected, repository.log(resource, start, end, limit, false));
     }
 
     @Test
@@ -117,7 +117,7 @@ public abstract class AbstractRepositoryLog {
         final List<Log> expected = logLoader.load(resource, start, end, limit);
         final String message = createMessage(resource, start, end, limit);
         Assert.assertEquals(message, limit, expected.size());
-        Assert.assertEquals(message, expected, repository.log(resource, start, end, limit));
+        Assert.assertEquals(message, expected, repository.log(resource, start, end, limit, false));
     }
 
     @Test
@@ -130,7 +130,7 @@ public abstract class AbstractRepositoryLog {
         final List<Log> expected = logLoader.load(resource, start, end, limit);
         final String message = createMessage(resource, start, end, limit);
         Assert.assertEquals(message, limit, expected.size());
-        Assert.assertEquals(message, expected, repository.log(resource, start, end, limit));
+        Assert.assertEquals(message, expected, repository.log(resource, start, end, limit, false));
     }
 
     @Test
@@ -142,7 +142,7 @@ public abstract class AbstractRepositoryLog {
 
         final List<Log> expected = logLoader.load(resource, start, end, limit);
         final String message = createMessage(resource, start, end, limit);
-        Assert.assertEquals(message, expected, repository.log(resource, start, end, limit));
+        Assert.assertEquals(message, expected, repository.log(resource, start, end, limit, false));
     }
 
     @Test
@@ -154,7 +154,7 @@ public abstract class AbstractRepositoryLog {
 
         final List<Log> expected = logLoader.load(resource, start, end, limit);
         final String message = createMessage(resource, start, end, limit);
-        Assert.assertEquals(message, expected, repository.log(resource, start, end, limit));
+        Assert.assertEquals(message, expected, repository.log(resource, start, end, limit, false));
     }
 
     @Test
@@ -166,7 +166,7 @@ public abstract class AbstractRepositoryLog {
 
         final List<Log> expected = logLoader.load(resource, start, end, limit);
         final String message = createMessage(resource, start, end, limit);
-        Assert.assertEquals(message, expected, repository.log(resource, start, end, limit));
+        Assert.assertEquals(message, expected, repository.log(resource, start, end, limit, false));
     }
 
     @Test
@@ -179,6 +179,6 @@ public abstract class AbstractRepositoryLog {
         // NOTE: determine last existing revision for loader
         final List<Log> expected = logLoader.load(resource, start, Revision.create(86), limit);
         final String message = createMessage(resource, start, end, limit);
-        Assert.assertEquals(message, expected, repository.log(resource, start, end, limit));
+        Assert.assertEquals(message, expected, repository.log(resource, start, end, limit, false));
     }
 }

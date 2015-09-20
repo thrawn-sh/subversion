@@ -488,7 +488,7 @@ public abstract class AbstractRepositoryEncoding {
     private void testLog(final Resource resource, final Revision start, final Revision end) throws Exception {
         final List<Log> expected = logLoader.load(resource, start, end, 0);
         final String message = resource + ": " + start + " -> " + end + " (" + 0 + ")";
-        Assert.assertEquals(message, expected, repository.log(resource, start, end, 0));
+        Assert.assertEquals(message, expected, repository.log(resource, start, end, 0, false));
     }
 
     private void testMkdir(final Resource resource) throws Exception {

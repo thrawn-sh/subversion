@@ -440,7 +440,7 @@ public abstract class AbstractBaseRepository implements Repository {
     }
 
     @Override
-    public final List<Log> log(final View view, final Resource resource, final Revision startRevision, final Revision endRevision, final int limit) {
+    public final List<Log> log(final View view, final Resource resource, final Revision startRevision, final Revision endRevision, final int limit, final boolean stopOnCopy) {
         Validate.notNull(view, "view must not be null");
         Validate.notNull(resource, "resource must not be null");
         Validate.notNull(startRevision, "startRevision must not be null");
@@ -449,22 +449,22 @@ public abstract class AbstractBaseRepository implements Repository {
         validateRevision(view, endRevision);
 
         LOGGER.trace("retrieving log for resource {} from {} to {} (limit: {})", resource, startRevision, endRevision, limit);
-        return log0(view, resource, startRevision, endRevision, limit);
+        return log0(view, resource, startRevision, endRevision, limit, stopOnCopy);
     }
 
     @Override
-    public List<Log> log(final Resource resource, final Revision startRevision, final Revision endRevision, final int limit) {
-        return log(createView(), resource, startRevision, endRevision, limit);
+    public List<Log> log(final Resource resource, final Revision startRevision, final Revision endRevision, final int limit, final boolean stopOnCopy) {
+        return log(createView(), resource, startRevision, endRevision, limit, stopOnCopy);
     }
 
-    private List<Log> log0(final View view, final Resource resource, final Revision startRevision, final Revision endRevision, final int limit) {
+    private List<Log> log0(final View view, final Resource resource, final Revision startRevision, final Revision endRevision, final int limit, final boolean stopOnCopy) {
         final Revision concreteStartRevision = getConcreteRevision(view, startRevision);
         final Revision concreteEndRevision = getConcreteRevision(view, endRevision);
 
         final Revision resoledRevision = (concreteStartRevision.compareTo(concreteEndRevision) > 0) ? concreteStartRevision : concreteEndRevision;
         final Resource resolved = resolve2(view, resource, resoledRevision, true);
 
-        final LogOperation operation = new LogOperation(repository, resolved, concreteStartRevision, concreteEndRevision, limit);
+        final LogOperation operation = new LogOperation(repository, resolved, concreteStartRevision, concreteEndRevision, limit, stopOnCopy);
         return operation.execute(client, context);
     }
 

@@ -267,7 +267,7 @@ public abstract class AbstractRepositoryCombinedOperations {
 
         repository.lock(resourceB, true);
 
-        final List<Log> logs = repository.log(resourceB, Revision.HEAD, Revision.INITIAL, 0);
+        final List<Log> logs = repository.log(resourceB, Revision.HEAD, Revision.INITIAL, 0, false);
         Assert.assertEquals("there must be 2 log entries", 2, logs.size());
 
         final Revision revisionB = logs.get(0).getRevision();

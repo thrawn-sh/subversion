@@ -219,7 +219,7 @@ public abstract class AbstractRepositoryPerformance {
     public void test03_log() throws Exception {
         final Resource resource = AbstractRepositoryLog.PREFIX.append(Resource.create("/file.txt"));
 
-        repository.log(resource, Revision.INITIAL, Revision.HEAD, 0);
+        repository.log(resource, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("number of requests must match", 2, counter.getTotalRequestCount());
     }
 
@@ -227,7 +227,7 @@ public abstract class AbstractRepositoryPerformance {
     public void test03_logWithView() throws Exception {
         final Resource resource = AbstractRepositoryLog.PREFIX.append(Resource.create("/file.txt"));
 
-        repository.log(currentView, resource, Revision.INITIAL, Revision.HEAD, 0);
+        repository.log(currentView, resource, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("number of requests must match", 1, counter.getTotalRequestCount());
     }
 

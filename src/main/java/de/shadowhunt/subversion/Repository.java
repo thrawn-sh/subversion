@@ -305,6 +305,7 @@ public interface Repository {
      * @param startRevision the first {@link Revision} of the resource to retrieve (including)
      * @param endRevision the last {@link Revision} of the resource to retrieve (including)
      * @param limit maximal number of {@link Log} entries, if the value is lower or equal to {@code 0} all entries will be returned
+     * @þaram stopOnCopy do not cross copies while traversing history
      *
      * @return ordered (early to latest) {@link List} of {@link Log} for the revisions between startRevision and endRevision of the resource
      *
@@ -312,7 +313,7 @@ public interface Repository {
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
      * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    List<Log> log(Resource resource, Revision startRevision, Revision endRevision, int limit);
+    List<Log> log(Resource resource, Revision startRevision, Revision endRevision, int limit, boolean stopOnCopy);
 
     /**
      * Retrieve the log information for the revisions between startRevision and endRevision of the resource
@@ -322,6 +323,7 @@ public interface Repository {
      * @param startRevision the first {@link Revision} of the resource to retrieve (including)
      * @param endRevision the last {@link Revision} of the resource to retrieve (including)
      * @param limit maximal number of {@link Log} entries, if the value is lower or equal to {@code 0} all entries will be returned
+     * @þaram stopOnCopy do not cross copies while traversing history
      *
      * @return ordered (early to latest) {@link List} of {@link Log} for the revisions between startRevision and endRevision of the resource
      *
@@ -329,7 +331,7 @@ public interface Repository {
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
      * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
-    List<Log> log(View view, Resource resource, Revision startRevision, Revision endRevision, int limit);
+    List<Log> log(View view, Resource resource, Revision startRevision, Revision endRevision, int limit, boolean stopOnCopy);
 
     /**
      * Create a folder with all necessary parents folders
