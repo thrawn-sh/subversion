@@ -329,7 +329,7 @@ public interface Repository {
      * @param startRevision the first {@link Revision} of the resource to retrieve (including)
      * @param endRevision the last {@link Revision} of the resource to retrieve (including)
      * @param limit maximal number of {@link Log} entries, if the value is lower or equal to {@code 0} all entries will be returned
-     * @þaram stopOnCopy do not cross copies while traversing history
+     * @param stopOnCopy do not cross copies while traversing history
      *
      * @return ordered (early to latest) {@link List} of {@link Log} for the revisions between startRevision and
      * endRevision of the resource
@@ -349,7 +349,7 @@ public interface Repository {
      * @param startRevision the first {@link Revision} of the resource to retrieve (including)
      * @param endRevision the last {@link Revision} of the resource to retrieve (including)
      * @param limit maximal number of {@link Log} entries, if the value is lower or equal to {@code 0} all entries will be returned
-     * @þaram stopOnCopy do not cross copies while traversing history
+     * @param stopOnCopy do not cross copies while traversing history
      *
      * @return ordered (early to latest) {@link List} of {@link Log} for the revisions between startRevision and
      * endRevision of the resource
