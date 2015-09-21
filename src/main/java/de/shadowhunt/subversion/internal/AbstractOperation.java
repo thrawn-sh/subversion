@@ -40,6 +40,8 @@ public abstract class AbstractOperation<T> implements ResponseHandler<T> {
 
     protected static final class DavTemplateRequest extends HttpEntityEnclosingRequestBase {
 
+        private static final String USER_AGENT = BuildProperties.getUserAgent();
+
         private final String method;
 
         /**
@@ -51,6 +53,7 @@ public abstract class AbstractOperation<T> implements ResponseHandler<T> {
         public DavTemplateRequest(final String method, final URI uri) {
             this.method = method;
             setURI(uri);
+            addHeader("User-Agent", USER_AGENT);
         }
 
         @Override

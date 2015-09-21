@@ -22,7 +22,6 @@ import de.shadowhunt.subversion.LockToken;
 import de.shadowhunt.subversion.Resource;
 
 import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpUriRequest;
 
 class DeleteOperation extends AbstractVoidOperation {
@@ -40,7 +39,7 @@ class DeleteOperation extends AbstractVoidOperation {
     @Override
     protected HttpUriRequest createRequest() {
         final URI uri = URIUtils.createURI(repository, resource);
-        final HttpUriRequest request = new HttpDelete(uri);
+        final HttpUriRequest request = new DavTemplateRequest("DELETE", uri);
 
         lockToken.ifPresent(x -> request.addHeader("If", "<" + uri + "> (<" + x + ">)"));
 

@@ -27,7 +27,6 @@ import de.shadowhunt.subversion.internal.URIUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -54,7 +53,7 @@ class CreateTransactionOperation extends AbstractOperation<TransactionImpl> {
     @Override
     protected HttpUriRequest createRequest() {
         final URI uri = URIUtils.createURI(repository, resource);
-        final HttpPost request = new HttpPost(uri);
+        final DavTemplateRequest request = new DavTemplateRequest("POST", uri);
         request.setEntity(ENTITY);
         return request;
     }

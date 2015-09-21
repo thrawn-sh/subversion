@@ -26,7 +26,6 @@ import de.shadowhunt.subversion.TransmissionException;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.protocol.HttpContext;
 
@@ -42,7 +41,7 @@ class DownloadOperation extends AbstractOperation<Optional<InputStream>> {
     @Override
     protected HttpUriRequest createRequest() {
         final URI uri = URIUtils.createURI(repository, resource);
-        return new HttpGet(uri);
+        return new DavTemplateRequest("GET", uri);
     }
 
     @Override

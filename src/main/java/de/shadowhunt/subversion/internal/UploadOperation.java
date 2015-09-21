@@ -23,7 +23,6 @@ import de.shadowhunt.subversion.LockToken;
 import de.shadowhunt.subversion.Resource;
 
 import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.InputStreamEntity;
 
@@ -47,7 +46,7 @@ class UploadOperation extends AbstractVoidOperation {
     @Override
     protected HttpUriRequest createRequest() {
         final URI uri = URIUtils.createURI(repository, resource);
-        final HttpPut request = new HttpPut(uri);
+        final DavTemplateRequest request = new DavTemplateRequest("PUT", uri);
 
         lockToken.ifPresent(x -> request.addHeader("If", "<" + uri + "> (<" + x + ">)"));
 

@@ -272,6 +272,9 @@
             <plugin>
                 <groupId>com.redhat.rcm.maven.plugin</groupId>
                 <artifactId>buildmetadata-maven-plugin</artifactId>
+                <configuration>
+                    <buildDatePattern>yyyy-MM-dd</buildDatePattern>
+                </configuration>
                 <executions>
                     <execution>
                         <phase>initialize</phase>
