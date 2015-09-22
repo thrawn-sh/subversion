@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2013-2015 shadowhunt (dev@shadowhunt.de)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package de.shadowhunt.subversion;
 
 import java.io.IOException;
@@ -19,37 +34,36 @@ public final class BuildProperties {
 
     public static final String UNDEFINED = "UNDEFINED";
 
-    public static final String DATE_PATTERN = "yyyy-MM-dd";
+    private static final String DATE_PATTERN = "yyyy-MM-dd";
+
+    private static final String PROPERTIES_RESOURCE = "META-INF/build.PROPERTIES";
+
+    private static final String VERSION;
+
+    private static final String BUILD_DATE;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BuildProperties.class);
 
-    private static final String PROPERTIES_RESOURCE = "META-INF/build.properties";
+    static {
+        final Properties properties = new Properties();
 
-    private static transient volatile Properties properties;
-
-    private BuildProperties() {
-        // prevent instantiation
-    }
-
-    private static Properties getProperties() {
-        if (properties != null) {
-            return properties;
-        }
-
-        properties = new Properties();
         final InputStream stream = BuildProperties.class.getResourceAsStream(PROPERTIES_RESOURCE);
         if (stream != null) {
             try {
                 properties.load(stream);
             } catch (final IOException e) {
-                LOGGER.warn("could not load resource " + PROPERTIES_RESOURCE, e);
+                // ignore errors
             } finally {
                 IOUtils.closeQuietly(stream);
             }
-        } else {
-            LOGGER.warn("could not find resource " + PROPERTIES_RESOURCE);
         }
-        return properties;
+
+        BUILD_DATE = properties.getProperty("build.date", UNDEFINED);
+        VERSION = properties.getProperty("build.version", UNDEFINED);
+    }
+
+    private BuildProperties() {
+        // prevent instantiation
     }
 
     /**
@@ -58,22 +72,17 @@ public final class BuildProperties {
      * @return {@link Date} of the build
      */
     public static Optional<Date> getBuildDate() {
-        final String value = getBuildDate0();
-        if (UNDEFINED.equals(value)) {
+        if (UNDEFINED.equals(BUILD_DATE)) {
             return Optional.empty();
         }
 
         final SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
         try {
-            return Optional.of(dateFormat.parse(value));
+            return Optional.of(dateFormat.parse(BUILD_DATE));
         } catch (final ParseException e) {
-            LOGGER.debug("could not parse date {} with pattern {}", value, DATE_PATTERN, e);
+            LOGGER.debug("could not parse date {} with pattern {}", BUILD_DATE, DATE_PATTERN, e);
         }
         return Optional.empty();
-    }
-
-    private static String getBuildDate0() {
-        return getProperties().getProperty("build.date", UNDEFINED);
     }
 
     /**
@@ -82,7 +91,7 @@ public final class BuildProperties {
      * @return version or UNDEFINED if the version could not be determined
      */
     public static String getBuildVersion() {
-        return getProperties().getProperty("build.version", UNDEFINED);
+        return VERSION;
     }
 
     /**
@@ -91,6 +100,6 @@ public final class BuildProperties {
      * @return User-Agent identifier
      */
     public static String getUserAgent() {
-        return "SVN/" + getBuildVersion() + " " + getBuildDate0() + " (https://dev.shadowhunt.de/subversion)";
+        return "SVN/" + VERSION + " " + BUILD_DATE + " (https://dev.shadowhunt.de/subversion)";
     }
 }
