@@ -239,7 +239,7 @@ public interface Repository {
      *
      * @param resource the {@link Resource} of the resource (relative to the repository root)
      * @param revision the {@link Revision} of the resource to retrieve
-     * @param keys request only the specified {@link ResourceProperty.Key}s
+     * @param keys request only the specified {@link ResourceProperty.Key}s, empty for all
      *
      * @return {@link Info} for the resource (if keys where specified, only reduced {@link Info} will be returned)
      *
