@@ -12,6 +12,9 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Provides information about the subversion client lib.
+ */
 public final class BuildProperties {
 
     public static final String UNDEFINED = "UNDEFINED";
@@ -24,7 +27,11 @@ public final class BuildProperties {
 
     private static transient volatile Properties properties;
 
-    private static final Properties getProperties() {
+    private BuildProperties() {
+        // prevent instantiation
+    }
+
+    private static Properties getProperties() {
         if (properties != null) {
             return properties;
         }
@@ -34,7 +41,7 @@ public final class BuildProperties {
         if (stream != null) {
             try {
                 properties.load(stream);
-            } catch(final IOException e) {
+            } catch (final IOException e) {
                 LOGGER.warn("could not load resource " + PROPERTIES_RESOURCE, e);
             } finally {
                 IOUtils.closeQuietly(stream);
@@ -46,7 +53,8 @@ public final class BuildProperties {
     }
 
     /**
-     * Returns the {@link Date} of the build
+     * Returns the {@link Date} of the build.
+     *
      * @return {@link Date} of the build
      */
     public static Optional<Date> getBuildDate() {
@@ -69,7 +77,8 @@ public final class BuildProperties {
     }
 
     /**
-     * Returns the build version ({MAJOR}.{MINOR}.{PATCH} with -SNAPSHOT suffix, if it's an internal release)
+     * Returns the build version ({MAJOR}.{MINOR}.{PATCH} with -SNAPSHOT suffix, if it's an internal release).
+     *
      * @return version or UNDEFINED if the version could not be determined
      */
     public static String getBuildVersion() {
@@ -77,7 +86,8 @@ public final class BuildProperties {
     }
 
     /**
-     * Returns the User-Agent identifier that is sent by each request to the server
+     * Returns the User-Agent identifier that is sent by each request to the server.
+     *
      * @return User-Agent identifier
      */
     public static String getUserAgent() {
