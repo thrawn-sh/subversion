@@ -21,6 +21,7 @@ import java.net.URI;
 
 import javax.xml.stream.XMLOutputFactory;
 
+import de.shadowhunt.subversion.BuildProperties;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.TransmissionException;
 
