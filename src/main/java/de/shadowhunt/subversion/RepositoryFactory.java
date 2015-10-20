@@ -84,6 +84,8 @@ public abstract class RepositoryFactory {
      * @param repository {@link URI} to the root of the repository (e.g: http://repository.example.net/svn/test_repo)
      * @param client {@link HttpClient} that will handle all requests for this repository
      * @param context {@link HttpContext} that will be used by all requests to this repository
+     * @param check verify that the {@link URI} path points to the root of the repository (if disabled the first
+     * modifying operation, that requires a {@link Transaction} will do the check implicitly)
      *
      * @return a new {@link Repository} for given {@link URI}
      *
@@ -92,16 +94,16 @@ public abstract class RepositoryFactory {
      * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
      * the server
      */
-    public final Repository createRepository(final URI repository, final HttpClient client, final HttpContext context) {
+    public final Repository createRepository(final URI repository, final HttpClient client, final HttpContext context, final boolean check) {
         Validate.notNull(repository, "repository must not be null");
         Validate.notNull(client, "client must not be null");
         Validate.notNull(context, "context must not be null");
 
         final URI saneUri = sanitise(repository, Resource.create(repository.getPath()));
-        return createRepository0(saneUri, client, context);
+        return createRepository0(saneUri, client, context, check);
     }
 
-    protected abstract Repository createRepository0(final URI saneUri, final HttpClient client, final HttpContext context);
+    protected abstract Repository createRepository0(final URI saneUri, final HttpClient client, final HttpContext context, final boolean check);
 
     /**
      * Create a new {@link Repository} for given {@link URI} and use the given {@link HttpClient} with the {@link
@@ -129,7 +131,7 @@ public abstract class RepositoryFactory {
         while (true) {
             try {
                 final URI saneUri = sanitise(repository, path);
-                return createRepository0(saneUri, client, context);
+                return createRepository0(saneUri, client, context, true);
             } catch (final SubversionException e) {
                 // ignore these errors while searching the correct repository root
                 if (!isTolerableError(e.getHttpStatusCode())) {

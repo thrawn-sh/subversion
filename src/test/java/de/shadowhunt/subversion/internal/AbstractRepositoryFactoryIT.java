@@ -48,7 +48,7 @@ public abstract class AbstractRepositoryFactoryIT {
     @Test
     public void test00_create() {
         final RepositoryFactory factory = RepositoryFactory.getInstance();
-        final Repository probeRepository = factory.createRepository(repository.getBaseUri(), client, context);
+        final Repository probeRepository = factory.createRepository(repository.getBaseUri(), client, context, true);
         Assert.assertNotNull("probe repository must not be null", probeRepository);
 
         Assert.assertEquals("base uri must match", repository.getBaseUri(), probeRepository.getBaseUri());
@@ -59,8 +59,27 @@ public abstract class AbstractRepositoryFactoryIT {
     @Test(expected = SubversionException.class)
     public void test01_create() {
         final RepositoryFactory factory = RepositoryFactory.getInstance();
-        final URI uri = URI.create(repository.getBaseUri().toString() + "/" + UUID.randomUUID().toString());
-        factory.createRepository(uri, client, context);
+        final URI uri = URI.create(repository.getBaseUri().toString() + "/trunk");
+        factory.createRepository(uri, client, context, true);
+        Assert.fail("must not complete");
+    }
+
+    @Test
+    public void test01_createInvalidWithoutCheck() {
+        final RepositoryFactory factory = RepositoryFactory.getInstance();
+        final URI uri = URI.create(repository.getBaseUri().toString() + "/trunk");
+        final Repository createRepository = factory.createRepository(uri, client, context, false);
+        Assert.assertNotNull("probe repository must not be null", createRepository);
+    }
+
+    @Test(expected = SubversionException.class)
+    public void test01_createInvalidFailsOnTransaction() {
+        final RepositoryFactory factory = RepositoryFactory.getInstance();
+        final URI uri = URI.create(repository.getBaseUri().toString() + "/trunk");
+        final Repository createRepository = factory.createRepository(uri, client, context, false);
+        Assert.assertNotNull("probe repository must not be null", createRepository);
+
+        createRepository.createTransaction();
         Assert.fail("must not complete");
     }
 

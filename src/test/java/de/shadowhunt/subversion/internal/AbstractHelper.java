@@ -152,7 +152,7 @@ public abstract class AbstractHelper {
             final HttpContext context = getHttpContext();
             final HttpClient client = getHttpClient(USERNAME_A, interceptors);
 
-            repositoryA = RepositoryFactory.getInstance().createRepository(repositoryUri, client, context);
+            repositoryA = RepositoryFactory.getInstance().createRepository(repositoryUri, client, context, true);
         }
         return repositoryA;
     }
@@ -162,7 +162,7 @@ public abstract class AbstractHelper {
             final HttpContext context = getHttpContext();
             final HttpClient client = getHttpClient(USERNAME_B, interceptors);
 
-            repositoryB = RepositoryFactory.getInstance().createRepository(repositoryUri, client, context);
+            repositoryB = RepositoryFactory.getInstance().createRepository(repositoryUri, client, context, true);
         }
         return repositoryB;
     }
