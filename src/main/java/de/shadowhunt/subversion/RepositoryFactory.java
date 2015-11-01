@@ -29,6 +29,7 @@ import org.apache.http.protocol.HttpContext;
 /**
  * {@link RepositoryFactory} creates a new {@link Repository}.
  */
+@SuppressWarnings("checkstyle:abstractclassname")
 @ThreadSafe
 public abstract class RepositoryFactory {
 
