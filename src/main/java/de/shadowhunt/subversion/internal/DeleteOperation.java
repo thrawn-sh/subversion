@@ -30,7 +30,7 @@ class DeleteOperation extends AbstractVoidOperation {
 
     private final Resource resource;
 
-    public DeleteOperation(final URI repository, final Resource resource, final Optional<LockToken> lockToken) {
+    DeleteOperation(final URI repository, final Resource resource, final Optional<LockToken> lockToken) {
         super(repository);
         this.resource = resource;
         this.lockToken = lockToken;

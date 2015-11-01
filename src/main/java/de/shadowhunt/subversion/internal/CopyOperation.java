@@ -33,7 +33,7 @@ class CopyOperation extends AbstractVoidOperation {
 
     private final Resource target;
 
-    public CopyOperation(final URI repository, final Resource source, final Resource target, final Optional<LockToken> lockToken) {
+    CopyOperation(final URI repository, final Resource source, final Resource target, final Optional<LockToken> lockToken) {
         super(repository);
         this.source = source;
         this.target = target;

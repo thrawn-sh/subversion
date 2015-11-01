@@ -46,7 +46,7 @@ class LogOperation extends AbstractOperation<List<Log>> {
 
     private final boolean stopOnCopy;
 
-    public LogOperation(final URI repository, final Resource resource, final Revision start, final Revision end, final int limit, final boolean stopOnCopy) {
+    LogOperation(final URI repository, final Resource resource, final Revision start, final Revision end, final int limit, final boolean stopOnCopy) {
         super(repository);
         this.resource = resource;
         this.start = start;

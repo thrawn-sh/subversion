@@ -35,7 +35,7 @@ class LockOperation extends AbstractVoidOperation {
 
     private final boolean steal;
 
-    public LockOperation(final URI repository, final Resource resource, final boolean steal) {
+    LockOperation(final URI repository, final Resource resource, final boolean steal) {
         super(repository);
         this.resource = resource;
         this.steal = steal;

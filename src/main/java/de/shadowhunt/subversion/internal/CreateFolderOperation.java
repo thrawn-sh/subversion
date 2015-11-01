@@ -27,7 +27,7 @@ class CreateFolderOperation extends AbstractOperation<Boolean> {
 
     private final Resource resource;
 
-    public CreateFolderOperation(final URI repository, final Resource resource) {
+    CreateFolderOperation(final URI repository, final Resource resource) {
         super(repository);
         this.resource = resource;
     }

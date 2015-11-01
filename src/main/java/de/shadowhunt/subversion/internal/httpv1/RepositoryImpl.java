@@ -44,7 +44,7 @@ class RepositoryImpl extends AbstractBaseRepository {
 
         private final Resource prefix;
 
-        public ResourceMapperImpl(final Resource prefix) {
+        ResourceMapperImpl(final Resource prefix) {
             this.prefix = prefix;
         }
 
