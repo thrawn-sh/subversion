@@ -11,8 +11,6 @@ Its API is based on the command-lines client.
 *Usage*
 
 ```java
- RepositoryFactory factory = RepositoryFactory.getInstance();
-
  CredentialsProvider cp = new BasicCredentialsProvider();
  Credentials credentials = new UsernamePasswordCredentials(USERNAME, PASSWORD);
  cp.setCredentials(AuthScope.ANY, credentials);
