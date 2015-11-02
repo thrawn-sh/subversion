@@ -37,6 +37,7 @@ import de.shadowhunt.subversion.Resource;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
@@ -68,18 +69,24 @@ public abstract class AbstractHelper {
 
     private Repository repositoryB;
 
+    private Repository repositoryReadOnly;
+
     private final URI repositoryUri;
+
+    private final URI repositoryReadOnlyUri;
 
     private final File root;
 
     private final UUID testId;
 
-    protected AbstractHelper(final File base, final URI dumpUri, final URI md5Uri, final URI repositoryUri, final UUID testId) {
+    protected AbstractHelper(final File base, final URI dumpUri, final URI md5Uri, final URI repositoryUri,
+            final URI repositoryReadOnylUri, final UUID testId) {
         this.base = base;
         this.root = new File(base, "dump");
         this.dumpUri = dumpUri;
         this.md5Uri = md5Uri;
         this.repositoryUri = repositoryUri;
+        this.repositoryReadOnlyUri = repositoryReadOnylUri;
         this.testId = testId;
     }
 
@@ -130,10 +137,12 @@ public abstract class AbstractHelper {
     public HttpClient getHttpClient(final String username, final HttpRequestInterceptor... interceptors) {
         final HttpClientBuilder builder = HttpClientBuilder.create();
 
-        final CredentialsProvider cp = new BasicCredentialsProvider();
-        final Credentials credentials = new UsernamePasswordCredentials(username, PASSWORD);
-        cp.setCredentials(AuthScope.ANY, credentials);
-        builder.setDefaultCredentialsProvider(cp);
+        if (StringUtils.isNotBlank(username)) {
+            final CredentialsProvider cp = new BasicCredentialsProvider();
+            final Credentials credentials = new UsernamePasswordCredentials(username, PASSWORD);
+            cp.setCredentials(AuthScope.ANY, credentials);
+            builder.setDefaultCredentialsProvider(cp);
+        }
 
         for (HttpRequestInterceptor interceptor : interceptors) {
             builder.addInterceptorFirst(interceptor);
@@ -152,7 +161,8 @@ public abstract class AbstractHelper {
             final HttpContext context = getHttpContext();
             final HttpClient client = getHttpClient(USERNAME_A, interceptors);
 
-            repositoryA = RepositoryFactory.getInstance().createRepository(repositoryUri, client, context, true);
+            final RepositoryFactory factory = RepositoryFactory.getInstance();
+            repositoryA = factory.createRepository(repositoryUri, client, context, true);
         }
         return repositoryA;
     }
@@ -162,9 +172,21 @@ public abstract class AbstractHelper {
             final HttpContext context = getHttpContext();
             final HttpClient client = getHttpClient(USERNAME_B, interceptors);
 
-            repositoryB = RepositoryFactory.getInstance().createRepository(repositoryUri, client, context, true);
+            final RepositoryFactory factory = RepositoryFactory.getInstance();
+            repositoryB = factory.createRepository(repositoryUri, client, context, true);
         }
         return repositoryB;
+    }
+
+    public Repository getRepositoryReadOnly(final HttpRequestInterceptor... interceptors) {
+        if (repositoryReadOnly == null) {
+            final HttpContext context = getHttpContext();
+            final HttpClient client = getHttpClient(null, interceptors);
+
+            final RepositoryFactory factory = RepositoryFactory.getInstance();
+            repositoryReadOnly = factory.createRepository(repositoryReadOnlyUri, client, context, true);
+        }
+        return repositoryReadOnly;
     }
 
     public File getRoot() {

@@ -31,15 +31,18 @@ final class Helper extends AbstractHelper {
 
     private static final URI REPOSITORY_URI;
 
+    private static final URI REPOSITORY_READ_ONLY_URI;
+
     static {
         final String host = System.getProperty("SUBVERSION_TEST_HOST", "subversion.vm.shadowhunt.de");
         final String version = "1.6.0";
         DUMP_URI = URI.create("http://" + host + "/" + version + "/dump.zip");
         MD5_URI = URI.create("http://" + host + "/" + version + "/dump.zip.md5");
         REPOSITORY_URI = URI.create("http://" + host + "/" + version + "/svn-basic/test");
+        REPOSITORY_READ_ONLY_URI = URI.create("http://" + host + "/" + version + "/svn-non/test");
     }
 
     Helper() {
-        super(BASE, DUMP_URI, MD5_URI, REPOSITORY_URI, UUID.randomUUID());
+        super(BASE, DUMP_URI, MD5_URI, REPOSITORY_URI, REPOSITORY_READ_ONLY_URI, UUID.randomUUID());
     }
 }
