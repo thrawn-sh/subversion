@@ -29,16 +29,17 @@ final class DateUtils {
     private static final FastDateFormat LAST_MODIFIED;
 
     static Date parseCreatedDate(final String date) {
-        if ('Z' != date.charAt(date.length() - 1)) {
+        final int lastIndex = date.length() - 1;
+        if ('Z' != date.charAt(lastIndex)) {
             throw new IllegalArgumentException("date '" + date + "'is not in Zulu timezone");
         }
 
         final int index = date.indexOf('.');
         final String time;
         if (index > 0) {
-            time = date.substring(0, index + 4); // remove nanoseconds
+            time = date.substring(0, index + 4); // remove nanoseconds + 'Z'
         } else {
-            time = date;
+            time = date.substring(0, lastIndex) + ".000";
         }
 
         try {
