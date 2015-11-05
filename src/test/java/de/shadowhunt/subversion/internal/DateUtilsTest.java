@@ -38,7 +38,7 @@ public class DateUtilsTest {
     @Test(expected = IllegalArgumentException.class)
     public void parseLastModifiedDate_invalidDatePattern() throws Exception {
         final String dateString = "Thu, 13 Jan 2000 01:02:03";
-        DateUtils.parseCreatedDate(dateString);
+        DateUtils.parseLastModifiedDate(dateString);
         Assert.fail("must not complete");
     }
 
