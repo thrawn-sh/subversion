@@ -1,0 +1,7 @@
+[svn-path:/]
+svnuser  =
+svnuser2 = r
+
+[svn-path:/trunk]
+svnuser  = rw
+svnuser2 = rw

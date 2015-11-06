@@ -35,13 +35,21 @@ while read version port; do
         ProxyPassReverse http://localhost:${port}
         <if "(%{REQUEST_URI} != '/${version}/dump.zip') && (%{REQUEST_URI} != '/${version}/svn.zip')" >
             Header           edit SVN-Me-Resource     /svn-basic /${version}/svn-basic
+            Header           edit SVN-Me-Resource     /svn-path  /${version}/svn-path
             Header           edit SVN-Repository-Root /svn-basic /${version}/svn-basic
+            Header           edit SVN-Repository-Root /svn-path  /${version}/svn-path
             Header           edit SVN-Rev-Root-Stub   /svn-basic /${version}/svn-basic
+            Header           edit SVN-Rev-Root-Stub   /svn-path  /${version}/svn-path
             Header           edit SVN-Rev-Stub        /svn-basic /${version}/svn-basic
+            Header           edit SVN-Rev-Stub        /svn-path  /${version}/svn-path
             Header           edit SVN-Txn-Root-Stub   /svn-basic /${version}/svn-basic
+            Header           edit SVN-Txn-Root-Stub   /svn-path  /${version}/svn-path
             Header           edit SVN-Txn-Stub        /svn-basic /${version}/svn-basic
+            Header           edit SVN-Txn-Stub        /svn-path  /${version}/svn-path
             Header           edit SVN-VTxn-Root-Stub  /svn-basic /${version}/svn-basic
+            Header           edit SVN-VTxn-Root-Stub  /svn-path  /${version}/svn-path
             Header           edit SVN-VTxn-Stub       /svn-basic /${version}/svn-basic
+            Header           edit SVN-VTxn-Stub       /svn-path  /${version}/svn-path
             Header           edit Location    localhost:${port} subversion.vm.shadowhunt.de/${version}
             RequestHeader    edit Destination subversion.vm.shadowhunt.de/${version} localhost:${port}
             SetInputFilter   Sed
