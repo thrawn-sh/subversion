@@ -35,7 +35,7 @@ final class Helper extends AbstractHelper {
 
     static {
         final String host = System.getProperty("SUBVERSION_TEST_HOST", "subversion.vm.shadowhunt.de");
-        final String version = "1.9.0";
+        final String version = "1.9.1";
         DUMP_URI = URI.create("http://" + host + "/" + version + "/dump.zip");
         MD5_URI = URI.create("http://" + host + "/" + version + "/dump.zip.md5");
         REPOSITORY_URI = URI.create("http://" + host + "/" + version + "/svn-basic/test");
