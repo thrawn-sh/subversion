@@ -716,7 +716,7 @@ function subversion_1_8() { #{{{1
 	rm -rf "${directory}"
 } #}}}1
 function subversion_1_9() { #{{{1
-	local version="1.9.0"
+	local version="1.9.1"
 	local directory=`mktemp -d`
 	local prefix="/opt/subversion-${version}"
 	mkdir -p "${prefix}/.install"
@@ -741,12 +741,9 @@ function subversion_1_9() { #{{{1
 		wget "http://archive.apache.org/dist/subversion/subversion-${version}.tar.bz2" -O "${archive}"
 	fi
 
-	local patch_file="${PWD}/patches/subversion-1.9.0.patch"
-
 	cd "${directory}"
 	tar -xjf "${archive}"
 	cd "subversion-${version}"
-	patch -p0 < "${patch_file}"
 
 	./configure \
 		--disable-keychain \
