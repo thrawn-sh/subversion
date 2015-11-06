@@ -1,7 +1,7 @@
-[svn-path:/]
+[test:/]
 svnuser  =
 svnuser2 = r
 
-[svn-path:/trunk]
+[test:/trunk]
 svnuser  = rw
 svnuser2 = rw
