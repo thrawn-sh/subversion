@@ -53,6 +53,8 @@ public abstract class AbstractHelper {
 
     public static final String PASSWORD = "svnpass";
 
+    private static final UUID testId = UUID.randomUUID();
+
     public static final String USERNAME_A = "svnuser";
 
     public static final String USERNAME_B = "svnuser2";
@@ -71,23 +73,20 @@ public abstract class AbstractHelper {
 
     private Repository repositoryReadOnly;
 
-    private final URI repositoryUri;
-
     private final URI repositoryReadOnlyUri;
+
+    private final URI repositoryUri;
 
     private final File root;
 
-    private final UUID testId;
-
     protected AbstractHelper(final File base, final URI dumpUri, final URI md5Uri, final URI repositoryUri,
-            final URI repositoryReadOnylUri, final UUID testId) {
+            final URI repositoryReadOnylUri) {
         this.base = base;
         this.root = new File(base, "dump");
         this.dumpUri = dumpUri;
         this.md5Uri = md5Uri;
         this.repositoryUri = repositoryUri;
         this.repositoryReadOnlyUri = repositoryReadOnylUri;
-        this.testId = testId;
     }
 
     private String calculateMd5(final File zip) throws IOException {

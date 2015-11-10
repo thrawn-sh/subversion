@@ -17,7 +17,6 @@ package de.shadowhunt.subversion.internal.httpv2.v1_7;
 
 import java.io.File;
 import java.net.URI;
-import java.util.UUID;
 
 import de.shadowhunt.subversion.internal.AbstractHelper;
 
@@ -43,6 +42,6 @@ final class Helper extends AbstractHelper {
     }
 
     Helper() {
-        super(BASE, DUMP_URI, MD5_URI, REPOSITORY_URI, REPOSITORY_READ_ONLY_URI, UUID.randomUUID());
+        super(BASE, DUMP_URI, MD5_URI, REPOSITORY_URI, REPOSITORY_READ_ONLY_URI);
     }
 }
