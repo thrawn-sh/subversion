@@ -16,11 +16,10 @@
 package de.shadowhunt.subversion.internal;
 
 import java.net.URI;
-import java.util.UUID;
 
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.RepositoryFactory;
-import de.shadowhunt.subversion.SubversionException;
+import de.shadowhunt.subversion.Transaction;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
@@ -37,72 +36,58 @@ public abstract class AbstractRepositoryFactoryIT {
 
     private final HttpContext context;
 
-    private final Repository repository;
+    private final AbstractHelper helper;
 
-    protected AbstractRepositoryFactoryIT(final Repository repository, final HttpClient client, final HttpContext context) {
-        this.repository = repository;
-        this.client = client;
-        this.context = context;
+    protected AbstractRepositoryFactoryIT(final AbstractHelper helper) {
+        this.helper = helper;
+        this.client = helper.getHttpClient(AbstractHelper.USERNAME_A);
+        this.context = helper.getHttpContext();
     }
 
     @Test
     public void test00_create() {
         final RepositoryFactory factory = RepositoryFactory.getInstance();
-        final Repository probeRepository = factory.createRepository(repository.getBaseUri(), client, context, true);
-        Assert.assertNotNull("probe repository must not be null", probeRepository);
+        final Repository repository = factory.createRepository(helper.getRepositoryUri(), client, context, true);
+        Assert.assertNotNull("repository must not be null", repository);
 
-        Assert.assertEquals("base uri must match", repository.getBaseUri(), probeRepository.getBaseUri());
-        Assert.assertEquals("protocol version must match", repository.getProtocolVersion(), probeRepository.getProtocolVersion());
-        Assert.assertEquals("repository id must match", repository.getRepositoryId(), probeRepository.getRepositoryId());
+        Assert.assertEquals("base uri must match", helper.getRepositoryUri(), repository.getBaseUri());
+        Assert.assertNotNull("protocol must not be null", repository.getProtocolVersion());
+        Assert.assertNotNull("repository must not be null", repository.getRepositoryId());
     }
 
-    @Test(expected = SubversionException.class)
+    @Test
     public void test01_create() {
         final RepositoryFactory factory = RepositoryFactory.getInstance();
-        final URI uri = URI.create(repository.getBaseUri().toString() + "/trunk");
-        factory.createRepository(uri, client, context, true);
-        Assert.fail("must not complete");
+        final URI uri = URI.create(helper.getRepositoryUri().toString() + "/trunk");
+        final Repository repository = factory.createRepository(uri, client, context, true);
+        Assert.assertNotNull("repository must not be null", repository);
+
+        Assert.assertEquals("base uri must match", helper.getRepositoryUri(), repository.getBaseUri());
+        Assert.assertNotNull("protocol must not be null", repository.getProtocolVersion());
+        Assert.assertNotNull("repository must not be null", repository.getRepositoryId());
     }
 
     @Test
     public void test01_createInvalidWithoutCheck() {
         final RepositoryFactory factory = RepositoryFactory.getInstance();
-        final URI uri = URI.create(repository.getBaseUri().toString() + "/trunk");
-        final Repository createRepository = factory.createRepository(uri, client, context, false);
-        Assert.assertNotNull("probe repository must not be null", createRepository);
+        final URI uri = URI.create(helper.getRepositoryUri().toString() + "/trunk");
+        final Repository repository = factory.createRepository(uri, client, context, false);
+        Assert.assertNotNull("repository must not be null", repository);
+
+        Assert.assertEquals("base uri must match", helper.getRepositoryUri(), repository.getBaseUri());
+        Assert.assertNotNull("protocol must not be null", repository.getProtocolVersion());
+        Assert.assertNotNull("repository must not be null", repository.getRepositoryId());
     }
 
-    @Test(expected = SubversionException.class)
+    @Test
     public void test01_createInvalidFailsOnTransaction() {
         final RepositoryFactory factory = RepositoryFactory.getInstance();
-        final URI uri = URI.create(repository.getBaseUri().toString() + "/trunk");
-        final Repository createRepository = factory.createRepository(uri, client, context, false);
-        Assert.assertNotNull("probe repository must not be null", createRepository);
+        final URI uri = URI.create(helper.getRepositoryUri().toString() + "/trunk");
+        final Repository repository = factory.createRepository(uri, client, context, false);
+        Assert.assertNotNull("repository must not be null", repository);
 
-        createRepository.createTransaction();
-        Assert.fail("must not complete");
-    }
-
-    @Test
-    public void test02_probe() {
-        final RepositoryFactory factory = RepositoryFactory.getInstance();
-        final Repository probeRepository = factory.probeRepository(repository.getBaseUri(), client, context);
-        Assert.assertNotNull("probe repository must not be null", probeRepository);
-
-        Assert.assertEquals("base uri must match", repository.getBaseUri(), probeRepository.getBaseUri());
-        Assert.assertEquals("protocol version must match", repository.getProtocolVersion(), probeRepository.getProtocolVersion());
-        Assert.assertEquals("repository id must match", repository.getRepositoryId(), probeRepository.getRepositoryId());
-    }
-
-    @Test
-    public void test03_probe() {
-        final RepositoryFactory factory = RepositoryFactory.getInstance();
-        final URI uri = URI.create(repository.getBaseUri().toString() + "/" + UUID.randomUUID().toString());
-        final Repository probeRepository = factory.probeRepository(uri, client, context);
-        Assert.assertNotNull("probe repository must not be null", probeRepository);
-
-        Assert.assertEquals("base uri must match", repository.getBaseUri(), probeRepository.getBaseUri());
-        Assert.assertEquals("protocol version must match", repository.getProtocolVersion(), probeRepository.getProtocolVersion());
-        Assert.assertEquals("repository id must match", repository.getRepositoryId(), probeRepository.getRepositoryId());
+        Transaction transaction = repository.createTransaction();
+        Assert.assertNotNull("transaction must not be null", transaction);
+        repository.rollback(transaction);
     }
 }

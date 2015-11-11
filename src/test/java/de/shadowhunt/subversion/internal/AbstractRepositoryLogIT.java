@@ -54,7 +54,8 @@ public abstract class AbstractRepositoryLogIT {
     public void test00_NonExistingEndRevision() throws Exception {
         final Resource resource = PREFIX.append(Resource.create("/file.txt"));
         final Revision start = Revision.INITIAL;
-        final Revision end = Revision.create(Integer.MAX_VALUE); // there should not be a such high revision
+        // there should not be a such high revision
+        final Revision end = Revision.create(Integer.MAX_VALUE);
         final int limit = UNLIMITED;
 
         repository.log(resource, start, end, limit, false);
@@ -75,7 +76,9 @@ public abstract class AbstractRepositoryLogIT {
     @Test(expected = SubversionException.class)
     public void test00_NonExistingStartRevision() throws Exception {
         final Resource resource = PREFIX.append(Resource.create("/file.txt"));
-        final Revision start = Revision.create(Integer.MAX_VALUE); // there should not be a such high revision
+        // there should not be a such high revision
+        final Revision start = Revision.create(Integer.MAX_VALUE);
+
         final Revision end = Revision.HEAD;
         final int limit = UNLIMITED;
 

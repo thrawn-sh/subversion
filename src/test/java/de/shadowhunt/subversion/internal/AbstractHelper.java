@@ -79,8 +79,7 @@ public abstract class AbstractHelper {
 
     private final File root;
 
-    protected AbstractHelper(final File base, final URI dumpUri, final URI md5Uri, final URI repositoryUri,
-            final URI repositoryReadOnylUri) {
+    protected AbstractHelper(final File base, final URI dumpUri, final URI md5Uri, final URI repositoryUri, final URI repositoryReadOnylUri) {
         this.base = base;
         this.root = new File(base, "dump");
         this.dumpUri = dumpUri;
@@ -186,6 +185,14 @@ public abstract class AbstractHelper {
             repositoryReadOnly = factory.createRepository(repositoryReadOnlyUri, client, context, true);
         }
         return repositoryReadOnly;
+    }
+
+    URI getRepositoryReadOnlyUri() {
+        return repositoryReadOnlyUri;
+    }
+
+    URI getRepositoryUri() {
+        return repositoryUri;
     }
 
     public File getRoot() {

@@ -53,7 +53,8 @@ public abstract class AbstractRepositoryExistsIT {
     @Test(expected = SubversionException.class)
     public void test00_NonExistingRevision() throws Exception {
         final Resource resource = PREFIX.append(Resource.create("/file.txt"));
-        final Revision revision = Revision.create(Integer.MAX_VALUE); // there should not be a such high revision
+        // there should not be a such high revision
+        final Revision revision = Revision.create(Integer.MAX_VALUE);
 
         repository.exists(resource, revision);
         Assert.fail("exists must not complete");

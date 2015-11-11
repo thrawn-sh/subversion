@@ -480,7 +480,7 @@ public abstract class AbstractRepositoryEncodingIT {
     private void testDownloadUri(final Resource resource, final Revision revision) {
         final View view = repository.createView();
         final AbstractBaseRepository ar = (AbstractBaseRepository) repository;
-        final URI expected = URIUtils.createURI(repository.getBaseUri(), ar.config.getVersionedResource(resource, view.getHeadRevision()));
+        final URI expected = URIUtils.appendResources(repository.getBaseUri(), ar.config.getVersionedResource(resource, view.getHeadRevision()));
         final String message = resource + ": @" + revision;
         Assert.assertEquals(message, expected, repository.downloadURI(resource, revision));
     }
