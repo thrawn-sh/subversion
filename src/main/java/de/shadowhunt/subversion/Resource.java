@@ -49,10 +49,16 @@ public final class Resource implements Comparable<Resource> {
 
         final StringBuilder sb = new StringBuilder();
         for (final String segment : PATH_PATTERN.split(path)) {
-            if (!StringUtils.isEmpty(segment)) {
-                sb.append(SEPARATOR_CHAR);
-                sb.append(segment);
+            if (StringUtils.isEmpty(segment) || ".".equals(segment)) {
+                continue;
             }
+
+            if ("..".equals(segment)) {
+                throw new SubversionException("path is not canonical: " + path);
+            }
+
+            sb.append(SEPARATOR_CHAR);
+            sb.append(segment);
         }
 
         return new Resource(sb.toString());

@@ -40,6 +40,13 @@ public class ResourceTest {
         Assert.assertEquals(expected, Resource.create("//a/b/c/d.txt"));
         Assert.assertEquals(expected, Resource.create("a//b/c//d.txt"));
         Assert.assertEquals(expected, Resource.create("/a/b/c/d.txt/"));
+        Assert.assertEquals(expected, Resource.create("/a/b/./c/d.txt"));
+    }
+
+    @Test(expected = SubversionException.class)
+    public void createResource_withParentDirectory() throws Exception {
+        Resource.create("/a/b/../c/d.txt");
+        Assert.fail("path with parent directory must not complete");
     }
 
     @Test
