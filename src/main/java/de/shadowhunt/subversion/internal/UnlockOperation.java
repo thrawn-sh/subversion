@@ -40,7 +40,7 @@ class UnlockOperation extends AbstractVoidOperation {
 
     @Override
     protected HttpUriRequest createRequest() {
-        final URI uri = URIUtils.createURI(repository, resource);
+        final URI uri = URIUtils.appendResources(repository, resource);
         final DavTemplateRequest request = new DavTemplateRequest("UNLOCK", uri);
         request.addHeader("Lock-Token", '<' + lockToken.toString() + '>');
         if (force) {

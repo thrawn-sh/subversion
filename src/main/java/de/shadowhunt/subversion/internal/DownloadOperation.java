@@ -40,7 +40,7 @@ class DownloadOperation extends AbstractOperation<Optional<InputStream>> {
 
     @Override
     protected HttpUriRequest createRequest() {
-        final URI uri = URIUtils.createURI(repository, resource);
+        final URI uri = URIUtils.appendResources(repository, resource);
         return new DavTemplateRequest("GET", uri);
     }
 

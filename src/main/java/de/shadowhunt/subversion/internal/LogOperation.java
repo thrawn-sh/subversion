@@ -87,7 +87,7 @@ class LogOperation extends AbstractOperation<List<Log>> {
             throw new SubversionException("could not create request body", e);
         }
 
-        final URI uri = URIUtils.createURI(repository, resource);
+        final URI uri = URIUtils.appendResources(repository, resource);
         final DavTemplateRequest request = new DavTemplateRequest("REPORT", uri);
         request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
         return request;

@@ -42,8 +42,8 @@ class CopyOperation extends AbstractVoidOperation {
 
     @Override
     protected HttpUriRequest createRequest() {
-        final URI sourceUri = URIUtils.createURI(repository, source);
-        final URI targetUri = URIUtils.createURI(repository, target);
+        final URI sourceUri = URIUtils.appendResources(repository, source);
+        final URI targetUri = URIUtils.appendResources(repository, target);
         final DavTemplateRequest request = new DavTemplateRequest("COPY", sourceUri);
         request.addHeader("Destination", targetUri.toASCIIString());
         request.addHeader("Depth", Depth.INFINITY.value);

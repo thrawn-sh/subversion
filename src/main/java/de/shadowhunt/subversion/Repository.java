@@ -214,6 +214,13 @@ public interface Repository {
     boolean exists(View view, Resource resource, Revision revision);
 
     /**
+     * Returns the {@link Resource} to the base for this {@link Repository}.
+     *
+     * @return the {@link Resource} to the base for this {@link Repository}.
+     */
+    Resource getBasePath();
+
+    /**
      * Returns the {@link URI} to the root of this {@link Repository}.
      *
      * @return the {@link URI} to the root of this {@link Repository}

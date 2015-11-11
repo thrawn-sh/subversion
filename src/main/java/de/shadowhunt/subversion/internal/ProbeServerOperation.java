@@ -26,7 +26,6 @@ import javax.xml.stream.XMLStreamWriter;
 
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Repository.ProtocolVersion;
-import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.TransmissionException;
 
@@ -63,7 +62,7 @@ class ProbeServerOperation extends AbstractOperation<Repository> {
             writer.writeStartElement("options");
             writer.writeDefaultNamespace(XmlConstants.DAV_NAMESPACE);
             writer.writeEmptyElement("activity-collection-set");
-            writer.writeEndElement(); //options
+            writer.writeEndElement(); // options
             writer.writeEndDocument();
             writer.close();
         } catch (final XMLStreamException e) {
@@ -80,14 +79,14 @@ class ProbeServerOperation extends AbstractOperation<Repository> {
         final HttpUriRequest request = createRequest();
 
         final ProtocolVersion version;
-        final Resource prefix;
+        final Probe probe;
         try {
             final HttpResponse response = client.execute(request, context);
             try (final InputStream in = getContent(response)) {
                 check(response);
 
                 version = determineVersion(response.getAllHeaders());
-                prefix = Prefix.read(in, version);
+                probe = ProbeReader.read(in, version);
             }
         } catch (final IOException e) {
             throw new TransmissionException(e);
@@ -95,7 +94,7 @@ class ProbeServerOperation extends AbstractOperation<Repository> {
 
         for (final RepositoryLocator repositoryLocator : ServiceLoader.load(RepositoryLocator.class)) {
             if (repositoryLocator.isSupported(version)) {
-                return repositoryLocator.create(repository, prefix, client, context);
+                return repositoryLocator.create(repository, probe, client, context);
             }
         }
 

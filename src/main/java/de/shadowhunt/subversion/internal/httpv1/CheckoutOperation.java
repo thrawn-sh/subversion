@@ -54,7 +54,7 @@ class CheckoutOperation extends AbstractVoidOperation {
             writer.writeDefaultNamespace(XmlConstants.DAV_NAMESPACE);
             writer.writeStartElement("activity-set");
             writer.writeStartElement("href");
-            final URI transactionURI = URIUtils.createURI(repository, transaction);
+            final URI transactionURI = URIUtils.appendResources(repository, transaction);
             writer.writeCData(transactionURI.toString());
             writer.writeEndElement(); // href
             writer.writeEndElement(); // activity-set
@@ -66,7 +66,7 @@ class CheckoutOperation extends AbstractVoidOperation {
             throw new SubversionException("could not create request body", e);
         }
 
-        final URI uri = URIUtils.createURI(repository, resource);
+        final URI uri = URIUtils.appendResources(repository, resource);
         final DavTemplateRequest request = new DavTemplateRequest("CHECKOUT", uri);
         request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
         return request;

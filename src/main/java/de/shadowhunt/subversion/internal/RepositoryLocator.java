@@ -18,14 +18,13 @@ package de.shadowhunt.subversion.internal;
 import java.net.URI;
 
 import de.shadowhunt.subversion.Repository;
-import de.shadowhunt.subversion.Resource;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 
 public interface RepositoryLocator {
 
-    Repository create(URI repository, Resource prefix, HttpClient client, HttpContext context);
+    Repository create(URI uri, Probe probe, HttpClient client, HttpContext context);
 
     boolean isSupported(Repository.ProtocolVersion version);
 }

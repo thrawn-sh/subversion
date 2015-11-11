@@ -88,7 +88,7 @@ abstract class AbstractPropfindOperation<T> extends AbstractOperation<T> {
 
     @Override
     protected HttpUriRequest createRequest() {
-        final URI uri = URIUtils.createURI(repository, resource);
+        final URI uri = URIUtils.appendResources(repository, resource);
         final DavTemplateRequest request = new DavTemplateRequest("PROPFIND", uri);
         request.addHeader("Depth", depth.value);
 

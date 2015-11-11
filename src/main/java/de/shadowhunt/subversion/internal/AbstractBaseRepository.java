@@ -39,7 +39,6 @@ import de.shadowhunt.subversion.Transaction.Status;
 import de.shadowhunt.subversion.View;
 
 import org.apache.commons.lang3.Validate;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
@@ -54,17 +53,9 @@ public abstract class AbstractBaseRepository implements Repository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("de.shadowhunt.subversion.Repository");
 
-    private static final ResourceProperty.Key[] REPOSITORY_UUID = new ResourceProperty.Key[] { ResourceProperty.REPOSITORY_ID };
-
     private static final ResourceProperty.Key[] REVISION = new ResourceProperty.Key[] { ResourceProperty.RESOURCE, ResourceProperty.VERSION };
 
     private static final ResourceProperty.Key[] TYPE = new ResourceProperty.Key[] { ResourceProperty.RESOURCE, ResourceProperty.RESOURCE_TYPE };
-
-    private static UUID determineRepositoryId(final URI repository, final HttpClient client, final HttpContext context, final Resource marker) {
-        final InfoOperation operation = new InfoOperation(repository, Resource.ROOT, marker, REPOSITORY_UUID);
-        final Optional<Info> info = operation.execute(client, context);
-        return info.orElseThrow(() -> new SubversionException("No repository found at " + repository, HttpStatus.SC_BAD_REQUEST)).getRepositoryId();
-    }
 
     protected interface ResourceMapper {
 
@@ -95,19 +86,23 @@ public abstract class AbstractBaseRepository implements Repository {
 
     protected final UUID repositoryId;
 
-    protected AbstractBaseRepository(final URI repository, final ResourceMapper config, final HttpClient client, final HttpContext context) {
+    protected final Resource base;
+
+    protected AbstractBaseRepository(final URI repository, final Resource base, final UUID id, final ResourceMapper config, final HttpClient client,
+            final HttpContext context) {
         Validate.notNull(repository, "repository must not be null");
+        Validate.notNull(base, "base must not be null");
+        Validate.notNull(id, "id must not be null");
         Validate.notNull(config, "config must not be null");
         Validate.notNull(client, "client must not be null");
         Validate.notNull(context, "context must not be null");
 
-        this.repository = URIUtils.createURI(repository);
+        this.repository = repository;
+        this.base = base;
+        this.repositoryId = id;
         this.config = config;
         this.client = client;
         this.context = context;
-
-        repositoryId = determineRepositoryId(repository, client, context, config.getPrefix());
-        Validate.notNull(repositoryId, "repositoryId must not be null");
     }
 
     @Override
@@ -136,18 +131,21 @@ public abstract class AbstractBaseRepository implements Repository {
     }
 
     @Override
-    public void copy(final Transaction transaction, final Resource sourceResource, final Revision sourceRevision, final Resource targetResource, final boolean parents) {
+    public void copy(final Transaction transaction, final Resource sourceResource, final Revision sourceRevision, final Resource targetResource,
+            final boolean parents) {
         validateTransaction(transaction);
         Validate.notNull(sourceResource, "sourceResource must not be null");
         Validate.notNull(sourceRevision, "sourceRevision must not be null");
         Validate.notNull(targetResource, "targetResource must not be null");
         validateRevision(transaction, sourceRevision);
 
-        LOGGER.trace("copying resource from {}@{} to {} during transaction {} (parents: {})", sourceResource, sourceRevision, targetResource, transaction.getId(), parents);
+        LOGGER.trace("copying resource from {}@{} to {} during transaction {} (parents: {})", sourceResource, sourceRevision, targetResource,
+                transaction.getId(), parents);
         copy0(transaction, sourceResource, sourceRevision, targetResource, parents, true);
     }
 
-    private void copy0(final Transaction transaction, final Resource sourceResource, final Revision sourceRevision, final Resource targetResource, final boolean parents, final boolean resolveSource) {
+    private void copy0(final Transaction transaction, final Resource sourceResource, final Revision sourceRevision, final Resource targetResource,
+            final boolean parents, final boolean resolveSource) {
         if (parents) {
             createFolder(transaction, targetResource.getParent(), true);
         } else {
@@ -198,7 +196,7 @@ public abstract class AbstractBaseRepository implements Repository {
         }
 
         Resource current = resource.getParent();
-        while (!Resource.ROOT.equals(current)) {
+        while (!base.equals(current)) {
             if (!transaction.register(current, Status.EXISTS)) {
                 break;
             }
@@ -206,6 +204,7 @@ public abstract class AbstractBaseRepository implements Repository {
         }
     }
 
+    @Override
     public View createView() {
         LOGGER.trace("creating new view");
         final Revision headRevision = determineHeadRevision();
@@ -233,7 +232,7 @@ public abstract class AbstractBaseRepository implements Repository {
     }
 
     protected Revision determineHeadRevision() {
-        final InfoOperation operation = new InfoOperation(repository, Resource.ROOT, config.getPrefix(), REVISION);
+        final InfoOperation operation = new InfoOperation(repository, base, config.getPrefix(), REVISION);
         final Optional<Info> info = operation.execute(client, context);
         return info.orElseThrow(() -> new SubversionException("can not determine HEAD revision")).getRevision();
     }
@@ -282,7 +281,7 @@ public abstract class AbstractBaseRepository implements Repository {
             throw new SubversionException("Can't resolve: " + resource + '@' + revision);
         }
         final Resource resolved = resolve(view, resource, revision, true);
-        return URIUtils.createURI(repository, resolved);
+        return URIUtils.appendResources(repository, resolved);
     }
 
     @Override
@@ -309,8 +308,13 @@ public abstract class AbstractBaseRepository implements Repository {
     }
 
     @Override
+    public final Resource getBasePath() {
+        return base;
+    }
+
+    @Override
     public final URI getBaseUri() {
-        return URIUtils.createURI(repository);
+        return URIUtils.appendResources(repository);
     }
 
     protected Revision getConcreteRevision(final View view, final Revision revision) {
@@ -404,7 +408,8 @@ public abstract class AbstractBaseRepository implements Repository {
         return infoSet.orElseThrow(() -> new SubversionException("Can't resolve: " + resource + '@' + revision));
     }
 
-    private void listRecursively0(final View view, final Resource resource, final Revision revision, final Set<Info> result, final ResourceProperty.Key[] keys) {
+    private void listRecursively0(final View view, final Resource resource, final Revision revision, final Set<Info> result,
+            final ResourceProperty.Key[] keys) {
         for (final Info info : list0(view, resource, revision, Depth.IMMEDIATES, keys)) {
             if (!result.add(info)) {
                 continue;
@@ -426,7 +431,8 @@ public abstract class AbstractBaseRepository implements Repository {
     }
 
     @Override
-    public final List<Log> log(final View view, final Resource resource, final Revision startRevision, final Revision endRevision, final int limit, final boolean stopOnCopy) {
+    public final List<Log> log(final View view, final Resource resource, final Revision startRevision, final Revision endRevision, final int limit,
+            final boolean stopOnCopy) {
         Validate.notNull(view, "view must not be null");
         Validate.notNull(resource, "resource must not be null");
         Validate.notNull(startRevision, "startRevision must not be null");
@@ -443,7 +449,8 @@ public abstract class AbstractBaseRepository implements Repository {
         return log(createView(), resource, startRevision, endRevision, limit, stopOnCopy);
     }
 
-    private List<Log> log0(final View view, final Resource resource, final Revision startRevision, final Revision endRevision, final int limit, final boolean stopOnCopy) {
+    private List<Log> log0(final View view, final Resource resource, final Revision startRevision, final Revision endRevision, final int limit,
+            final boolean stopOnCopy) {
         final Revision concreteStartRevision = getConcreteRevision(view, startRevision);
         final Revision concreteEndRevision = getConcreteRevision(view, endRevision);
 
@@ -484,7 +491,8 @@ public abstract class AbstractBaseRepository implements Repository {
         propertiesUpdate(transaction, resource, PropertiesUpdateOperation.Type.SET, properties);
     }
 
-    protected void propertiesUpdate(final Transaction transaction, final Resource resource, final PropertiesUpdateOperation.Type type, final ResourceProperty... properties) {
+    protected void propertiesUpdate(final Transaction transaction, final Resource resource, final PropertiesUpdateOperation.Type type,
+            final ResourceProperty... properties) {
         validateTransaction(transaction);
         Validate.notNull(resource, "resource must not be null");
         Validate.noNullElements(properties, "properties must not contain null elements");
@@ -551,7 +559,8 @@ public abstract class AbstractBaseRepository implements Repository {
 
     private void unlock0(final View view, final Resource resource, final boolean force) {
         final Optional<Info> info = info0(view, resource, view.getHeadRevision(), true, LOCKING);
-        final Optional<LockToken> lockToken = info.orElseThrow(() -> new SubversionException("Can't resolve: " + resource + '@' + view.getHeadRevision())).getLockToken();
+        final Optional<LockToken> lockToken = info.orElseThrow(() -> new SubversionException("Can't resolve: " + resource + '@' + view.getHeadRevision()))
+                .getLockToken();
 
         if (!lockToken.isPresent()) {
             return;

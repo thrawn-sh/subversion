@@ -31,9 +31,9 @@ import de.shadowhunt.subversion.xml.AbstractSaxExpressionHandler;
 
 import org.xml.sax.SAXException;
 
-final class Prefix {
+final class ProbeReader {
 
-    private static class PrefixExpression extends AbstractSaxExpression<Resource> {
+    private static class CollectionExpression extends AbstractSaxExpression<Probe> {
 
         private static final QName[] PATH = { //
                 new QName(XmlConstants.DAV_NAMESPACE, "options-response"), //
@@ -43,60 +43,70 @@ final class Prefix {
 
         private static final Pattern PATH_PATTERN = Pattern.compile(Resource.SEPARATOR);
 
-        private Resource prefix;
+        private Probe probe;
 
         private final ProtocolVersion version;
 
-        PrefixExpression(final ProtocolVersion version) {
+        CollectionExpression(final ProtocolVersion version) {
             super(PATH);
             this.version = version;
         }
 
         @Override
-        public Optional<Resource> getValue() {
-            return Optional.ofNullable(prefix);
+        public Optional<Probe> getValue() {
+            return Optional.ofNullable(probe);
         }
 
         @Override
         protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
             if ((ProtocolVersion.HTTP_V1 == version) || (ProtocolVersion.HTTP_V2 == version)) {
                 // .../${svn}/act/
-                //     ^^^^^^ <- prefix
+                // ^^^^^^ <- prefix
+                // ^^^ <- part of baseUri
                 final String[] segments = PATH_PATTERN.split(text);
-                prefix = Resource.create(segments[segments.length - 2]);
+                final int prefixIndex = segments.length - 2;
+                final Resource prefix = Resource.create(segments[prefixIndex]);
+
+                final StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < prefixIndex; i++) {
+                    sb.append(Resource.SEPARATOR_CHAR);
+                    sb.append(segments[i]);
+                }
+                final Resource basePath = Resource.create(sb.toString());
+                probe = new Probe(basePath, prefix);
             }
         }
 
         @Override
         public void resetHandler() {
             super.resetHandler();
-            prefix = null;
+            probe = null;
         }
     }
 
-    private static class PrefixHandler extends AbstractSaxExpressionHandler<Resource> {
+    private static class ProbeHandler extends AbstractSaxExpressionHandler<Probe> {
 
-        PrefixHandler(final ProtocolVersion version) {
-            super(new PrefixExpression(version));
+        ProbeHandler(final ProtocolVersion version) {
+            super(new CollectionExpression(version));
         }
 
         @Override
-        public Optional<Resource> getValue() {
-            return ((PrefixExpression) expressions[0]).getValue();
+        public Optional<Probe> getValue() {
+            return ((CollectionExpression) expressions[0]).getValue();
         }
     }
 
-    static Resource read(final InputStream inputStream, final ProtocolVersion version) throws IOException {
+    static Probe read(final InputStream inputStream, final ProtocolVersion version) throws IOException {
         try {
-            final PrefixHandler handler = new PrefixHandler(version);
-            final Optional<Resource> prefix = handler.parse(inputStream);
-            return prefix.orElseThrow(() -> new SubversionException("Invalid server response: could not parse response"));
+            final ProbeHandler handler = new ProbeHandler(version);
+            final Optional<Probe> probe = handler.parse(inputStream);
+            return probe.orElseThrow(() -> new SubversionException("Invalid server response: could not be parsed"));
         } catch (final ParserConfigurationException | SAXException e) {
             throw new SubversionException("Invalid server response: could not parse response", e);
         }
     }
 
-    private Prefix() {
+    private ProbeReader() {
         // prevent instantiation
     }
 

@@ -34,7 +34,7 @@ class CreateFolderOperation extends AbstractOperation<Boolean> {
 
     @Override
     protected HttpUriRequest createRequest() {
-        final URI uri = URIUtils.createURI(repository, resource);
+        final URI uri = URIUtils.appendResources(repository, resource);
         return new DavTemplateRequest("MKCOL", uri);
     }
 

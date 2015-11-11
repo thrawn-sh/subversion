@@ -38,20 +38,52 @@ public final class URIUtils {
      * @throws IllegalArgumentException if resources contain {@code null elements}
      * @throws NullPointerException if repository is {@code null}
      */
-    public static URI createURI(final URI repository, final Resource... resources) {
+    public static URI appendResources(final URI repository, final Resource... resources) {
         try {
-            return createURI0(repository, resources);
+            return appendResource0(repository, resources);
         } catch (final URISyntaxException e) {
             throw new IllegalArgumentException(e);
         }
     }
 
-    private static URI createURI0(final URI repository, final Resource... resources) throws URISyntaxException {
+    private static URI appendResource0(final URI repository, final Resource... resources) throws URISyntaxException {
         final URIBuilder builder = new URIBuilder();
         builder.setScheme(repository.getScheme());
         builder.setHost(repository.getHost());
         builder.setPort(repository.getPort());
         final StringBuilder completePath = new StringBuilder(repository.getPath());
+        for (final Resource resource : resources) {
+            completePath.append(resource.getValue());
+        }
+        builder.setPath(completePath.toString());
+        return builder.build();
+    }
+
+    /**
+     * Replace path elements from repository {@link URI} with {@link Resource}s to a valid {@link URI}.
+     *
+     * @param repository base {@link URI}
+     * @param resources {@link Resource}s to replace the path of the repository {@link URI}
+     *
+     * @return replacement of path elements from repository {@link URI} with {@link Resource}s
+     *
+     * @throws IllegalArgumentException if resources contain {@code null elements}
+     * @throws NullPointerException if repository is {@code null}
+     */
+    public static URI replacePathWithResources(final URI repository, final Resource... resources) {
+        try {
+            return replacePathWithResources0(repository, resources);
+        } catch (final URISyntaxException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    private static URI replacePathWithResources0(final URI repository, final Resource... resources) throws URISyntaxException {
+        final URIBuilder builder = new URIBuilder();
+        builder.setScheme(repository.getScheme());
+        builder.setHost(repository.getHost());
+        builder.setPort(repository.getPort());
+        final StringBuilder completePath = new StringBuilder();
         for (final Resource resource : resources) {
             completePath.append(resource.getValue());
         }

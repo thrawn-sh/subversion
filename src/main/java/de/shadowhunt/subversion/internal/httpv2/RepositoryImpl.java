@@ -17,6 +17,7 @@ package de.shadowhunt.subversion.internal.httpv2;
 
 import java.net.URI;
 import java.util.Set;
+import java.util.UUID;
 
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
@@ -95,8 +96,8 @@ class RepositoryImpl extends AbstractBaseRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("de.shadowhunt.subversion.Repository");
 
-    RepositoryImpl(final URI repository, final Resource prefix, final HttpClient client, final HttpContext context) {
-        super(repository, new ResourceMapperImpl(prefix), client, context);
+    RepositoryImpl(final URI repository, final Resource base, final UUID id, final Resource prefix, final HttpClient client, final HttpContext context) {
+        super(repository, base, id, new ResourceMapperImpl(prefix), client, context);
     }
 
     @Override
