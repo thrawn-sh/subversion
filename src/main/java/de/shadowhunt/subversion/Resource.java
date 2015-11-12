@@ -24,15 +24,21 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class Resource implements Comparable<Resource> {
 
+    private static final Pattern PATH_PATTERN = Pattern.compile("/");
+
     /**
      * Represents the base {@link Resource} in the repository.
      */
     public static final Resource ROOT = new Resource("");
 
+    /**
+     * Separator {@link String} for directories.
+     */
     public static final String SEPARATOR = "/";
 
-    private static final Pattern PATH_PATTERN = Pattern.compile(SEPARATOR);
-
+    /**
+     * Separator {@code char} for directories.
+     */
     public static final char SEPARATOR_CHAR = '/';
 
     /**
@@ -139,6 +145,17 @@ public final class Resource implements Comparable<Resource> {
     @Override
     public int hashCode() {
         return value.hashCode();
+    }
+
+    /**
+     * Returns {@code true} if this {@link Resource} is a prefix of the given {@link Resource}.
+     *
+     * @param other {@link Resource} to check against this {@link Resource}
+     *
+     * @return {@code true} if this {@link Resource} is a prefix of the given {@link Resource}
+     */
+    public boolean isPrefix(final Resource other) {
+        return other.value.startsWith(value);
     }
 
     @Override
