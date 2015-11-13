@@ -29,6 +29,7 @@ import de.shadowhunt.subversion.Revision;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -37,7 +38,7 @@ public final class InfoLoader extends AbstractBaseLoader {
 
     static class InfoHandler extends BasicHandler {
 
-        private InfoImpl current = new InfoImpl();
+        private final InfoImpl current = new InfoImpl();
 
         @Override
         public void endElement(final String uri, final String localName, final String qName) throws SAXException {
@@ -78,13 +79,13 @@ public final class InfoLoader extends AbstractBaseLoader {
 
     private final ResourcePropertyLoader resourcePropertyLoader;
 
-    InfoLoader(final File root) {
-        super(root);
-        resourcePropertyLoader = new ResourcePropertyLoader(root);
+    InfoLoader(final File root, final Resource base) {
+        super(root, base);
+        resourcePropertyLoader = new ResourcePropertyLoader(root, base);
     }
 
     public Info load(final Resource resource, final Revision revision) throws Exception {
-        final File infoFile = new File(root, resolve(revision) + resource.getValue() + SUFFIX);
+        final File infoFile = new File(root, resolve(revision) + base.getValue() + resource.getValue() + SUFFIX);
 
         final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
         final InfoHandler handler = new InfoHandler();
@@ -92,8 +93,9 @@ public final class InfoLoader extends AbstractBaseLoader {
         saxParser.parse(infoFile, handler);
         final InfoImpl info = handler.getInfo();
 
-        info.setResource(resource);
-        final File f = new File(root, resolve(revision) + resource.getValue());
+        final String relative = StringUtils.removeStart(resource.getValue(), base.getValue());
+        info.setResource(Resource.create(relative));
+        final File f = new File(root, resolve(revision) + base.getValue() + resource.getValue());
         info.setDirectory(f.isDirectory());
         if (info.isFile()) {
             final FileInputStream fis = new FileInputStream(f);

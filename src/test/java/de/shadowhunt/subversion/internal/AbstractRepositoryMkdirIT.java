@@ -63,7 +63,7 @@ public abstract class AbstractRepositoryMkdirIT {
     private final Repository repository;
 
     protected AbstractRepositoryMkdirIT(final Repository repository, final UUID testId) {
-        prefix = Resource.create("/trunk/" + testId + "/mkdir");
+        prefix = Resource.create("/" + testId + "/mkdir");
         this.repository = repository;
     }
 

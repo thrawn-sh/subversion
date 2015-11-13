@@ -64,7 +64,7 @@ public abstract class AbstractRepositoryAddIT {
     private final Repository repository;
 
     protected AbstractRepositoryAddIT(final Repository repository, final UUID testId) {
-        prefix = Resource.create("/trunk/" + testId + "/add");
+        prefix = Resource.create("/" + testId + "/add");
         this.repository = repository;
     }
 

@@ -35,7 +35,7 @@ import org.junit.runners.MethodSorters;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class AbstractRepositoryListIT {
 
-    public static final Resource PREFIX = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/list");
+    public static final Resource PREFIX = Resource.create("/00000000-0000-0000-0000-000000000000/list");
 
     public static void assertListEquals(final String message, final Set<Info> expected, final Set<Info> actual) {
         Assert.assertEquals(message, expected.size(), actual.size());
@@ -54,7 +54,7 @@ public abstract class AbstractRepositoryListIT {
 
     protected AbstractRepositoryListIT(final Repository repository, final File root) {
         this.repository = repository;
-        listLoader = new ListLoader(root);
+        listLoader = new ListLoader(root, repository.getBasePath());
     }
 
     private String createMessage(final Resource resource, final Revision revision, final Depth depth) {

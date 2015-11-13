@@ -43,13 +43,13 @@ public final class ListLoader extends AbstractBaseLoader {
 
     private final InfoLoader infoLoader;
 
-    ListLoader(final File root) {
-        super(root);
-        infoLoader = new InfoLoader(root);
+    ListLoader(final File root, final Resource base) {
+        super(root, base);
+        infoLoader = new InfoLoader(root, base);
     }
 
     public Set<Info> load(final Resource resource, final Revision revision, final Depth depth) throws Exception {
-        final File base = new File(root, resolve(revision) + resource.getValue());
+        final File base = new File(root, resolve(revision) + this.base.getValue() + resource.getValue());
 
         final Set<Info> result = new TreeSet<>(Info.RESOURCE_COMPARATOR);
         result.add(infoLoader.load(resource, revision));

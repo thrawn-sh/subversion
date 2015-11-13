@@ -38,6 +38,7 @@ import de.shadowhunt.subversion.xml.AbstractSaxExpression;
 import de.shadowhunt.subversion.xml.AbstractSaxExpressionHandler;
 import de.shadowhunt.subversion.xml.SaxExpression;
 
+import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.SAXException;
 
 final class InfoImplReader {
@@ -49,16 +50,16 @@ final class InfoImplReader {
                 new QName(XmlConstants.DAV_NAMESPACE, "response") //
         };
 
-        private static SaxExpression<?>[] createExpressions() {
+        private static SaxExpression<?>[] createExpressions(final Resource basePath) {
             return new SaxExpression[] { //
                     new StringExpression(new QName(XmlConstants.DAV_NAMESPACE, "creationdate")), //
-                    new ResourceTypeExpression(),
-                    new StringExpression(new QName(XmlConstants.DAV_NAMESPACE, "getlastmodified")), //
-                    new StringExpression(new QName(XmlConstants.DAV_NAMESPACE, "lockdiscovery"), new QName(XmlConstants.DAV_NAMESPACE, "activelock"), new QName(XmlConstants.DAV_NAMESPACE, "locktoken"), new QName(XmlConstants.DAV_NAMESPACE, "href")),
+                    new ResourceTypeExpression(), new StringExpression(new QName(XmlConstants.DAV_NAMESPACE, "getlastmodified")), //
+                    new StringExpression(new QName(XmlConstants.DAV_NAMESPACE, "lockdiscovery"), new QName(XmlConstants.DAV_NAMESPACE, "activelock"),
+                            new QName(XmlConstants.DAV_NAMESPACE, "locktoken"), new QName(XmlConstants.DAV_NAMESPACE, "href")),
                     new StringExpression(new QName(XmlConstants.SUBVERSION_DAV_NAMESPACE, "md5-checksum")), //
                     new PropertyExpression(), //
                     new StringExpression(new QName(XmlConstants.SUBVERSION_DAV_NAMESPACE, "repository-uuid")), //
-                    new ResourceExpression(), //
+                    new ResourceExpression(basePath), //
                     new StringExpression(new QName(XmlConstants.DAV_NAMESPACE, "version-name")), //
 
                     new StatusExpression(), // throws exception on error
@@ -67,8 +68,8 @@ final class InfoImplReader {
 
         private final List<Info> entries = new ArrayList<>();
 
-        InfoExpression() {
-            super(PATH, createExpressions());
+        InfoExpression(final Resource basePath) {
+            super(PATH, createExpressions(basePath));
         }
 
         @Override
@@ -113,8 +114,8 @@ final class InfoImplReader {
 
     private static class InfoHandler extends AbstractSaxExpressionHandler<List<Info>> {
 
-        InfoHandler() {
-            super(new InfoExpression());
+        InfoHandler(final Resource basePath) {
+            super(new InfoExpression(basePath));
         }
 
         @Override
@@ -128,8 +129,7 @@ final class InfoImplReader {
         private static final QName[] PATH = { //
                 new QName(XmlConstants.DAV_NAMESPACE, "propstat"), //
                 new QName(XmlConstants.DAV_NAMESPACE, "prop"), //
-                new QName(XMLConstants.NULL_NS_URI, "*")
-        };
+                new QName(XMLConstants.NULL_NS_URI, "*") };
 
         private Set<ResourceProperty> properties = new TreeSet<>(ResourceProperty.TYPE_NAME_COMPARATOR);
 
@@ -137,6 +137,7 @@ final class InfoImplReader {
             super(PATH);
         }
 
+        @Override
         public void clear() {
             properties = new TreeSet<>(ResourceProperty.TYPE_NAME_COMPARATOR);
         }
@@ -176,8 +177,11 @@ final class InfoImplReader {
 
         private Optional<Resource> resource = Optional.empty();
 
-        ResourceExpression() {
+        private final Resource basePath;
+
+        ResourceExpression(final Resource basePath) {
             super(PATH);
+            this.basePath = basePath;
         }
 
         @Override
@@ -187,7 +191,9 @@ final class InfoImplReader {
 
         @Override
         protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
-            resource = Optional.of(Resource.create(text));
+            final Resource qualifiedResource = Resource.create(text);
+            final String relative = StringUtils.removeStart(qualifiedResource.getValue(), basePath.getValue());
+            resource = Optional.of(Resource.create(relative));
         }
 
         @Override
@@ -231,7 +237,7 @@ final class InfoImplReader {
 
         public static final QName[] PATH = { //
                 new QName(XmlConstants.DAV_NAMESPACE, "propstat"), //
-                new QName(XmlConstants.DAV_NAMESPACE, "status")  //
+                new QName(XmlConstants.DAV_NAMESPACE, "status") //
         };
 
         StatusExpression() {
@@ -291,14 +297,17 @@ final class InfoImplReader {
     }
 
     /**
-     * Reads status information for a single revision of a resource from the given {@link java.io.InputStream}.
+     * Reads status information for a single revision of a resource from the
+     * given {@link java.io.InputStream}.
      *
-     * @param in {@link java.io.InputStream} from which the status information is read (Note: will not be closed)
+     * @param in
+     *            {@link java.io.InputStream} from which the status information
+     *            is read (Note: will not be closed)
      *
      * @return {@link InfoImpl} for the resource
      */
-    static Info read(final InputStream in) throws IOException {
-        final List<Info> infoSet = readAll(in);
+    static Info read(final InputStream in, final Resource basePath) throws IOException {
+        final List<Info> infoSet = readAll(in, basePath);
         if (infoSet.isEmpty()) {
             throw new SubversionException("Invalid server response: expected content is missing");
         }
@@ -306,16 +315,17 @@ final class InfoImplReader {
     }
 
     /**
-     * Reads a {@link java.util.SortedSet} of status information for a single revision of various resources from the
-     * given {@link java.io.InputStream}.
+     * Reads a {@link java.util.SortedSet} of status information for a single
+     * revision of various resources from the given {@link java.io.InputStream}.
      *
-     * @param inputStream {@link java.io.InputStream} from which the status information is read (Note: will not be
-     * closed)
+     * @param inputStream
+     *            {@link java.io.InputStream} from which the status information
+     *            is read (Note: will not be closed)
      *
      * @return {@link InfoImpl} for the resources
      */
-    static List<Info> readAll(final InputStream inputStream) throws IOException {
-        final InfoHandler handler = new InfoHandler();
+    static List<Info> readAll(final InputStream inputStream, final Resource basePath) throws IOException {
+        final InfoHandler handler = new InfoHandler(basePath);
         try {
             final InputStream escapedStream = ResourcePropertyUtils.escapedInputStream(inputStream);
             final Optional<List<Info>> list = handler.parse(escapedStream);

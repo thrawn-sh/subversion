@@ -37,7 +37,7 @@ public abstract class AbstractRepositoryResolveIT {
     private final Repository repository;
 
     protected AbstractRepositoryResolveIT(final Repository repository, final UUID testId) {
-        prefix = Resource.create("/trunk/" + testId + "/resolve");
+        prefix = Resource.create("/" + testId + "/resolve");
         this.repository = repository;
     }
 

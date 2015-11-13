@@ -70,7 +70,7 @@ public abstract class AbstractRepositoryPerformanceIT {
     protected AbstractRepositoryPerformanceIT(final Repository repository, final CountingHttpRequestInterceptor counter, final UUID testId) {
         this.repository = repository;
         this.counter = counter;
-        this.prefix = Resource.create("/trunk/" + testId + "/performance");
+        this.prefix = Resource.create("/" + testId + "/performance");
     }
 
     private void prepare() {

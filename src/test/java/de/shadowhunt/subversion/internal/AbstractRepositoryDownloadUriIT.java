@@ -32,7 +32,7 @@ import org.junit.runners.MethodSorters;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class AbstractRepositoryDownloadUriIT {
 
-    public static final Resource PREFIX = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/download");
+    public static final Resource PREFIX = Resource.create("/00000000-0000-0000-0000-000000000000/download");
 
     private final Repository repository;
 
@@ -70,7 +70,8 @@ public abstract class AbstractRepositoryDownloadUriIT {
 
         final View view = repository.createView();
         final AbstractBaseRepository ar = (AbstractBaseRepository) repository;
-        final URI expected = URIUtils.appendResources(repository.getBaseUri(), ar.config.getVersionedResource(resource, view.getHeadRevision()));
+        final QualifiedResource qualifiedResource = new QualifiedResource(repository.getBasePath(), resource);
+        final URI expected = URIUtils.appendResources(repository.getBaseUri(), ar.config.getVersionedResource(qualifiedResource, view.getHeadRevision()));
         final String message = createMessage(resource, revision);
         Assert.assertEquals(message, expected, repository.downloadURI(resource, revision));
     }
@@ -81,7 +82,8 @@ public abstract class AbstractRepositoryDownloadUriIT {
         final Revision revision = Revision.create(22);
 
         final AbstractBaseRepository ar = (AbstractBaseRepository) repository;
-        final URI expected = URIUtils.appendResources(repository.getBaseUri(), ar.config.getVersionedResource(resource, revision));
+        final QualifiedResource qualifiedResource = new QualifiedResource(repository.getBasePath(), resource);
+        final URI expected = URIUtils.appendResources(repository.getBaseUri(), ar.config.getVersionedResource(qualifiedResource, revision));
         final String message = createMessage(resource, revision);
         Assert.assertEquals(message, expected, repository.downloadURI(resource, revision));
     }
@@ -92,7 +94,8 @@ public abstract class AbstractRepositoryDownloadUriIT {
         final Revision revision = Revision.create(25);
 
         final AbstractBaseRepository ar = (AbstractBaseRepository) repository;
-        final URI expected = URIUtils.appendResources(repository.getBaseUri(), ar.config.getVersionedResource(resource, revision));
+        final QualifiedResource qualifiedResource = new QualifiedResource(repository.getBasePath(), resource);
+        final URI expected = URIUtils.appendResources(repository.getBaseUri(), ar.config.getVersionedResource(qualifiedResource, revision));
         final String message = createMessage(resource, revision);
         Assert.assertEquals(message, expected, repository.downloadURI(resource, revision));
     }
@@ -103,7 +106,8 @@ public abstract class AbstractRepositoryDownloadUriIT {
         final Revision revision = Revision.create(27);
 
         final AbstractBaseRepository ar = (AbstractBaseRepository) repository;
-        final URI expected = URIUtils.appendResources(repository.getBaseUri(), ar.config.getVersionedResource(resource, revision));
+        final QualifiedResource qualifiedResource = new QualifiedResource(repository.getBasePath(), resource);
+        final URI expected = URIUtils.appendResources(repository.getBaseUri(), ar.config.getVersionedResource(qualifiedResource, revision));
         final String message = createMessage(resource, revision);
         Assert.assertEquals(message, expected, repository.downloadURI(resource, revision));
     }

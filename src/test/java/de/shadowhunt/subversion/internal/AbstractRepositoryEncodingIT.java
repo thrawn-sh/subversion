@@ -57,12 +57,13 @@ public abstract class AbstractRepositoryEncodingIT {
 
     protected AbstractRepositoryEncodingIT(final Repository repository, final UUID testId, final File root) {
         this.repository = repository;
-        this.read = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/encoding");
-        this.write = Resource.create("/trunk/" + testId + "/encoding");
-        infoLoader = new InfoLoader(root);
-        logLoader = new LogLoader(root);
-        downloadLoader = new DownloadLoader(root);
-        listLoader = new ListLoader(root);
+        this.read = Resource.create("/00000000-0000-0000-0000-000000000000/encoding");
+        this.write = Resource.create("/" + testId + "/encoding");
+        final Resource basePath = repository.getBasePath();
+        infoLoader = new InfoLoader(root, basePath);
+        logLoader = new LogLoader(root, basePath);
+        downloadLoader = new DownloadLoader(root, basePath);
+        listLoader = new ListLoader(root, basePath);
     }
 
     private void checkProperties(final Resource resource) {
@@ -480,7 +481,8 @@ public abstract class AbstractRepositoryEncodingIT {
     private void testDownloadUri(final Resource resource, final Revision revision) {
         final View view = repository.createView();
         final AbstractBaseRepository ar = (AbstractBaseRepository) repository;
-        final URI expected = URIUtils.appendResources(repository.getBaseUri(), ar.config.getVersionedResource(resource, view.getHeadRevision()));
+        final QualifiedResource qualifiedResource = new QualifiedResource(repository.getBasePath(), resource);
+        final URI expected = URIUtils.appendResources(repository.getBaseUri(), ar.config.getVersionedResource(qualifiedResource, view.getHeadRevision()));
         final String message = resource + ": @" + revision;
         Assert.assertEquals(message, expected, repository.downloadURI(resource, revision));
     }

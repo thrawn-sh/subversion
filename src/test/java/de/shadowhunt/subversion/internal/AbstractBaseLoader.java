@@ -17,6 +17,7 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.File;
 
+import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 
 abstract class AbstractBaseLoader {
@@ -25,8 +26,11 @@ abstract class AbstractBaseLoader {
 
     protected final File root;
 
-    protected AbstractBaseLoader(final File root) {
+    protected final Resource base;
+
+    protected AbstractBaseLoader(final File root, final Resource base) {
         this.root = root;
+        this.base = base;
     }
 
     protected Revision resolve(final Revision revision) {

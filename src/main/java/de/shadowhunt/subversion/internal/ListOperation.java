@@ -32,8 +32,12 @@ import org.apache.http.HttpStatus;
 
 class ListOperation extends AbstractPropfindOperation<Optional<Set<Info>>> {
 
-    ListOperation(final URI repository, final QualifiedResource resource, final Resource marker, final Depth depth, final ResourceProperty.Key[] keys) {
+    private final Resource basePath;
+
+    ListOperation(final URI repository, final Resource basePath, final QualifiedResource resource, final Resource marker, final Depth depth,
+            final ResourceProperty.Key[] keys) {
         super(repository, resource, marker, depth, keys);
+        this.basePath = basePath;
     }
 
     @Override
@@ -43,7 +47,7 @@ class ListOperation extends AbstractPropfindOperation<Optional<Set<Info>>> {
         }
 
         final Set<Info> result = new TreeSet<>(Info.RESOURCE_COMPARATOR);
-        final List<Info> infoList = InfoImplReader.readAll(getContent(response));
+        final List<Info> infoList = InfoImplReader.readAll(getContent(response), basePath);
         result.addAll(infoList);
         return Optional.of(result);
     }

@@ -41,7 +41,7 @@ public abstract class AbstractRepositoryCopyIT {
     private final Repository repository;
 
     protected AbstractRepositoryCopyIT(final Repository repository, final UUID testId) {
-        prefix = Resource.create("/trunk/" + testId + "/copy");
+        prefix = Resource.create("/" + testId + "/copy");
         this.repository = repository;
     }
 
@@ -213,7 +213,7 @@ public abstract class AbstractRepositoryCopyIT {
 
     @Test
     public void test03_copyFileRevision() throws Exception {
-        final Resource source = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/copy/file_delete.txt");
+        final Resource source = Resource.create("/00000000-0000-0000-0000-000000000000/copy/file_delete.txt");
         final Revision sourceRevision = Revision.create(5);
         final Resource target = prefix.append(Resource.create("file_delete.txt"));
 
@@ -244,7 +244,7 @@ public abstract class AbstractRepositoryCopyIT {
 
     @Test
     public void test03_copyFolderRevision() throws Exception {
-        final Resource source = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/copy/folder_delete");
+        final Resource source = Resource.create("/00000000-0000-0000-0000-000000000000/copy/folder_delete");
         final Revision sourceRevision = Revision.create(14);
         final Resource target = prefix.append(Resource.create("folder_delete"));
 

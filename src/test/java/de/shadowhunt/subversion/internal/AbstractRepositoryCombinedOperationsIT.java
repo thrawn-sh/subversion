@@ -45,7 +45,7 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
     private final Repository repository;
 
     protected AbstractRepositoryCombinedOperationsIT(final Repository repository, final UUID testId) {
-        prefix = Resource.create("/trunk/" + testId + "/combined");
+        prefix = Resource.create("/" + testId + "/combined");
         this.repository = repository;
     }
 

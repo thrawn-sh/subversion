@@ -33,7 +33,7 @@ import org.junit.runners.MethodSorters;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class AbstractRepositoryDownloadIT {
 
-    public static final Resource PREFIX = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/download");
+    public static final Resource PREFIX = Resource.create("/00000000-0000-0000-0000-000000000000/download");
 
     public static void assertEquals(final String message, final InputStream expected, final InputStream actual) throws Exception {
         try {
@@ -50,7 +50,7 @@ public abstract class AbstractRepositoryDownloadIT {
 
     protected AbstractRepositoryDownloadIT(final Repository repository, final File root) {
         this.repository = repository;
-        downloadLoader = new DownloadLoader(root);
+        downloadLoader = new DownloadLoader(root, repository.getBasePath());
     }
 
     private String createMessage(final Resource resource, final Revision revision) {

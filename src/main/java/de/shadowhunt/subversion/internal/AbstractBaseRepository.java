@@ -116,10 +116,11 @@ public abstract class AbstractBaseRepository implements Repository {
             mkdir(transaction, resource.getParent(), true);
         }
 
-        final Optional<Info> info = info0(transaction, new QualifiedResource(base, resource), transaction.getHeadRevision(), false, LOCKING);
+        final QualifiedResource qualifiedResource = new QualifiedResource(base, resource);
+        final Optional<Info> info = info0(transaction, qualifiedResource, transaction.getHeadRevision(), false, LOCKING);
         final Optional<LockToken> lockToken = info.flatMap(Info::getLockToken);
 
-        final QualifiedResource uploadResource = config.getWorkingResource(transaction).append(resource);
+        final QualifiedResource uploadResource = config.getWorkingResource(transaction).append(qualifiedResource);
         final UploadOperation operation = new UploadOperation(repository, uploadResource, lockToken, content);
         operation.execute(client, context);
         if (info.isPresent()) {
@@ -158,7 +159,7 @@ public abstract class AbstractBaseRepository implements Repository {
         final Optional<Info> targetInfo = info0(transaction, targetResource, transaction.getHeadRevision(), false, LOCKING);
         final Optional<LockToken> lockToken = targetInfo.flatMap(Info::getLockToken);
 
-        final QualifiedResource source = config.getVersionedResource(new QualifiedResource(sourceInfoValue.getResource()), sourceInfoValue.getRevision());
+        final QualifiedResource source = config.getVersionedResource(new QualifiedResource(base, sourceInfoValue.getResource()), sourceInfoValue.getRevision());
         final QualifiedResource target = config.getWorkingResource(transaction).append(targetResource);
 
         final CopyOperation operation = new CopyOperation(repository, source, target, lockToken);
@@ -175,7 +176,7 @@ public abstract class AbstractBaseRepository implements Repository {
         final Revision headRevision = transaction.getHeadRevision();
         final Optional<Info> info = info0(transaction, resource, headRevision, false, TYPE);
 
-        if (parents && !info.isPresent() && !Resource.ROOT.equals(resource)) {
+        if (parents && !info.isPresent() && !Resource.ROOT.equals(resource.getResource())) {
             createFolder(transaction, resource.getParent(), true);
         }
 
@@ -232,7 +233,7 @@ public abstract class AbstractBaseRepository implements Repository {
     }
 
     protected Revision determineHeadRevision() {
-        final InfoOperation operation = new InfoOperation(repository, new QualifiedResource(base, Resource.ROOT), config.getPrefix(), REVISION);
+        final InfoOperation operation = new InfoOperation(repository, base, new QualifiedResource(base, Resource.ROOT), config.getPrefix(), REVISION);
         final Optional<Info> info = operation.execute(client, context);
         return info.orElseThrow(() -> new SubversionException("can not determine HEAD revision")).getRevision();
     }
@@ -374,7 +375,7 @@ public abstract class AbstractBaseRepository implements Repository {
     private Optional<Info> info0(final View view, final QualifiedResource resource, final Revision revision, final boolean resolve,
             final ResourceProperty.Key[] keys) {
         final QualifiedResource resolved = resolve(view, resource, revision, resolve);
-        final InfoOperation operation = new InfoOperation(repository, resolved, config.getPrefix(), keys);
+        final InfoOperation operation = new InfoOperation(repository, base, resolved, config.getPrefix(), keys);
         return operation.execute(client, context);
     }
 
@@ -404,7 +405,7 @@ public abstract class AbstractBaseRepository implements Repository {
         }
 
         final QualifiedResource resolved = resolve(view, resource, revision, true);
-        final ListOperation operation = new ListOperation(repository, resolved, config.getPrefix(), depth, keys);
+        final ListOperation operation = new ListOperation(repository, base, resolved, config.getPrefix(), depth, keys);
         final Optional<Set<Info>> infoSet = operation.execute(client, context);
         return infoSet.orElseThrow(() -> new SubversionException("Can't resolve: " + resource + '@' + revision));
     }
@@ -416,7 +417,7 @@ public abstract class AbstractBaseRepository implements Repository {
                 continue;
             }
 
-            if (info.isDirectory() && !resource.equals(info.getResource())) {
+            if (info.isDirectory() && !resource.getResource().equals(info.getResource())) {
                 listRecursively0(view, new QualifiedResource(base, info.getResource()), revision, result, keys);
             }
         }

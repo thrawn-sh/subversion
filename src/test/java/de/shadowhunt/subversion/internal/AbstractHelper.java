@@ -51,6 +51,8 @@ import org.apache.http.protocol.HttpContext;
 
 public abstract class AbstractHelper {
 
+    public static final Resource BASE_PATH = Resource.create("/trunk");
+
     public static final String PASSWORD = "svnpass";
 
     private static final UUID testId = UUID.randomUUID();
@@ -71,7 +73,11 @@ public abstract class AbstractHelper {
 
     private Repository repositoryB;
 
+    private final URI repositoryBaseUri;
+
     private Repository repositoryReadOnly;
+
+    private final URI repositoryReadOnlyBaseUri;
 
     private final URI repositoryReadOnlyUri;
 
@@ -79,13 +85,17 @@ public abstract class AbstractHelper {
 
     private final File root;
 
-    protected AbstractHelper(final File base, final URI dumpUri, final URI md5Uri, final URI repositoryUri, final URI repositoryReadOnylUri) {
+    protected AbstractHelper(final File base, final String protocol, final String host, final String version) {
         this.base = base;
         this.root = new File(base, "dump");
-        this.dumpUri = dumpUri;
-        this.md5Uri = md5Uri;
-        this.repositoryUri = repositoryUri;
-        this.repositoryReadOnlyUri = repositoryReadOnylUri;
+        this.dumpUri = URI.create(protocol + "://" + host + "/" + version + "/dump.zip");
+        this.md5Uri = URI.create(protocol + "://" + host + "/" + version + "/dump.zip.md5");
+
+        this.repositoryBaseUri = URI.create(protocol + "://" + host + "/" + version + "/svn-basic/test");
+        this.repositoryUri = URI.create(repositoryBaseUri.toString() + BASE_PATH.getValue());
+
+        this.repositoryReadOnlyBaseUri = URI.create(protocol + "://" + host + "/" + version + "/svn-non/test");
+        this.repositoryReadOnlyUri = URI.create(repositoryReadOnlyBaseUri.toString() + BASE_PATH.getValue());
     }
 
     private String calculateMd5(final File zip) throws IOException {
@@ -160,7 +170,7 @@ public abstract class AbstractHelper {
             final HttpClient client = getHttpClient(USERNAME_A, interceptors);
 
             final RepositoryFactory factory = RepositoryFactory.getInstance();
-            repositoryA = factory.createRepository(repositoryUri, client, context, true);
+            repositoryA = factory.createRepository(repositoryUri, client, context);
         }
         return repositoryA;
     }
@@ -171,9 +181,13 @@ public abstract class AbstractHelper {
             final HttpClient client = getHttpClient(USERNAME_B, interceptors);
 
             final RepositoryFactory factory = RepositoryFactory.getInstance();
-            repositoryB = factory.createRepository(repositoryUri, client, context, true);
+            repositoryB = factory.createRepository(repositoryUri, client, context);
         }
         return repositoryB;
+    }
+
+    public URI getRepositoryBaseUri() {
+        return repositoryBaseUri;
     }
 
     public Repository getRepositoryReadOnly(final HttpRequestInterceptor... interceptors) {
@@ -182,16 +196,20 @@ public abstract class AbstractHelper {
             final HttpClient client = getHttpClient(null, interceptors);
 
             final RepositoryFactory factory = RepositoryFactory.getInstance();
-            repositoryReadOnly = factory.createRepository(repositoryReadOnlyUri, client, context, true);
+            repositoryReadOnly = factory.createRepository(repositoryReadOnlyUri, client, context);
         }
         return repositoryReadOnly;
     }
 
-    URI getRepositoryReadOnlyUri() {
+    public URI getRepositoryReadOnlyBaseUri() {
+        return repositoryReadOnlyBaseUri;
+    }
+
+    public URI getRepositoryReadOnlyUri() {
         return repositoryReadOnlyUri;
     }
 
-    URI getRepositoryUri() {
+    public URI getRepositoryUri() {
         return repositoryUri;
     }
 

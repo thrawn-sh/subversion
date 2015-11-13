@@ -37,7 +37,7 @@ public abstract class AbstractRepositoryNamespacePropertiesIT {
 
     private static final ResourceProperty[] NAMESPACE_PROPERTIES = { new ResourceProperty(ResourceProperty.Type.SUBVERSION_CUSTOM, "namespace:name", "value") };
 
-    public static final Resource READ_PREFIX = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/namespace_properties");
+    public static final Resource READ_PREFIX = Resource.create("/00000000-0000-0000-0000-000000000000/namespace_properties");
 
     private final InfoLoader infoLoader;
 
@@ -47,8 +47,8 @@ public abstract class AbstractRepositoryNamespacePropertiesIT {
 
     protected AbstractRepositoryNamespacePropertiesIT(final Repository repository, final File root, final UUID testId) {
         this.repository = repository;
-        write_prefix = Resource.create("/trunk/" + testId + "/namespace_properties");
-        infoLoader = new InfoLoader(root);
+        write_prefix = Resource.create("/" + testId + "/namespace_properties");
+        infoLoader = new InfoLoader(root, repository.getBasePath());
     }
 
     @Test

@@ -41,7 +41,7 @@ public abstract class AbstractRepositoryMoveIT {
     private final Repository repository;
 
     protected AbstractRepositoryMoveIT(final Repository repository, final UUID testId) {
-        prefix = Resource.create("/trunk/" + testId + "/move");
+        prefix = Resource.create("/" + testId + "/move");
         this.repository = repository;
     }
 

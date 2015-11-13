@@ -33,7 +33,7 @@ import org.junit.runners.MethodSorters;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class AbstractRepositoryLogIT {
 
-    public static final Resource PREFIX = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/log");
+    public static final Resource PREFIX = Resource.create("/00000000-0000-0000-0000-000000000000/log");
 
     public static final int UNLIMITED = 0;
 
@@ -43,7 +43,7 @@ public abstract class AbstractRepositoryLogIT {
 
     protected AbstractRepositoryLogIT(final Repository repository, final File root) {
         this.repository = repository;
-        logLoader = new LogLoader(root);
+        logLoader = new LogLoader(root, repository.getBasePath());
     }
 
     private String createMessage(final Resource resource, final Revision start, final Revision end, final int limit) {

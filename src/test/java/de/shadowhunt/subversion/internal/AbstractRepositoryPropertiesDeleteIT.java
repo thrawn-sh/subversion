@@ -40,7 +40,7 @@ public abstract class AbstractRepositoryPropertiesDeleteIT {
     private final Repository repository;
 
     protected AbstractRepositoryPropertiesDeleteIT(final Repository repository, final UUID testId) {
-        prefix = Resource.create("/trunk/" + testId + "/propdel");
+        prefix = Resource.create("/" + testId + "/propdel");
         this.repository = repository;
     }
 

@@ -58,7 +58,7 @@ public abstract class AbstractRepositoryPropertiesSetIT {
     private final Repository repository;
 
     protected AbstractRepositoryPropertiesSetIT(final Repository repository, final UUID testId) {
-        prefix = Resource.create("/trunk/" + testId + "/propset");
+        prefix = Resource.create("/" + testId + "/propset");
         this.repository = repository;
     }
 

@@ -16,7 +16,6 @@
 package de.shadowhunt.subversion.internal.httpv1.v1_4;
 
 import java.io.File;
-import java.net.URI;
 
 import de.shadowhunt.subversion.internal.AbstractHelper;
 
@@ -24,24 +23,13 @@ final class Helper extends AbstractHelper {
 
     private static final File BASE = new File("src/test/resources/dump/v1_4");
 
-    private static final URI DUMP_URI;
+    private static final String HOST = System.getProperty("SUBVERSION_TEST_HOST", "subversion.vm.shadowhunt.de");
 
-    private static final URI MD5_URI;
+    private static final String VERSION = "1.4.0";
 
-    private static final URI REPOSITORY_URI;
-
-    private static final URI REPOSITORY_READ_ONLY_URI;
-
-    static {
-        final String host = System.getProperty("SUBVERSION_TEST_HOST", "subversion.vm.shadowhunt.de");
-        final String version = "1.4.0";
-        DUMP_URI = URI.create("http://" + host + "/" + version + "/dump.zip");
-        MD5_URI = URI.create("http://" + host + "/" + version + "/dump.zip.md5");
-        REPOSITORY_URI = URI.create("http://" + host + "/" + version + "/svn-basic/test");
-        REPOSITORY_READ_ONLY_URI = URI.create("http://" + host + "/" + version + "/svn-non/test");
-    }
+    private static final String PROTOCOL = "http";
 
     Helper() {
-        super(BASE, DUMP_URI, MD5_URI, REPOSITORY_URI, REPOSITORY_READ_ONLY_URI);
+        super(BASE, PROTOCOL, HOST, VERSION);
     }
 }

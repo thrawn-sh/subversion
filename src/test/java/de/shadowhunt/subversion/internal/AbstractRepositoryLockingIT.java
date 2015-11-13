@@ -47,7 +47,7 @@ public abstract class AbstractRepositoryLockingIT {
     private final Repository repositoryB;
 
     protected AbstractRepositoryLockingIT(final Repository repositoryA, final Repository repositoryB, final UUID testId) {
-        prefix = Resource.create("/trunk/" + testId + "/locking");
+        prefix = Resource.create("/" + testId + "/locking");
         this.repositoryA = repositoryA;
         this.repositoryB = repositoryB;
     }

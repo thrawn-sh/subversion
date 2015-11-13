@@ -32,7 +32,7 @@ import org.junit.runners.MethodSorters;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class AbstractRepositoryInfoIT {
 
-    public static final Resource PREFIX = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/info");
+    public static final Resource PREFIX = Resource.create("/00000000-0000-0000-0000-000000000000/info");
 
     public static void assertInfoEquals(final String message, final Info expected, final Info actual) {
         Assert.assertEquals(message, expected.getCreationDate(), actual.getCreationDate());
@@ -43,6 +43,7 @@ public abstract class AbstractRepositoryInfoIT {
         Assert.assertArrayEquals(message, expected.getProperties(), actual.getProperties());
         Assert.assertEquals(message, expected.getRepositoryId(), actual.getRepositoryId());
         Assert.assertEquals(message, expected.getRevision(), actual.getRevision());
+        Assert.assertEquals(message, expected.getResource(), actual.getResource());
 
         Assert.assertEquals(message, expected, actual);
     }
@@ -57,7 +58,7 @@ public abstract class AbstractRepositoryInfoIT {
 
     protected AbstractRepositoryInfoIT(final Repository repository, final File root) {
         this.repository = repository;
-        infoLoader = new InfoLoader(root);
+        infoLoader = new InfoLoader(root, repository.getBasePath());
     }
 
     @Test(expected = SubversionException.class)

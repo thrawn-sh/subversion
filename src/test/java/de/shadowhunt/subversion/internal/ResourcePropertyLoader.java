@@ -72,12 +72,12 @@ public final class ResourcePropertyLoader extends AbstractBaseLoader {
 
     public static final String SUFFIX = ".proplist";
 
-    ResourcePropertyLoader(final File root) {
-        super(root);
+    ResourcePropertyLoader(final File root, final Resource base) {
+        super(root, base);
     }
 
     public ResourceProperty[] load(final Resource resource, final Revision revision) throws Exception {
-        final File file = new File(root, resolve(revision) + resource.getValue() + SUFFIX);
+        final File file = new File(root, resolve(revision) + base.getValue() + resource.getValue() + SUFFIX);
 
         final SAXParser saxParser = BasicHandler.FACTORY.newSAXParser();
         final ResourcePropertyHandler handler = new ResourcePropertyHandler();

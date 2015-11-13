@@ -27,14 +27,14 @@ import org.apache.http.protocol.HttpContext;
 public class RepositoryFactoryImpl extends RepositoryFactory {
 
     @Override
-    protected Repository createRepository0(final URI saneUri, final HttpClient client, final HttpContext context, final boolean check) {
+    protected Repository createRepository0(final URI saneUri, final HttpClient client, final HttpContext context) {
         final ProbeServerOperation operation = new ProbeServerOperation(saneUri);
         final Repository repository = operation.execute(client, context);
-        if (check) {
-            // do we got the real repository root
-            final Transaction transaction = repository.createTransaction();
-            repository.rollback(transaction);
-        }
+
+        // do we got the real repository root
+        final Transaction transaction = repository.createTransaction();
+        repository.rollback(transaction);
+
         return repository;
     }
 }

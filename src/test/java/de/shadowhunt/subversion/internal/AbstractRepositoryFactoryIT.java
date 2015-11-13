@@ -15,14 +15,8 @@
  */
 package de.shadowhunt.subversion.internal;
 
-import java.net.URI;
-
 import de.shadowhunt.subversion.Repository;
-import de.shadowhunt.subversion.RepositoryFactory;
-import de.shadowhunt.subversion.Transaction;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.protocol.HttpContext;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -32,62 +26,31 @@ import org.junit.runners.MethodSorters;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class AbstractRepositoryFactoryIT {
 
-    private final HttpClient client;
-
-    private final HttpContext context;
-
     private final AbstractHelper helper;
 
     protected AbstractRepositoryFactoryIT(final AbstractHelper helper) {
         this.helper = helper;
-        this.client = helper.getHttpClient(AbstractHelper.USERNAME_A);
-        this.context = helper.getHttpContext();
     }
 
     @Test
     public void test00_create() {
-        final RepositoryFactory factory = RepositoryFactory.getInstance();
-        final Repository repository = factory.createRepository(helper.getRepositoryUri(), client, context, true);
+        final Repository repository = helper.getRepositoryA();
         Assert.assertNotNull("repository must not be null", repository);
 
-        Assert.assertEquals("base uri must match", helper.getRepositoryUri(), repository.getBaseUri());
+        Assert.assertEquals("base uri must match", helper.getRepositoryBaseUri(), repository.getBaseUri());
+        Assert.assertEquals("base path must match", AbstractHelper.BASE_PATH, repository.getBasePath());
         Assert.assertNotNull("protocol must not be null", repository.getProtocolVersion());
         Assert.assertNotNull("repository must not be null", repository.getRepositoryId());
     }
 
     @Test
-    public void test01_create() {
-        final RepositoryFactory factory = RepositoryFactory.getInstance();
-        final URI uri = URI.create(helper.getRepositoryUri().toString() + "/trunk");
-        final Repository repository = factory.createRepository(uri, client, context, true);
+    public void test02_createReadOnly() {
+        final Repository repository = helper.getRepositoryReadOnly();
         Assert.assertNotNull("repository must not be null", repository);
 
-        Assert.assertEquals("base uri must match", helper.getRepositoryUri(), repository.getBaseUri());
+        Assert.assertEquals("base uri must match", helper.getRepositoryReadOnlyBaseUri(), repository.getBaseUri());
+        Assert.assertEquals("base path must match", AbstractHelper.BASE_PATH, repository.getBasePath());
         Assert.assertNotNull("protocol must not be null", repository.getProtocolVersion());
         Assert.assertNotNull("repository must not be null", repository.getRepositoryId());
-    }
-
-    @Test
-    public void test01_createInvalidWithoutCheck() {
-        final RepositoryFactory factory = RepositoryFactory.getInstance();
-        final URI uri = URI.create(helper.getRepositoryUri().toString() + "/trunk");
-        final Repository repository = factory.createRepository(uri, client, context, false);
-        Assert.assertNotNull("repository must not be null", repository);
-
-        Assert.assertEquals("base uri must match", helper.getRepositoryUri(), repository.getBaseUri());
-        Assert.assertNotNull("protocol must not be null", repository.getProtocolVersion());
-        Assert.assertNotNull("repository must not be null", repository.getRepositoryId());
-    }
-
-    @Test
-    public void test01_createInvalidFailsOnTransaction() {
-        final RepositoryFactory factory = RepositoryFactory.getInstance();
-        final URI uri = URI.create(helper.getRepositoryUri().toString() + "/trunk");
-        final Repository repository = factory.createRepository(uri, client, context, false);
-        Assert.assertNotNull("repository must not be null", repository);
-
-        Transaction transaction = repository.createTransaction();
-        Assert.assertNotNull("transaction must not be null", transaction);
-        repository.rollback(transaction);
     }
 }

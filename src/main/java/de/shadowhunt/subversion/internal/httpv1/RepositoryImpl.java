@@ -122,7 +122,9 @@ class RepositoryImpl extends AbstractBaseRepository {
         }
 
         final Revision concreteRevision = transaction.getHeadRevision();
-        final QualifiedResource messageResource = config.getCommitMessageResource(transaction).append(Resource.create(concreteRevision.toString()));
+        final Resource resource = Resource.create(concreteRevision.toString());
+        final QualifiedResource qualifiedResource = new QualifiedResource(resource);
+        final QualifiedResource messageResource = config.getCommitMessageResource(transaction).append(qualifiedResource);
         final CommitMessageOperation cmo = new CommitMessageOperation(repository, messageResource, message);
         cmo.execute(client, context);
 
