@@ -32,7 +32,7 @@ class InfoOperation extends AbstractPropfindOperation<Optional<Info>> {
 
     private static final String LOCK_OWNER_HEADER = "X-SVN-Lock-Owner";
 
-    InfoOperation(final URI repository, final Resource resource, final Resource marker, final ResourceProperty.Key[] keys) {
+    InfoOperation(final URI repository, final QualifiedResource resource, final Resource marker, final ResourceProperty.Key[] keys) {
         super(repository, resource, marker, Depth.EMPTY, keys);
     }
 

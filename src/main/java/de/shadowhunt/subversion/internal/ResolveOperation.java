@@ -23,7 +23,6 @@ import java.util.Optional;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.internal.AbstractBaseRepository.ResourceMapper;
@@ -34,17 +33,17 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 
-class ResolveOperation extends AbstractOperation<Optional<Resource>> {
+class ResolveOperation extends AbstractOperation<Optional<QualifiedResource>> {
 
     private final ResourceMapper config;
 
     private final Revision expected;
 
-    private final Resource resource;
+    private final QualifiedResource resource;
 
     private final Revision revision;
 
-    ResolveOperation(final URI repository, final Resource resource, final Revision revision, final Revision expected, final ResourceMapper config) {
+    ResolveOperation(final URI repository, final QualifiedResource resource, final Revision revision, final Revision expected, final ResourceMapper config) {
         super(repository);
         this.resource = resource;
         this.revision = revision;
@@ -67,7 +66,7 @@ class ResolveOperation extends AbstractOperation<Optional<Resource>> {
             writer.writeStartElement("location-revision");
             writer.writeCharacters(expected.toString());
             writer.writeEndElement(); // location-revision
-            writer.writeEndElement(); //get-locations
+            writer.writeEndElement(); // get-locations
             writer.writeEndDocument();
             writer.close();
         } catch (final XMLStreamException e) {
@@ -86,13 +85,13 @@ class ResolveOperation extends AbstractOperation<Optional<Resource>> {
     }
 
     @Override
-    protected Optional<Resource> processResponse(final HttpResponse response) throws IOException {
+    protected Optional<QualifiedResource> processResponse(final HttpResponse response) throws IOException {
         final int statusCode = getStatusCode(response);
         if (statusCode == HttpStatus.SC_NOT_FOUND) {
             return Optional.empty();
         }
 
         final Resolve resolve = Resolve.read(getContent(response));
-        return Optional.of(config.getVersionedResource(resolve.getResource(), expected));
+        return Optional.of(config.getVersionedResource(new QualifiedResource(resolve.getResource()), expected));
     }
 }

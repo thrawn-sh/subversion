@@ -28,6 +28,7 @@ import de.shadowhunt.subversion.Transaction.Status;
 import de.shadowhunt.subversion.internal.AbstractBaseRepository;
 import de.shadowhunt.subversion.internal.CommitMessageOperation;
 import de.shadowhunt.subversion.internal.MergeOperation;
+import de.shadowhunt.subversion.internal.QualifiedResource;
 
 import org.apache.commons.lang3.Validate;
 import org.apache.http.client.HttpClient;
@@ -48,14 +49,14 @@ class RepositoryImpl extends AbstractBaseRepository {
         }
 
         @Override
-        public Resource getCommitMessageResource(final Transaction transaction) {
+        public QualifiedResource getCommitMessageResource(final Transaction transaction) {
             final Resource suffix = Resource.create("/txn/" + transaction.getId());
-            return prefix.append(suffix);
+            return new QualifiedResource(prefix, suffix);
         }
 
         @Override
-        public Resource getCreateTransactionResource() {
-            return prefix.append(CREATE_TRANSACTION);
+        public QualifiedResource getCreateTransactionResource() {
+            return new QualifiedResource(prefix, CREATE_TRANSACTION);
         }
 
         @Override
@@ -64,33 +65,33 @@ class RepositoryImpl extends AbstractBaseRepository {
         }
 
         @Override
-        public Resource getRegisterResource(final Resource resource, final Revision revision) {
+        public QualifiedResource getRegisterResource(final QualifiedResource resource, final Revision revision) {
             throw new UnsupportedOperationException("Not supported by httpv2");
         }
 
         @Override
-        public Resource getRegisterTransactionResource(final Transaction transaction) {
+        public QualifiedResource getRegisterTransactionResource(final Transaction transaction) {
             throw new UnsupportedOperationException("Not supported by httpv2");
         }
 
         @Override
-        public Resource getTransactionResource(final Transaction transaction) {
+        public QualifiedResource getTransactionResource(final Transaction transaction) {
             return getCommitMessageResource(transaction);
         }
 
         @Override
-        public Resource getVersionedResource(final Resource resource, final Revision revision) {
+        public QualifiedResource getVersionedResource(final QualifiedResource resource, final Revision revision) {
             if (Revision.HEAD.equals(revision)) {
                 throw new SubversionException("must not be HEAD revision");
             }
-            final Resource suffix = Resource.create("/rvr/" + revision + Resource.SEPARATOR + resource);
-            return prefix.append(suffix);
+            final Resource suffix = Resource.create("/rvr/" + revision + Resource.SEPARATOR + resource.getValue());
+            return new QualifiedResource(prefix, suffix);
         }
 
         @Override
-        public Resource getWorkingResource(final Transaction transaction) {
+        public QualifiedResource getWorkingResource(final Transaction transaction) {
             final Resource suffix = Resource.create("/txr/" + transaction.getId());
-            return prefix.append(suffix);
+            return new QualifiedResource(prefix, suffix);
         }
     }
 
@@ -113,22 +114,23 @@ class RepositoryImpl extends AbstractBaseRepository {
             return;
         }
 
-        final Resource messageResource = config.getCommitMessageResource(transaction);
+        final QualifiedResource messageResource = config.getCommitMessageResource(transaction);
         final CommitMessageOperation cmo = new CommitMessageOperation(repository, messageResource, message);
         cmo.execute(client, context);
 
         final Set<Info> lockTokenInfoSet = getInfoSetWithLockTokens(transaction);
-        final Resource mergeResource = config.getTransactionResource(transaction);
+        final QualifiedResource mergeResource = config.getTransactionResource(transaction);
         final MergeOperation mo = new MergeOperation(repository, mergeResource, lockTokenInfoSet);
         mo.execute(client, context);
-        transaction.invalidate(); // only invalidate after successful commit to allow rollback
+        // only invalidate after successful commit to allow rollback
+        transaction.invalidate();
     }
 
     @Override
     public Transaction createTransaction() {
         LOGGER.trace("creating new transaction");
 
-        final Resource resource = config.getCreateTransactionResource();
+        final QualifiedResource resource = config.getCreateTransactionResource();
         final Revision headRevision = determineHeadRevision();
         final CreateTransactionOperation cto = new CreateTransactionOperation(repository, repositoryId, resource, headRevision);
         return cto.execute(client, context);

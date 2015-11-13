@@ -25,7 +25,7 @@ import org.apache.http.HttpStatus;
 
 class ExistsOperation extends AbstractPropfindOperation<Boolean> {
 
-    ExistsOperation(final URI repository, final Resource resource, final Resource marker) {
+    ExistsOperation(final URI repository, final QualifiedResource resource, final Resource marker) {
         super(repository, resource, marker, Depth.EMPTY);
     }
 

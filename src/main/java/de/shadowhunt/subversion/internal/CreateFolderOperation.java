@@ -17,17 +17,15 @@ package de.shadowhunt.subversion.internal;
 
 import java.net.URI;
 
-import de.shadowhunt.subversion.Resource;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 
 class CreateFolderOperation extends AbstractOperation<Boolean> {
 
-    private final Resource resource;
+    private final QualifiedResource resource;
 
-    CreateFolderOperation(final URI repository, final Resource resource) {
+    CreateFolderOperation(final URI repository, final QualifiedResource resource) {
         super(repository);
         this.resource = resource;
     }

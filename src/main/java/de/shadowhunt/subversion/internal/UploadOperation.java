@@ -20,7 +20,6 @@ import java.net.URI;
 import java.util.Optional;
 
 import de.shadowhunt.subversion.LockToken;
-import de.shadowhunt.subversion.Resource;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -34,9 +33,9 @@ class UploadOperation extends AbstractVoidOperation {
 
     private final Optional<LockToken> lockToken;
 
-    private final Resource resource;
+    private final QualifiedResource resource;
 
-    UploadOperation(final URI repository, final Resource resource, final Optional<LockToken> lockToken, final InputStream content) {
+    UploadOperation(final URI repository, final QualifiedResource resource, final Optional<LockToken> lockToken, final InputStream content) {
         super(repository);
         this.resource = resource;
         this.lockToken = lockToken;

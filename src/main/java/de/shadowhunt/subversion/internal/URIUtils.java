@@ -27,25 +27,6 @@ import org.apache.http.client.utils.URIBuilder;
  */
 public final class URIUtils {
 
-    /**
-     * Combine repository {@link URI} and {@link Resource}s to a valid {@link URI}.
-     *
-     * @param repository base {@link URI}, {@link Resource}s are appended to the path of the repository
-     * @param resources {@link Resource}s to appended to the repository {@link URI}
-     *
-     * @return combination of repository {@link URI} and {@link Resource}s
-     *
-     * @throws IllegalArgumentException if resources contain {@code null elements}
-     * @throws NullPointerException if repository is {@code null}
-     */
-    public static URI appendResources(final URI repository, final Resource... resources) {
-        try {
-            return appendResource0(repository, resources);
-        } catch (final URISyntaxException e) {
-            throw new IllegalArgumentException(e);
-        }
-    }
-
     private static URI appendResource0(final URI repository, final Resource... resources) throws URISyntaxException {
         final URIBuilder builder = new URIBuilder();
         builder.setScheme(repository.getScheme());
@@ -60,6 +41,40 @@ public final class URIUtils {
     }
 
     /**
+     * Combine repository {@link URI} and {@link QualifiedResource} to a valid {@link URI}.
+     *
+     * @param repository base {@link URI}, {@link QualifiedResource} is appended to the path of the repository
+     * @param resource {@link QualifiedResource} to appended to the repository {@link URI}
+     *
+     * @return combination of repository {@link URI} and {@link QualifiedResource}
+     *
+     * @throws IllegalArgumentException if resource contain {@code null} elements
+     * @throws NullPointerException if repository is {@code null}
+     */
+    public static URI appendResources(final URI repository, final QualifiedResource resource) {
+        return appendResources(repository, resource.getBase(), resource.getResource());
+    }
+
+    /**
+     * Combine repository {@link URI} and {@link Resource}s to a valid {@link URI}.
+     *
+     * @param repository base {@link URI}, {@link Resource}s are appended to the path of the repository
+     * @param resources {@link Resource}s to appended to the repository {@link URI}
+     *
+     * @return combination of repository {@link URI} and {@link Resource}s
+     *
+     * @throws IllegalArgumentException if resources contain {@code null} elements
+     * @throws NullPointerException if repository is {@code null}
+     */
+    public static URI appendResources(final URI repository, final Resource... resources) {
+        try {
+            return appendResource0(repository, resources);
+        } catch (final URISyntaxException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    /**
      * Replace path elements from repository {@link URI} with {@link Resource}s to a valid {@link URI}.
      *
      * @param repository base {@link URI}
@@ -67,7 +82,7 @@ public final class URIUtils {
      *
      * @return replacement of path elements from repository {@link URI} with {@link Resource}s
      *
-     * @throws IllegalArgumentException if resources contain {@code null elements}
+     * @throws IllegalArgumentException if resources contain {@code null} elements
      * @throws NullPointerException if repository is {@code null}
      */
     public static URI replacePathWithResources(final URI repository, final Resource... resources) {

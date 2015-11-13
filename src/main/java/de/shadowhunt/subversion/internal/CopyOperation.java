@@ -20,7 +20,6 @@ import java.util.Optional;
 
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.LockToken;
-import de.shadowhunt.subversion.Resource;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -29,11 +28,11 @@ class CopyOperation extends AbstractVoidOperation {
 
     private final Optional<LockToken> lockToken;
 
-    private final Resource source;
+    private final QualifiedResource source;
 
-    private final Resource target;
+    private final QualifiedResource target;
 
-    CopyOperation(final URI repository, final Resource source, final Resource target, final Optional<LockToken> lockToken) {
+    CopyOperation(final URI repository, final QualifiedResource source, final QualifiedResource target, final Optional<LockToken> lockToken) {
         super(repository);
         this.source = source;
         this.target = target;

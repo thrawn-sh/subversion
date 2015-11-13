@@ -33,7 +33,7 @@ public abstract class AbstractRepositoryLocator implements RepositoryLocator {
     private static final ResourceProperty.Key[] REPOSITORY_UUID = new ResourceProperty.Key[] { ResourceProperty.REPOSITORY_ID };
 
     protected static UUID determineRepositoryId(final URI repository, final Resource prefix, final HttpClient client, final HttpContext context) {
-        final InfoOperation operation = new InfoOperation(repository, Resource.ROOT, prefix, REPOSITORY_UUID);
+        final InfoOperation operation = new InfoOperation(repository, new QualifiedResource(Resource.ROOT), prefix, REPOSITORY_UUID);
         final Optional<Info> info = operation.execute(client, context);
         return info.orElseThrow(() -> new SubversionException("No repository found at " + repository, HttpStatus.SC_BAD_REQUEST)).getRepositoryId();
     }

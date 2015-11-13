@@ -32,7 +32,7 @@ import org.apache.http.HttpStatus;
 
 class ListOperation extends AbstractPropfindOperation<Optional<Set<Info>>> {
 
-    ListOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, final ResourceProperty.Key[] keys) {
+    ListOperation(final URI repository, final QualifiedResource resource, final Resource marker, final Depth depth, final ResourceProperty.Key[] keys) {
         super(repository, resource, marker, depth, keys);
     }
 

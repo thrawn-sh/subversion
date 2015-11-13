@@ -21,7 +21,6 @@ import java.net.URI;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.SubversionException;
 
 import org.apache.commons.io.output.StringBuilderWriter;
@@ -33,9 +32,9 @@ public class CommitMessageOperation extends AbstractVoidOperation {
 
     private final String message;
 
-    private final Resource resource;
+    private final QualifiedResource resource;
 
-    public CommitMessageOperation(final URI repository, final Resource resource, final String message) {
+    public CommitMessageOperation(final URI repository, final QualifiedResource resource, final String message) {
         super(repository);
         this.resource = resource;
         this.message = message;

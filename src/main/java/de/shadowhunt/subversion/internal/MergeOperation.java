@@ -37,9 +37,9 @@ public class MergeOperation extends AbstractVoidOperation {
 
     private final Set<Info> infoSet;
 
-    private final Resource resource;
+    private final QualifiedResource resource;
 
-    public MergeOperation(final URI repository, final Resource resource, final Set<Info> infoSet) {
+    public MergeOperation(final URI repository, final QualifiedResource resource, final Set<Info> infoSet) {
         super(repository);
         this.resource = resource;
         this.infoSet = infoSet;

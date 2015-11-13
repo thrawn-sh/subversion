@@ -24,7 +24,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import de.shadowhunt.subversion.Log;
-import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 
@@ -40,13 +39,13 @@ class LogOperation extends AbstractOperation<List<Log>> {
 
     private final int limit;
 
-    private final Resource resource;
+    private final QualifiedResource resource;
 
     private final Revision start;
 
     private final boolean stopOnCopy;
 
-    LogOperation(final URI repository, final Resource resource, final Revision start, final Revision end, final int limit, final boolean stopOnCopy) {
+    LogOperation(final URI repository, final QualifiedResource resource, final Revision start, final Revision end, final int limit, final boolean stopOnCopy) {
         super(repository);
         this.resource = resource;
         this.start = start;

@@ -21,6 +21,7 @@ import java.util.UUID;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.internal.AbstractOperation;
+import de.shadowhunt.subversion.internal.QualifiedResource;
 import de.shadowhunt.subversion.internal.TransactionImpl;
 import de.shadowhunt.subversion.internal.URIUtils;
 
@@ -34,11 +35,11 @@ class CreateTransactionOperation extends AbstractOperation<TransactionImpl> {
 
     private final UUID repositoryId;
 
-    private final Resource resource;
+    private final QualifiedResource resource;
 
     private final UUID transactionId = UUID.randomUUID();
 
-    CreateTransactionOperation(final URI repository, final UUID repositoryId, final Resource resource, final Revision headRevision) {
+    CreateTransactionOperation(final URI repository, final UUID repositoryId, final QualifiedResource resource, final Revision headRevision) {
         super(repository);
         this.repositoryId = repositoryId;
         this.resource = resource;
@@ -47,7 +48,7 @@ class CreateTransactionOperation extends AbstractOperation<TransactionImpl> {
 
     @Override
     protected HttpUriRequest createRequest() {
-        final URI uri = URIUtils.appendResources(repository, resource, Resource.create(transactionId.toString()));
+        final URI uri = URIUtils.appendResources(repository, resource.getBase(), resource.getResource(), Resource.create(transactionId.toString()));
         return new DavTemplateRequest("MKACTIVITY", uri);
     }
 

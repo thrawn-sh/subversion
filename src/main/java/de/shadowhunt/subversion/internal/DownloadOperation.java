@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.Optional;
 
-import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.TransmissionException;
 
 import org.apache.http.HttpResponse;
@@ -31,9 +30,9 @@ import org.apache.http.protocol.HttpContext;
 
 class DownloadOperation extends AbstractOperation<Optional<InputStream>> {
 
-    private final Resource resource;
+    private final QualifiedResource resource;
 
-    DownloadOperation(final URI repository, final Resource resource) {
+    DownloadOperation(final URI repository, final QualifiedResource resource) {
         super(repository);
         this.resource = resource;
     }

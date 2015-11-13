@@ -68,9 +68,10 @@ abstract class AbstractPropfindOperation<T> extends AbstractOperation<T> {
 
     protected final ResourceProperty.Key[] propertyKeys;
 
-    protected final Resource resource;
+    protected final QualifiedResource resource;
 
-    AbstractPropfindOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth, final ResourceProperty.Key[] propertyKeys) {
+    AbstractPropfindOperation(final URI repository, final QualifiedResource resource, final Resource marker, final Depth depth,
+            final ResourceProperty.Key[] propertyKeys) {
         super(repository);
         this.resource = resource;
         this.marker = marker;
@@ -78,7 +79,7 @@ abstract class AbstractPropfindOperation<T> extends AbstractOperation<T> {
         this.propertyKeys = filter(propertyKeys);
     }
 
-    AbstractPropfindOperation(final URI repository, final Resource resource, final Resource marker, final Depth depth) {
+    AbstractPropfindOperation(final URI repository, final QualifiedResource resource, final Resource marker, final Depth depth) {
         super(repository);
         this.resource = resource;
         this.marker = marker;

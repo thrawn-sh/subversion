@@ -21,9 +21,9 @@ import java.net.URI;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.internal.AbstractVoidOperation;
+import de.shadowhunt.subversion.internal.QualifiedResource;
 import de.shadowhunt.subversion.internal.URIUtils;
 import de.shadowhunt.subversion.internal.XmlConstants;
 
@@ -34,11 +34,11 @@ import org.apache.http.entity.StringEntity;
 
 class CheckoutOperation extends AbstractVoidOperation {
 
-    private final Resource resource;
+    private final QualifiedResource resource;
 
-    private final Resource transaction;
+    private final QualifiedResource transaction;
 
-    CheckoutOperation(final URI repository, final Resource resource, final Resource transaction) {
+    CheckoutOperation(final URI repository, final QualifiedResource resource, final QualifiedResource transaction) {
         super(repository);
         this.resource = resource;
         this.transaction = transaction;
@@ -59,7 +59,7 @@ class CheckoutOperation extends AbstractVoidOperation {
             writer.writeEndElement(); // href
             writer.writeEndElement(); // activity-set
             writer.writeEmptyElement("apply-to-version");
-            writer.writeEndElement(); //checkout
+            writer.writeEndElement(); // checkout
             writer.writeEndDocument();
             writer.close();
         } catch (final XMLStreamException e) {

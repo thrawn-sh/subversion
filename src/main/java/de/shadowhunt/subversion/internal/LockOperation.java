@@ -21,7 +21,6 @@ import java.net.URI;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.SubversionException;
 
 import org.apache.commons.io.output.StringBuilderWriter;
@@ -31,11 +30,11 @@ import org.apache.http.entity.StringEntity;
 
 class LockOperation extends AbstractVoidOperation {
 
-    private final Resource resource;
+    private final QualifiedResource resource;
 
     private final boolean steal;
 
-    LockOperation(final URI repository, final Resource resource, final boolean steal) {
+    LockOperation(final URI repository, final QualifiedResource resource, final boolean steal) {
         super(repository);
         this.resource = resource;
         this.steal = steal;
@@ -61,7 +60,7 @@ class LockOperation extends AbstractVoidOperation {
             writer.writeStartElement("locktype");
             writer.writeEmptyElement("write");
             writer.writeEndElement(); // locktype
-            writer.writeEndElement(); //lockinfo
+            writer.writeEndElement(); // lockinfo
             writer.writeEndDocument();
             writer.close();
         } catch (final XMLStreamException e) {

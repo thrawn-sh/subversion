@@ -18,7 +18,6 @@ package de.shadowhunt.subversion.internal;
 import java.net.URI;
 
 import de.shadowhunt.subversion.LockToken;
-import de.shadowhunt.subversion.Resource;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -29,9 +28,9 @@ class UnlockOperation extends AbstractVoidOperation {
 
     private final LockToken lockToken;
 
-    private final Resource resource;
+    private final QualifiedResource resource;
 
-    UnlockOperation(final URI repository, final Resource resource, final LockToken lockToken, final boolean force) {
+    UnlockOperation(final URI repository, final QualifiedResource resource, final LockToken lockToken, final boolean force) {
         super(repository);
         this.resource = resource;
         this.lockToken = lockToken;
