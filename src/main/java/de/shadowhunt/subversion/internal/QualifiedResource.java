@@ -32,10 +32,6 @@ public final class QualifiedResource {
         this.resource = resource;
     }
 
-    public QualifiedResource appendA(final Resource suffix) {
-        return new QualifiedResource(base, resource.append(suffix));
-    }
-
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {

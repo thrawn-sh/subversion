@@ -65,7 +65,7 @@ public abstract class RepositoryFactory {
      * Create a new {@link Repository} for given {@link URI} and use the given {@link HttpClient} with the {@link
      * HttpClient} to connect to the server.
      *
-     * @param repository {@link URI} to the root of the repository (e.g: http://repository.example.net/svn/test_repo)
+     * @param uri {@link URI} to the root of the repository (e.g: http://repository.example.net/svn/test_repo/trunk/folder)
      * @param client {@link HttpClient} that will handle all requests for this repository
      * @param context {@link HttpContext} that will be used by all requests to this repository
      *
@@ -76,12 +76,12 @@ public abstract class RepositoryFactory {
      * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
      * the server
      */
-    public final Repository createRepository(final URI repository, final HttpClient client, final HttpContext context) {
-        Validate.notNull(repository, "repository must not be null");
+    public final Repository createRepository(final URI uri, final HttpClient client, final HttpContext context) {
+        Validate.notNull(uri, "uri must not be null");
         Validate.notNull(client, "client must not be null");
         Validate.notNull(context, "context must not be null");
 
-        final URI saneUri = sanitise(repository, Resource.create(repository.getPath()));
+        final URI saneUri = sanitise(uri, Resource.create(uri.getPath()));
         return createRepository0(saneUri, client, context);
     }
 
