@@ -75,6 +75,12 @@ public abstract class AbstractHelper {
 
     private final URI repositoryBaseUri;
 
+    private Repository repositoryPath;
+
+    private final URI repositoryPathBaseUri;
+
+    private final URI repositoryPathUri;
+
     private Repository repositoryReadOnly;
 
     private final URI repositoryReadOnlyBaseUri;
@@ -96,6 +102,9 @@ public abstract class AbstractHelper {
 
         this.repositoryReadOnlyBaseUri = URI.create(protocol + "://" + host + "/" + version + "/svn-non/test");
         this.repositoryReadOnlyUri = URI.create(repositoryReadOnlyBaseUri.toString() + BASE_PATH.getValue());
+
+        this.repositoryPathBaseUri = URI.create(protocol + "://" + host + "/" + version + "/svn-path/test");
+        this.repositoryPathUri = URI.create(repositoryPathBaseUri.toString() + BASE_PATH.getValue());
     }
 
     private String calculateMd5(final File zip) throws IOException {
@@ -188,6 +197,21 @@ public abstract class AbstractHelper {
 
     public URI getRepositoryBaseUri() {
         return repositoryBaseUri;
+    }
+
+    public Repository getRepositoryPath(final HttpRequestInterceptor... interceptors) {
+        if (repositoryPath == null) {
+            final HttpContext context = getHttpContext();
+            final HttpClient client = getHttpClient(USERNAME_A, interceptors);
+
+            final RepositoryFactory factory = RepositoryFactory.getInstance();
+            repositoryPath = factory.createRepository(repositoryPathUri, client, context);
+        }
+        return repositoryPath;
+    }
+
+    public URI getRepositoryPathBaseUri() {
+        return repositoryPathBaseUri;
     }
 
     public Repository getRepositoryReadOnly(final HttpRequestInterceptor... interceptors) {

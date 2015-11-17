@@ -53,4 +53,15 @@ public abstract class AbstractRepositoryFactoryIT {
         Assert.assertNotNull("protocol must not be null", repository.getProtocolVersion());
         Assert.assertNotNull("repository must not be null", repository.getRepositoryId());
     }
+
+    @Test
+    public void test03_createPath() {
+        final Repository repository = helper.getRepositoryPath();
+        Assert.assertNotNull("repository must not be null", repository);
+
+        Assert.assertEquals("base uri must match", helper.getRepositoryPathBaseUri(), repository.getBaseUri());
+        Assert.assertEquals("base path must match", AbstractHelper.BASE_PATH, repository.getBasePath());
+        Assert.assertNotNull("protocol must not be null", repository.getProtocolVersion());
+        Assert.assertNotNull("repository must not be null", repository.getRepositoryId());
+    }
 }
