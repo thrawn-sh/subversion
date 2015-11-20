@@ -220,7 +220,7 @@ public abstract class AbstractHelper {
             final HttpClient client = getHttpClient(null, interceptors);
 
             final RepositoryFactory factory = RepositoryFactory.getInstance();
-            repositoryReadOnly = factory.createRepository(repositoryReadOnlyUri, client, context, true);
+            repositoryReadOnly = factory.createRepository(repositoryReadOnlyUri, client, context, false);
         }
         return repositoryReadOnly;
     }
