@@ -68,6 +68,7 @@ public abstract class RepositoryFactory {
      * @param uri {@link URI} to the root of the repository (e.g: http://repository.example.net/svn/test_repo/trunk/folder)
      * @param client {@link HttpClient} that will handle all requests for this repository
      * @param context {@link HttpContext} that will be used by all requests to this repository
+     * @param validate {@code true} check the given parameters during creation, {@code false} check during first usage
      *
      * @return a new {@link Repository} for given {@link URI}
      *
@@ -76,14 +77,14 @@ public abstract class RepositoryFactory {
      * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
      * the server
      */
-    public final Repository createRepository(final URI uri, final HttpClient client, final HttpContext context) {
+    public final Repository createRepository(final URI uri, final HttpClient client, final HttpContext context, final boolean validate) {
         Validate.notNull(uri, "uri must not be null");
         Validate.notNull(client, "client must not be null");
         Validate.notNull(context, "context must not be null");
 
         final URI saneUri = sanitise(uri, Resource.create(uri.getPath()));
-        return createRepository0(saneUri, client, context);
+        return createRepository0(saneUri, client, context, validate);
     }
 
-    protected abstract Repository createRepository0(final URI saneUri, final HttpClient client, final HttpContext context);
+    protected abstract Repository createRepository0(final URI saneUri, final HttpClient client, final HttpContext context, final boolean validate);
 }

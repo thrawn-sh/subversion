@@ -179,7 +179,7 @@ public abstract class AbstractHelper {
             final HttpClient client = getHttpClient(USERNAME_A, interceptors);
 
             final RepositoryFactory factory = RepositoryFactory.getInstance();
-            repositoryA = factory.createRepository(repositoryUri, client, context);
+            repositoryA = factory.createRepository(repositoryUri, client, context, true);
         }
         return repositoryA;
     }
@@ -190,7 +190,7 @@ public abstract class AbstractHelper {
             final HttpClient client = getHttpClient(USERNAME_B, interceptors);
 
             final RepositoryFactory factory = RepositoryFactory.getInstance();
-            repositoryB = factory.createRepository(repositoryUri, client, context);
+            repositoryB = factory.createRepository(repositoryUri, client, context, true);
         }
         return repositoryB;
     }
@@ -205,7 +205,7 @@ public abstract class AbstractHelper {
             final HttpClient client = getHttpClient(USERNAME_A, interceptors);
 
             final RepositoryFactory factory = RepositoryFactory.getInstance();
-            repositoryPath = factory.createRepository(repositoryPathUri, client, context);
+            repositoryPath = factory.createRepository(repositoryPathUri, client, context, true);
         }
         return repositoryPath;
     }
@@ -220,7 +220,7 @@ public abstract class AbstractHelper {
             final HttpClient client = getHttpClient(null, interceptors);
 
             final RepositoryFactory factory = RepositoryFactory.getInstance();
-            repositoryReadOnly = factory.createRepository(repositoryReadOnlyUri, client, context);
+            repositoryReadOnly = factory.createRepository(repositoryReadOnlyUri, client, context, true);
         }
         return repositoryReadOnly;
     }
