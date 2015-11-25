@@ -29,11 +29,6 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import de.shadowhunt.http.client.SubversionRequestRetryHandler;
-import de.shadowhunt.subversion.Repository;
-import de.shadowhunt.subversion.RepositoryFactory;
-import de.shadowhunt.subversion.Resource;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -49,9 +44,16 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
+import de.shadowhunt.http.client.SubversionRequestRetryHandler;
+import de.shadowhunt.subversion.Repository;
+import de.shadowhunt.subversion.RepositoryFactory;
+import de.shadowhunt.subversion.Resource;
+
 public abstract class AbstractHelper {
 
     public static final Resource BASE_PATH = Resource.create("/trunk");
+
+    public static final Resource DEEP_PATH = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/exists/");
 
     public static final String PASSWORD = "svnpass";
 
@@ -74,6 +76,12 @@ public abstract class AbstractHelper {
     private Repository repositoryB;
 
     private final URI repositoryBaseUri;
+
+    private Repository repositoryDeep;
+
+    private final URI repositoryDeepBaseUri;
+
+    private final URI repositoryDeepUri;
 
     private Repository repositoryPath;
 
@@ -102,6 +110,9 @@ public abstract class AbstractHelper {
 
         this.repositoryReadOnlyBaseUri = URI.create(protocol + "://" + host + "/" + version + "/svn-non/test");
         this.repositoryReadOnlyUri = URI.create(repositoryReadOnlyBaseUri.toString() + BASE_PATH.getValue());
+
+        this.repositoryDeepBaseUri = URI.create(protocol + "://" + host + "/" + version + "/svn-non/test");
+        this.repositoryDeepUri = URI.create(repositoryReadOnlyBaseUri.toString() + DEEP_PATH.getValue());
 
         this.repositoryPathBaseUri = URI.create(protocol + "://" + host + "/" + version + "/svn-path/test");
         this.repositoryPathUri = URI.create(repositoryPathBaseUri.toString() + BASE_PATH.getValue());
@@ -197,6 +208,25 @@ public abstract class AbstractHelper {
 
     public URI getRepositoryBaseUri() {
         return repositoryBaseUri;
+    }
+
+    public URI getRepositoryDeepBaseUri() {
+        return repositoryDeepBaseUri;
+    }
+
+    public Repository getRepositoryDeepPath(final HttpRequestInterceptor... interceptors) {
+        if (repositoryDeep == null) {
+            final HttpContext context = getHttpContext();
+            final HttpClient client = getHttpClient(null, interceptors);
+
+            final RepositoryFactory factory = RepositoryFactory.getInstance();
+            repositoryDeep = factory.createRepository(repositoryDeepUri, client, context, false);
+        }
+        return repositoryDeep;
+    }
+
+    public URI getRepositoryDeepUri() {
+        return repositoryDeepUri;
     }
 
     public Repository getRepositoryPath(final HttpRequestInterceptor... interceptors) {

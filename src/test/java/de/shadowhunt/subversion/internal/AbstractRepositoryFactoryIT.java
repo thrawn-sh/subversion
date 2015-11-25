@@ -44,6 +44,17 @@ public abstract class AbstractRepositoryFactoryIT {
     }
 
     @Test
+    public void test01_deepPath() {
+        final Repository repository = helper.getRepositoryDeepPath();
+        Assert.assertNotNull("repository must not be null", repository);
+
+        Assert.assertEquals("base uri must match", helper.getRepositoryDeepBaseUri(), repository.getBaseUri());
+        Assert.assertEquals("base path must match", AbstractHelper.DEEP_PATH, repository.getBasePath());
+        Assert.assertNotNull("protocol must not be null", repository.getProtocolVersion());
+        Assert.assertNotNull("repository must not be null", repository.getRepositoryId());
+    }
+
+    @Test
     public void test02_createReadOnly() {
         final Repository repository = helper.getRepositoryReadOnly();
         Assert.assertNotNull("repository must not be null", repository);
