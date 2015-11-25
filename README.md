@@ -17,7 +17,7 @@ Its API is based on the command-lines client.
 
  DefaultHttpClient client = new DefaultHttpClient();
  client.setCredentialsProvider(cp);
- client.setHttpRequestRetryHandler(new WebDavHttpRequestRetryHandler());
+ client.setHttpRequestRetryHandler(new SubversionRequestRetryHandler());
 
  HttpContext context = new BasicHttpContext();
 
