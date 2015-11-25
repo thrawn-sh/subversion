@@ -68,7 +68,7 @@ public interface Transaction extends View {
     /**
      * After {@link Repository#commit(Transaction, String)} or {@link Repository#rollback(Transaction)} the {@link
      * Transaction} is invalidated.
-     * <p/>
+     *
      * For internal usage only. Use {@link Repository#commit(Transaction, String)} or {@link
      * Repository#rollback(Transaction)} instead
      */
@@ -93,7 +93,7 @@ public interface Transaction extends View {
     /**
      * Tell the {@link Transaction} the specified {@link Resource} will be affected during {@link
      * Repository#commit(Transaction, String)}.
-     * <p/>
+     *
      * For internal usage only. Use the methods from {@link Repository} instead
      *
      * @param resource {@link Resource} to register to the {@link Transaction}
