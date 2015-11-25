@@ -33,22 +33,26 @@ Shadowhunt Subversion Library
 * Usage
 
 +-----+
-RepositoryFactory factory = RepositoryFactory.getInstance();
-
-final HttpClientBuilder builder = HttpClientBuilder.create();
-
-final CredentialsProvider cp = new BasicCredentialsProvider();
-final Credentials credentials = new UsernamePasswordCredentials(username, PASSWORD);
+CredentialsProvider cp = new BasicCredentialsProvider();
+Credentials credentials = new UsernamePasswordCredentials(USERNAME, PASSWORD);
 cp.setCredentials(AuthScope.ANY, credentials);
-builder.setDefaultCredentialsProvider(cp);
 
-builder.setRetryHandler(new SubversionRequestRetryHandler());
-final HttpClient =  builder.build();
+DefaultHttpClient client = new DefaultHttpClient();
+client.setCredentialsProvider(cp);
+client.setHttpRequestRetryHandler(new WebDavHttpRequestRetryHandler());
 
-HttpContext context = ...;
-URI repositoryUri = URI.create("https://scm.example.net/svn/test-repo");
+HttpContext context = new BasicHttpContext();
+
+URIBuilder builder = new URIBuilder();
+URI uri = builder //
+   .setScheme("http")//
+   .setHost("scm.example.net") //
+   .setPort(8080)
+   .setPath("/svn/test-repo/trunk") //
+   .build();
+
 RepositoryFactory factory = RepositoryFactory.getInstance();
-Repository repository = factory.probeRepository(repositoryUri, client, context);
+Repository repository = factory.createRepository(uri, client, context, true);
 
 Transaction transaction = repository.createTransaction();
 try { // adding new files
