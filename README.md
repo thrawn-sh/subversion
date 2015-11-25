@@ -19,10 +19,18 @@ Its API is based on the command-lines client.
  client.setCredentialsProvider(cp);
  client.setHttpRequestRetryHandler(new WebDavHttpRequestRetryHandler());
 
- HttpContext context = ...;
- URI uri = URI.create("https://scm.example.net/svn/test-repo/trunk");
+ HttpContext context = new BasicHttpContext();
+
+ URIBuilder builder = new URIBuilder();
+ URI uri = builder //
+    .setScheme("http")//
+    .setHost("scm.example.net") //
+    .setPort(8080)
+    .setPath("/svn/test-repo/trunk") //
+    .build();
+
  RepositoryFactory factory = RepositoryFactory.getInstance();
- Repository repository = factory.createRepository(uri, client, context);
+ Repository repository = factory.createRepository(uri, client, context, true);
 
  Transaction transaction = repository.createTransaction();
  try { // adding new files
