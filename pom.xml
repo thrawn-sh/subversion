@@ -307,6 +307,7 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <configuration>
                     <configLocation>https://dev.shadowhunt.de/checkstyle.xml</configLocation>
+                    <excludes>${project.build.directory}/generated-sources/**/*.java</excludes>
                     <includeTestSourceDirectory>true</includeTestSourceDirectory>
                     <violationSeverity>warning</violationSeverity>
                 </configuration>
