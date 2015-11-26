@@ -56,7 +56,7 @@ public abstract class AbstractRepositoryPropertiesDeleteIT {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             repository.propertiesDelete(transaction, resource, property);
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            repository.commit(transaction, "delete " + resource);
+            repository.commit(transaction, "delete " + resource, true);
             Assert.assertFalse("transaction must not be active", transaction.isActive());
         } finally {
             repository.rollbackIfNotCommitted(transaction);

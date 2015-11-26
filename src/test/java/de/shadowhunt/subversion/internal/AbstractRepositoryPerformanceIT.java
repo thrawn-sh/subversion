@@ -76,7 +76,7 @@ public abstract class AbstractRepositoryPerformanceIT {
     private void prepare() {
         final Transaction transaction = repository.createTransaction();
         repository.mkdir(transaction, prefix, true);
-        repository.commit(transaction, "commit");
+        repository.commit(transaction, "commit", true);
     }
 
     private void prepare(final Resource resource) {
@@ -84,7 +84,7 @@ public abstract class AbstractRepositoryPerformanceIT {
         repository.mkdir(transaction, prefix, true);
 
         repository.add(transaction, resource, false, new ByteArrayInputStream("test".getBytes()));
-        repository.commit(transaction, "commit");
+        repository.commit(transaction, "commit", true);
     }
 
     private void prepare(final Resource resource, final ResourceProperty... properties) {
@@ -93,7 +93,7 @@ public abstract class AbstractRepositoryPerformanceIT {
 
         repository.add(transaction, resource, false, new ByteArrayInputStream("test".getBytes()));
         repository.propertiesSet(transaction, resource, properties);
-        repository.commit(transaction, "commit");
+        repository.commit(transaction, "commit", true);
     }
 
     @Before
@@ -264,7 +264,7 @@ public abstract class AbstractRepositoryPerformanceIT {
         Assert.assertEquals("number of requests must match", expectedRequestForCreate, counter.getTotalRequestCount());
 
         counter.reset();
-        repository.commit(transaction, "empty commit");
+        repository.commit(transaction, "empty commit", true);
         Assert.assertEquals("number of requests must match", 1, counter.getTotalRequestCount());
     }
 
@@ -297,7 +297,7 @@ public abstract class AbstractRepositoryPerformanceIT {
         }
         Assert.assertEquals("number of requests must match", expectedRequest, counter.getTotalRequestCount());
 
-        repository.commit(transaction, "commit");
+        repository.commit(transaction, "commit", true);
     }
 
     @Test
@@ -311,7 +311,7 @@ public abstract class AbstractRepositoryPerformanceIT {
         repository.mkdir(transaction, resource, false);
         Assert.assertEquals("number of requests must match", 2, counter.getTotalRequestCount());
 
-        repository.commit(transaction, "commit");
+        repository.commit(transaction, "commit", true);
     }
 
     @Test
@@ -324,7 +324,7 @@ public abstract class AbstractRepositoryPerformanceIT {
         repository.add(transaction, resource, false, new ByteArrayInputStream("test".getBytes()));
         Assert.assertEquals("number of requests must match", 2, counter.getTotalRequestCount());
 
-        repository.commit(transaction, "commit");
+        repository.commit(transaction, "commit", true);
     }
 
     @Test
@@ -338,7 +338,7 @@ public abstract class AbstractRepositoryPerformanceIT {
         repository.delete(transaction, resource);
         Assert.assertEquals("number of requests must match", 2, counter.getTotalRequestCount());
 
-        repository.commit(transaction, "commit");
+        repository.commit(transaction, "commit", true);
     }
 
     @Test
@@ -354,7 +354,7 @@ public abstract class AbstractRepositoryPerformanceIT {
         repository.propertiesDelete(transaction, resource, a, b);
         Assert.assertEquals("number of requests must match", 2, counter.getTotalRequestCount());
 
-        repository.commit(transaction, "commit");
+        repository.commit(transaction, "commit", true);
     }
 
     @Test
@@ -370,7 +370,7 @@ public abstract class AbstractRepositoryPerformanceIT {
         repository.propertiesSet(transaction, resource, a, b);
         Assert.assertEquals("number of requests must match", 2, counter.getTotalRequestCount());
 
-        repository.commit(transaction, "commit");
+        repository.commit(transaction, "commit", true);
     }
 
     @Test
@@ -389,7 +389,7 @@ public abstract class AbstractRepositoryPerformanceIT {
         }
         Assert.assertEquals("number of requests must match", expectedRequest, counter.getTotalRequestCount());
 
-        repository.commit(transaction, "commit");
+        repository.commit(transaction, "commit", true);
     }
 
     @Test
@@ -408,6 +408,6 @@ public abstract class AbstractRepositoryPerformanceIT {
         }
         Assert.assertEquals("number of requests must match", expectedRequest, counter.getTotalRequestCount());
 
-        repository.commit(transaction, "commit");
+        repository.commit(transaction, "commit", true);
     }
 }

@@ -100,7 +100,7 @@ public abstract class AbstractRepositoryDeleteIT {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             repository.delete(transaction, resource);
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            repository.commit(transaction, "deleted");
+            repository.commit(transaction, "deleted", true);
             Assert.assertFalse("transaction must not be active", transaction.isActive());
         } finally {
             repository.rollbackIfNotCommitted(transaction);
@@ -118,7 +118,7 @@ public abstract class AbstractRepositoryDeleteIT {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             repository.delete(transaction, resource);
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            repository.commit(transaction, "deleted");
+            repository.commit(transaction, "deleted", true);
             Assert.assertFalse("transaction must not be active", transaction.isActive());
         } finally {
             repository.rollbackIfNotCommitted(transaction);
@@ -142,7 +142,7 @@ public abstract class AbstractRepositoryDeleteIT {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             repository.delete(transaction, root);
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            repository.commit(transaction, "deleted");
+            repository.commit(transaction, "deleted", true);
             Assert.assertFalse("transaction must not be active", transaction.isActive());
         } finally {
             repository.rollbackIfNotCommitted(transaction);

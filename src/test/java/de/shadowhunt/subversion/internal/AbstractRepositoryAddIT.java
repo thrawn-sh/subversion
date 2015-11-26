@@ -48,7 +48,7 @@ public abstract class AbstractRepositoryAddIT {
 
             final Status expectedStatus = (initial) ? Status.ADDED : Status.MODIFIED;
             Assert.assertEquals("change set must contain: " + resource, expectedStatus, transaction.getChangeSet().get(resource));
-            repository.commit(transaction, "add " + resource);
+            repository.commit(transaction, "add " + resource, true);
             Assert.assertFalse("transaction must not be active", transaction.isActive());
         } finally {
             repository.rollbackIfNotCommitted(transaction);

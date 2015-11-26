@@ -59,7 +59,7 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
         try {
             repository.add(transaction, file, true, IOUtils.toInputStream(content, AbstractHelper.UTF8));
             repository.mkdir(transaction, folder, true);
-            repository.commit(transaction, "add " + file + " " + folder);
+            repository.commit(transaction, "add " + file + " " + folder, true);
         } finally {
             repository.rollbackIfNotCommitted(transaction);
         }
@@ -83,7 +83,7 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
             repository.add(transaction, resource, true, IOUtils.toInputStream(content, AbstractHelper.UTF8));
             repository.propertiesSet(transaction, resource, property);
             Assert.assertEquals("change set must contain: " + resource, Status.ADDED, transaction.getChangeSet().get(resource));
-            repository.commit(transaction, "add " + resource);
+            repository.commit(transaction, "add " + resource, true);
         } finally {
             repository.rollbackIfNotCommitted(transaction);
         }
@@ -108,7 +108,7 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
         try {
             repository.add(transaction, resourceA, true, IOUtils.toInputStream(content, AbstractHelper.UTF8));
             repository.add(transaction, resourceB, true, IOUtils.toInputStream(content, AbstractHelper.UTF8));
-            repository.commit(transaction, "add " + resourceA + " " + resourceB);
+            repository.commit(transaction, "add " + resourceA + " " + resourceB, true);
         } finally {
             repository.rollbackIfNotCommitted(transaction);
         }
@@ -138,7 +138,7 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
         try {
             repository.add(transaction, resourceA, true, IOUtils.toInputStream(content, AbstractHelper.UTF8));
             repository.add(transaction, resourceB, true, IOUtils.toInputStream(content, AbstractHelper.UTF8));
-            repository.commit(transaction, "add " + resourceA + " " + resourceB);
+            repository.commit(transaction, "add " + resourceA + " " + resourceB, true);
         } finally {
             repository.rollbackIfNotCommitted(transaction);
         }
@@ -161,7 +161,7 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
         try {
             repository.add(transaction, resource, true, IOUtils.toInputStream("something else", AbstractHelper.UTF8));
             repository.add(transaction, resource, true, IOUtils.toInputStream(content, AbstractHelper.UTF8));
-            repository.commit(transaction, "add " + resource);
+            repository.commit(transaction, "add " + resource, true);
         } finally {
             repository.rollbackIfNotCommitted(transaction);
         }
@@ -186,7 +186,7 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
             repository.propertiesSet(transaction, resource, propertyA, propertyB);
             repository.propertiesDelete(transaction, resource, propertyB);
             repository.propertiesSet(transaction, resource, propertyC);
-            repository.commit(transaction, "properties " + resource);
+            repository.commit(transaction, "properties " + resource, true);
         } finally {
             repository.rollbackIfNotCommitted(transaction);
         }
@@ -230,7 +230,7 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
             Assert.assertEquals("change set must contain: " + resource, Status.MODIFIED, transaction.getChangeSet().get(resource));
             repository.delete(transaction, resource);
             Assert.assertEquals("change set must contain: " + resource, Status.DELETED, transaction.getChangeSet().get(resource));
-            repository.commit(transaction, "empty " + resource);
+            repository.commit(transaction, "empty " + resource, true);
         } finally {
             repository.rollbackIfNotCommitted(transaction);
         }
@@ -248,7 +248,7 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
         final Transaction transaction = repository.createTransaction();
         try {
             repository.move(transaction, resourceA, resourceB, false);
-            repository.commit(transaction, "move");
+            repository.commit(transaction, "move", true);
         } finally {
             repository.rollbackIfNotCommitted(transaction);
         }

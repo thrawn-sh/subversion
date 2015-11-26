@@ -51,7 +51,7 @@ public abstract class AbstractRepositoryMkdirIT {
 
             repository.mkdir(transaction, resource, parents);
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            repository.commit(transaction, "mkdir " + resource);
+            repository.commit(transaction, "mkdir " + resource, true);
             Assert.assertFalse("transaction must be not active", transaction.isActive());
         } finally {
             repository.rollbackIfNotCommitted(transaction);

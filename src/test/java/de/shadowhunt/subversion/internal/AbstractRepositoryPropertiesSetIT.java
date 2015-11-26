@@ -41,7 +41,7 @@ public abstract class AbstractRepositoryPropertiesSetIT {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             repository.propertiesSet(transaction, resource, properties);
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            repository.commit(transaction, "add " + resource);
+            repository.commit(transaction, "add " + resource, true);
             Assert.assertFalse("transaction must not be active", transaction.isActive());
         } finally {
             repository.rollbackIfNotCommitted(transaction);

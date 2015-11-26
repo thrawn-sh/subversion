@@ -40,7 +40,7 @@ public abstract class AbstractRepositoryTransactionIT {
     @Test(expected = SubversionException.class)
     public void test00_commitInactiveTransaction() throws Exception {
         final TransactionImpl transaction = new TransactionImpl("1", repository.getRepositoryId(), Revision.HEAD);
-        repository.commit(transaction, "empty commit");
+        repository.commit(transaction, "empty commit", true);
         Assert.fail("commit of inactive transaction");
     }
 
@@ -64,7 +64,7 @@ public abstract class AbstractRepositoryTransactionIT {
         final Info before = repository.info(Resource.ROOT, Revision.HEAD);
         final Transaction transaction = repository.createTransaction();
         Assert.assertTrue("transaction must be active", transaction.isActive());
-        repository.commit(transaction, "empty commit");
+        repository.commit(transaction, "empty commit", true);
         Assert.assertFalse("transaction must be inactive", transaction.isActive());
         final Info after = repository.info(Resource.ROOT, Revision.HEAD);
         AbstractRepositoryInfoIT.assertInfoEquals("empty commit", before, after);

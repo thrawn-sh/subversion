@@ -78,7 +78,7 @@ public abstract class AbstractRepositoryEncodingIT {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             repository.propertiesDelete(transaction, resource, property);
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            repository.commit(transaction, "delete " + resource);
+            repository.commit(transaction, "delete " + resource, true);
             Assert.assertFalse("transaction must not be active", transaction.isActive());
         } finally {
             repository.rollbackIfNotCommitted(transaction);
@@ -453,7 +453,7 @@ public abstract class AbstractRepositoryEncodingIT {
         final Transaction transaction = repository.createTransaction();
         try {
             repository.copy(transaction, source, Revision.HEAD, target, false);
-            repository.commit(transaction, "copy");
+            repository.commit(transaction, "copy", true);
         } finally {
             repository.rollbackIfNotCommitted(transaction);
         }
@@ -465,7 +465,7 @@ public abstract class AbstractRepositoryEncodingIT {
         final Transaction transaction = repository.createTransaction();
         try {
             repository.delete(transaction, resource);
-            repository.commit(transaction, "delete");
+            repository.commit(transaction, "delete", true);
         } finally {
             repository.rollbackIfNotCommitted(transaction);
         }
@@ -516,7 +516,7 @@ public abstract class AbstractRepositoryEncodingIT {
         final Transaction transaction = repository.createTransaction();
         try {
             repository.mkdir(transaction, resource, true);
-            repository.commit(transaction, "mkdir");
+            repository.commit(transaction, "mkdir", true);
         } finally {
             repository.rollbackIfNotCommitted(transaction);
         }
@@ -530,7 +530,7 @@ public abstract class AbstractRepositoryEncodingIT {
         final Transaction transaction = repository.createTransaction();
         try {
             repository.move(transaction, source, target, false);
-            repository.commit(transaction, "move");
+            repository.commit(transaction, "move", true);
         } finally {
             repository.rollbackIfNotCommitted(transaction);
         }

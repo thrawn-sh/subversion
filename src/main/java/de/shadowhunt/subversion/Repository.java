@@ -58,6 +58,7 @@ public interface Repository {
      *
      * @param transaction the current running {@link Transaction}
      * @param message the commit message for the expected operation
+     * @param releaseLocks remove all locks from {@link Resource}s in this {@link Transaction}
      *
      * @throws java.lang.NullPointerException if the transaction parameter is {@code null}
      * @throws java.lang.NullPointerException if the message parameter is {@code null}
@@ -65,8 +66,8 @@ public interface Repository {
      * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
      * the server
      */
-    void commit(Transaction transaction, String message);
-
+    void commit(Transaction transaction, String message, boolean releaseLocks);
+    
     /**
      * Recursively copy a resource in the given revision.
      *

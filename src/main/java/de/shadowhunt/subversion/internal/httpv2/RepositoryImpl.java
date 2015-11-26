@@ -102,7 +102,7 @@ class RepositoryImpl extends AbstractBaseRepository {
     }
 
     @Override
-    public void commit(final Transaction transaction, final String message) {
+    public void commit(final Transaction transaction, final String message, final boolean releaseLocks) {
         validateTransaction(transaction);
         Validate.notNull(message, "message must not be null");
 
@@ -120,7 +120,7 @@ class RepositoryImpl extends AbstractBaseRepository {
 
         final Set<Info> lockTokenInfoSet = getInfoSetWithLockTokens(transaction);
         final QualifiedResource mergeResource = config.getTransactionResource(transaction);
-        final MergeOperation mo = new MergeOperation(repository, mergeResource, lockTokenInfoSet);
+        final MergeOperation mo = new MergeOperation(repository, mergeResource, lockTokenInfoSet, releaseLocks);
         mo.execute(client, context);
         // only invalidate after successful commit to allow rollback
         transaction.invalidate();

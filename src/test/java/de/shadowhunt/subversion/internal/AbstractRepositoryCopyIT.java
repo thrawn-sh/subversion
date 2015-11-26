@@ -95,7 +95,7 @@ public abstract class AbstractRepositoryCopyIT {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             Assert.assertEquals("change set must contain: " + target, Status.ADDED, transaction.getChangeSet().get(target));
             AbstractRepositoryMkdirIT.assertParentsMapped(target.getParent(), transaction);
-            repository.commit(transaction, "copy");
+            repository.commit(transaction, "copy", true);
             Assert.assertFalse("transaction must not be active", transaction.isActive());
         } finally {
             repository.rollbackIfNotCommitted(transaction);
@@ -144,7 +144,7 @@ public abstract class AbstractRepositoryCopyIT {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             Assert.assertEquals("change set must contain: " + target, Status.ADDED, transaction.getChangeSet().get(target));
             AbstractRepositoryMkdirIT.assertParentsMapped(target.getParent(), transaction);
-            repository.commit(transaction, "copy");
+            repository.commit(transaction, "copy", true);
             Assert.assertFalse("transaction must not be active", transaction.isActive());
         } finally {
             repository.rollbackIfNotCommitted(transaction);
@@ -194,7 +194,7 @@ public abstract class AbstractRepositoryCopyIT {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             Assert.assertEquals("change set must contain: " + target, Status.ADDED, transaction.getChangeSet().get(target));
             AbstractRepositoryMkdirIT.assertParentsMapped(target.getParent(), transaction);
-            repository.commit(transaction, "copy");
+            repository.commit(transaction, "copy", true);
             Assert.assertFalse("transaction must not be active", transaction.isActive());
         } finally {
             repository.rollbackIfNotCommitted(transaction);
@@ -224,7 +224,7 @@ public abstract class AbstractRepositoryCopyIT {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             Assert.assertEquals("change set must contain: " + target, Status.ADDED, transaction.getChangeSet().get(target));
             AbstractRepositoryMkdirIT.assertParentsMapped(target.getParent(), transaction);
-            repository.commit(transaction, "copy");
+            repository.commit(transaction, "copy", true);
             Assert.assertFalse("transaction must not be active", transaction.isActive());
         } finally {
             repository.rollbackIfNotCommitted(transaction);
@@ -255,7 +255,7 @@ public abstract class AbstractRepositoryCopyIT {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             Assert.assertEquals("change set must contain: " + target, Status.ADDED, transaction.getChangeSet().get(target));
             AbstractRepositoryMkdirIT.assertParentsMapped(target.getParent(), transaction);
-            repository.commit(transaction, "copy");
+            repository.commit(transaction, "copy", true);
             Assert.assertFalse("transaction must not be active", transaction.isActive());
         } finally {
             repository.rollbackIfNotCommitted(transaction);
@@ -284,7 +284,7 @@ public abstract class AbstractRepositoryCopyIT {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             Assert.assertEquals("change set must contain: " + target, Status.MODIFIED, transaction.getChangeSet().get(target));
             AbstractRepositoryMkdirIT.assertParentsMapped(target.getParent(), transaction);
-            repository.commit(transaction, "copy");
+            repository.commit(transaction, "copy", true);
             Assert.assertFalse("transaction must not be active", transaction.isActive());
         } finally {
             repository.rollbackIfNotCommitted(transaction);
@@ -317,7 +317,7 @@ public abstract class AbstractRepositoryCopyIT {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             Assert.assertEquals("change set must contain: " + target, Status.MODIFIED, transaction.getChangeSet().get(target));
             AbstractRepositoryMkdirIT.assertParentsMapped(target.getParent(), transaction);
-            repository.commit(transaction, "copy");
+            repository.commit(transaction, "copy", true);
             Assert.assertFalse("transaction must not be active", transaction.isActive());
         } finally {
             repository.rollbackIfNotCommitted(transaction);

@@ -51,7 +51,7 @@ public abstract class AbstractRepositoryResolveIT {
         final Transaction transaction = repository.createTransaction();
         try {
             repository.delete(transaction, resource);
-            repository.commit(transaction, "delete");
+            repository.commit(transaction, "delete", true);
         } finally {
             repository.rollbackIfNotCommitted(transaction);
         }
@@ -72,7 +72,7 @@ public abstract class AbstractRepositoryResolveIT {
         final Transaction transaction = repository.createTransaction();
         try {
             repository.delete(transaction, resource.getParent());
-            repository.commit(transaction, "delete");
+            repository.commit(transaction, "delete", true);
         } finally {
             repository.rollbackIfNotCommitted(transaction);
         }

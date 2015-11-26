@@ -39,16 +39,22 @@ public class MergeOperation extends AbstractVoidOperation {
 
     private final QualifiedResource resource;
 
-    public MergeOperation(final URI repository, final QualifiedResource resource, final Set<Info> infoSet) {
+    private final boolean releaseLocks;
+
+    public MergeOperation(final URI repository, final QualifiedResource resource, final Set<Info> infoSet, final boolean releaseLocks) {
         super(repository);
         this.resource = resource;
         this.infoSet = infoSet;
+        this.releaseLocks = releaseLocks;
     }
 
     @Override
     protected HttpUriRequest createRequest() {
         final DavTemplateRequest request = new DavTemplateRequest("MERGE", repository);
-        request.addHeader("X-SVN-Options", "release-locks");
+
+        if (releaseLocks) {
+            request.addHeader("X-SVN-Options", "release-locks");
+        }
 
         final Writer body = new StringBuilderWriter();
         try {

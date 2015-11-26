@@ -241,7 +241,7 @@ public abstract class AbstractRepositoryLockingIT {
         final Transaction transaction = repositoryA.createTransaction();
         try {
             repositoryA.copy(transaction, source, Revision.HEAD, target, false);
-            repositoryA.commit(transaction, "copy");
+            repositoryA.commit(transaction, "copy", true);
         } finally {
             repositoryA.rollbackIfNotCommitted(transaction);
         }
@@ -270,7 +270,7 @@ public abstract class AbstractRepositoryLockingIT {
         final Transaction transaction = repositoryA.createTransaction();
         try {
             repositoryA.move(transaction, source, target, false);
-            repositoryA.commit(transaction, "move");
+            repositoryA.commit(transaction, "move", true);
         } finally {
             repositoryA.rollbackIfNotCommitted(transaction);
         }
@@ -291,7 +291,7 @@ public abstract class AbstractRepositoryLockingIT {
         final Transaction transaction = repositoryA.createTransaction();
         try {
             repositoryA.propertiesDelete(transaction, resource, property);
-            repositoryA.commit(transaction, "update");
+            repositoryA.commit(transaction, "update", true);
         } finally {
             repositoryA.rollbackIfNotCommitted(transaction);
         }
@@ -317,7 +317,7 @@ public abstract class AbstractRepositoryLockingIT {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             Assert.assertEquals("change set must contain: " + target, Status.MODIFIED, transaction.getChangeSet().get(target));
             AbstractRepositoryMkdirIT.assertParentsMapped(target.getParent(), transaction);
-            repositoryA.commit(transaction, "copy");
+            repositoryA.commit(transaction, "copy", true);
             Assert.assertFalse("transaction must not be active", transaction.isActive());
         } finally {
             repositoryA.rollbackIfNotCommitted(transaction);
@@ -348,7 +348,7 @@ public abstract class AbstractRepositoryLockingIT {
             repositoryA.delete(transaction, resource);
             Assert.assertTrue("transaction must be active", transaction.isActive());
             Assert.assertEquals("change set must contain: " + resource, Status.DELETED, transaction.getChangeSet().get(resource));
-            repositoryA.commit(transaction, "deleted");
+            repositoryA.commit(transaction, "deleted", true);
             Assert.assertFalse("transaction must not be active", transaction.isActive());
         } finally {
             repositoryA.rollbackIfNotCommitted(transaction);
@@ -376,7 +376,7 @@ public abstract class AbstractRepositoryLockingIT {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             Assert.assertEquals("change set must contain: " + target, Status.MODIFIED, transaction.getChangeSet().get(target));
             AbstractRepositoryMkdirIT.assertParentsMapped(target.getParent(), transaction);
-            repositoryA.commit(transaction, "move");
+            repositoryA.commit(transaction, "move", true);
             Assert.assertFalse("transaction must not be active", transaction.isActive());
         } finally {
             repositoryA.rollbackIfNotCommitted(transaction);
@@ -404,7 +404,7 @@ public abstract class AbstractRepositoryLockingIT {
         final Transaction transaction = repositoryA.createTransaction();
         try {
             repositoryA.add(transaction, resource, false, IOUtils.toInputStream(content, AbstractHelper.UTF8));
-            repositoryA.commit(transaction, "update");
+            repositoryA.commit(transaction, "update", true);
         } finally {
             repositoryA.rollbackIfNotCommitted(transaction);
         }
@@ -427,7 +427,7 @@ public abstract class AbstractRepositoryLockingIT {
         final Transaction transaction = repositoryA.createTransaction();
         try {
             repositoryA.propertiesSet(transaction, resource, propertyB);
-            repositoryA.commit(transaction, "update");
+            repositoryA.commit(transaction, "update", true);
         } finally {
             repositoryA.rollbackIfNotCommitted(transaction);
         }
