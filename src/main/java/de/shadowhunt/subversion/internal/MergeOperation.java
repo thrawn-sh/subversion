@@ -82,16 +82,18 @@ public class MergeOperation extends AbstractVoidOperation {
                 writer.writeNamespace(XmlConstants.SVN_PREFIX, XmlConstants.SVN_NAMESPACE);
                 for (final Info info : infoSet) {
                     final Optional<LockToken> lockToken = info.getLockToken();
-                    final Resource infoResource = info.getResource();
+                    if (lockToken.isPresent()) {
+                        final Resource infoResource = info.getResource();
 
-                    writer.writeStartElement(XmlConstants.SVN_NAMESPACE, "lock");
-                    writer.writeStartElement(XmlConstants.SVN_NAMESPACE, "lock-path");
-                    writer.writeCData(infoResource.getValueWithoutLeadingSeparator());
-                    writer.writeEndElement(); // lock-path
-                    writer.writeStartElement(XmlConstants.SVN_NAMESPACE, "lock-token");
-                    writer.writeCharacters(lockToken.get().toString());
-                    writer.writeEndElement(); // lock-token
-                    writer.writeEndElement(); // lock
+                        writer.writeStartElement(XmlConstants.SVN_NAMESPACE, "lock");
+                        writer.writeStartElement(XmlConstants.SVN_NAMESPACE, "lock-path");
+                        writer.writeCData(infoResource.getValueWithoutLeadingSeparator());
+                        writer.writeEndElement(); // lock-path
+                        writer.writeStartElement(XmlConstants.SVN_NAMESPACE, "lock-token");
+                        writer.writeCharacters(lockToken.get().toString());
+                        writer.writeEndElement(); // lock-token
+                        writer.writeEndElement(); // lock
+                    }
                 }
                 writer.writeEndElement(); // lock-token-list
             }
