@@ -24,13 +24,15 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
 
 /**
- * SVN as support for properties that have a namespace and contain a colon in their name. XML in general does not allow
- * such names. The methods in this class make sure these properties can be read and written by default XML tool by
- * escaping them before the XML processing and reverting the escaping afterwards.
+ * SVN as support for properties that have a namespace and contain a colon in
+ * their name. XML in general does not allow such names. The methods in this
+ * class make sure these properties can be read and written by default XML tool
+ * by escaping them before the XML processing and reverting the escaping
+ * afterwards.
  */
 final class ResourcePropertyUtils {
 
-    static final String COLON = ":";
+    private static final String COLON = ":";
 
     static final String MARKER = "__ILLEGAL_COLON_IN_TAG_NAME__";
 
