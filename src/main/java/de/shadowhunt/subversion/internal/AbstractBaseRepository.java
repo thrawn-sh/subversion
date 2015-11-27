@@ -49,14 +49,6 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractBaseRepository implements Repository {
 
-    private static final ResourceProperty.Key[] LOCKING = new ResourceProperty.Key[] { ResourceProperty.RESOURCE, ResourceProperty.LOCK_STATUS };
-
-    private static final Logger LOGGER = LoggerFactory.getLogger("de.shadowhunt.subversion.Repository");
-
-    private static final ResourceProperty.Key[] REVISION = new ResourceProperty.Key[] { ResourceProperty.RESOURCE, ResourceProperty.VERSION };
-
-    private static final ResourceProperty.Key[] TYPE = new ResourceProperty.Key[] { ResourceProperty.RESOURCE, ResourceProperty.RESOURCE_TYPE };
-
     protected interface ResourceMapper {
 
         QualifiedResource getCommitMessageResource(Transaction transaction);
@@ -76,6 +68,16 @@ public abstract class AbstractBaseRepository implements Repository {
         QualifiedResource getWorkingResource(Transaction transaction);
     }
 
+    private static final ResourceProperty.Key[] LOCKING = new ResourceProperty.Key[] { ResourceProperty.RESOURCE, ResourceProperty.LOCK_STATUS };
+
+    private static final Logger LOGGER = LoggerFactory.getLogger("de.shadowhunt.subversion.Repository");
+
+    private static final ResourceProperty.Key[] REVISION = new ResourceProperty.Key[] { ResourceProperty.RESOURCE, ResourceProperty.VERSION };
+
+    private static final ResourceProperty.Key[] TYPE = new ResourceProperty.Key[] { ResourceProperty.RESOURCE, ResourceProperty.RESOURCE_TYPE };
+
+    protected final Resource base;
+
     protected final HttpClient client;
 
     protected final ResourceMapper config;
@@ -85,8 +87,6 @@ public abstract class AbstractBaseRepository implements Repository {
     protected final URI repository;
 
     protected final UUID repositoryId;
-
-    protected final Resource base;
 
     protected AbstractBaseRepository(final URI repository, final Resource base, final UUID id, final ResourceMapper config, final HttpClient client,
             final HttpContext context) {
@@ -239,6 +239,11 @@ public abstract class AbstractBaseRepository implements Repository {
     }
 
     @Override
+    public InputStream download(final Resource resource, final Revision revision) {
+        return download(createView(), resource, revision);
+    }
+
+    @Override
     public final InputStream download(final View view, final Resource resource, final Revision revision) {
         Validate.notNull(view, "view must not be null");
         Validate.notNull(resource, "resource must not be null");
@@ -249,16 +254,16 @@ public abstract class AbstractBaseRepository implements Repository {
         return download0(view, new QualifiedResource(base, resource), revision);
     }
 
-    @Override
-    public InputStream download(final Resource resource, final Revision revision) {
-        return download(createView(), resource, revision);
-    }
-
     private InputStream download0(final View view, final QualifiedResource resource, final Revision revision) {
         final QualifiedResource resolved = resolve(view, resource, revision, false);
         final DownloadOperation operation = new DownloadOperation(repository, resolved);
         final Optional<InputStream> is = operation.execute(client, context);
         return is.orElseThrow(() -> new SubversionException("Can't resolve: " + resource + '@' + revision));
+    }
+
+    @Override
+    public URI downloadURI(final Resource resource, final Revision revision) {
+        return downloadURI(createView(), resource, revision);
     }
 
     @Override
@@ -272,17 +277,17 @@ public abstract class AbstractBaseRepository implements Repository {
         return downloadURI0(view, new QualifiedResource(base, resource), revision);
     }
 
-    @Override
-    public URI downloadURI(final Resource resource, final Revision revision) {
-        return downloadURI(createView(), resource, revision);
-    }
-
     private URI downloadURI0(final View view, final QualifiedResource resource, final Revision revision) {
         if (!exists0(view, resource, revision)) {
             throw new SubversionException("Can't resolve: " + resource + '@' + revision);
         }
         final QualifiedResource resolved = resolve(view, resource, revision, true);
         return URIUtils.appendResources(repository, resolved);
+    }
+
+    @Override
+    public boolean exists(final Resource resource, final Revision revision) {
+        return exists(createView(), resource, revision);
     }
 
     @Override
@@ -294,11 +299,6 @@ public abstract class AbstractBaseRepository implements Repository {
 
         LOGGER.trace("checking existence for resource {}@{}", resource, revision);
         return exists0(view, new QualifiedResource(base, resource), revision);
-    }
-
-    @Override
-    public boolean exists(final Resource resource, final Revision revision) {
-        return exists(createView(), resource, revision);
     }
 
     private boolean exists0(final View view, final QualifiedResource resource, final Revision revision) {
@@ -433,6 +433,11 @@ public abstract class AbstractBaseRepository implements Repository {
     }
 
     @Override
+    public List<Log> log(final Resource resource, final Revision startRevision, final Revision endRevision, final int limit, final boolean stopOnCopy) {
+        return log(createView(), resource, startRevision, endRevision, limit, stopOnCopy);
+    }
+
+    @Override
     public final List<Log> log(final View view, final Resource resource, final Revision startRevision, final Revision endRevision, final int limit,
             final boolean stopOnCopy) {
         Validate.notNull(view, "view must not be null");
@@ -444,11 +449,6 @@ public abstract class AbstractBaseRepository implements Repository {
 
         LOGGER.trace("retrieving log for resource {} from {} to {} (limit: {})", resource, startRevision, endRevision, limit);
         return log0(view, new QualifiedResource(base, resource), startRevision, endRevision, limit, stopOnCopy);
-    }
-
-    @Override
-    public List<Log> log(final Resource resource, final Revision startRevision, final Revision endRevision, final int limit, final boolean stopOnCopy) {
-        return log(createView(), resource, startRevision, endRevision, limit, stopOnCopy);
     }
 
     private List<Log> log0(final View view, final QualifiedResource resource, final Revision startRevision, final Revision endRevision, final int limit,

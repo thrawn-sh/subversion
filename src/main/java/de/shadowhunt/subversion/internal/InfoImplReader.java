@@ -175,9 +175,9 @@ final class InfoImplReader {
                 new QName(XmlConstants.SUBVERSION_DAV_NAMESPACE, "baseline-relative-path") //
         };
 
-        private Optional<Resource> resource = Optional.empty();
-
         private final Resource basePath;
+
+        private Optional<Resource> resource = Optional.empty();
 
         ResourceExpression(final Resource basePath) {
             super(PATH);

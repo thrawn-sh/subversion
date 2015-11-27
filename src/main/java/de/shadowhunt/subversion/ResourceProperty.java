@@ -105,33 +105,15 @@ public final class ResourceProperty {
         }
     }
 
-    public static final Key AUTHOR = new Key(Type.DAV, "creator-displayname");
-
-    public static final Key CREATION_DATE = new Key(Type.DAV, "creationdate");
-
-    public static final Key LAST_MODIFIED_DATE = new Key(Type.DAV, "getlastmodified");
-
-    public static final Key LOCK_STATUS = new Key(Type.DAV, "lockdiscovery");
-
-    public static final Key MD5_HASH = new Key(Type.SUBVERSION_DAV, "md5-checksum");
-
-    public static final Key REPOSITORY_ID = new Key(Type.SUBVERSION_DAV, "repository-uuid");
-
-    public static final Key RESOURCE = new Key(Type.SUBVERSION_DAV, "baseline-relative-path");
-
-    public static final Key RESOURCE_TYPE = new Key(Type.DAV, "resourcetype");
-
-    public static final Key VERSION = new Key(Type.DAV, "version-name");
-
     /**
      * {@link ResourceProperty} can have various types, depending of the context they are used.
      */
     public enum Type {
         DAV("DAV:"),
-        SVN("svn:"),
         SUBVERSION_CUSTOM("http://subversion.tigris.org/xmlns/custom/"),
         SUBVERSION_DAV("http://subversion.tigris.org/xmlns/dav/"),
-        SUBVERSION_SVN("http://subversion.tigris.org/xmlns/svn/");
+        SUBVERSION_SVN("http://subversion.tigris.org/xmlns/svn/"),
+        SVN("svn:");
 
         private final String prefix;
 
@@ -149,7 +131,21 @@ public final class ResourceProperty {
         }
     }
 
-    private final Key key;
+    public static final Key AUTHOR = new Key(Type.DAV, "creator-displayname");
+
+    public static final Key CREATION_DATE = new Key(Type.DAV, "creationdate");
+
+    public static final Key LAST_MODIFIED_DATE = new Key(Type.DAV, "getlastmodified");
+
+    public static final Key LOCK_STATUS = new Key(Type.DAV, "lockdiscovery");
+
+    public static final Key MD5_HASH = new Key(Type.SUBVERSION_DAV, "md5-checksum");
+
+    public static final Key REPOSITORY_ID = new Key(Type.SUBVERSION_DAV, "repository-uuid");
+
+    public static final Key RESOURCE = new Key(Type.SUBVERSION_DAV, "baseline-relative-path");
+
+    public static final Key RESOURCE_TYPE = new Key(Type.DAV, "resourcetype");
 
     /**
      * {@link Comparator} that compares {@link ResourceProperty} by their type and name.
@@ -160,6 +156,10 @@ public final class ResourceProperty {
 
         return rp1.getKey().compareTo(rp2.getKey());
     };
+
+    public static final Key VERSION = new Key(Type.DAV, "version-name");
+
+    private final Key key;
 
     private final String value;
 

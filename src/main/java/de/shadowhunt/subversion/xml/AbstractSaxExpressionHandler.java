@@ -32,6 +32,12 @@ public abstract class AbstractSaxExpressionHandler<V> extends DefaultHandler {
 
     private static final SAXParserFactory FACTORY;
 
+    static {
+        FACTORY = SAXParserFactory.newInstance();
+        FACTORY.setNamespaceAware(true);
+        FACTORY.setValidating(false);
+    }
+
     private final StringBuilder buffer = new StringBuilder();
 
     private int depth = 0;
@@ -89,11 +95,5 @@ public abstract class AbstractSaxExpressionHandler<V> extends DefaultHandler {
         for (final SaxExpression<?> expression : expressions) {
             expression.start(uri, localName, depth++, attributes);
         }
-    }
-
-    static {
-        FACTORY = SAXParserFactory.newInstance();
-        FACTORY.setNamespaceAware(true);
-        FACTORY.setValidating(false);
     }
 }

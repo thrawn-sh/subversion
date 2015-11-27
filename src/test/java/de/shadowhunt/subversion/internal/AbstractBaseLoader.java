@@ -24,9 +24,9 @@ abstract class AbstractBaseLoader {
 
     protected static Revision resolvedHeadRevision;
 
-    protected final File root;
-
     protected final Resource base;
+
+    protected final File root;
 
     protected AbstractBaseLoader(final File root, final Resource base) {
         this.root = root;

@@ -34,9 +34,7 @@ final class ResourcePropertyUtils {
 
     static final String MARKER = "__ILLEGAL_COLON_IN_TAG_NAME__";
 
-    private static final String REGEX = "<(/?)(\\s*)([\\w\\d]+):([\\w\\d]+):([\\w\\d]+)((?:\\s*[\\w\\d=\"]*\\s*)*)(/?)>";
-
-    private static final Pattern PATTERN = Pattern.compile(REGEX);
+    private static final Pattern PATTERN = Pattern.compile("<(/?)(\\s*)([\\w\\d]+):([\\w\\d]+):([\\w\\d]+)((?:\\s*[\\w\\d=\"]*\\s*)*)(/?)>");
 
     static final Charset UTF8 = Charset.forName("UTF-8");
 

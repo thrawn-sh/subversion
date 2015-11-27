@@ -246,6 +246,26 @@ public abstract class AbstractRepositoryEncodingIT {
     }
 
     @Test
+    public void test03_download_01_Utf8File() throws Exception {
+        testDownload(read.append(Resource.create("/file_日本国.txt")), Revision.HEAD);
+    }
+
+    @Test
+    public void test03_download_02_XmlFile() throws Exception {
+        testDownload(read.append(Resource.create("/file_<&>'\".txt")), Revision.HEAD);
+    }
+
+    @Test
+    public void test03_download_03_UrlFile() throws Exception {
+        testDownload(read.append(Resource.create("/file ^%.txt")), Revision.HEAD);
+    }
+
+    @Test
+    public void test03_download_04_CombinedFile() throws Exception {
+        testDownload(read.append(Resource.create("/file_日本国_<&>'\"_ ^%.txt")), Revision.HEAD);
+    }
+
+    @Test
     public void test03_downloadUri_01_Utf8File() throws Exception {
         testDownloadUri(read.append(Resource.create("/file_日本国.txt")), Revision.HEAD);
     }
@@ -268,26 +288,6 @@ public abstract class AbstractRepositoryEncodingIT {
     @Test
     public void test03_downloadUri_04_CombinedFolder() throws Exception {
         testDownloadUri(read.append(Resource.create("/folder_中华人民共和国_<&>'\"_ ^%")), Revision.HEAD);
-    }
-
-    @Test
-    public void test03_download_01_Utf8File() throws Exception {
-        testDownload(read.append(Resource.create("/file_日本国.txt")), Revision.HEAD);
-    }
-
-    @Test
-    public void test03_download_02_XmlFile() throws Exception {
-        testDownload(read.append(Resource.create("/file_<&>'\".txt")), Revision.HEAD);
-    }
-
-    @Test
-    public void test03_download_03_UrlFile() throws Exception {
-        testDownload(read.append(Resource.create("/file ^%.txt")), Revision.HEAD);
-    }
-
-    @Test
-    public void test03_download_04_CombinedFile() throws Exception {
-        testDownload(read.append(Resource.create("/file_日本国_<&>'\"_ ^%.txt")), Revision.HEAD);
     }
 
     @Test

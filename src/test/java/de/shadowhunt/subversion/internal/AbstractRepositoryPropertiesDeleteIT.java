@@ -64,22 +64,6 @@ public abstract class AbstractRepositoryPropertiesDeleteIT {
     }
 
     @Test(expected = SubversionException.class)
-    public void test00_NonExistingResource() throws Exception {
-        final Resource resource = prefix.append(Resource.create("non_existing.txt"));
-        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "test");
-        Assert.assertFalse(resource + " does already exist", repository.exists(resource, Revision.HEAD));
-
-        final Transaction transaction = repository.createTransaction();
-        try {
-            Assert.assertTrue("transaction must be active", transaction.isActive());
-            repository.propertiesDelete(transaction, resource, property);
-            Assert.fail("must not complete");
-        } finally {
-            repository.rollbackIfNotCommitted(transaction);
-        }
-    }
-
-    @Test(expected = SubversionException.class)
     public void test00_invalid() throws Exception {
         final Resource resource = prefix.append(Resource.create("invalid.txt"));
         final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "test");
@@ -89,6 +73,22 @@ public abstract class AbstractRepositoryPropertiesDeleteIT {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             transaction.invalidate();
             Assert.assertFalse("transaction must not be active", transaction.isActive());
+            repository.propertiesDelete(transaction, resource, property);
+            Assert.fail("must not complete");
+        } finally {
+            repository.rollbackIfNotCommitted(transaction);
+        }
+    }
+
+    @Test(expected = SubversionException.class)
+    public void test00_NonExistingResource() throws Exception {
+        final Resource resource = prefix.append(Resource.create("non_existing.txt"));
+        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "test");
+        Assert.assertFalse(resource + " does already exist", repository.exists(resource, Revision.HEAD));
+
+        final Transaction transaction = repository.createTransaction();
+        try {
+            Assert.assertTrue("transaction must be active", transaction.isActive());
             repository.propertiesDelete(transaction, resource, property);
             Assert.fail("must not complete");
         } finally {

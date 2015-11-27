@@ -25,9 +25,9 @@ final class Helper extends AbstractHelper {
 
     private static final String HOST = System.getProperty("SUBVERSION_TEST_HOST", "subversion.vm.shadowhunt.de");
 
-    private static final String VERSION = "1.3.0";
-
     private static final String PROTOCOL = "http";
+
+    private static final String VERSION = "1.3.0";
 
     Helper() {
         super(BASE, PROTOCOL, HOST, VERSION);

@@ -35,7 +35,7 @@ import org.apache.http.entity.StringEntity;
 class PropertiesUpdateOperation extends AbstractVoidOperation {
 
     enum Type {
-        SET("set"), DELETE("remove");
+        DELETE("remove"), SET("set");
 
         final String action;
 

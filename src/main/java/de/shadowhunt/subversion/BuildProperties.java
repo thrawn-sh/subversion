@@ -32,17 +32,17 @@ import org.slf4j.LoggerFactory;
  */
 public final class BuildProperties {
 
-    public static final String UNDEFINED = "UNDEFINED";
+    private static final String BUILD_DATE;
 
     private static final String DATE_PATTERN = "yyyy-MM-dd";
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(BuildProperties.class);
+
     private static final String PROPERTIES_RESOURCE = "META-INF/build.PROPERTIES";
 
+    public static final String UNDEFINED = "UNDEFINED";
+
     private static final String VERSION;
-
-    private static final String BUILD_DATE;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(BuildProperties.class);
 
     static {
         final Properties properties = new Properties();
@@ -60,10 +60,6 @@ public final class BuildProperties {
 
         BUILD_DATE = properties.getProperty("build.date", UNDEFINED);
         VERSION = properties.getProperty("build.version", UNDEFINED);
-    }
-
-    private BuildProperties() {
-        // prevent instantiation
     }
 
     /**
@@ -101,5 +97,9 @@ public final class BuildProperties {
      */
     public static String getUserAgent() {
         return "SVN/" + VERSION + " " + BUILD_DATE + " (https://dev.shadowhunt.de/subversion)";
+    }
+
+    private BuildProperties() {
+        // prevent instantiation
     }
 }

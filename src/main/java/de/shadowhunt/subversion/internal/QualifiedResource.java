@@ -32,6 +32,10 @@ public final class QualifiedResource {
         this.resource = resource;
     }
 
+    public QualifiedResource append(final QualifiedResource suffix) {
+        return new QualifiedResource(base, resource.append(suffix.base).append(suffix.resource));
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {
@@ -89,9 +93,5 @@ public final class QualifiedResource {
     @Override
     public String toString() {
         return base.append(resource).toString();
-    }
-
-    public QualifiedResource append(final QualifiedResource suffix) {
-        return new QualifiedResource(base, resource.append(suffix.base).append(suffix.resource));
     }
 }

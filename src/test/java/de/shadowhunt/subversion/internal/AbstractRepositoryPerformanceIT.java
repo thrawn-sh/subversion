@@ -191,30 +191,6 @@ public abstract class AbstractRepositoryPerformanceIT {
     }
 
     @Test
-    public void test02_listWithView_Empty() throws Exception {
-        final Resource resource = AbstractRepositoryListIT.PREFIX.append(Resource.create("/folder"));
-
-        repository.list(currentView, resource, Revision.HEAD, Depth.EMPTY);
-        Assert.assertEquals("number of requests must match", 1, counter.getTotalRequestCount());
-    }
-
-    @Test
-    public void test02_listWithView_Immediate() throws Exception {
-        final Resource resource = AbstractRepositoryListIT.PREFIX.append(Resource.create("/folder"));
-
-        repository.list(currentView, resource, Revision.HEAD, Depth.IMMEDIATES);
-        Assert.assertEquals("number of requests must match", 1, counter.getTotalRequestCount());
-    }
-
-    @Test
-    public void test02_listWithView_Infinity() throws Exception {
-        final Resource resource = AbstractRepositoryListIT.PREFIX.append(Resource.create("/folder"));
-
-        repository.list(currentView, resource, Revision.HEAD, Depth.INFINITY);
-        Assert.assertEquals("number of requests must match", 1, counter.getTotalRequestCount());
-    }
-
-    @Test
     public void test02_list_Empty() throws Exception {
         final Resource resource = AbstractRepositoryListIT.PREFIX.append(Resource.create("/folder"));
 
@@ -236,6 +212,30 @@ public abstract class AbstractRepositoryPerformanceIT {
 
         repository.list(resource, Revision.HEAD, Depth.INFINITY);
         Assert.assertEquals("number of requests must match", 2, counter.getTotalRequestCount());
+    }
+
+    @Test
+    public void test02_listWithView_Empty() throws Exception {
+        final Resource resource = AbstractRepositoryListIT.PREFIX.append(Resource.create("/folder"));
+
+        repository.list(currentView, resource, Revision.HEAD, Depth.EMPTY);
+        Assert.assertEquals("number of requests must match", 1, counter.getTotalRequestCount());
+    }
+
+    @Test
+    public void test02_listWithView_Immediate() throws Exception {
+        final Resource resource = AbstractRepositoryListIT.PREFIX.append(Resource.create("/folder"));
+
+        repository.list(currentView, resource, Revision.HEAD, Depth.IMMEDIATES);
+        Assert.assertEquals("number of requests must match", 1, counter.getTotalRequestCount());
+    }
+
+    @Test
+    public void test02_listWithView_Infinity() throws Exception {
+        final Resource resource = AbstractRepositoryListIT.PREFIX.append(Resource.create("/folder"));
+
+        repository.list(currentView, resource, Revision.HEAD, Depth.INFINITY);
+        Assert.assertEquals("number of requests must match", 1, counter.getTotalRequestCount());
     }
 
     @Test
