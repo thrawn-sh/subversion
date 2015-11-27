@@ -120,7 +120,7 @@ class RepositoryImpl extends AbstractBaseRepository {
 
         final Set<Info> lockTokenInfoSet = getInfoSetWithLockTokens(transaction);
         final QualifiedResource mergeResource = config.getTransactionResource(transaction);
-        final MergeOperation mo = new MergeOperation(repository, mergeResource, lockTokenInfoSet, releaseLocks);
+        final MergeOperation mo = new MergeOperation(repository, mergeResource, lockTokenInfoSet, base, releaseLocks);
         mo.execute(client, context);
         // only invalidate after successful commit to allow rollback
         transaction.invalidate();

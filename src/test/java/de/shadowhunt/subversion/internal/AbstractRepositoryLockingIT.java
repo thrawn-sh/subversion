@@ -437,4 +437,47 @@ public abstract class AbstractRepositoryLockingIT {
         Assert.assertEquals("expected number of properties", 1, actual.length);
         Assert.assertEquals("property must match", propertyB, actual[0]);
     }
+
+    @Test
+    public void test05_KeepLockOnCommit() throws Exception {
+        final Resource resource = prefix.append(Resource.create("file_keep_lock_on_commit.txt"));
+
+        AbstractRepositoryAddIT.file(repositoryA, resource, "resource", true);
+        repositoryA.lock(resource, false);
+        final Info afterLock = repositoryA.info(resource, Revision.HEAD);
+        Assert.assertTrue(resource + " must be locked", afterLock.isLocked());
+
+        final Transaction transaction = repositoryA.createTransaction();
+        try {
+            repositoryA.add(transaction, resource, false, IOUtils.toInputStream("res", AbstractHelper.UTF8));
+            repositoryA.commit(transaction, "update", false);
+        } finally {
+            repositoryA.rollbackIfNotCommitted(transaction);
+        }
+
+        final Info afterCommit = repositoryA.info(resource, Revision.HEAD);
+        Assert.assertTrue(resource + " must be locked", afterCommit.isLocked());
+    }
+
+    @Test
+    public void test05_ReleaseLockOnCommit() throws Exception {
+        final Resource resource = prefix.append(Resource.create("file_release_lock_on_commit.txt"));
+
+        AbstractRepositoryAddIT.file(repositoryA, resource, "resource", true);
+        repositoryA.lock(resource, false);
+        final Info afterLock = repositoryA.info(resource, Revision.HEAD);
+        Assert.assertTrue(resource + " must be locked", afterLock.isLocked());
+
+        final Transaction transaction = repositoryA.createTransaction();
+        try {
+            repositoryA.add(transaction, resource, false, IOUtils.toInputStream("res", AbstractHelper.UTF8));
+            repositoryA.commit(transaction, "update", true);
+        } finally {
+            repositoryA.rollbackIfNotCommitted(transaction);
+        }
+
+        final Info afterCommit = repositoryA.info(resource, Revision.HEAD);
+        Assert.assertFalse(resource + " must not be locked", afterCommit.isLocked());
+    }
+
 }

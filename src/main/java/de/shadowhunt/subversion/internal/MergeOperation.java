@@ -35,16 +35,19 @@ import org.apache.http.entity.StringEntity;
 
 public class MergeOperation extends AbstractVoidOperation {
 
-    private final Set<Info> infoSet;
+    private final Resource base;
 
-    private final QualifiedResource resource;
+    private final Set<Info> infoSet;
 
     private final boolean releaseLocks;
 
-    public MergeOperation(final URI repository, final QualifiedResource resource, final Set<Info> infoSet, final boolean releaseLocks) {
+    private final QualifiedResource resource;
+
+    public MergeOperation(final URI repository, final QualifiedResource resource, final Set<Info> infoSet, final Resource base, final boolean releaseLocks) {
         super(repository);
         this.resource = resource;
         this.infoSet = infoSet;
+        this.base = base;
         this.releaseLocks = releaseLocks;
     }
 
@@ -87,7 +90,7 @@ public class MergeOperation extends AbstractVoidOperation {
 
                         writer.writeStartElement(XmlConstants.SVN_NAMESPACE, "lock");
                         writer.writeStartElement(XmlConstants.SVN_NAMESPACE, "lock-path");
-                        writer.writeCData(infoResource.getValueWithoutLeadingSeparator());
+                        writer.writeCData(base.getValueWithoutLeadingSeparator() + infoResource.getValue());
                         writer.writeEndElement(); // lock-path
                         writer.writeStartElement(XmlConstants.SVN_NAMESPACE, "lock-token");
                         writer.writeCharacters(lockToken.get().toString());
