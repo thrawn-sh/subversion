@@ -133,4 +133,17 @@ public abstract class AbstractRepositoryPropertiesSetIT {
         final ResourceProperty existingProperty = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "B");
         setProperties(repository, resource, newProperty, existingProperty);
     }
+
+    @Test
+    public void test03_subversionProperties() throws Exception {
+        final Resource resource = prefix.append(Resource.create("subversion_properties.txt"));
+
+        AbstractRepositoryAddIT.file(repository, resource, "test", true);
+        final ResourceProperty eolProperty = new ResourceProperty(Type.SUBVERSION_SVN, "eol-style", "native");
+        final ResourceProperty executableProperty = new ResourceProperty(Type.SUBVERSION_SVN, "executable", "*");
+        final ResourceProperty keywordsProperty = new ResourceProperty(Type.SUBVERSION_SVN, "keywords", "Author Id");
+        final ResourceProperty mimeProperty = new ResourceProperty(Type.SUBVERSION_SVN, "mime-type", "text/plain");
+
+        setProperties(repository, resource, eolProperty, executableProperty, keywordsProperty, mimeProperty);
+    }
 }
