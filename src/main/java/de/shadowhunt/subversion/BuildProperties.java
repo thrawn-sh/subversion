@@ -38,7 +38,7 @@ public final class BuildProperties {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BuildProperties.class);
 
-    private static final String PROPERTIES_RESOURCE = "META-INF/build.PROPERTIES";
+    private static final String PROPERTIES_RESOURCE = "META-INF/build.properties";
 
     public static final String UNDEFINED = "UNDEFINED";
 
@@ -82,7 +82,8 @@ public final class BuildProperties {
     }
 
     /**
-     * Returns the build version ({MAJOR}.{MINOR}.{PATCH} with -SNAPSHOT suffix, if it's an internal release).
+     * Returns the build version ({MAJOR}.{MINOR}.{PATCH} with -SNAPSHOT suffix,
+     * if it's an internal release).
      *
      * @return version or UNDEFINED if the version could not be determined
      */
@@ -91,7 +92,8 @@ public final class BuildProperties {
     }
 
     /**
-     * Returns the User-Agent identifier that is sent by each request to the server.
+     * Returns the User-Agent identifier that is sent by each request to the
+     * server.
      *
      * @return User-Agent identifier
      */
