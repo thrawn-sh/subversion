@@ -18,20 +18,17 @@ package de.shadowhunt.subversion;
 import java.util.Map;
 
 /**
- * {@link Transaction} allows the application to define units of work, it can be created via {@link
- * Repository#createTransaction()}.
+ * {@link Transaction} allows the application to define units of work, it can be
+ * created via {@link Repository#createTransaction()}.
  */
 public interface Transaction extends View {
 
     /**
-     * Defines the status of each {@link Resource} that is part of the current active {@link Transaction}.
+     * Defines the status of each {@link Resource} that is part of the current
+     * active {@link Transaction}.
      */
     enum Status {
-        ADDED("A", 2),
-        DELETED("D", 3),
-        EXISTS("E", -1),
-        MODIFIED("M", 1),
-        NOT_TRACKED("?", Integer.MIN_VALUE);
+        ADDED("A", 2), DELETED("D", 3), EXISTS("E", -1), MODIFIED("M", 1), NOT_TRACKED("?", Integer.MIN_VALUE);
 
         private final String abbreviation;
 
@@ -52,56 +49,68 @@ public interface Transaction extends View {
     }
 
     /**
-     * Returns a {@link Map} of {@link Resource}s (that are part of this {@link Transaction} and their {@link Status}.
+     * Returns a {@link Map} of {@link Resource}s (that are part of this
+     * {@link Transaction} and their {@link Status}.
      *
      * @return the {@link Map} of {@link Resource}s and their {@link Status}
      */
     Map<Resource, Status> getChangeSet();
 
     /**
-     * Returns the identifier of the {@link Transaction} (unique for each {@link Repository}.
+     * Returns the identifier of the {@link Transaction} (unique for each
+     * {@link Repository}.
      *
      * @return the identifier of the {@link Transaction}
      */
     String getId();
 
     /**
-     * After {@link Repository#commit(Transaction, String)} or {@link Repository#rollback(Transaction)} the {@link
-     * Transaction} is invalidated.
+     * After {@link Repository#commit(Transaction, String, boolean)} or
+     * {@link Repository#rollback(Transaction)} the {@link Transaction} is
+     * invalidated.
      *
-     * For internal usage only. Use {@link Repository#commit(Transaction, String)} or {@link
-     * Repository#rollback(Transaction)} instead
+     * For internal usage only. Use
+     * {@link Repository#commit(Transaction, String, boolean)} or
+     * {@link Repository#rollback(Transaction)} instead
      */
     void invalidate();
 
     /**
-     * Determines whether the {@link Transaction} can still be used. It cannot be used after {@link
-     * Repository#commit(Transaction, String)} or {@link Repository#rollback(Transaction)} where called.
+     * Determines whether the {@link Transaction} can still be used. It cannot
+     * be used after {@link Repository#commit(Transaction, String, boolean)} or
+     * {@link Repository#rollback(Transaction)} where called.
      *
-     * @return {@code true} if the {@link Transaction} can still be used otherwise {@code false}
+     * @return {@code true} if the {@link Transaction} can still be used
+     *         otherwise {@code false}
      */
     boolean isActive();
 
     /**
-     * Whether there are any {@link Resource}s that are affected by the {@link Transaction}.
+     * Whether there are any {@link Resource}s that are affected by the
+     * {@link Transaction}.
      *
-     * @return {@code true} if there are no {@link Resource}s affected by the {@link Transaction}, otherwise {@code
+     * @return {@code true} if there are no {@link Resource}s affected by the
+     *         {@link Transaction}, otherwise {@code
      * false}
      */
     boolean isChangeSetEmpty();
 
     /**
-     * Tell the {@link Transaction} the specified {@link Resource} will be affected during {@link
-     * Repository#commit(Transaction, String)}.
+     * Tell the {@link Transaction} the specified {@link Resource} will be
+     * affected during {@link Repository#commit(Transaction, String, boolean)}.
      *
      * For internal usage only. Use the methods from {@link Repository} instead
      *
-     * @param resource {@link Resource} to register to the {@link Transaction}
-     * @param status {@link Status} of the registered {@link Resource}
+     * @param resource
+     *            {@link Resource} to register to the {@link Transaction}
+     * @param status
+     *            {@link Status} of the registered {@link Resource}
      *
-     * @return {@code true} if the registration modified the change set, otherwise {@code false}
+     * @return {@code true} if the registration modified the change set,
+     *         otherwise {@code false}
      *
-     * @throws NullPointerException if any parameter is {@code null}
+     * @throws NullPointerException
+     *             if any parameter is {@code null}
      */
     boolean register(Resource resource, Status status);
 }
