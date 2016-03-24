@@ -90,7 +90,11 @@ public class MergeOperation extends AbstractVoidOperation {
 
                         writer.writeStartElement(XmlConstants.SVN_NAMESPACE, "lock");
                         writer.writeStartElement(XmlConstants.SVN_NAMESPACE, "lock-path");
-                        writer.writeCData(base.getValueWithoutLeadingSeparator() + infoResource.getValue());
+                        if (Resource.ROOT.equals(base)) {
+                            writer.writeCData(infoResource.getValueWithoutLeadingSeparator());
+                        } else {
+                            writer.writeCData(base.getValueWithoutLeadingSeparator() + infoResource.getValue());
+                        }
                         writer.writeEndElement(); // lock-path
                         writer.writeStartElement(XmlConstants.SVN_NAMESPACE, "lock-token");
                         writer.writeCharacters(lockToken.get().toString());
