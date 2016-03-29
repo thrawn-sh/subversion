@@ -11,15 +11,16 @@ Its API is based on the command-lines client.
 *Usage*
 
 ```java
+
  CredentialsProvider cp = new BasicCredentialsProvider();
  Credentials credentials = new UsernamePasswordCredentials(USERNAME, PASSWORD);
  cp.setCredentials(AuthScope.ANY, credentials);
 
- DefaultHttpClient client = new DefaultHttpClient();
- client.setCredentialsProvider(cp);
- client.setHttpRequestRetryHandler(new SubversionRequestRetryHandler());
-
  HttpContext context = new BasicHttpContext();
+
+ HttpClientBuilder builder = HttpClientBuilder.create();
+ builder.setDefaultCredentialsProvider(cp);
+ builder.setRetryHandler(new SubversionRequestRetryHandler());
 
  URIBuilder builder = new URIBuilder();
  URI uri = builder //
@@ -30,21 +31,24 @@ Its API is based on the command-lines client.
     .build();
 
  RepositoryFactory factory = RepositoryFactory.getInstance();
- Repository repository = factory.createRepository(uri, client, context, true);
 
- Transaction transaction = repository.createTransaction();
- try { // adding new files
-     InputStream file1 = ...;
-     repository.add(transaction, Resource.create("/folder/file1.txt"), true, file1);
-     InputStream file2 = ...;
-     repository.add(transaction, Resource.create("/folder/file2.txt"), true, file2);
-     Resource sourceFile = Resource.create("/folder/source.txt");
-     if (repository.exists(sourceFile, Revision.HEAD)) {
-         repository.move(transaction, sourceFile, Resource.create("/folder/target.txt"), false);
-     }
-     repository.commit(transaction, "adding 2 files, renaming 1");
- } catch (SubversionException se) {
-     repository.rollback(transaction);
+ try (ClosableHttpClient client = builder.build()) {
+    Repository repository = factory.createRepository(uri, client, context, true);
+
+    Transaction transaction = repository.createTransaction();
+    try { // adding new files
+        InputStream file1 = ...;
+        repository.add(transaction, Resource.create("/folder/file1.txt"), true, file1);
+        InputStream file2 = ...;
+        repository.add(transaction, Resource.create("/folder/file2.txt"), true, file2);
+        Resource sourceFile = Resource.create("/folder/source.txt");
+        if (repository.exists(sourceFile, Revision.HEAD)) {
+            repository.move(transaction, sourceFile, Resource.create("/folder/target.txt"), false);
+        }
+        repository.commit(transaction, "adding 2 files, renaming 1");
+    } finally {
+        repository.rollbackIfNotCommitted(transaction);
+    }
  }
 ```
 
