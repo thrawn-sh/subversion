@@ -47,7 +47,8 @@ public final class BuildProperties {
     static {
         final Properties properties = new Properties();
 
-        final InputStream stream = BuildProperties.class.getResourceAsStream(PROPERTIES_RESOURCE);
+        final ClassLoader classLoader = BuildProperties.class.getClassLoader();
+        final InputStream stream = classLoader.getResourceAsStream(PROPERTIES_RESOURCE);
         if (stream != null) {
             try {
                 properties.load(stream);
