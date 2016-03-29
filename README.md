@@ -18,12 +18,12 @@ Its API is based on the command-lines client.
 
  HttpContext context = new BasicHttpContext();
 
- HttpClientBuilder builder = HttpClientBuilder.create();
- builder.setDefaultCredentialsProvider(cp);
- builder.setRetryHandler(new SubversionRequestRetryHandler());
+ HttpClientBuilder httpBuilder = HttpClientBuilder.create();
+ httpBuilder.setDefaultCredentialsProvider(cp);
+ httpBuilder.setRetryHandler(new SubversionRequestRetryHandler());
 
- URIBuilder builder = new URIBuilder();
- URI uri = builder //
+ URIBuilder uriBuilder = new URIBuilder();
+ URI uri = uriBuilder //
     .setScheme("http")//
     .setHost("scm.example.net") //
     .setPort(8080)
@@ -32,7 +32,7 @@ Its API is based on the command-lines client.
 
  RepositoryFactory factory = RepositoryFactory.getInstance();
 
- try (ClosableHttpClient client = builder.build()) {
+ try (ClosableHttpClient client = httpBuilder.build()) {
     Repository repository = factory.createRepository(uri, client, context, true);
 
     Transaction transaction = repository.createTransaction();
