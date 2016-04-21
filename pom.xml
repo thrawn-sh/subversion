@@ -261,9 +261,10 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <configLocation>https://dev.shadowhunt.de/checkstyle.xml</configLocation>
-                    <excludes>${project.build.directory}/generated-sources/**/*.java</excludes>
+                    <configLocation>assets/dev/checkstyle.xml</configLocation>
+                    <headerLocation>LICENSE</headerLocation>
                     <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    <suppressionsLocation>assets/dev/checkstyle-suppressions.xml</suppressionsLocation>
                     <violationSeverity>warning</violationSeverity>
                 </configuration>
             </plugin>
@@ -406,7 +407,7 @@
                     <linkXRef>false</linkXRef>
                     <printFailingErrors>true</printFailingErrors>
                     <rulesets>
-                        <ruleset>https://dev.shadowhunt.de/pmd.xml</ruleset>
+                        <ruleset>assets/dev/pmd.xml</ruleset>
                     </rulesets>
                 </configuration>
             </plugin>
@@ -567,8 +568,11 @@
                     </reportSet>
                 </reportSets>
                 <configuration>
-                    <configLocation>https://dev.shadowhunt.de/checkstyle.xml</configLocation>
-                    <linkXRef>false</linkXRef>
+                    <configLocation>assets/dev/checkstyle.xml</configLocation>
+                    <headerLocation>LICENSE</headerLocation>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    <suppressionsLocation>assets/dev/checkstyle-suppressions.xml</suppressionsLocation>
+                    <violationSeverity>warning</violationSeverity>
                 </configuration>
             </plugin>
             <plugin>
@@ -615,6 +619,7 @@
                 <version>3.0.3</version>
                 <configuration>
                     <effort>Max</effort>
+                    <excludeFilterFile>assets/dev/findbugs-exclude.xml</excludeFilterFile>
                     <xmlOutput>true</xmlOutput>
                 </configuration>
             </plugin>
