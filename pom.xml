@@ -376,7 +376,6 @@
                         </manifest>
                         <manifestEntries>
                             <Implementation-Build>${buildNumber}</Implementation-Build>
-                            <Sealed>true</Sealed>
                         </manifestEntries>
                     </archive>
                     <skipIfEmpty>true</skipIfEmpty>
