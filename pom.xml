@@ -53,7 +53,7 @@
     </developers>
 
     <prerequisites>
-        <maven>3.0.1</maven>
+        <maven>3.0.4</maven>
     </prerequisites>
     <!-- }}}1 -->
 
@@ -99,7 +99,7 @@
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>annotations</artifactId>
             <version>3.0.1u2</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
@@ -116,7 +116,7 @@
             <groupId>de.shadowhunt</groupId>
             <artifactId>annotations</artifactId>
             <version>2.0.0</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -487,7 +487,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>buildnumber-maven-plugin</artifactId>
-                <version>1.3</version>
+                <version>1.0</version>
                 <executions>
                     <execution>
                         <phase>validate</phase>
@@ -624,7 +624,6 @@
                 </configuration>
             </plugin>
         </plugins>
-        <!-- }}}1 -->
     </reporting>
     <!-- }}}1 -->
 </project>
