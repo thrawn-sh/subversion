@@ -30,8 +30,8 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
@@ -62,7 +62,7 @@ abstract class AbstractCommand implements Command {
                 .forHelp();
     }
 
-    protected final HttpClient createHttpClient(final String username, final String password) {
+    protected final CloseableHttpClient createHttpClient(final String username, final String password) {
         final HttpClientBuilder builder = HttpClientBuilder.create();
 
         if (StringUtils.isNotBlank(username)) {

@@ -29,7 +29,7 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.protocol.HttpContext;
 
 public class CatCommand extends AbstractCommand {
@@ -62,22 +62,27 @@ public class CatCommand extends AbstractCommand {
             return true;
         }
 
-        final HttpClient client = createHttpClient(usernameOption.value(options), passwordOption.value(options));
-        final HttpContext context = createHttpContext();
-
-        final RepositoryFactory factory = RepositoryFactory.getInstance();
-        final Repository repository = factory.createRepository(baseOption.value(options), client, context, true);
-
         final Resource resource = Resource.create(resourceOption.value(options));
         final Revision revision;
         if (options.has(revisionOption)) {
-            revision = Revision.create(revisionOption.value(options));
+            final int value = revisionOption.value(options);
+            revision = Revision.create(value);
         } else {
             revision = Revision.HEAD;
         }
 
-        try (InputStream download = repository.download(resource, revision)) {
-            IOUtils.copy(download, output);
+        final String username = usernameOption.value(options);
+        final String password = passwordOption.value(options);
+        try (CloseableHttpClient client = createHttpClient(username, password)) {
+            final RepositoryFactory factory = RepositoryFactory.getInstance();
+
+            final HttpContext context = createHttpContext();
+            final URI base = baseOption.value(options);
+            final Repository repository = factory.createRepository(base, client, context, true);
+
+            try (InputStream download = repository.download(resource, revision)) {
+                IOUtils.copy(download, output);
+            }
         }
         return true;
     }
