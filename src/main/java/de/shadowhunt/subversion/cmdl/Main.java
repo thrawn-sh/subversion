@@ -21,10 +21,18 @@ import java.util.ServiceLoader;
 public final class Main {
 
     public static void main(final String[] args) throws Exception {
-        final String commandName = args[0];
+        final String commandName;
+        final String[] commandArguments;
+        if (args.length > 0) {
+            commandName = args[0];
+            commandArguments = Arrays.copyOfRange(args, 1, args.length);
+        } else {
+            commandName = "help";
+            commandArguments = new String[0];
+        }
+
         for (final Command command : ServiceLoader.load(Command.class)) {
             if (commandName.equals(command.getName())) {
-                final String[] commandArguments = Arrays.copyOfRange(args, 1, args.length);
                 if (!command.call(System.out, commandArguments)) {
                     System.exit(1);
                 }
