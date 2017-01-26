@@ -21,7 +21,7 @@
 
     <groupId>de.shadowhunt</groupId>
     <artifactId>subversion</artifactId>
-    <version>3.0.3-SNAPSHOT</version>
+    <version>3.0.3</version>
     <packaging>jar</packaging>
 
     <!-- project information {{{1 -->
