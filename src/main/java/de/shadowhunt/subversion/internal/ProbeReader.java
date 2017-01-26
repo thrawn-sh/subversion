@@ -17,6 +17,7 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLDecoder;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -60,10 +61,11 @@ final class ProbeReader {
         @Override
         protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
             if ((ProtocolVersion.HTTP_V1 == version) || (ProtocolVersion.HTTP_V2 == version)) {
+                final String unescapedPath = decodePath(text);
                 // .../${svn}/act/
                 // ^^^^^^ <- prefix
                 // ^^^ <- part of baseUri
-                final String[] segments = PATH_PATTERN.split(text);
+                final String[] segments = PATH_PATTERN.split(unescapedPath);
                 final int prefixIndex = segments.length - 2;
                 final Resource prefix = Resource.create(segments[prefixIndex]);
 
@@ -74,6 +76,14 @@ final class ProbeReader {
                 }
                 final Resource basePath = Resource.create(sb.toString());
                 probe = new Probe(basePath, prefix);
+            }
+        }
+
+        private String decodePath(final String path) {
+            try {
+                return URLDecoder.decode(path, "UTF-8");
+            } catch (Exception e) {
+                throw new SubversionException("can not decode path: " + path, e);
             }
         }
 
