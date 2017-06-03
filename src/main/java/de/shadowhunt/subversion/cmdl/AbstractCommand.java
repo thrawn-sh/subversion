@@ -41,6 +41,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+import org.slf4j.impl.SimpleLogger;
 
 abstract class AbstractCommand implements Command {
 
@@ -198,9 +199,12 @@ abstract class AbstractCommand implements Command {
                 .required();
     }
 
-    private OptionSpecBuilder createWireLogOption(final OptionParser parser) {
+    protected final OptionSpec<File> createWireLogOption(final OptionParser parser) {
         return parser //
-                .accepts("wirelog", "dump all communication to wire.log");
+                .acceptsAll(Arrays.asList("wirelog"), "dump all communication to") //
+                .withRequiredArg() //
+                .describedAs("file") //
+                .ofType(File.class);
     }
 
     @Override
@@ -241,7 +245,7 @@ abstract class AbstractCommand implements Command {
     @CheckForNull
     protected final OptionSet parse(final PrintStream output, final OptionParser parser, final String... args) throws IOException {
         final OptionSpec<Void> helpOption = createHelpOption(parser);
-        final OptionSpecBuilder wireLogOption = createWireLogOption(parser);
+        final OptionSpec<File> wireLogOption = createWireLogOption(parser);
 
         final OptionSet options;
         try {
@@ -256,16 +260,16 @@ abstract class AbstractCommand implements Command {
             return null;
         }
 
-        if (options.has(wireLogOption)) {
-            options.has(wireLogOption); // FIXME
-            // log4j.rootLogger=INFO, stdout
-            //
-            // log4j.appender.stdout=org.apache.log4j.ConsoleAppender
-            // log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
-            // log4j.appender.stdout.layout.ConversionPattern=%5p [%c] %m%n
-            //
-            // log4j.logger.org.apache.http=DEBUG
-            // log4j.logger.org.apache.http.wire=ERROR
+        final File log = options.valueOf(wireLogOption);
+        if (log != null) {
+            System.setProperty(SimpleLogger.DATE_TIME_FORMAT_KEY, "[yyyy-MM-dd HH:mm:ss.SSS]");
+            System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "error");
+            System.setProperty(SimpleLogger.LEVEL_IN_BRACKETS_KEY, "true");
+            System.setProperty(SimpleLogger.LOG_FILE_KEY, log.getAbsolutePath());
+            System.setProperty(SimpleLogger.LOG_KEY_PREFIX + "org.apache.http.wire", "debug");
+            System.setProperty(SimpleLogger.SHOW_DATE_TIME_KEY, "true");
+            System.setProperty(SimpleLogger.SHOW_LOG_NAME_KEY, "false");
+            System.setProperty(SimpleLogger.SHOW_THREAD_NAME_KEY, "false");
         }
 
         return options;
