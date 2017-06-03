@@ -20,7 +20,6 @@ import java.util.Optional;
 
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.LockToken;
-
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 

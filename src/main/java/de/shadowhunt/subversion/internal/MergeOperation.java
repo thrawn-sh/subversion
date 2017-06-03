@@ -27,7 +27,6 @@ import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.LockToken;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.SubversionException;
-
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;

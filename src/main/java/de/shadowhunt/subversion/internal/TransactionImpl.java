@@ -23,7 +23,6 @@ import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.View;
-
 import org.apache.commons.lang3.Validate;
 
 /**

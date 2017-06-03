@@ -47,7 +47,7 @@ public final class QualifiedResource {
         if (!(obj instanceof QualifiedResource)) {
             return false;
         }
-        QualifiedResource other = (QualifiedResource) obj;
+        final QualifiedResource other = (QualifiedResource) obj;
         if (base == null) {
             if (other.base != null) {
                 return false;

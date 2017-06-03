@@ -26,7 +26,6 @@ import javax.xml.stream.XMLStreamWriter;
 import de.shadowhunt.subversion.LockToken;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.SubversionException;
-
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -52,8 +51,7 @@ class PropertiesUpdateOperation extends AbstractVoidOperation {
 
     private final Type type;
 
-    PropertiesUpdateOperation(final URI repository, final QualifiedResource resource, final Type type, final Optional<LockToken> lockToken,
-            final ResourceProperty[] properties) {
+    PropertiesUpdateOperation(final URI repository, final QualifiedResource resource, final Type type, final Optional<LockToken> lockToken, final ResourceProperty[] properties) {
         super(repository);
         this.resource = resource;
         this.type = type;

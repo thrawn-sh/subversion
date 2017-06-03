@@ -18,11 +18,9 @@ package de.shadowhunt.subversion;
 import java.util.UUID;
 
 /**
- * {@link View} allows the application to define a view on the repository, it can be created via {@link
- * Repository#createView()}.
+ * {@link View} allows the application to define a view on the repository, it can be created via {@link Repository#createView()}.
  *
- * A {@link View} will freeze the maximal (newest) {@link de.shadowhunt.subversion.Revision} the {@link Repository} can
- * be accessed with, resulting in a uniform view when using the {@link de.shadowhunt.subversion.Revision#HEAD}
+ * A {@link View} will freeze the maximal (newest) {@link de.shadowhunt.subversion.Revision} the {@link Repository} can be accessed with, resulting in a uniform view when using the {@link de.shadowhunt.subversion.Revision#HEAD}
  */
 public interface View {
 

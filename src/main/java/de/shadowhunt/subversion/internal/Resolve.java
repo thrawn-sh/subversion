@@ -27,7 +27,6 @@ import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.xml.AbstractSaxExpression;
 import de.shadowhunt.subversion.xml.AbstractSaxExpressionHandler;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 

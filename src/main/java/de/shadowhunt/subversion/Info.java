@@ -28,7 +28,7 @@ import org.apache.commons.lang3.Validate;
 public interface Info {
 
     /**
-     * {@link java.util.Comparator} orders {@link de.shadowhunt.subversion.Info}s by their relative {@link Resource}.
+     * {@link java.util.Comparator} orders {@link de.shadowhunt.subversion.Info} s by their relative {@link Resource}.
      */
     Comparator<Info> RESOURCE_COMPARATOR = (i1, i2) -> {
         Validate.notNull(i1, "i1 must not be null");

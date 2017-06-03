@@ -34,8 +34,7 @@ public interface Repository {
      */
     enum ProtocolVersion {
 
-        HTTP_V1,
-        HTTP_V2
+        HTTP_V1, HTTP_V2
     }
 
     /**
@@ -48,8 +47,7 @@ public interface Repository {
      *
      * @throws java.lang.NullPointerException if any parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     void add(Transaction transaction, Resource resource, boolean parents, InputStream content);
 
@@ -63,11 +61,10 @@ public interface Repository {
      * @throws java.lang.NullPointerException if the transaction parameter is {@code null}
      * @throws java.lang.NullPointerException if the message parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     void commit(Transaction transaction, String message, boolean releaseLocks);
-    
+
     /**
      * Recursively copy a resource in the given revision.
      *
@@ -79,8 +76,7 @@ public interface Repository {
      *
      * @throws java.lang.NullPointerException if any parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     void copy(Transaction transaction, Resource srcResource, Revision srcRevision, Resource targetResource, boolean parents);
 
@@ -90,8 +86,7 @@ public interface Repository {
      * @return the new {@link Transaction}
      *
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     Transaction createTransaction();
 
@@ -101,8 +96,7 @@ public interface Repository {
      * @return the new {@link View}
      *
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     View createView();
 
@@ -114,8 +108,7 @@ public interface Repository {
      *
      * @throws java.lang.NullPointerException if any parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     void delete(Transaction transaction, Resource resource);
 
@@ -129,8 +122,7 @@ public interface Repository {
      *
      * @throws java.lang.NullPointerException if any parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     InputStream download(Resource resource, Revision revision);
 
@@ -145,8 +137,7 @@ public interface Repository {
      *
      * @throws java.lang.NullPointerException if any parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     InputStream download(View view, Resource resource, Revision revision);
 
@@ -160,8 +151,7 @@ public interface Repository {
      *
      * @throws java.lang.NullPointerException if any parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     URI downloadURI(Resource resource, Revision revision);
 
@@ -176,8 +166,7 @@ public interface Repository {
      *
      * @throws java.lang.NullPointerException if any parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     URI downloadURI(View view, Resource resource, Revision revision);
 
@@ -192,8 +181,7 @@ public interface Repository {
      *
      * @throws java.lang.NullPointerException if any parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     boolean exists(Resource resource, Revision revision);
 
@@ -209,8 +197,7 @@ public interface Repository {
      *
      * @throws java.lang.NullPointerException if any parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     boolean exists(View view, Resource resource, Revision revision);
 
@@ -253,8 +240,7 @@ public interface Repository {
      *
      * @throws java.lang.NullPointerException if any parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     Info info(Resource resource, Revision revision, ResourceProperty.Key... keys);
 
@@ -270,49 +256,40 @@ public interface Repository {
      *
      * @throws java.lang.NullPointerException if any parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     Info info(View view, Resource resource, Revision revision, ResourceProperty.Key... keys);
 
     /**
-     * Retrieve information for the resource in the given revision and its child resources (depending on depth
-     * parameter).
+     * Retrieve information for the resource in the given revision and its child resources (depending on depth parameter).
      *
      * @param resource the {@link Resource} of the resource (relative to the repository root)
      * @param revision the {@link Revision} of the resource to retrieve
-     * @param depth whether to retrieve only for the given resource, its children or only part of its children depending
-     * on the value of {@link Depth}
+     * @param depth whether to retrieve only for the given resource, its children or only part of its children depending on the value of {@link Depth}
      * @param keys request only the specified {@link ResourceProperty.Key}s
      *
-     * @return {@link Set} of {@link Info} for the resource and its child resources (depending on depth parameter), if
-     * keys where specified, only reduced {@link Info} will contained in the {@link Set}
+     * @return {@link Set} of {@link Info} for the resource and its child resources (depending on depth parameter), if keys where specified, only reduced {@link Info} will contained in the {@link Set}
      *
      * @throws java.lang.NullPointerException if any parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     Set<Info> list(Resource resource, Revision revision, Depth depth, ResourceProperty.Key... keys);
 
     /**
-     * Retrieve information for the resource in the given revision and its child resources (depending on depth
-     * parameter).
+     * Retrieve information for the resource in the given revision and its child resources (depending on depth parameter).
      *
      * @param view the current valid {@link View}
      * @param resource the {@link Resource} of the resource (relative to the repository root)
      * @param revision the {@link Revision} of the resource to retrieve
-     * @param depth whether to retrieve only for the given resource, its children or only part of its children depending
-     * on the value of {@link Depth}
+     * @param depth whether to retrieve only for the given resource, its children or only part of its children depending on the value of {@link Depth}
      * @param keys request only the specified {@link ResourceProperty.Key}s
      *
-     * @return {@link Set} of {@link Info} for the resource and its child resources (depending on depth parameter), if
-     * keys where specified, only reduced {@link Info} will contained in the {@link Set}
+     * @return {@link Set} of {@link Info} for the resource and its child resources (depending on depth parameter), if keys where specified, only reduced {@link Info} will contained in the {@link Set}
      *
      * @throws java.lang.NullPointerException if any parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     Set<Info> list(View view, Resource resource, Revision revision, Depth depth, ResourceProperty.Key... keys);
 
@@ -320,13 +297,11 @@ public interface Repository {
      * Mark the expected revision of the resource as locked.
      *
      * @param resource the {@link Resource} of the resource (relative to the repository root)
-     * @param steal if the resource is locked by another user {@code true} will override the lock, otherwise the
-     * operation will fail
+     * @param steal if the resource is locked by another user {@code true} will override the lock, otherwise the operation will fail
      *
      * @throws java.lang.NullPointerException if the resource parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     void lock(Resource resource, boolean steal);
 
@@ -339,13 +314,11 @@ public interface Repository {
      * @param limit maximal number of {@link Log} entries, if the value is lower or equal to {@code 0} all entries will be returned
      * @param stopOnCopy do not cross copies while traversing history
      *
-     * @return ordered (early to latest) {@link List} of {@link Log} for the revisions between startRevision and
-     * endRevision of the resource
+     * @return ordered (early to latest) {@link List} of {@link Log} for the revisions between startRevision and endRevision of the resource
      *
      * @throws java.lang.NullPointerException if any parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     List<Log> log(Resource resource, Revision startRevision, Revision endRevision, int limit, boolean stopOnCopy);
 
@@ -359,13 +332,11 @@ public interface Repository {
      * @param limit maximal number of {@link Log} entries, if the value is lower or equal to {@code 0} all entries will be returned
      * @param stopOnCopy do not cross copies while traversing history
      *
-     * @return ordered (early to latest) {@link List} of {@link Log} for the revisions between startRevision and
-     * endRevision of the resource
+     * @return ordered (early to latest) {@link List} of {@link Log} for the revisions between startRevision and endRevision of the resource
      *
      * @throws java.lang.NullPointerException if any parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     List<Log> log(View view, Resource resource, Revision startRevision, Revision endRevision, int limit, boolean stopOnCopy);
 
@@ -378,8 +349,7 @@ public interface Repository {
      *
      * @throws java.lang.NullPointerException if any parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     void mkdir(Transaction transaction, Resource resource, boolean parents);
 
@@ -393,8 +363,7 @@ public interface Repository {
      *
      * @throws java.lang.NullPointerException if any parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     void move(Transaction transaction, Resource srcResource, Resource targetResource, boolean parents);
 
@@ -408,14 +377,12 @@ public interface Repository {
      * @throws java.lang.IllegalArgumentException if properties contain {@code null} elements
      * @throws java.lang.NullPointerException if any parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     void propertiesDelete(Transaction transaction, Resource resource, ResourceProperty... properties);
 
     /**
-     * Set the given properties for the resource (new properties will be added, existing properties will be
-     * overridden).
+     * Set the given properties for the resource (new properties will be added, existing properties will be overridden).
      *
      * @param transaction the current running {@link Transaction}
      * @param resource the {@link Resource} of the resource (relative to the repository root)
@@ -424,8 +391,7 @@ public interface Repository {
      * @throws java.lang.IllegalArgumentException if properties contain {@code null} elements
      * @throws java.lang.NullPointerException if any parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     void propertiesSet(Transaction transaction, Resource resource, ResourceProperty... properties);
 
@@ -436,8 +402,7 @@ public interface Repository {
      *
      * @throws java.lang.NullPointerException if the transaction parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     void rollback(Transaction transaction);
 
@@ -448,8 +413,7 @@ public interface Repository {
      *
      * @throws java.lang.NullPointerException if the transaction parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     void rollbackIfNotCommitted(Transaction transaction);
 
@@ -462,8 +426,7 @@ public interface Repository {
      *
      * @throws java.lang.NullPointerException if the resource parameter is {@code null}
      * @throws de.shadowhunt.subversion.SubversionException if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     void unlock(Resource resource, boolean force);
 }

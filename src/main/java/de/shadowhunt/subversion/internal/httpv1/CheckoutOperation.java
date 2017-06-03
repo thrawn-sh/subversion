@@ -26,7 +26,6 @@ import de.shadowhunt.subversion.internal.AbstractVoidOperation;
 import de.shadowhunt.subversion.internal.QualifiedResource;
 import de.shadowhunt.subversion.internal.URIUtils;
 import de.shadowhunt.subversion.internal.XmlConstants;
-
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;

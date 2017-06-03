@@ -19,7 +19,6 @@ import java.net.URI;
 
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Resource;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 

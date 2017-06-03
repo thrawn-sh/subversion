@@ -26,7 +26,6 @@ import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 
@@ -34,8 +33,7 @@ class ListOperation extends AbstractPropfindOperation<Optional<Set<Info>>> {
 
     private final Resource basePath;
 
-    ListOperation(final URI repository, final Resource basePath, final QualifiedResource resource, final Resource marker, final Depth depth,
-            final ResourceProperty.Key[] keys) {
+    ListOperation(final URI repository, final Resource basePath, final QualifiedResource resource, final Resource marker, final Depth depth, final ResourceProperty.Key[] keys) {
         super(repository, resource, marker, depth, keys);
         this.basePath = basePath;
     }

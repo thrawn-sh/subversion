@@ -62,8 +62,7 @@ public abstract class RepositoryFactory {
     }
 
     /**
-     * Create a new {@link Repository} for given {@link URI} and use the given {@link HttpClient} with the {@link
-     * HttpClient} to connect to the server.
+     * Create a new {@link Repository} for given {@link URI} and use the given {@link HttpClient} with the {@link HttpClient} to connect to the server.
      *
      * @param uri {@link URI} to the root of the repository (e.g: http://repository.example.net/svn/test_repo/trunk/folder)
      * @param client {@link HttpClient} that will handle all requests for this repository
@@ -74,8 +73,7 @@ public abstract class RepositoryFactory {
      *
      * @throws NullPointerException if any parameter is {@code null}
      * @throws SubversionException if no {@link Repository} can be created
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with
-     * the server
+     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
      */
     public final Repository createRepository(final URI uri, final HttpClient client, final HttpContext context, final boolean validate) {
         Validate.notNull(uri, "uri must not be null");

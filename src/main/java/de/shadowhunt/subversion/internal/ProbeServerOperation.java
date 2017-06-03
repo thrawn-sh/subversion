@@ -28,7 +28,6 @@ import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Repository.ProtocolVersion;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.TransmissionException;
-
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;

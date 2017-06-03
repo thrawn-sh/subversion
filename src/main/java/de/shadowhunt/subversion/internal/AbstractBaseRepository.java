@@ -37,7 +37,6 @@ import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.Transaction.Status;
 import de.shadowhunt.subversion.View;
-
 import org.apache.commons.lang3.Validate;
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
@@ -88,8 +87,7 @@ public abstract class AbstractBaseRepository implements Repository {
 
     protected final UUID repositoryId;
 
-    protected AbstractBaseRepository(final URI repository, final Resource base, final UUID id, final ResourceMapper config, final HttpClient client,
-            final HttpContext context) {
+    protected AbstractBaseRepository(final URI repository, final Resource base, final UUID id, final ResourceMapper config, final HttpClient client, final HttpContext context) {
         Validate.notNull(repository, "repository must not be null");
         Validate.notNull(base, "base must not be null");
         Validate.notNull(id, "id must not be null");
@@ -132,21 +130,18 @@ public abstract class AbstractBaseRepository implements Repository {
     }
 
     @Override
-    public void copy(final Transaction transaction, final Resource sourceResource, final Revision sourceRevision, final Resource targetResource,
-            final boolean parents) {
+    public void copy(final Transaction transaction, final Resource sourceResource, final Revision sourceRevision, final Resource targetResource, final boolean parents) {
         validateTransaction(transaction);
         Validate.notNull(sourceResource, "sourceResource must not be null");
         Validate.notNull(sourceRevision, "sourceRevision must not be null");
         Validate.notNull(targetResource, "targetResource must not be null");
         validateRevision(transaction, sourceRevision);
 
-        LOGGER.trace("copying resource from {}@{} to {} during transaction {} (parents: {})", sourceResource, sourceRevision, targetResource,
-                transaction.getId(), parents);
+        LOGGER.trace("copying resource from {}@{} to {} during transaction {} (parents: {})", sourceResource, sourceRevision, targetResource, transaction.getId(), parents);
         copy0(transaction, new QualifiedResource(base, sourceResource), sourceRevision, new QualifiedResource(base, targetResource), parents, true);
     }
 
-    private void copy0(final Transaction transaction, final QualifiedResource sourceResource, final Revision sourceRevision,
-            final QualifiedResource targetResource, final boolean parents, final boolean resolveSource) {
+    private void copy0(final Transaction transaction, final QualifiedResource sourceResource, final Revision sourceRevision, final QualifiedResource targetResource, final boolean parents, final boolean resolveSource) {
         if (parents) {
             createFolder(transaction, targetResource.getParent(), true);
         } else {
@@ -372,8 +367,7 @@ public abstract class AbstractBaseRepository implements Repository {
         return info.orElseThrow(() -> new SubversionException("Can't resolve: " + resource + '@' + revision));
     }
 
-    private Optional<Info> info0(final View view, final QualifiedResource resource, final Revision revision, final boolean resolve,
-            final ResourceProperty.Key[] keys) {
+    private Optional<Info> info0(final View view, final QualifiedResource resource, final Revision revision, final boolean resolve, final ResourceProperty.Key[] keys) {
         final QualifiedResource resolved = resolve(view, resource, revision, resolve);
         final InfoOperation operation = new InfoOperation(repository, base, resolved, config.getPrefix(), keys);
         return operation.execute(client, context);
@@ -410,8 +404,7 @@ public abstract class AbstractBaseRepository implements Repository {
         return infoSet.orElseThrow(() -> new SubversionException("Can't resolve: " + resource + '@' + revision));
     }
 
-    private void listRecursively0(final View view, final QualifiedResource resource, final Revision revision, final Set<Info> result,
-            final ResourceProperty.Key[] keys) {
+    private void listRecursively0(final View view, final QualifiedResource resource, final Revision revision, final Set<Info> result, final ResourceProperty.Key[] keys) {
         for (final Info info : list0(view, resource, revision, Depth.IMMEDIATES, keys)) {
             if (!result.add(info)) {
                 continue;
@@ -438,8 +431,7 @@ public abstract class AbstractBaseRepository implements Repository {
     }
 
     @Override
-    public final List<Log> log(final View view, final Resource resource, final Revision startRevision, final Revision endRevision, final int limit,
-            final boolean stopOnCopy) {
+    public final List<Log> log(final View view, final Resource resource, final Revision startRevision, final Revision endRevision, final int limit, final boolean stopOnCopy) {
         Validate.notNull(view, "view must not be null");
         Validate.notNull(resource, "resource must not be null");
         Validate.notNull(startRevision, "startRevision must not be null");
@@ -451,8 +443,7 @@ public abstract class AbstractBaseRepository implements Repository {
         return log0(view, new QualifiedResource(base, resource), startRevision, endRevision, limit, stopOnCopy);
     }
 
-    private List<Log> log0(final View view, final QualifiedResource resource, final Revision startRevision, final Revision endRevision, final int limit,
-            final boolean stopOnCopy) {
+    private List<Log> log0(final View view, final QualifiedResource resource, final Revision startRevision, final Revision endRevision, final int limit, final boolean stopOnCopy) {
         final Revision concreteStartRevision = getConcreteRevision(view, startRevision);
         final Revision concreteEndRevision = getConcreteRevision(view, endRevision);
 
@@ -494,8 +485,7 @@ public abstract class AbstractBaseRepository implements Repository {
         propertiesUpdate(transaction, new QualifiedResource(base, resource), PropertiesUpdateOperation.Type.SET, properties);
     }
 
-    protected void propertiesUpdate(final Transaction transaction, final QualifiedResource resource, final PropertiesUpdateOperation.Type type,
-            final ResourceProperty... properties) {
+    protected void propertiesUpdate(final Transaction transaction, final QualifiedResource resource, final PropertiesUpdateOperation.Type type, final ResourceProperty... properties) {
         validateTransaction(transaction);
         Validate.notNull(resource, "resource must not be null");
         Validate.noNullElements(properties, "properties must not contain null elements");
@@ -564,8 +554,7 @@ public abstract class AbstractBaseRepository implements Repository {
 
     private void unlock0(final View view, final QualifiedResource resource, final boolean force) {
         final Optional<Info> info = info0(view, resource, view.getHeadRevision(), true, LOCKING);
-        final Optional<LockToken> lockToken = info.orElseThrow(() -> new SubversionException("Can't resolve: " + resource + '@' + view.getHeadRevision()))
-                .getLockToken();
+        final Optional<LockToken> lockToken = info.orElseThrow(() -> new SubversionException("Can't resolve: " + resource + '@' + view.getHeadRevision())).getLockToken();
 
         if (!lockToken.isPresent()) {
             return;

@@ -18,7 +18,6 @@ package de.shadowhunt.subversion.internal;
 import java.net.URI;
 
 import de.shadowhunt.subversion.Repository;
-
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 

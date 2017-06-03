@@ -21,7 +21,6 @@ import java.net.URI;
 import java.util.Optional;
 
 import de.shadowhunt.subversion.TransmissionException;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;

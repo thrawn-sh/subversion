@@ -31,7 +31,6 @@ import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.xml.AbstractSaxExpression;
 import de.shadowhunt.subversion.xml.AbstractSaxExpressionHandler;
 import de.shadowhunt.subversion.xml.SaxExpression;
-
 import org.xml.sax.SAXException;
 
 final class LogImplReader {
@@ -124,8 +123,7 @@ final class LogImplReader {
         };
 
         private static SaxExpression<?>[] createExpressions() {
-            return new SaxExpression[] {
-                    new CommentExpression(), //
+            return new SaxExpression[] { new CommentExpression(), //
                     new CreatorExpression(), //
                     new DateExpression(), //
                     new RevisionExpression() //
@@ -204,8 +202,7 @@ final class LogImplReader {
     /**
      * Reads log information for a resource from the given {@link java.io.InputStream}.
      *
-     * @param inputStream {@link java.io.InputStream} from which the status information is read (Note: will not be
-     * closed)
+     * @param inputStream {@link java.io.InputStream} from which the status information is read (Note: will not be closed)
      *
      * @return {@link Log} for the resource
      */

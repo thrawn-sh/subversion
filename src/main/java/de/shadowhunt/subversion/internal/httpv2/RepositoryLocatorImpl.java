@@ -23,7 +23,6 @@ import de.shadowhunt.subversion.Repository.ProtocolVersion;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.internal.AbstractRepositoryLocator;
 import de.shadowhunt.subversion.internal.Probe;
-
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 

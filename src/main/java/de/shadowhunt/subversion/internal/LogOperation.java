@@ -26,7 +26,6 @@ import javax.xml.stream.XMLStreamWriter;
 import de.shadowhunt.subversion.Log;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
-
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;

@@ -27,7 +27,6 @@ import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.SubversionException;
-
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -78,8 +77,7 @@ abstract class AbstractPropfindOperation<T> extends AbstractOperation<T> {
         this.propertyKeys = null;
     }
 
-    AbstractPropfindOperation(final URI repository, final QualifiedResource resource, final Resource marker, final Depth depth,
-            final ResourceProperty.Key[] propertyKeys) {
+    AbstractPropfindOperation(final URI repository, final QualifiedResource resource, final Resource marker, final Depth depth, final ResourceProperty.Key[] propertyKeys) {
         super(repository);
         this.resource = resource;
         this.marker = marker;

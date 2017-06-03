@@ -18,7 +18,6 @@ package de.shadowhunt.subversion.internal;
 import java.net.URI;
 
 import de.shadowhunt.subversion.LockToken;
-
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 

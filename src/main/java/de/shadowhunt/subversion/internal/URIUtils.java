@@ -19,7 +19,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import de.shadowhunt.subversion.Resource;
-
 import org.apache.http.client.utils.URIBuilder;
 
 /**

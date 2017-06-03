@@ -24,7 +24,6 @@ import javax.xml.stream.XMLOutputFactory;
 import de.shadowhunt.subversion.BuildProperties;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.TransmissionException;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -116,11 +115,8 @@ public abstract class AbstractOperation<T> implements ResponseHandler<T> {
     }
 
     /**
-     * as the Resource can not differ between files and directories each request for an directory (without ending '/')
-     * will result in a redirect (with ending '/'), if another call to a redirected URI occurs a
-     * CircularRedirectException is thrown, as we can't determine the real target we can't prevent this from happening.
-     * Allowing circular redirects globally could lead to live locks on the other hand. Therefore we clear the
-     * redirection cache explicitly.
+     * as the Resource can not differ between files and directories each request for an directory (without ending '/') will result in a redirect (with ending '/'), if another call to a redirected URI occurs a CircularRedirectException is thrown, as we can't determine the real target we can't prevent
+     * this from happening. Allowing circular redirects globally could lead to live locks on the other hand. Therefore we clear the redirection cache explicitly.
      */
     final void clearRedirects(final HttpContext context) {
         context.removeAttribute(HttpClientContext.REDIRECT_LOCATIONS);
@@ -146,6 +142,7 @@ public abstract class AbstractOperation<T> implements ResponseHandler<T> {
         }
     }
 
+    @Override
     public T handleResponse(final HttpResponse response) throws IOException {
         check(response);
         return processResponse(response);

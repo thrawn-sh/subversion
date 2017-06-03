@@ -37,7 +37,6 @@ import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.xml.AbstractSaxExpression;
 import de.shadowhunt.subversion.xml.AbstractSaxExpressionHandler;
 import de.shadowhunt.subversion.xml.SaxExpression;
-
 import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.SAXException;
 
@@ -54,8 +53,7 @@ final class InfoImplReader {
             return new SaxExpression[] { //
                     new StringExpression(new QName(XmlConstants.DAV_NAMESPACE, "creationdate")), //
                     new ResourceTypeExpression(), new StringExpression(new QName(XmlConstants.DAV_NAMESPACE, "getlastmodified")), //
-                    new StringExpression(new QName(XmlConstants.DAV_NAMESPACE, "lockdiscovery"), new QName(XmlConstants.DAV_NAMESPACE, "activelock"),
-                            new QName(XmlConstants.DAV_NAMESPACE, "locktoken"), new QName(XmlConstants.DAV_NAMESPACE, "href")),
+                    new StringExpression(new QName(XmlConstants.DAV_NAMESPACE, "lockdiscovery"), new QName(XmlConstants.DAV_NAMESPACE, "activelock"), new QName(XmlConstants.DAV_NAMESPACE, "locktoken"), new QName(XmlConstants.DAV_NAMESPACE, "href")),
                     new StringExpression(new QName(XmlConstants.SUBVERSION_DAV_NAMESPACE, "md5-checksum")), //
                     new PropertyExpression(), //
                     new StringExpression(new QName(XmlConstants.SUBVERSION_DAV_NAMESPACE, "repository-uuid")), //
@@ -297,12 +295,9 @@ final class InfoImplReader {
     }
 
     /**
-     * Reads status information for a single revision of a resource from the
-     * given {@link java.io.InputStream}.
+     * Reads status information for a single revision of a resource from the given {@link java.io.InputStream}.
      *
-     * @param in
-     *            {@link java.io.InputStream} from which the status information
-     *            is read (Note: will not be closed)
+     * @param in {@link java.io.InputStream} from which the status information is read (Note: will not be closed)
      *
      * @return {@link InfoImpl} for the resource
      */
@@ -315,12 +310,9 @@ final class InfoImplReader {
     }
 
     /**
-     * Reads a {@link java.util.SortedSet} of status information for a single
-     * revision of various resources from the given {@link java.io.InputStream}.
+     * Reads a {@link java.util.SortedSet} of status information for a single revision of various resources from the given {@link java.io.InputStream}.
      *
-     * @param inputStream
-     *            {@link java.io.InputStream} from which the status information
-     *            is read (Note: will not be closed)
+     * @param inputStream {@link java.io.InputStream} from which the status information is read (Note: will not be closed)
      *
      * @return {@link InfoImpl} for the resources
      */

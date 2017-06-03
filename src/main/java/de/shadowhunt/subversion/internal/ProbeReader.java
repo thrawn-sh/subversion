@@ -29,7 +29,6 @@ import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.xml.AbstractSaxExpression;
 import de.shadowhunt.subversion.xml.AbstractSaxExpressionHandler;
-
 import org.xml.sax.SAXException;
 
 final class ProbeReader {
@@ -51,6 +50,14 @@ final class ProbeReader {
         CollectionExpression(final ProtocolVersion version) {
             super(PATH);
             this.version = version;
+        }
+
+        private String decodePath(final String path) {
+            try {
+                return URLDecoder.decode(path, "UTF-8");
+            } catch (final Exception e) {
+                throw new SubversionException("can not decode path: " + path, e);
+            }
         }
 
         @Override
@@ -76,14 +83,6 @@ final class ProbeReader {
                 }
                 final Resource basePath = Resource.create(sb.toString());
                 probe = new Probe(basePath, prefix);
-            }
-        }
-
-        private String decodePath(final String path) {
-            try {
-                return URLDecoder.decode(path, "UTF-8");
-            } catch (Exception e) {
-                throw new SubversionException("can not decode path: " + path, e);
             }
         }
 

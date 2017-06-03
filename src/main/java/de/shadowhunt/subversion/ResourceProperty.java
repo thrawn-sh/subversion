@@ -109,11 +109,7 @@ public final class ResourceProperty {
      * {@link ResourceProperty} can have various types, depending of the context they are used.
      */
     public enum Type {
-        DAV("DAV:"),
-        SUBVERSION_CUSTOM("http://subversion.tigris.org/xmlns/custom/"),
-        SUBVERSION_DAV("http://subversion.tigris.org/xmlns/dav/"),
-        SUBVERSION_SVN("http://subversion.tigris.org/xmlns/svn/"),
-        SVN("svn:");
+        DAV("DAV:"), SUBVERSION_CUSTOM("http://subversion.tigris.org/xmlns/custom/"), SUBVERSION_DAV("http://subversion.tigris.org/xmlns/dav/"), SUBVERSION_SVN("http://subversion.tigris.org/xmlns/svn/"), SVN("svn:");
 
         private final String prefix;
 
@@ -201,11 +197,9 @@ public final class ResourceProperty {
     }
 
     /**
-     * Returns the {@link de.shadowhunt.subversion.ResourceProperty.Key} of the {@link
-     * de.shadowhunt.subversion.ResourceProperty}.
+     * Returns the {@link de.shadowhunt.subversion.ResourceProperty.Key} of the {@link de.shadowhunt.subversion.ResourceProperty}.
      *
-     * @return the {@link de.shadowhunt.subversion.ResourceProperty.Key} of the {@link
-     * de.shadowhunt.subversion.ResourceProperty}
+     * @return the {@link de.shadowhunt.subversion.ResourceProperty.Key} of the {@link de.shadowhunt.subversion.ResourceProperty}
      */
     public Key getKey() {
         return key;

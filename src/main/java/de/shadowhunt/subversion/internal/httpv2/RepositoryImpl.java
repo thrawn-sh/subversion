@@ -29,7 +29,6 @@ import de.shadowhunt.subversion.internal.AbstractBaseRepository;
 import de.shadowhunt.subversion.internal.CommitMessageOperation;
 import de.shadowhunt.subversion.internal.MergeOperation;
 import de.shadowhunt.subversion.internal.QualifiedResource;
-
 import org.apache.commons.lang3.Validate;
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
