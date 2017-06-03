@@ -15,14 +15,19 @@
  */
 package de.shadowhunt.subversion.cmdl;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URI;
 import java.util.Arrays;
 
-import de.shadowhunt.http.client.SubversionRequestRetryHandler;
+import javax.annotation.CheckForNull;
 
+import de.shadowhunt.http.client.SubversionRequestRetryHandler;
 import joptsimple.BuiltinHelpFormatter;
+import joptsimple.OptionException;
 import joptsimple.OptionParser;
+import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import joptsimple.OptionSpecBuilder;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +35,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -56,13 +62,22 @@ abstract class AbstractCommand implements Command {
                 .required();
     }
 
-    protected final OptionSpec<Void> createHelpOption(final OptionParser parser) {
+    protected final OptionSpec<String> createCommitMessageOption(final OptionParser parser) {
         return parser //
-                .acceptsAll(Arrays.asList("help", "h", "?"), "show help") //
+                .acceptsAll(Arrays.asList("message", "m"), "commit message") //
+                .withRequiredArg() //
+                .describedAs("commit message") //
+                .ofType(String.class) //
+                .required();
+    }
+
+    private OptionSpec<Void> createHelpOption(final OptionParser parser) {
+        return parser //
+                .acceptsAll(Arrays.asList("help", "h", "?"), "show this command help") //
                 .forHelp();
     }
 
-    protected final CloseableHttpClient createHttpClient(final String username, final String password) {
+    protected final CloseableHttpClient createHttpClient(final String username, final String password, final boolean allowAllSsl) {
         final HttpClientBuilder builder = HttpClientBuilder.create();
 
         if (StringUtils.isNotBlank(username)) {
@@ -72,12 +87,29 @@ abstract class AbstractCommand implements Command {
             builder.setDefaultCredentialsProvider(cp);
         }
 
+        if (allowAllSsl) {
+            builder.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
+        }
+
         builder.setRetryHandler(new SubversionRequestRetryHandler());
         return builder.build();
     }
 
     protected final HttpContext createHttpContext() {
         return new BasicHttpContext();
+    }
+
+    protected final OptionSpec<File> createOutputOption(final OptionParser parser) {
+        return parser //
+                .acceptsAll(Arrays.asList("output", "o"), "output file") //
+                .withRequiredArg() //
+                .describedAs("file") //
+                .ofType(File.class);
+    }
+
+    protected final OptionSpecBuilder createParentsOption(final OptionParser parser) {
+        return parser //
+                .accepts("parents", "create missing parent folders");
     }
 
     protected final OptionParser createParser() {
@@ -113,9 +145,48 @@ abstract class AbstractCommand implements Command {
                 .ofType(Integer.class);
     }
 
+    protected final OptionSpec<String> createSourceResourceOption(final OptionParser parser) {
+        return parser //
+                .acceptsAll(Arrays.asList("source", "s"), "source resource path") //
+                .withRequiredArg() //
+                .describedAs("path") //
+                .ofType(String.class) //
+                .required();
+    }
+
     protected final OptionSpecBuilder createSslOption(final OptionParser parser) {
         return parser //
                 .accepts("trust-ssl", "don't validate SSL");
+    }
+
+    protected final OptionSpec<Integer> createStartRevisionOption(final OptionParser parser) {
+        return parser //
+                .acceptsAll(Arrays.asList("start"), "start version") //
+                .withRequiredArg() //
+                .describedAs("version") //
+                .ofType(Integer.class);
+    }
+
+    protected final OptionSpecBuilder createStealLockOption(final OptionParser parser) {
+        return parser //
+                .accepts("steal-lock", "steal existing lock");
+    }
+
+    protected final OptionSpec<Integer> createStopRevisionOption(final OptionParser parser) {
+        return parser //
+                .acceptsAll(Arrays.asList("stop"), "stop version") //
+                .withRequiredArg() //
+                .describedAs("version") //
+                .ofType(Integer.class);
+    }
+
+    protected final OptionSpec<String> createTargetResourceOption(final OptionParser parser) {
+        return parser //
+                .acceptsAll(Arrays.asList("target", "t"), "target resource path") //
+                .withRequiredArg() //
+                .describedAs("path") //
+                .ofType(String.class) //
+                .required();
     }
 
     protected final OptionSpec<String> createUsernameOption(final OptionParser parser) {
@@ -125,6 +196,11 @@ abstract class AbstractCommand implements Command {
                 .describedAs("username") //
                 .ofType(String.class) //
                 .required();
+    }
+
+    private OptionSpecBuilder createWireLogOption(final OptionParser parser) {
+        return parser //
+                .accepts("wirelog", "dump all communication to wire.log");
     }
 
     @Override
@@ -160,6 +236,39 @@ abstract class AbstractCommand implements Command {
         int result = 1;
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         return result;
+    }
+
+    @CheckForNull
+    protected final OptionSet parse(final PrintStream output, final OptionParser parser, final String... args) throws IOException {
+        final OptionSpec<Void> helpOption = createHelpOption(parser);
+        final OptionSpecBuilder wireLogOption = createWireLogOption(parser);
+
+        final OptionSet options;
+        try {
+            options = parser.parse(args);
+        } catch (final OptionException e) {
+            parser.printHelpOn(output);
+            return null;
+        }
+
+        if (options.has(helpOption)) {
+            parser.printHelpOn(output);
+            return null;
+        }
+
+        if (options.has(wireLogOption)) {
+            options.has(wireLogOption); // FIXME
+            // log4j.rootLogger=INFO, stdout
+            //
+            // log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+            // log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+            // log4j.appender.stdout.layout.ConversionPattern=%5p [%c] %m%n
+            //
+            // log4j.logger.org.apache.http=DEBUG
+            // log4j.logger.org.apache.http.wire=ERROR
+        }
+
+        return options;
     }
 
     @Override

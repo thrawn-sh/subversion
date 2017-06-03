@@ -15,29 +15,28 @@
  */
 package de.shadowhunt.subversion.cmdl;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URI;
+import java.util.Optional;
 
+import de.shadowhunt.subversion.Info;
+import de.shadowhunt.subversion.LockToken;
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.RepositoryFactory;
 import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.Revision;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import joptsimple.OptionSpecBuilder;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.protocol.HttpContext;
 
-public class DownloadCommand extends AbstractCommand {
+public class InfoCommand extends AbstractCommand {
 
-    public DownloadCommand() {
-        super("download");
+    public InfoCommand() {
+        super("info");
     }
 
     @Override
@@ -45,11 +44,10 @@ public class DownloadCommand extends AbstractCommand {
         final OptionParser parser = createParser();
         final OptionSpec<URI> baseOption = createBaseOption(parser);
         final OptionSpec<String> resourceOption = createResourceOption(parser);
-        final OptionSpec<Integer> revisionOption = createRevisionOption(parser);
         final OptionSpec<String> usernameOption = createUsernameOption(parser);
         final OptionSpec<String> passwordOption = createPasswordOption(parser);
         final OptionSpecBuilder sslOption = createSslOption(parser);
-        final OptionSpec<File> outputOption = createOutputOption(parser);
+        final OptionSpec<Integer> revisionOption = createRevisionOption(parser);
 
         final OptionSet options = parse(output, parser, args);
         if (options == null) {
@@ -74,11 +72,38 @@ public class DownloadCommand extends AbstractCommand {
             final URI base = baseOption.value(options);
             final Repository repository = factory.createRepository(base, client, context, true);
 
-            final File file = outputOption.value(options);
-            try (OutputStream os = new FileOutputStream(file)) {
-                try (InputStream download = repository.download(resource, revision)) {
-                    IOUtils.copy(download, os);
-                }
+            final Info info = repository.info(resource, revision);
+            output.println("Reource: " + info.getResource());
+            output.println("URL: " + repository.getBaseUri() + info.getResource());
+            output.println("Repository Root: " + repository.getBaseUri());
+            output.println("Repository UUID: " + info.getRepositoryId());
+            output.println("Revision: " + revision);
+            if (info.isDirectory()) {
+                output.println("Node Kind: directory");
+            } else {
+                output.println("Node Kind: file");
+            }
+            output.println("Creation Date: " + info.getCreationDate());
+            output.println("Last Changed Rev: " + info.getRevision());
+            output.println("Last Changed Date: " + info.getLastModifiedDate());
+            final Optional<LockToken> lockToken = info.getLockToken();
+            if (lockToken.isPresent()) {
+                output.println("Lock Token: opaquelocktoken: " + lockToken.get());
+            }
+            final Optional<String> lockOwner = info.getLockOwner();
+            if (lockOwner.isPresent()) {
+                output.println("Lock Owner: " + lockOwner.get());
+            }
+            final Optional<String> md5 = info.getMd5();
+            if (md5.isPresent()) {
+                output.println("Checksum: " + md5.get());
+            }
+            output.println();
+
+            output.println("Properties:");
+            final ResourceProperty[] properties = info.getProperties();
+            for (final ResourceProperty property : properties) {
+                output.println("  " + property.getName() + ": " + property.getValue());
             }
         }
         return true;

@@ -15,13 +15,11 @@
  */
 package de.shadowhunt.subversion.cmdl;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URI;
+import java.util.List;
 
+import de.shadowhunt.subversion.Log;
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.RepositoryFactory;
 import de.shadowhunt.subversion.Resource;
@@ -30,14 +28,13 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import joptsimple.OptionSpecBuilder;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.protocol.HttpContext;
 
-public class DownloadCommand extends AbstractCommand {
+public class LogCommand extends AbstractCommand {
 
-    public DownloadCommand() {
-        super("download");
+    public LogCommand() {
+        super("log");
     }
 
     @Override
@@ -45,11 +42,11 @@ public class DownloadCommand extends AbstractCommand {
         final OptionParser parser = createParser();
         final OptionSpec<URI> baseOption = createBaseOption(parser);
         final OptionSpec<String> resourceOption = createResourceOption(parser);
-        final OptionSpec<Integer> revisionOption = createRevisionOption(parser);
         final OptionSpec<String> usernameOption = createUsernameOption(parser);
         final OptionSpec<String> passwordOption = createPasswordOption(parser);
         final OptionSpecBuilder sslOption = createSslOption(parser);
-        final OptionSpec<File> outputOption = createOutputOption(parser);
+        final OptionSpec<Integer> startRevisionOption = createStartRevisionOption(parser);
+        final OptionSpec<Integer> stopRevisionOption = createStopRevisionOption(parser);
 
         final OptionSet options = parse(output, parser, args);
         if (options == null) {
@@ -57,12 +54,20 @@ public class DownloadCommand extends AbstractCommand {
         }
 
         final Resource resource = Resource.create(resourceOption.value(options));
-        final Revision revision;
-        if (options.has(revisionOption)) {
-            final int value = revisionOption.value(options);
-            revision = Revision.create(value);
+        final Revision startRevision;
+        if (options.has(startRevisionOption)) {
+            final int value = startRevisionOption.value(options);
+            startRevision = Revision.create(value);
         } else {
-            revision = Revision.HEAD;
+            startRevision = Revision.HEAD;
+        }
+
+        final Revision stopRevision;
+        if (options.has(stopRevisionOption)) {
+            final int value = stopRevisionOption.value(options);
+            stopRevision = Revision.create(value);
+        } else {
+            stopRevision = Revision.INITIAL;
         }
 
         final String username = usernameOption.value(options);
@@ -74,11 +79,16 @@ public class DownloadCommand extends AbstractCommand {
             final URI base = baseOption.value(options);
             final Repository repository = factory.createRepository(base, client, context, true);
 
-            final File file = outputOption.value(options);
-            try (OutputStream os = new FileOutputStream(file)) {
-                try (InputStream download = repository.download(resource, revision)) {
-                    IOUtils.copy(download, os);
-                }
+            final List<Log> logs = repository.log(resource, startRevision, stopRevision, Integer.MAX_VALUE, false);
+            for (final Log log : logs) {
+                output.println("------------------------------------------------------------------------");
+                output.print(log.getRevision());
+                output.print(" | ");
+                output.print(log.getAuthor());
+                output.print(" | ");
+                output.println(log.getDate());
+                output.println();
+                output.println(log.getMessage());
             }
         }
         return true;

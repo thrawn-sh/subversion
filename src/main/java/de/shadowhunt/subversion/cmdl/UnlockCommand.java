@@ -15,29 +15,23 @@
  */
 package de.shadowhunt.subversion.cmdl;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URI;
 
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.RepositoryFactory;
 import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.Revision;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import joptsimple.OptionSpecBuilder;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.protocol.HttpContext;
 
-public class DownloadCommand extends AbstractCommand {
+public class UnlockCommand extends AbstractCommand {
 
-    public DownloadCommand() {
-        super("download");
+    public UnlockCommand() {
+        super("unlock");
     }
 
     @Override
@@ -45,11 +39,10 @@ public class DownloadCommand extends AbstractCommand {
         final OptionParser parser = createParser();
         final OptionSpec<URI> baseOption = createBaseOption(parser);
         final OptionSpec<String> resourceOption = createResourceOption(parser);
-        final OptionSpec<Integer> revisionOption = createRevisionOption(parser);
         final OptionSpec<String> usernameOption = createUsernameOption(parser);
         final OptionSpec<String> passwordOption = createPasswordOption(parser);
         final OptionSpecBuilder sslOption = createSslOption(parser);
-        final OptionSpec<File> outputOption = createOutputOption(parser);
+        final OptionSpecBuilder stealLockOption = createStealLockOption(parser);
 
         final OptionSet options = parse(output, parser, args);
         if (options == null) {
@@ -57,13 +50,6 @@ public class DownloadCommand extends AbstractCommand {
         }
 
         final Resource resource = Resource.create(resourceOption.value(options));
-        final Revision revision;
-        if (options.has(revisionOption)) {
-            final int value = revisionOption.value(options);
-            revision = Revision.create(value);
-        } else {
-            revision = Revision.HEAD;
-        }
 
         final String username = usernameOption.value(options);
         final String password = passwordOption.value(options);
@@ -74,12 +60,7 @@ public class DownloadCommand extends AbstractCommand {
             final URI base = baseOption.value(options);
             final Repository repository = factory.createRepository(base, client, context, true);
 
-            final File file = outputOption.value(options);
-            try (OutputStream os = new FileOutputStream(file)) {
-                try (InputStream download = repository.download(resource, revision)) {
-                    IOUtils.copy(download, os);
-                }
-            }
+            repository.unlock(resource, options.has(stealLockOption));
         }
         return true;
     }

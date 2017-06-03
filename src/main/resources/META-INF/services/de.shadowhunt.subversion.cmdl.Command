@@ -1,1 +1,13 @@
-de.shadowhunt.subversion.cmdl.CatCommand
+de.shadowhunt.subversion.cmdl.CopyCommand
+de.shadowhunt.subversion.cmdl.DeleteCommand
+de.shadowhunt.subversion.cmdl.DownloadCommand
+de.shadowhunt.subversion.cmdl.ExistsCommand
+de.shadowhunt.subversion.cmdl.HelpCommand
+de.shadowhunt.subversion.cmdl.InfoCommand
+de.shadowhunt.subversion.cmdl.ListCommand
+de.shadowhunt.subversion.cmdl.LockCommand
+de.shadowhunt.subversion.cmdl.LogCommand
+de.shadowhunt.subversion.cmdl.MkdirCommand
+de.shadowhunt.subversion.cmdl.MoveCommand
+de.shadowhunt.subversion.cmdl.ProbeCommand
+de.shadowhunt.subversion.cmdl.UnlockCommand

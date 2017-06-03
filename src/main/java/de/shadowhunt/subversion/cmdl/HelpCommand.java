@@ -15,34 +15,30 @@
  */
 package de.shadowhunt.subversion.cmdl;
 
-import java.util.Arrays;
+import java.io.PrintStream;
 import java.util.ServiceLoader;
+import java.util.Set;
+import java.util.TreeSet;
 
-public final class Main {
+public class HelpCommand extends AbstractCommand {
 
-    public static void main(final String... args) throws Exception {
-        final String commandName;
-        final String[] commandArguments;
-        if (args.length > 0) {
-            commandName = args[0];
-            commandArguments = Arrays.copyOfRange(args, 1, args.length);
-        } else {
-            commandName = "help";
-            commandArguments = new String[0];
-        }
+    public HelpCommand() {
+        super("help");
+    }
 
+    @Override
+    public boolean call(final PrintStream output, final String... args) throws Exception {
+        final Set<String> names = new TreeSet<>();
         for (final Command command : ServiceLoader.load(Command.class)) {
-            if (commandName.equals(command.getName())) {
-                if (!command.call(System.out, commandArguments)) {
-                    System.exit(1);
-                }
-                return;
-            }
+            names.add(command.getName());
         }
-    }
 
-    private Main() {
-        // prevent instantiation
+        output.println("Available subcommands:");
+        for (final String name : names) {
+            output.println(" * " + name);
+        }
+        output.println();
+        output.println(" for help on a specific subcommand: <subcommand> --help");
+        return true;
     }
-
 }

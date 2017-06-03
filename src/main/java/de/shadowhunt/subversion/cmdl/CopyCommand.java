@@ -15,10 +15,6 @@
  */
 package de.shadowhunt.subversion.cmdl;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URI;
 
@@ -26,43 +22,46 @@ import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.RepositoryFactory;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.Transaction;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import joptsimple.OptionSpecBuilder;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.protocol.HttpContext;
 
-public class DownloadCommand extends AbstractCommand {
+public class CopyCommand extends AbstractCommand {
 
-    public DownloadCommand() {
-        super("download");
+    public CopyCommand() {
+        super("copy");
     }
 
     @Override
     public boolean call(final PrintStream output, final String... args) throws Exception {
         final OptionParser parser = createParser();
         final OptionSpec<URI> baseOption = createBaseOption(parser);
-        final OptionSpec<String> resourceOption = createResourceOption(parser);
-        final OptionSpec<Integer> revisionOption = createRevisionOption(parser);
+        final OptionSpec<String> sourceOption = createSourceResourceOption(parser);
+        final OptionSpec<String> targetOption = createTargetResourceOption(parser);
         final OptionSpec<String> usernameOption = createUsernameOption(parser);
         final OptionSpec<String> passwordOption = createPasswordOption(parser);
         final OptionSpecBuilder sslOption = createSslOption(parser);
-        final OptionSpec<File> outputOption = createOutputOption(parser);
+        final OptionSpecBuilder parentsOption = createParentsOption(parser);
+        final OptionSpec<String> commitMessageOption = createCommitMessageOption(parser);
+        final OptionSpec<Integer> revisionOption = createRevisionOption(parser);
 
         final OptionSet options = parse(output, parser, args);
         if (options == null) {
             return false;
         }
 
-        final Resource resource = Resource.create(resourceOption.value(options));
-        final Revision revision;
+        final Resource source = Resource.create(sourceOption.value(options));
+        final Resource target = Resource.create(targetOption.value(options));
+        final Revision sourceRevision;
         if (options.has(revisionOption)) {
             final int value = revisionOption.value(options);
-            revision = Revision.create(value);
+            sourceRevision = Revision.create(value);
         } else {
-            revision = Revision.HEAD;
+            sourceRevision = Revision.HEAD;
         }
 
         final String username = usernameOption.value(options);
@@ -74,11 +73,14 @@ public class DownloadCommand extends AbstractCommand {
             final URI base = baseOption.value(options);
             final Repository repository = factory.createRepository(base, client, context, true);
 
-            final File file = outputOption.value(options);
-            try (OutputStream os = new FileOutputStream(file)) {
-                try (InputStream download = repository.download(resource, revision)) {
-                    IOUtils.copy(download, os);
-                }
+            final Transaction transaction = repository.createTransaction();
+            try {
+                repository.copy(transaction, source, sourceRevision, target, options.has(parentsOption));
+
+                final String message = commitMessageOption.value(options);
+                repository.commit(transaction, message, true);
+            } finally {
+                repository.rollbackIfNotCommitted(transaction);
             }
         }
         return true;
