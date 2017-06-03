@@ -51,10 +51,6 @@
             <timezone>Europe/Berlin</timezone>
         </developer>
     </developers>
-
-    <prerequisites>
-        <maven>3.0.4</maven>
-    </prerequisites>
     <!-- }}}1 -->
 
     <!-- environment information {{{1 -->
