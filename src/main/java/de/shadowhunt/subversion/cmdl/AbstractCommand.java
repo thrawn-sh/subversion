@@ -19,11 +19,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URI;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 
 import javax.annotation.CheckForNull;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import de.shadowhunt.http.client.SubversionRequestRetryHandler;
+import de.shadowhunt.subversion.SubversionException;
 import joptsimple.BuiltinHelpFormatter;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
@@ -44,6 +50,24 @@ import org.apache.http.protocol.HttpContext;
 import org.slf4j.impl.SimpleLogger;
 
 abstract class AbstractCommand implements Command {
+
+    private static final TrustManager TRUST_ALL_MANAGER = new X509TrustManager() {
+
+        @Override
+        public void checkClientTrusted(final X509Certificate[] chain, final String authType) {
+            // nothing to to
+        }
+
+        @Override
+        public void checkServerTrusted(final X509Certificate[] chain, final String authType) {
+            // nothing to to
+        }
+
+        @Override
+        public X509Certificate[] getAcceptedIssuers() {
+            return new X509Certificate[0];
+        }
+    };
 
     private final String name;
 
@@ -89,6 +113,7 @@ abstract class AbstractCommand implements Command {
         }
 
         if (allowAllSsl) {
+            builder.setSSLContext(createUnsaveSslContext());
             builder.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
         }
 
@@ -188,6 +213,16 @@ abstract class AbstractCommand implements Command {
                 .describedAs("path") //
                 .ofType(String.class) //
                 .required();
+    }
+
+    private SSLContext createUnsaveSslContext() {
+        try {
+            final SSLContext sc = SSLContext.getInstance("TLS");
+            sc.init(null, new TrustManager[] { TRUST_ALL_MANAGER }, new SecureRandom());
+            return sc;
+        } catch (Exception e) {
+            throw new SubversionException("can not create unsave SSLContext", e);
+        }
     }
 
     protected final OptionSpec<String> createUsernameOption(final OptionParser parser) {
