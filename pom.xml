@@ -123,6 +123,7 @@
             <groupId>net.sf.jopt-simple</groupId>
             <artifactId>jopt-simple</artifactId>
             <version>5.0.3</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -146,9 +147,9 @@
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-nop</artifactId>
+            <artifactId>slf4j-simple</artifactId>
             <version>${version.slf4j}</version>
-            <scope>test</scope>
+            <optional>true</optional>
         </dependency>
     </dependencies>
     <!-- }}}1 -->
@@ -307,8 +308,7 @@
                     <failOnWarning>true</failOnWarning>
                     <outputXML>true</outputXML>
                     <usedDependencies>
-                        <!-- don't log to stdout during test -->
-                        <usedDependency>org.slf4j:slf4j-nop</usedDependency>
+                        <usedDependency>org.slf4j:slf4j-simple</usedDependency>
                     </usedDependencies>
                 </configuration>
             </plugin>
