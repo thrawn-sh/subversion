@@ -234,7 +234,7 @@
             <plugin>
                 <groupId>de.shadowhunt.maven.plugins</groupId>
                 <artifactId>package-info-maven-plugin</artifactId>
-                <version>1.4.4</version>
+                <version>2.0.0</version>
                 <executions>
                     <execution>
                         <phase>generate-sources</phase>
@@ -244,10 +244,14 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <annotationLines>
-                        <annotationLine>@de.shadowhunt.annotation.ReturnValuesAreNonnullByDefault</annotationLine>
-                        <annotationLine>@javax.annotation.ParametersAreNonnullByDefault</annotationLine>
-                    </annotationLines>
+                    <packages>
+                        <package>
+                            <annotations>
+                                <annotation>@de.shadowhunt.annotation.ReturnValuesAreNonnullByDefault</annotation>
+                                <annotation>@javax.annotation.ParametersAreNonnullByDefault</annotation>
+                            </annotations>
+                        </package>
+                    </packages>
                     <outputDirectory>${project.build.directory}/generated-sources</outputDirectory>
                 </configuration>
             </plugin>
