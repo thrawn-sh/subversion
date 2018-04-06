@@ -36,7 +36,7 @@ public class ExistsCommand extends AbstractCommand {
     }
 
     @Override
-    public boolean call(final PrintStream output, final String... args) throws Exception {
+    public boolean call(final PrintStream output, final PrintStream error, final String... args) throws Exception {
         final OptionParser parser = createParser();
         final OptionSpec<URI> baseOption = createBaseOption(parser);
         final OptionSpec<String> resourceOption = createResourceOption(parser);
@@ -45,7 +45,7 @@ public class ExistsCommand extends AbstractCommand {
         final OptionSpecBuilder sslOption = createSslOption(parser);
         final OptionSpec<Integer> revisionOption = createRevisionOption(parser);
 
-        final OptionSet options = parse(output, parser, args);
+        final OptionSet options = parse(output, error, parser, args);
         if (options == null) {
             return false;
         }

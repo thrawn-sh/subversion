@@ -34,13 +34,13 @@ public class ProbeCommand extends AbstractCommand {
     }
 
     @Override
-    public boolean call(final PrintStream output, final String... args) throws Exception {
+    public boolean call(final PrintStream output, final PrintStream error, final String... args) throws Exception {
         final OptionParser parser = createParser();
         final OptionSpec<String> usernameOption = createUsernameOption(parser);
         final OptionSpec<String> passwordOption = createPasswordOption(parser);
         final OptionSpecBuilder sslOption = createSslOption(parser);
 
-        final OptionSet options = parse(output, parser, args);
+        final OptionSet options = parse(output, error, parser, args);
         if (options == null) {
             return false;
         }

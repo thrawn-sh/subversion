@@ -19,7 +19,7 @@ import java.io.PrintStream;
 
 interface Command {
 
-    boolean call(PrintStream output, String... args) throws Exception;
+    boolean call(PrintStream output, PrintStream error, String... args) throws Exception;
 
     String getName();
 }

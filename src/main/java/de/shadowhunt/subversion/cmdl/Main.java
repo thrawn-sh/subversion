@@ -33,7 +33,7 @@ public final class Main {
 
         for (final Command command : ServiceLoader.load(Command.class)) {
             if (commandName.equals(command.getName())) {
-                if (!command.call(System.out, commandArguments)) {
+                if (!command.call(System.out, System.err, commandArguments)) {
                     System.exit(1);
                 }
                 return;

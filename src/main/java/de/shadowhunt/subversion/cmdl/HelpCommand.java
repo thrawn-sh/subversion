@@ -27,7 +27,7 @@ public class HelpCommand extends AbstractCommand {
     }
 
     @Override
-    public boolean call(final PrintStream output, final String... args) throws Exception {
+    public boolean call(final PrintStream output, final PrintStream error, final String... args) throws Exception {
         final Set<String> names = new TreeSet<>();
         for (final Command command : ServiceLoader.load(Command.class)) {
             names.add(command.getName());

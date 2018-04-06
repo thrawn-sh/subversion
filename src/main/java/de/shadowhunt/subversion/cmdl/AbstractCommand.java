@@ -76,7 +76,7 @@ abstract class AbstractCommand implements Command {
     }
 
     @Override
-    public abstract boolean call(final PrintStream output, final String... args) throws Exception;
+    public abstract boolean call(final PrintStream output, final PrintStream error, final String... args) throws Exception;
 
     protected final OptionSpec<URI> createBaseOption(final OptionParser parser) {
         return parser //
@@ -220,7 +220,7 @@ abstract class AbstractCommand implements Command {
             final SSLContext sc = SSLContext.getInstance("TLS");
             sc.init(null, new TrustManager[] { TRUST_ALL_MANAGER }, new SecureRandom());
             return sc;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new SubversionException("can not create unsave SSLContext", e);
         }
     }
@@ -273,12 +273,12 @@ abstract class AbstractCommand implements Command {
     public final int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = (prime * result) + ((name == null) ? 0 : name.hashCode());
         return result;
     }
 
     @CheckForNull
-    protected final OptionSet parse(final PrintStream output, final OptionParser parser, final String... args) throws IOException {
+    protected final OptionSet parse(final PrintStream output, final PrintStream error, final OptionParser parser, final String... args) throws IOException {
         final OptionSpec<Void> helpOption = createHelpOption(parser);
         final OptionSpec<File> wireLogOption = createWireLogOption(parser);
 
@@ -286,7 +286,7 @@ abstract class AbstractCommand implements Command {
         try {
             options = parser.parse(args);
         } catch (final OptionException e) {
-            parser.printHelpOn(output);
+            parser.printHelpOn(error);
             return null;
         }
 
