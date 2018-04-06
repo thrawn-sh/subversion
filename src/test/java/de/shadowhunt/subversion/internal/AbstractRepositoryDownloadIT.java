@@ -17,12 +17,12 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
@@ -37,7 +37,9 @@ public abstract class AbstractRepositoryDownloadIT {
 
     public static void assertEquals(final String message, final InputStream expected, final InputStream actual) throws Exception {
         try {
-            Assert.assertEquals(message, IOUtils.toString(expected).trim(), IOUtils.toString(actual).trim());
+            final String expectedString = IOUtils.toString(expected, StandardCharsets.UTF_8);
+            final String actualString = IOUtils.toString(actual, StandardCharsets.UTF_8);
+            Assert.assertEquals(message, expectedString.trim(), actualString.trim());
         } finally {
             IOUtils.closeQuietly(expected);
             IOUtils.closeQuietly(actual);
