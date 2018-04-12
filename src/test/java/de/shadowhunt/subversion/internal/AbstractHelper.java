@@ -23,7 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
@@ -33,7 +33,6 @@ import de.shadowhunt.http.client.SubversionRequestRetryHandler;
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.RepositoryFactory;
 import de.shadowhunt.subversion.Resource;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -44,6 +43,7 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.BasicHttpContext;
@@ -63,7 +63,13 @@ public abstract class AbstractHelper {
 
     public static final String USERNAME_B = "svnuser2";
 
-    public static final Charset UTF8 = Charset.forName("UTF-8");
+    private static URI concat(final URI base, final Resource resource) {
+        final URIBuilder builder = new URIBuilder(base);
+        final String path = base.getPath() + resource.getValue();
+        builder.setPath(path);
+        final String uri = builder.toString();
+        return URI.create(uri);
+    }
 
     private final File base;
 
@@ -99,23 +105,23 @@ public abstract class AbstractHelper {
 
     private final File root;
 
-    protected AbstractHelper(final File base, final String protocol, final String host, final String version) {
+    protected AbstractHelper(final File base, final String protocol, final String host) {
         this.base = base;
-        this.root = new File(base, "dump");
-        this.dumpUri = URI.create(protocol + "://" + host + "/" + version + "/dump.zip");
-        this.md5Uri = URI.create(protocol + "://" + host + "/" + version + "/dump.zip.md5");
+        root = new File(base, "dump");
+        dumpUri = URI.create(protocol + "://" + host + "/dump.zip");
+        md5Uri = URI.create(protocol + "://" + host + "/dump.zip.md5");
 
-        this.repositoryBaseUri = URI.create(protocol + "://" + host + "/" + version + "/svn-basic/test");
-        this.repositoryUri = URI.create(repositoryBaseUri.toString() + BASE_PATH.getValue());
+        repositoryBaseUri = URI.create(protocol + "://" + host + "/svn-basic/test");
+        repositoryUri = concat(repositoryBaseUri, BASE_PATH);
 
-        this.repositoryReadOnlyBaseUri = URI.create(protocol + "://" + host + "/" + version + "/svn-non/test");
-        this.repositoryReadOnlyUri = URI.create(repositoryReadOnlyBaseUri.toString() + BASE_PATH.getValue());
+        repositoryReadOnlyBaseUri = URI.create(protocol + "://" + host + "/svn-non/test");
+        repositoryReadOnlyUri = concat(repositoryReadOnlyBaseUri, BASE_PATH);
 
-        this.repositoryDeepBaseUri = URI.create(protocol + "://" + host + "/" + version + "/svn-non/test");
-        this.repositoryDeepUri = URI.create(repositoryReadOnlyBaseUri.toString() + DEEP_PATH.getValue());
+        repositoryDeepBaseUri = URI.create(protocol + "://" + host + "/svn-non/test");
+        repositoryDeepUri = concat(repositoryDeepBaseUri, DEEP_PATH);
 
-        this.repositoryPathBaseUri = URI.create(protocol + "://" + host + "/" + version + "/svn-path/test");
-        this.repositoryPathUri = URI.create(repositoryPathBaseUri.toString() + BASE_PATH.getValue());
+        repositoryPathBaseUri = URI.create(protocol + "://" + host + "/svn-path/test");
+        repositoryPathUri = concat(repositoryPathBaseUri, BASE_PATH);
     }
 
     private String calculateMd5(final File zip) throws IOException {
@@ -126,7 +132,7 @@ public abstract class AbstractHelper {
 
     private String copyUrlToString(final URL source) throws IOException {
         try (final InputStream is = source.openStream()) {
-            return IOUtils.toString(is, UTF8);
+            return IOUtils.toString(is, StandardCharsets.UTF_8);
         }
     }
 
@@ -172,7 +178,7 @@ public abstract class AbstractHelper {
             builder.setDefaultCredentialsProvider(cp);
         }
 
-        for (HttpRequestInterceptor interceptor : interceptors) {
+        for (final HttpRequestInterceptor interceptor : interceptors) {
             builder.addInterceptorFirst(interceptor);
         }
 
@@ -279,8 +285,7 @@ public abstract class AbstractHelper {
         final File zip = new File(base, "dump.zip");
         if (zip.exists()) {
             final String localMD5 = calculateMd5(zip);
-            final String hashContent = copyUrlToString(md5Uri.toURL());
-            final String remoteMD5 = hashContent.substring(0, 32);
+            final String remoteMD5 = copyUrlToString(md5Uri.toURL());
             if (localMD5.equals(remoteMD5)) {
                 return;
             }

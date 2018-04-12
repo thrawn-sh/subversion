@@ -16,6 +16,7 @@
 package de.shadowhunt.subversion.internal;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 
@@ -57,14 +58,14 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
 
         final Transaction transaction = repository.createTransaction();
         try {
-            repository.add(transaction, file, true, IOUtils.toInputStream(content, AbstractHelper.UTF8));
+            repository.add(transaction, file, true, IOUtils.toInputStream(content, StandardCharsets.UTF_8));
             repository.mkdir(transaction, folder, true);
             repository.commit(transaction, "add " + file + " " + folder, true);
         } finally {
             repository.rollbackIfNotCommitted(transaction);
         }
 
-        final InputStream expected = IOUtils.toInputStream(content, AbstractHelper.UTF8);
+        final InputStream expected = IOUtils.toInputStream(content, StandardCharsets.UTF_8);
         final InputStream actual = repository.download(file, Revision.HEAD);
         AbstractRepositoryDownloadIT.assertEquals("content must match", expected, actual);
 
@@ -80,7 +81,7 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
 
         final Transaction transaction = repository.createTransaction();
         try {
-            repository.add(transaction, resource, true, IOUtils.toInputStream(content, AbstractHelper.UTF8));
+            repository.add(transaction, resource, true, IOUtils.toInputStream(content, StandardCharsets.UTF_8));
             repository.propertiesSet(transaction, resource, property);
             Assert.assertEquals("change set must contain: " + resource, Status.ADDED, transaction.getChangeSet().get(resource));
             repository.commit(transaction, "add " + resource, true);
@@ -88,7 +89,7 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
             repository.rollbackIfNotCommitted(transaction);
         }
 
-        final InputStream expected = IOUtils.toInputStream(content, AbstractHelper.UTF8);
+        final InputStream expected = IOUtils.toInputStream(content, StandardCharsets.UTF_8);
         final InputStream actual = repository.download(resource, Revision.HEAD);
         AbstractRepositoryDownloadIT.assertEquals("content must match", expected, actual);
 
@@ -106,18 +107,18 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
 
         final Transaction transaction = repository.createTransaction();
         try {
-            repository.add(transaction, resourceA, true, IOUtils.toInputStream(content, AbstractHelper.UTF8));
-            repository.add(transaction, resourceB, true, IOUtils.toInputStream(content, AbstractHelper.UTF8));
+            repository.add(transaction, resourceA, true, IOUtils.toInputStream(content, StandardCharsets.UTF_8));
+            repository.add(transaction, resourceB, true, IOUtils.toInputStream(content, StandardCharsets.UTF_8));
             repository.commit(transaction, "add " + resourceA + " " + resourceB, true);
         } finally {
             repository.rollbackIfNotCommitted(transaction);
         }
 
-        final InputStream expectedA = IOUtils.toInputStream(content, AbstractHelper.UTF8);
+        final InputStream expectedA = IOUtils.toInputStream(content, StandardCharsets.UTF_8);
         final InputStream actualA = repository.download(resourceA, Revision.HEAD);
         AbstractRepositoryDownloadIT.assertEquals("content must match", expectedA, actualA);
 
-        final InputStream expectedB = IOUtils.toInputStream(content, AbstractHelper.UTF8);
+        final InputStream expectedB = IOUtils.toInputStream(content, StandardCharsets.UTF_8);
         final InputStream actualB = repository.download(resourceB, Revision.HEAD);
         AbstractRepositoryDownloadIT.assertEquals("content must match", expectedB, actualB);
     }
@@ -136,18 +137,18 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
 
         final Transaction transaction = repository.createTransaction();
         try {
-            repository.add(transaction, resourceA, true, IOUtils.toInputStream(content, AbstractHelper.UTF8));
-            repository.add(transaction, resourceB, true, IOUtils.toInputStream(content, AbstractHelper.UTF8));
+            repository.add(transaction, resourceA, true, IOUtils.toInputStream(content, StandardCharsets.UTF_8));
+            repository.add(transaction, resourceB, true, IOUtils.toInputStream(content, StandardCharsets.UTF_8));
             repository.commit(transaction, "add " + resourceA + " " + resourceB, true);
         } finally {
             repository.rollbackIfNotCommitted(transaction);
         }
 
-        final InputStream expectedA = IOUtils.toInputStream(content, AbstractHelper.UTF8);
+        final InputStream expectedA = IOUtils.toInputStream(content, StandardCharsets.UTF_8);
         final InputStream actualA = repository.download(resourceA, Revision.HEAD);
         AbstractRepositoryDownloadIT.assertEquals("content must match", expectedA, actualA);
 
-        final InputStream expectedB = IOUtils.toInputStream(content, AbstractHelper.UTF8);
+        final InputStream expectedB = IOUtils.toInputStream(content, StandardCharsets.UTF_8);
         final InputStream actualB = repository.download(resourceB, Revision.HEAD);
         AbstractRepositoryDownloadIT.assertEquals("content must match", expectedB, actualB);
     }
@@ -159,14 +160,14 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
 
         final Transaction transaction = repository.createTransaction();
         try {
-            repository.add(transaction, resource, true, IOUtils.toInputStream("something else", AbstractHelper.UTF8));
-            repository.add(transaction, resource, true, IOUtils.toInputStream(content, AbstractHelper.UTF8));
+            repository.add(transaction, resource, true, IOUtils.toInputStream("something else", StandardCharsets.UTF_8));
+            repository.add(transaction, resource, true, IOUtils.toInputStream(content, StandardCharsets.UTF_8));
             repository.commit(transaction, "add " + resource, true);
         } finally {
             repository.rollbackIfNotCommitted(transaction);
         }
 
-        final InputStream expected = IOUtils.toInputStream(content, AbstractHelper.UTF8);
+        final InputStream expected = IOUtils.toInputStream(content, StandardCharsets.UTF_8);
         final InputStream actual = repository.download(resource, Revision.HEAD);
         AbstractRepositoryDownloadIT.assertEquals("content must match", expected, actual);
     }
@@ -182,7 +183,7 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
 
         final Transaction transaction = repository.createTransaction();
         try {
-            repository.add(transaction, resource, true, IOUtils.toInputStream(content, AbstractHelper.UTF8));
+            repository.add(transaction, resource, true, IOUtils.toInputStream(content, StandardCharsets.UTF_8));
             repository.propertiesSet(transaction, resource, propertyA, propertyB);
             repository.propertiesDelete(transaction, resource, propertyB);
             repository.propertiesSet(transaction, resource, propertyC);
@@ -191,7 +192,7 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
             repository.rollbackIfNotCommitted(transaction);
         }
 
-        final InputStream expected = IOUtils.toInputStream(content, AbstractHelper.UTF8);
+        final InputStream expected = IOUtils.toInputStream(content, StandardCharsets.UTF_8);
         final InputStream actual = repository.download(resource, Revision.HEAD);
         AbstractRepositoryDownloadIT.assertEquals("content must match", expected, actual);
 
@@ -209,7 +210,7 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
 
         final Transaction transaction = repository.createTransaction();
         try {
-            repository.add(transaction, resource, true, IOUtils.toInputStream(content, AbstractHelper.UTF8));
+            repository.add(transaction, resource, true, IOUtils.toInputStream(content, StandardCharsets.UTF_8));
             repository.delete(transaction, resource);
             Assert.fail("must not complete");
         } finally {
@@ -226,7 +227,7 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
 
         final Transaction transaction = repository.createTransaction();
         try {
-            repository.add(transaction, resource, true, IOUtils.toInputStream(content, AbstractHelper.UTF8));
+            repository.add(transaction, resource, true, IOUtils.toInputStream(content, StandardCharsets.UTF_8));
             Assert.assertEquals("change set must contain: " + resource, Status.MODIFIED, transaction.getChangeSet().get(resource));
             repository.delete(transaction, resource);
             Assert.assertEquals("change set must contain: " + resource, Status.DELETED, transaction.getChangeSet().get(resource));

@@ -23,13 +23,11 @@ final class Helper extends AbstractHelper {
 
     private static final File BASE = new File("src/test/resources/dump/v1_6");
 
-    private static final String HOST = System.getProperty("SUBVERSION_TEST_HOST", "subversion.vm.shadowhunt.de");
+    private static final String HOST = System.getProperty("subversion.1_6.host", "127.0.0.1");
 
-    private static final String PROTOCOL = "http";
-
-    private static final String VERSION = "1.6.0";
+    private static final String PROTOCOL = System.getProperty("subversion.1_6.protocol", "http");
 
     Helper() {
-        super(BASE, PROTOCOL, HOST, VERSION);
+        super(BASE, PROTOCOL, HOST);
     }
 }

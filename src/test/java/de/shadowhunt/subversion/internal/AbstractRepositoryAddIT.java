@@ -16,6 +16,7 @@
 package de.shadowhunt.subversion.internal;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import de.shadowhunt.subversion.Repository;
@@ -43,7 +44,7 @@ public abstract class AbstractRepositoryAddIT {
         final Transaction transaction = repository.createTransaction();
         try {
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            repository.add(transaction, resource, true, IOUtils.toInputStream(content, AbstractHelper.UTF8));
+            repository.add(transaction, resource, true, IOUtils.toInputStream(content, StandardCharsets.UTF_8));
             Assert.assertTrue("transaction must be active", transaction.isActive());
 
             final Status expectedStatus = (initial) ? Status.ADDED : Status.MODIFIED;
@@ -54,7 +55,7 @@ public abstract class AbstractRepositoryAddIT {
             repository.rollbackIfNotCommitted(transaction);
         }
 
-        final InputStream expected = IOUtils.toInputStream(content, AbstractHelper.UTF8);
+        final InputStream expected = IOUtils.toInputStream(content, StandardCharsets.UTF_8);
         final InputStream actual = repository.download(resource, Revision.HEAD);
         AbstractRepositoryDownloadIT.assertEquals("content must match", expected, actual);
     }
@@ -77,7 +78,7 @@ public abstract class AbstractRepositoryAddIT {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             transaction.invalidate();
             Assert.assertFalse("transaction must not be active", transaction.isActive());
-            repository.add(transaction, resource, false, IOUtils.toInputStream("test", AbstractHelper.UTF8));
+            repository.add(transaction, resource, false, IOUtils.toInputStream("test", StandardCharsets.UTF_8));
             Assert.fail("must not complete");
         } finally {
             repository.rollbackIfNotCommitted(transaction);
@@ -92,7 +93,7 @@ public abstract class AbstractRepositoryAddIT {
         final Transaction transaction = repository.createTransaction();
         try {
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            repository.add(transaction, resource, false, IOUtils.toInputStream("test", AbstractHelper.UTF8));
+            repository.add(transaction, resource, false, IOUtils.toInputStream("test", StandardCharsets.UTF_8));
             Assert.fail("must not complete");
         } finally {
             repository.rollbackIfNotCommitted(transaction);
@@ -106,7 +107,7 @@ public abstract class AbstractRepositoryAddIT {
         final Transaction transaction = repository.createTransaction();
         try {
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            repository.add(transaction, resource, false, IOUtils.toInputStream("test", AbstractHelper.UTF8));
+            repository.add(transaction, resource, false, IOUtils.toInputStream("test", StandardCharsets.UTF_8));
             Assert.assertTrue("transaction must be active", transaction.isActive());
             Assert.assertEquals("change set must contain: " + resource, Status.ADDED, transaction.getChangeSet().get(resource));
             repository.rollback(transaction);

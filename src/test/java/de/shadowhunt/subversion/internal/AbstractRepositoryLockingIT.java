@@ -16,6 +16,7 @@
 package de.shadowhunt.subversion.internal;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 
@@ -403,13 +404,13 @@ public abstract class AbstractRepositoryLockingIT {
 
         final Transaction transaction = repositoryA.createTransaction();
         try {
-            repositoryA.add(transaction, resource, false, IOUtils.toInputStream(content, AbstractHelper.UTF8));
+            repositoryA.add(transaction, resource, false, IOUtils.toInputStream(content, StandardCharsets.UTF_8));
             repositoryA.commit(transaction, "update", true);
         } finally {
             repositoryA.rollbackIfNotCommitted(transaction);
         }
 
-        final InputStream expected = IOUtils.toInputStream(content, AbstractHelper.UTF8);
+        final InputStream expected = IOUtils.toInputStream(content, StandardCharsets.UTF_8);
         final InputStream actual = repositoryA.download(resource, Revision.HEAD);
         AbstractRepositoryDownloadIT.assertEquals("content must match", expected, actual);
     }
@@ -449,7 +450,7 @@ public abstract class AbstractRepositoryLockingIT {
 
         final Transaction transaction = repositoryA.createTransaction();
         try {
-            repositoryA.add(transaction, resource, false, IOUtils.toInputStream("res", AbstractHelper.UTF8));
+            repositoryA.add(transaction, resource, false, IOUtils.toInputStream("res", StandardCharsets.UTF_8));
             repositoryA.commit(transaction, "update", false);
         } finally {
             repositoryA.rollbackIfNotCommitted(transaction);
@@ -470,7 +471,7 @@ public abstract class AbstractRepositoryLockingIT {
 
         final Transaction transaction = repositoryA.createTransaction();
         try {
-            repositoryA.add(transaction, resource, false, IOUtils.toInputStream("res", AbstractHelper.UTF8));
+            repositoryA.add(transaction, resource, false, IOUtils.toInputStream("res", StandardCharsets.UTF_8));
             repositoryA.commit(transaction, "update", true);
         } finally {
             repositoryA.rollbackIfNotCommitted(transaction);
