@@ -231,6 +231,8 @@
                 </executions>
                 <configuration>
                     <buildDatePattern>yyyy-MM-dd</buildDatePattern>
+                    <createPropertiesReport>false</createPropertiesReport>
+                    <createXmlReport>false</createXmlReport>
                     <forceNewProperties>true</forceNewProperties>
                 </configuration>
             </plugin>
@@ -484,7 +486,8 @@
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                         <manifestEntries>
-                            <Implementation-Build>${buildNumber}</Implementation-Build>
+                            <Built-By>dev@shadowhunt.de</Built-By>
+                            <Implementation-Build>${build.version.full}</Implementation-Build>
                         </manifestEntries>
                     </archive>
                     <skipIfEmpty>true</skipIfEmpty>
@@ -592,19 +595,6 @@
                     </execution>
                 </executions>
             </plugin-->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>buildnumber-maven-plugin</artifactId>
-                <version>1.4</version>
-                <executions>
-                    <execution>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>create</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
