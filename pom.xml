@@ -203,7 +203,10 @@
                         <exclude>**/.*</exclude>
                         <exclude>LICENSE</exclude>
                         <exclude>README.md</exclude>
-                        <exclude>setup/**</exclude>
+                        <exclude>assets/setup/httpd.conf</exclude>
+                        <exclude>assets/setup/mime.types</exclude>
+                        <exclude>assets/setup/passwd.basic</exclude>
+                        <exclude>assets/setup/svnpath.auth</exclude>
                         <exclude>src/test/resources/dump/**</exclude>
                     </excludes>
                     <header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</header>
