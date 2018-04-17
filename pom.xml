@@ -265,9 +265,10 @@
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>0.24.0</version>
                 <configuration>
+                    <autoPull>always</autoPull>
+                    <removeVolumes>true</removeVolumes>
                     <showLogs>false</showLogs>
                     <startParallel>true</startParallel>
-                    <removeVolumes>true</removeVolumes>
                     <images>
                         <image>
                             <name>shadowhunt/subversion:1.2</name>
