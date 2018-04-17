@@ -418,7 +418,6 @@
                     <outputXML>true</outputXML>
                     <usedDependencies>
                         <usedDependency>org.slf4j:jcl-over-slf4j</usedDependency>
-                        <usedDependency>org.slf4j:slf4j-simple</usedDependency>
                     </usedDependencies>
                 </configuration>
             </plugin>
