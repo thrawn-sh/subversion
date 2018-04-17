@@ -36,14 +36,9 @@ public abstract class AbstractRepositoryDownloadIT {
     public static final Resource PREFIX = Resource.create("/00000000-0000-0000-0000-000000000000/download");
 
     public static void assertEquals(final String message, final InputStream expected, final InputStream actual) throws Exception {
-        try {
-            final String expectedString = IOUtils.toString(expected, StandardCharsets.UTF_8);
-            final String actualString = IOUtils.toString(actual, StandardCharsets.UTF_8);
-            Assert.assertEquals(message, expectedString.trim(), actualString.trim());
-        } finally {
-            IOUtils.closeQuietly(expected);
-            IOUtils.closeQuietly(actual);
-        }
+        final String expectedString = IOUtils.toString(expected, StandardCharsets.UTF_8);
+        final String actualString = IOUtils.toString(actual, StandardCharsets.UTF_8);
+        Assert.assertEquals(message, expectedString.trim(), actualString.trim());
     }
 
     private final DownloadLoader downloadLoader;
@@ -83,9 +78,12 @@ public abstract class AbstractRepositoryDownloadIT {
         final Resource resource = PREFIX.append(Resource.create("/file.txt"));
         final Revision revision = Revision.HEAD;
 
-        final InputStream expected = downloadLoader.load(resource, revision);
         final String message = createMessage(resource, revision);
-        assertEquals(message, expected, repository.download(resource, revision));
+        try (InputStream expected = downloadLoader.load(resource, revision)) {
+            try (InputStream actual = repository.download(resource, revision)) {
+                assertEquals(message, expected, actual);
+            }
+        }
     }
 
     @Test

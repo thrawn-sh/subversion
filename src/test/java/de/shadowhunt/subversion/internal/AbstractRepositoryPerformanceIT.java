@@ -26,8 +26,6 @@ import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.View;
-
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.protocol.HttpContext;
@@ -70,7 +68,7 @@ public abstract class AbstractRepositoryPerformanceIT {
     protected AbstractRepositoryPerformanceIT(final Repository repository, final CountingHttpRequestInterceptor counter, final UUID testId) {
         this.repository = repository;
         this.counter = counter;
-        this.prefix = Resource.create("/" + testId + "/performance");
+        prefix = Resource.create("/" + testId + "/performance");
     }
 
     private void prepare() {
@@ -144,9 +142,9 @@ public abstract class AbstractRepositoryPerformanceIT {
     public void test02_download() throws Exception {
         final Resource resource = AbstractRepositoryDownloadIT.PREFIX.append(Resource.create("/file.txt"));
 
-        InputStream is = repository.download(resource, Revision.HEAD);
-        IOUtils.closeQuietly(is);
-        Assert.assertEquals("number of requests must match", 2, counter.getTotalRequestCount());
+        try (InputStream is = repository.download(resource, Revision.HEAD)) {
+            Assert.assertEquals("number of requests must match", 2, counter.getTotalRequestCount());
+        }
     }
 
     @Test
@@ -169,9 +167,9 @@ public abstract class AbstractRepositoryPerformanceIT {
     public void test02_downloadWithView() throws Exception {
         final Resource resource = AbstractRepositoryDownloadIT.PREFIX.append(Resource.create("/file.txt"));
 
-        final InputStream is = repository.download(currentView, resource, Revision.HEAD);
-        IOUtils.closeQuietly(is);
-        Assert.assertEquals("number of requests must match", 1, counter.getTotalRequestCount());
+        try (final InputStream is = repository.download(currentView, resource, Revision.HEAD)) {
+            Assert.assertEquals("number of requests must match", 1, counter.getTotalRequestCount());
+        }
     }
 
     @Test

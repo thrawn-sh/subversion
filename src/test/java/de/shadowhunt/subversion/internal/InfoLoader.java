@@ -17,6 +17,7 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.UUID;
 
@@ -26,9 +27,7 @@ import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.LockToken;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
-
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.xml.sax.Attributes;
@@ -95,14 +94,11 @@ public final class InfoLoader extends AbstractBaseLoader {
 
         final String relative = StringUtils.removeStart(resource.getValue(), base.getValue());
         info.setResource(Resource.create(relative));
-        final File f = new File(root, resolve(revision) + base.getValue() + resource.getValue());
-        info.setDirectory(f.isDirectory());
+        final File file = new File(root, resolve(revision) + base.getValue() + resource.getValue());
+        info.setDirectory(file.isDirectory());
         if (info.isFile()) {
-            final FileInputStream fis = new FileInputStream(f);
-            try {
-                info.setMd5(DigestUtils.md5Hex(fis));
-            } finally {
-                IOUtils.closeQuietly(fis);
+            try (InputStream input = new FileInputStream(file)) {
+                info.setMd5(DigestUtils.md5Hex(input));
             }
         }
 

@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Provides information about the subversion client lib.
  */
+@SuppressWarnings("deprecation") // FIXME rework class build.properties no longer available
 public final class BuildProperties {
 
     private static final String BUILD_DATE;
