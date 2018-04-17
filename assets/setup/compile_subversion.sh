@@ -78,16 +78,14 @@ function min_archive() { # {{{1
     rm --force --recursive "${directory}"
 
     mkdir --parents "${directory}/etc"
-    mkdir --parents "${directory}/tmp"
-    mkdir --parents "${directory}/var/run"
     mkdir --parents "${directory}/var/www"
     mkdir --parents "${directory}/var/www/htdocs"
     mkdir --parents "${directory}/var/www/svn"
 
-    chmod 1777 "${directory}/tmp"
+    ln --symbolic /dev/shm "${directory}/tmp"
+    ln --symbolic /dev/shm "${directory}/var/run"
 
     ldconfig
-
     cat > "${directory}/etc/ld.so.conf" <<EOF
 /lib
 /lib64
@@ -95,12 +93,12 @@ function min_archive() { # {{{1
 EOF
 
     dockerize -t subversion --filetools --symlinks="copy-all" --user="www-data" --group="www-data" --no-build --output-dir="${directory}" \
-        --add-file "${THIS_DIR}/httpd.conf"   /etc/httpd.conf   \
-        --add-file "${THIS_DIR}/mime.types"   /etc/mime.types   \
-        --add-file "${THIS_DIR}/passwd.basic" /etc/passwd.basic \
-        --add-file "${THIS_DIR}/svnpath.auth" /etc/svnpath.auth \
+        --add-file "${THIS_DIR}/httpd.conf"   /etc/httpd.conf            \
         --add-file "${THIS_DIR}/index.html"   /var/www/htdocs/index.html \
-        --entrypoint="/usr/local/bin/httpd -f /etc/httpd.conf -DFOREGROUND" \
+        --add-file "${THIS_DIR}/mime.types"   /etc/mime.types            \
+        --add-file "${THIS_DIR}/passwd.basic" /etc/passwd.basic          \
+        --add-file "${THIS_DIR}/startup.sh"   /startup.sh                \
+        --add-file "${THIS_DIR}/svnpath.auth" /etc/svnpath.auth          \
         /bin/bash                            \
         /bin/ln                              \
         /bin/mv                              \
@@ -155,7 +153,7 @@ HEALTHCHECK CMD /usr/local/bin/svn info --username=svnuser --password=svnpass --
 
 ADD subversion.tar /
 
-ENTRYPOINT ["/usr/local/bin/httpd", "-f", "/etc/httpd.conf", "-DFOREGROUND"]
+ENTRYPOINT ["/startup.sh"]
 EOF
 
     cat > "${directory}/build.sh" <<EOF
