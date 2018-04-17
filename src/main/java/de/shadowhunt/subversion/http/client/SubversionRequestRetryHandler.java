@@ -20,6 +20,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.http.HttpRequest;
+import org.apache.http.RequestLine;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 
 /**
@@ -77,8 +78,10 @@ public class SubversionRequestRetryHandler extends DefaultHttpRequestRetryHandle
 
     @Override
     protected boolean handleAsIdempotent(final HttpRequest request) {
-        final String method = request.getRequestLine().getMethod().toUpperCase(Locale.US);
-        final Boolean b = idempotentMethods.get(method);
-        return (b != null) && b;
+        final RequestLine requestLine = request.getRequestLine();
+        final String method = requestLine.getMethod();
+        final String methodUppercase = method.toUpperCase(Locale.US);
+        final Boolean idempotent = idempotentMethods.get(methodUppercase);
+        return Boolean.TRUE.equals(idempotent);
     }
 }
