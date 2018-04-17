@@ -15,72 +15,25 @@
  */
 package de.shadowhunt.subversion;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Optional;
-import java.util.Properties;
-
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Provides information about the subversion client lib.
  */
-@SuppressWarnings("deprecation") // FIXME rework class build.properties no longer available
 public final class BuildProperties {
-
-    private static final String BUILD_DATE;
-
-    private static final String DATE_PATTERN = "yyyy-MM-dd";
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(BuildProperties.class);
-
-    private static final String PROPERTIES_RESOURCE = "META-INF/build.properties";
 
     public static final String UNDEFINED = "UNDEFINED";
 
     private static final String VERSION;
 
     static {
-        final Properties properties = new Properties();
-
-        final ClassLoader classLoader = BuildProperties.class.getClassLoader();
-        final InputStream stream = classLoader.getResourceAsStream(PROPERTIES_RESOURCE);
-        if (stream != null) {
-            try {
-                properties.load(stream);
-            } catch (final IOException e) {
-                // ignore errors
-            } finally {
-                IOUtils.closeQuietly(stream);
-            }
+        final Package packageObject = BuildProperties.class.getPackage();
+        final String version = packageObject.getImplementationVersion();
+        if (StringUtils.isEmpty(version)) {
+            VERSION = UNDEFINED;
+        } else {
+            VERSION = version;
         }
-
-        BUILD_DATE = properties.getProperty("build.date", UNDEFINED);
-        VERSION = properties.getProperty("build.version", UNDEFINED);
-    }
-
-    /**
-     * Returns the {@link Date} of the build.
-     *
-     * @return {@link Date} of the build
-     */
-    public static Optional<Date> getBuildDate() {
-        if (UNDEFINED.equals(BUILD_DATE)) {
-            return Optional.empty();
-        }
-
-        final SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
-        try {
-            return Optional.of(dateFormat.parse(BUILD_DATE));
-        } catch (final ParseException e) {
-            LOGGER.debug("could not parse date {} with pattern {}", BUILD_DATE, DATE_PATTERN, e);
-        }
-        return Optional.empty();
     }
 
     /**
@@ -98,7 +51,7 @@ public final class BuildProperties {
      * @return User-Agent identifier
      */
     public static String getUserAgent() {
-        return "SVN/" + VERSION + " " + BUILD_DATE + " (https://dev.shadowhunt.de/subversion)";
+        return "SVN/" + VERSION + " (https://dev.shadowhunt.de/subversion)";
     }
 
     private BuildProperties() {
