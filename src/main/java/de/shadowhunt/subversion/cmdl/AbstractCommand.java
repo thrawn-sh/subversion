@@ -28,8 +28,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import de.shadowhunt.http.client.SubversionRequestRetryHandler;
 import de.shadowhunt.subversion.SubversionException;
+import de.shadowhunt.subversion.http.client.SubversionRequestRetryHandler;
 import joptsimple.BuiltinHelpFormatter;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
