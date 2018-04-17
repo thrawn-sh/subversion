@@ -79,7 +79,6 @@ function min_archive() { # {{{1
 
     mkdir --parents "${directory}/etc"
     mkdir --parents "${directory}/tmp"
-    mkdir --parents "${directory}/var/log"
     mkdir --parents "${directory}/var/run"
     mkdir --parents "${directory}/var/www"
     mkdir --parents "${directory}/var/www/htdocs"
@@ -103,6 +102,8 @@ EOF
         --add-file "${THIS_DIR}/index.html"   /var/www/htdocs/index.html \
         --entrypoint="/usr/local/bin/httpd -f /etc/httpd.conf -DFOREGROUND" \
         /bin/bash                            \
+        /bin/ln                              \
+        /bin/mv                              \
         /lib/x86_64-linux-gnu/libnsl.so.1    \
         /lib/x86_64-linux-gnu/libresolv.so.2 \
         /lib/x86_64-linux-gnu/libz.so.1      \
