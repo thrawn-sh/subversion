@@ -302,6 +302,7 @@
                             <alias>svn-1_9</alias>
                         </image>
                     </images>
+                    <skip>${skipTests}</skip>
                 </configuration>
                 <executions>
                     <execution>
