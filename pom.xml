@@ -201,6 +201,7 @@
                 <configuration>
                     <excludes>
                         <exclude>**/.*</exclude>
+                        <exclude>Jenkinsfile</exclude>
                         <exclude>LICENSE</exclude>
                         <exclude>README.md</exclude>
                         <exclude>assets/setup/httpd.conf</exclude>
