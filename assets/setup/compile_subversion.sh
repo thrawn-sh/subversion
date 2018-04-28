@@ -100,8 +100,8 @@ EOF
         --add-file "${THIS_DIR}/startup.sh"   /startup.sh                \
         --add-file "${THIS_DIR}/svnpath.auth" /etc/svnpath.auth          \
         /bin/bash                            \
+        /bin/cp                              \
         /bin/ln                              \
-        /bin/mv                              \
         /lib/x86_64-linux-gnu/libnsl.so.1    \
         /lib/x86_64-linux-gnu/libresolv.so.2 \
         /lib/x86_64-linux-gnu/libz.so.1      \
