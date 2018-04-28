@@ -78,12 +78,12 @@ function min_archive() { # {{{1
     rm --force --recursive "${directory}"
 
     mkdir --parents "${directory}/etc"
+    mkdir --parents "${directory}/tmp"
+    mkdir --parents "${directory}/var/run"
     mkdir --parents "${directory}/var/www"
     mkdir --parents "${directory}/var/www/htdocs"
     mkdir --parents "${directory}/var/www/svn"
-
-    ln --symbolic /dev/shm "${directory}/tmp"
-    ln --symbolic /dev/shm "${directory}/var/run"
+    mkdir --parents "${directory}/var/www/svn-template"
 
     ldconfig
     cat > "${directory}/etc/ld.so.conf" <<EOF
@@ -116,6 +116,7 @@ EOF
 
     ln --symbolic bash "${directory}/bin/sh"
     chown --recursive www-data:www-data "${directory}/var/www/svn"
+    chown --recursive www-data:www-data "${directory}/var/www/svn-template"
     set +e
     find "${directory}" -type f -print0 | xargs --no-run-if-empty --null strip --strip-all
     set -e

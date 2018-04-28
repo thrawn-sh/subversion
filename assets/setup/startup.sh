@@ -20,6 +20,11 @@ set -e
 set -o pipefail
 set -u
 
-mv /var/www/svn /dev/shm/
-ln --symbolic /dev/shm/svn /var/www/svn
+if [ ! -d /var/www/svn/empty ]; then
+    cp --archive /var/www/svn-template/empty /var/www/svn/empty
+fi
+if [ ! -d /var/www/svn/test ]; then
+    cp --archive /var/www/svn-template/test /var/www/svn/test
+fi
+
 exec /usr/local/bin/httpd -f /etc/httpd.conf -DFOREGROUND

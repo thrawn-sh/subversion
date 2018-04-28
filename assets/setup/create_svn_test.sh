@@ -283,8 +283,6 @@ for i in dump svn; do
     sha256sum "${zip_file}" | awk '{print $1}' > "${zip_file}.sha256"
     sha512sum "${zip_file}" | awk '{print $1}' > "${zip_file}.sha512"
 done
-mv svn "${TARGET}/svn/test"
+mv svn "${TARGET}/svn-template/test"
 
-"${SVNADMIN}" create "${TARGET}/svn/empty"
-
-chown -R www-data:www-data "${TARGET}/svn"
+"${SVNADMIN}" create "${TARGET}/svn-template/empty"
