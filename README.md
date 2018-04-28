@@ -53,3 +53,15 @@ Its API is based on the command-lines client.
 ```
 
 The full documentation is located at https://dev.shadowhunt.de/subversion/
+
+```sh
+# to start a test environment via docker
+docker run                                      \
+    --init                                      \
+    --read-only                                 \
+    --rm=true                                   \
+    --mount type=tmpfs,destination=/tmp         \
+    --mount type=tmpfs,destination=/var/run     \
+    --mount type=tmpfs,destination=/var/www/svn \
+    shadowhunt/subversion:<VERSION>
+```
