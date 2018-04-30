@@ -22,9 +22,11 @@ set -u
 
 if [ ! -d /var/www/svn/empty ]; then
     cp --archive /var/www/svn-template/empty /var/www/svn/empty
+    chown --recursive www-data:www-data /var/www/svn/empty
 fi
 if [ ! -d /var/www/svn/test ]; then
     cp --archive /var/www/svn-template/test /var/www/svn/test
+    chown --recursive www-data:www-data /var/www/svn/test
 fi
 
 exec /usr/local/bin/httpd -f /etc/httpd.conf -DFOREGROUND

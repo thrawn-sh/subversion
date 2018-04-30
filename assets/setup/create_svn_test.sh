@@ -284,5 +284,7 @@ for i in dump svn; do
     sha512sum "${zip_file}" | awk '{print $1}' > "${zip_file}.sha512"
 done
 mv svn "${TARGET}/svn-template/test"
+chown --recursive www-data:www-data "${TARGET}/svn-template/test"
 
 "${SVNADMIN}" create "${TARGET}/svn-template/empty"
+chown --recursive www-data:www-data "${TARGET}/svn-template/empty"
