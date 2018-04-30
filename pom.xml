@@ -81,7 +81,7 @@
 
     <properties>
         <jacoco.itReportPath>${project.basedir}/target/jacoco-it.exec</jacoco.itReportPath>
-        <jacoco.reportPath>${project.basedir}/target/jacoco-ut.exec</jacoco.reportPath>
+        <jacoco.utReportPath>${project.basedir}/target/jacoco-ut.exec</jacoco.utReportPath>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -718,7 +718,7 @@
                         </goals>
                         <configuration>
                             <propertyName>jacoco.agent.argLineUT</propertyName>
-                            <destFile>${jacoco.reportPath}</destFile>
+                            <destFile>${jacoco.utReportPath}</destFile>
                         </configuration>
                     </execution>
                     <execution>
@@ -732,7 +732,29 @@
                             <destFile>${jacoco.itReportPath}</destFile>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>merge</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>merge</goal>
+                        </goals>
+                        <configuration>
+                            <fileSets>
+                                <fileSet>
+                                    <directory>${project.build.directory}</directory>
+                                    <includes>
+                                        <include>jacoco-*.exec</include>
+                                    </includes>
+                                </fileSet>
+                            </fileSets>
+                        </configuration>
+                    </execution>
                 </executions>
+                <configuration>
+                    <includes>
+                        <include>de/shadowhunt/subversion/**</include>
+                    </includes>
+                </configuration>
             </plugin>
         </plugins>
         <!-- }}}1 -->
@@ -805,6 +827,8 @@
                 <configuration>
                     <effort>Max</effort>
                     <excludeFilterFile>assets/dev/findbugs-exclude.xml</excludeFilterFile>
+                    <onlyAnalyze>de.shadowhunt.subversion.-</onlyAnalyze>
+                    <threshold>Low</threshold>
                     <xmlOutput>true</xmlOutput>
                 </configuration>
             </plugin>
