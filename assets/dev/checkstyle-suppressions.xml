@@ -19,4 +19,5 @@
 <!DOCTYPE suppressions PUBLIC "-//Puppy Crawl//DTD Suppressions 1.1//EN" "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
 <suppressions>
     <suppress files="[/\\]target[/\\]" checks=".*"/>
+    <suppress files="de/shadowhunt/subversion/RepositoryFactory.java" checks="AbstractClassNameCheck"/>
 </suppressions>

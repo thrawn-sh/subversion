@@ -28,7 +28,6 @@ import org.apache.http.protocol.HttpContext;
 /**
  * {@link RepositoryFactory} creates a new {@link Repository}.
  */
-@SuppressWarnings("checkstyle:abstractclassname")
 @ThreadSafe
 public abstract class RepositoryFactory {
 
@@ -43,7 +42,8 @@ public abstract class RepositoryFactory {
      *
      * @return the new {@link RepositoryFactory} instance
      *
-     * @throws SubversionException if no {@link RepositoryFactory} can be created
+     * @throws SubversionException
+     *             if no {@link RepositoryFactory} can be created
      */
     public static RepositoryFactory getInstance() throws SubversionException {
         for (final RepositoryFactory factory : ServiceLoader.load(RepositoryFactory.class)) {
@@ -63,16 +63,23 @@ public abstract class RepositoryFactory {
     /**
      * Create a new {@link Repository} for given {@link URI} and use the given {@link HttpClient} with the {@link HttpClient} to connect to the server.
      *
-     * @param uri {@link URI} to the root of the repository (e.g: http://repository.example.net/svn/test_repo/trunk/folder)
-     * @param client {@link HttpClient} that will handle all requests for this repository
-     * @param context {@link HttpContext} that will be used by all requests to this repository
-     * @param validate {@code true} check the given parameters during creation, {@code false} check during first usage
+     * @param uri
+     *            {@link URI} to the root of the repository (e.g: http://repository.example.net/svn/test_repo/trunk/folder)
+     * @param client
+     *            {@link HttpClient} that will handle all requests for this repository
+     * @param context
+     *            {@link HttpContext} that will be used by all requests to this repository
+     * @param validate
+     *            {@code true} check the given parameters during creation, {@code false} check during first usage
      *
      * @return a new {@link Repository} for given {@link URI}
      *
-     * @throws NullPointerException if any parameter is {@code null}
-     * @throws SubversionException if no {@link Repository} can be created
-     * @throws de.shadowhunt.subversion.TransmissionException if an error occurs in the underlining communication with the server
+     * @throws NullPointerException
+     *             if any parameter is {@code null}
+     * @throws SubversionException
+     *             if no {@link Repository} can be created
+     * @throws de.shadowhunt.subversion.TransmissionException
+     *             if an error occurs in the underlining communication with the server
      */
     public final Repository createRepository(final URI uri, final HttpClient client, final HttpContext context, final boolean validate) {
         Validate.notNull(uri, "uri must not be null");
