@@ -85,6 +85,9 @@ function min_archive() { # {{{1
     mkdir --parents "${directory}/var/www/svn"
     mkdir --parents "${directory}/var/www/svn-template"
 
+    chmod 1777 "${directory}/tmp"
+    chmod 1777 "${directory}/var/run"
+
     ldconfig
     cat > "${directory}/etc/ld.so.conf" <<EOF
 /lib
@@ -115,8 +118,6 @@ EOF
         /usr/local/modules/*.so
 
     ln --symbolic bash "${directory}/bin/sh"
-    chown --recursive www-data:www-data "${directory}/var/www/svn"
-    chown --recursive www-data:www-data "${directory}/var/www/svn-template"
     set +e
     find "${directory}" -type f -print0 | xargs --no-run-if-empty --null strip --strip-all
     set -e
@@ -142,6 +143,7 @@ EOF
     "${THIS_DIR}/create_svn_test.sh" "${version}" "${target}/var/www"
 
     rm --force "${directory}/Dockerfile"
+    chown --recursive --no-dereference root:root "${directory}"
     tar --create --file /tmp/subversion.tar --directory="${directory}" .
     mv /tmp/subversion.tar "${directory}"
 
@@ -173,6 +175,11 @@ if [ \$# -ne 1 ]; then
     exit 1
 fi
 PASS="\${1}"; shift
+
+if [ "\$(id --user)" -ne "0" ]; then
+    echo "run as root" 1>&2
+    exit 1
+fi
 
 echo "\${PASS}" | docker login --password-stdin --username="shadowhunt"
 docker build --compress --force-rm --quiet --rm --tag shadowhunt/subversion:${tag} "\${THIS_DIR}"
