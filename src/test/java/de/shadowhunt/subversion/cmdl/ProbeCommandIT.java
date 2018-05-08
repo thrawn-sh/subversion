@@ -15,13 +15,10 @@
  */
 package de.shadowhunt.subversion.cmdl;
 
-import de.shadowhunt.subversion.Resource;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class ProbeCommandIT extends AbstractCommandIT {
-
-    private static final Resource RESOURCE = Resource.create("/trunk/00000000-0000-0000-0000-000000000000/exists/");
 
     public ProbeCommandIT() {
         super(new ProbeCommand());
@@ -29,9 +26,8 @@ public class ProbeCommandIT extends AbstractCommandIT {
 
     @Test
     public void test() throws Exception {
-        final String uri = getUri(RESOURCE);
-        final String[] arguments = filterArguments(USERNAME, PASSWORD, TRUST_SSL, uri);
-        final boolean success = command.call(TEST_OUT, TEST_ERR, arguments);
+        final String uri = getUri("/trunk/00000000-0000-0000-0000-000000000000/exists");
+        final boolean success = command.call(TEST_OUT, TEST_ERR, USERNAME, PASSWORD, TRUST_SSL, uri);
         Assert.assertTrue("command must succeed", success);
     }
 }

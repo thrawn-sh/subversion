@@ -29,8 +29,7 @@ public class LogCommandIT extends AbstractCommandIT {
         final String resource = "--resource=/trunk/00000000-0000-0000-0000-000000000000/log/file.txt";
         final String start = "--start=HEAD";
         final String stop = "--stop=0";
-        final String[] arguments = filterArguments(BASE, resource, USERNAME, PASSWORD, TRUST_SSL, start, stop);
-        final boolean success = command.call(TEST_OUT, TEST_ERR, arguments);
+        final boolean success = command.call(TEST_OUT, TEST_ERR, BASE, resource, USERNAME, PASSWORD, TRUST_SSL, start, stop);
         Assert.assertTrue("command must succeed", success);
     }
 
@@ -39,8 +38,7 @@ public class LogCommandIT extends AbstractCommandIT {
         final String resource = "--resource=/trunk/00000000-0000-0000-0000-000000000000/log";
         final String start = "--start=HEAD";
         final String stop = "--stop=0";
-        final String[] arguments = filterArguments(BASE, resource, USERNAME, PASSWORD, TRUST_SSL, start, stop);
-        final boolean success = command.call(TEST_OUT, TEST_ERR, arguments);
+        final boolean success = command.call(TEST_OUT, TEST_ERR, BASE, resource, USERNAME, PASSWORD, TRUST_SSL, start, stop);
         Assert.assertTrue("command must succeed", success);
     }
 }

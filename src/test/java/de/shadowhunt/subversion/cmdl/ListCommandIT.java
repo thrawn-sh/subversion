@@ -28,8 +28,7 @@ public class ListCommandIT extends AbstractCommandIT {
     public void fileTest() throws Exception {
         final String resource = "--resource=/trunk/00000000-0000-0000-0000-000000000000/list/file.txt";
         final String version = "--version=HEAD";
-        final String[] arguments = filterArguments(BASE, resource, USERNAME, PASSWORD, TRUST_SSL, version);
-        final boolean success = command.call(TEST_OUT, TEST_ERR, arguments);
+        final boolean success = command.call(TEST_OUT, TEST_ERR, BASE, resource, USERNAME, PASSWORD, TRUST_SSL, version);
         Assert.assertTrue("command must succeed", success);
     }
 
@@ -37,8 +36,7 @@ public class ListCommandIT extends AbstractCommandIT {
     public void folderTest() throws Exception {
         final String resource = "--resource=/trunk/00000000-0000-0000-0000-000000000000/list";
         final String version = "--version=HEAD";
-        final String[] arguments = filterArguments(BASE, resource, USERNAME, PASSWORD, TRUST_SSL, version);
-        final boolean success = command.call(TEST_OUT, TEST_ERR, arguments);
+        final boolean success = command.call(TEST_OUT, TEST_ERR, BASE, resource, USERNAME, PASSWORD, TRUST_SSL, version);
         Assert.assertTrue("command must succeed", success);
     }
 }

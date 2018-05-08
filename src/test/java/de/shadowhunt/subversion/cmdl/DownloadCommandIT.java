@@ -37,8 +37,7 @@ public class DownloadCommandIT extends AbstractCommandIT {
         final String version = "--version=HEAD";
         final File file = folder.newFile();
         final String output = "--output=" + file.getAbsolutePath();
-        final String[] arguments = filterArguments(BASE, resource, USERNAME, PASSWORD, TRUST_SSL, version, output);
-        final boolean success = command.call(TEST_OUT, TEST_ERR, arguments);
+        final boolean success = command.call(TEST_OUT, TEST_ERR, BASE, resource, USERNAME, PASSWORD, TRUST_SSL, version, output);
         Assert.assertTrue("command must succeed", success);
     }
 
@@ -48,8 +47,7 @@ public class DownloadCommandIT extends AbstractCommandIT {
         final String version = "--version=HEAD";
         final File file = folder.newFile();
         final String output = "--output=" + file.getAbsolutePath();
-        final String[] arguments = filterArguments(BASE, resource, USERNAME, PASSWORD, TRUST_SSL, version, output);
-        final boolean success = command.call(TEST_OUT, TEST_ERR, arguments);
+        final boolean success = command.call(TEST_OUT, TEST_ERR, BASE, resource, USERNAME, PASSWORD, TRUST_SSL, version, output);
         Assert.assertTrue("command must succeed", success);
     }
 }

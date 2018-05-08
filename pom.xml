@@ -528,7 +528,7 @@
                         <subversion.1_8.host>${docker.container.svn-1_8.ip}</subversion.1_8.host>
                         <subversion.1_9.host>${docker.container.svn-1_9.ip}</subversion.1_9.host>
                         <!-- use latest supported subversion for cmdl tests -->
-                        <subversion.host>${docker.container.svn-1_9.ip}</subversion.host>
+                        <subversion.cmdl.host>${docker.container.svn-1_9.ip}</subversion.cmdl.host>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>

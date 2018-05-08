@@ -16,12 +16,8 @@
 package de.shadowhunt.subversion.cmdl;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
 
-import de.shadowhunt.subversion.Resource;
 import org.apache.commons.io.output.NullOutputStream;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -42,8 +38,8 @@ public abstract class AbstractCommandIT {
     public static final String USERNAME;
 
     static {
-        final String host = System.getProperty("subversion.host", "172.17.0.2"); // FIXME
-        final String protocol = System.getProperty("subversion.protocol", "http");
+        final String host = System.getProperty("subversion.cmdl.host", "127.0.0.1");
+        final String protocol = System.getProperty("subversion.cmdl.protocol", "http");
 
         BASE_URI = protocol + "://" + host + "/svn-basic/test";
         BASE = "--base=" + BASE_URI;
@@ -61,19 +57,8 @@ public abstract class AbstractCommandIT {
         this.command = command;
     }
 
-    protected String[] filterArguments(final String... arguments) {
-        final List<String> filtered = new ArrayList<>(arguments.length);
-        for (final String argument : arguments) {
-            if (StringUtils.isNotBlank(argument)) {
-                filtered.add(argument);
-            }
-        }
-        final String[] result = new String[filtered.size()];
-        return filtered.toArray(result);
-    }
-
-    protected String getUri(final Resource resource) {
-        return BASE_URI + resource;
+    protected String getUri(final String suffix) {
+        return BASE_URI + suffix;
     }
 
     @Test

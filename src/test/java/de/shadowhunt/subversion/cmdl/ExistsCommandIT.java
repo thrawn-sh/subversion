@@ -28,8 +28,7 @@ public class ExistsCommandIT extends AbstractCommandIT {
     public void existingTest() throws Exception {
         final String resource = "--resource=/trunk/00000000-0000-0000-0000-000000000000/exists/file.txt";
         final String version = "--version=HEAD";
-        final String[] arguments = filterArguments(BASE, resource, USERNAME, PASSWORD, TRUST_SSL, version);
-        final boolean success = command.call(TEST_OUT, TEST_ERR, arguments);
+        final boolean success = command.call(TEST_OUT, TEST_ERR, BASE, resource, USERNAME, PASSWORD, TRUST_SSL, version);
         Assert.assertTrue("command must succeed", success);
     }
 
@@ -37,8 +36,7 @@ public class ExistsCommandIT extends AbstractCommandIT {
     public void nonExistingTest() throws Exception {
         final String resource = "--resource=/trunk/00000000-0000-0000-0000-000000000000/exists/non_existing.txt";
         final String version = "--version=HEAD";
-        final String[] arguments = filterArguments(BASE, resource, USERNAME, PASSWORD, TRUST_SSL, version);
-        final boolean success = command.call(TEST_OUT, TEST_ERR, arguments);
+        final boolean success = command.call(TEST_OUT, TEST_ERR, BASE, resource, USERNAME, PASSWORD, TRUST_SSL, version);
         Assert.assertTrue("command must succeed", success);
     }
 }
