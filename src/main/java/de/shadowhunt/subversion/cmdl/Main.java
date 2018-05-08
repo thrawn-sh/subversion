@@ -15,12 +15,13 @@
  */
 package de.shadowhunt.subversion.cmdl;
 
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.ServiceLoader;
 
 public final class Main {
 
-    public static void main(final String... args) throws Exception {
+    static boolean delegate(final PrintStream output, final PrintStream error, final String... args) throws Exception {
         final String commandName;
         final String[] commandArguments;
         if (args.length > 0) {
@@ -32,12 +33,18 @@ public final class Main {
         }
 
         for (final Command command : ServiceLoader.load(Command.class)) {
-            if (commandName.equals(command.getName())) {
-                if (!command.call(System.out, System.err, commandArguments)) {
-                    System.exit(1);
-                }
-                return;
+            final String name = command.getName();
+            if (commandName.equals(name)) {
+                return command.call(output, error, commandArguments);
             }
+        }
+        return false;
+    }
+
+    public static void main(final String... args) throws Exception {
+        final boolean success = delegate(System.out, System.err, args);
+        if (!success) {
+            System.exit(1);
         }
     }
 
