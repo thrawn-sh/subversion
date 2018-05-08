@@ -40,33 +40,24 @@ public class CopyCommand extends AbstractCommand {
     public boolean call(final PrintStream output, final PrintStream error, final String... args) throws Exception {
         final OptionParser parser = createParser();
         final OptionSpec<URI> baseOption = createBaseOption(parser);
-        final OptionSpec<String> sourceOption = createSourceResourceOption(parser);
-        final OptionSpec<String> targetOption = createTargetResourceOption(parser);
+        final OptionSpec<Resource> sourceOption = createSourceResourceOption(parser);
+        final OptionSpec<Resource> targetOption = createTargetResourceOption(parser);
         final OptionSpec<String> usernameOption = createUsernameOption(parser);
         final OptionSpec<String> passwordOption = createPasswordOption(parser);
         final OptionSpecBuilder sslOption = createSslOption(parser);
         final OptionSpecBuilder parentsOption = createParentsOption(parser);
         final OptionSpec<String> commitMessageOption = createCommitMessageOption(parser);
-        final OptionSpec<Integer> revisionOption = createRevisionOption(parser);
+        final OptionSpec<Revision> revisionOption = createRevisionOption(parser);
 
         final OptionSet options = parse(output, error, parser, args);
         if (options == null) {
             return false;
         }
 
-        final Resource source = Resource.create(sourceOption.value(options));
-        final Resource target = Resource.create(targetOption.value(options));
-        final Revision sourceRevision;
-        if (options.has(revisionOption)) {
-            final int value = revisionOption.value(options);
-            sourceRevision = Revision.create(value);
-        } else {
-            sourceRevision = Revision.HEAD;
-        }
-
         final String username = usernameOption.value(options);
         final String password = passwordOption.value(options);
-        try (CloseableHttpClient client = createHttpClient(username, password, options.has(sslOption))) {
+        final boolean allowAllSsl = options.has(sslOption);
+        try (CloseableHttpClient client = createHttpClient(username, password, allowAllSsl)) {
             final RepositoryFactory factory = RepositoryFactory.getInstance();
 
             final HttpContext context = createHttpContext();
@@ -75,7 +66,11 @@ public class CopyCommand extends AbstractCommand {
 
             final Transaction transaction = repository.createTransaction();
             try {
-                repository.copy(transaction, source, sourceRevision, target, options.has(parentsOption));
+                final Resource source = sourceOption.value(options);
+                final Revision sourceRevision = revisionOption.value(options);
+                final Resource target = targetOption.value(options);
+                final boolean parents = options.has(parentsOption);
+                repository.copy(transaction, source, sourceRevision, target, parents);
 
                 final String message = commitMessageOption.value(options);
                 repository.commit(transaction, message, true);

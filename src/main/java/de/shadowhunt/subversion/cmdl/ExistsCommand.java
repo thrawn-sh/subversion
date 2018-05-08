@@ -39,36 +39,31 @@ public class ExistsCommand extends AbstractCommand {
     public boolean call(final PrintStream output, final PrintStream error, final String... args) throws Exception {
         final OptionParser parser = createParser();
         final OptionSpec<URI> baseOption = createBaseOption(parser);
-        final OptionSpec<String> resourceOption = createResourceOption(parser);
+        final OptionSpec<Resource> resourceOption = createResourceOption(parser);
         final OptionSpec<String> usernameOption = createUsernameOption(parser);
         final OptionSpec<String> passwordOption = createPasswordOption(parser);
         final OptionSpecBuilder sslOption = createSslOption(parser);
-        final OptionSpec<Integer> revisionOption = createRevisionOption(parser);
+        final OptionSpec<Revision> revisionOption = createRevisionOption(parser);
 
         final OptionSet options = parse(output, error, parser, args);
         if (options == null) {
             return false;
         }
 
-        final Resource resource = Resource.create(resourceOption.value(options));
-        final Revision revision;
-        if (options.has(revisionOption)) {
-            final int value = revisionOption.value(options);
-            revision = Revision.create(value);
-        } else {
-            revision = Revision.HEAD;
-        }
-
         final String username = usernameOption.value(options);
         final String password = passwordOption.value(options);
-        try (CloseableHttpClient client = createHttpClient(username, password, options.has(sslOption))) {
+        final boolean allowAllSsl = options.has(sslOption);
+        try (CloseableHttpClient client = createHttpClient(username, password, allowAllSsl)) {
             final RepositoryFactory factory = RepositoryFactory.getInstance();
 
             final HttpContext context = createHttpContext();
             final URI base = baseOption.value(options);
             final Repository repository = factory.createRepository(base, client, context, true);
 
-            if (repository.exists(resource, revision)) {
+            final Resource resource = resourceOption.value(options);
+            final Revision revision = revisionOption.value(options);
+            final boolean exists = repository.exists(resource, revision);
+            if (exists) {
                 output.println("resource: " + resource + "@" + revision + " does exist");
             } else {
                 output.println("resource: " + resource + "@" + revision + " does not exist");

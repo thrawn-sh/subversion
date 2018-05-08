@@ -28,6 +28,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.http.client.SubversionRequestRetryHandler;
 import joptsimple.BuiltinHelpFormatter;
@@ -154,29 +156,30 @@ abstract class AbstractCommand implements Command {
                 .required();
     }
 
-    protected final OptionSpec<String> createResourceOption(final OptionParser parser) {
+    protected final OptionSpec<Resource> createResourceOption(final OptionParser parser) {
         return parser //
                 .acceptsAll(Arrays.asList("resource", "r"), "resource path") //
                 .withRequiredArg() //
                 .describedAs("path") //
-                .ofType(String.class) //
+                .withValuesConvertedBy(new ResourceConverter()) //
                 .required();
     }
 
-    protected final OptionSpec<Integer> createRevisionOption(final OptionParser parser) {
+    protected final OptionSpec<Revision> createRevisionOption(final OptionParser parser) {
         return parser //
                 .acceptsAll(Arrays.asList("version", "v"), "resource version") //
                 .withRequiredArg() //
                 .describedAs("version") //
-                .ofType(Integer.class);
+                .withValuesConvertedBy(new RevisionConverter()) //
+                .defaultsTo(Revision.HEAD);
     }
 
-    protected final OptionSpec<String> createSourceResourceOption(final OptionParser parser) {
+    protected final OptionSpec<Resource> createSourceResourceOption(final OptionParser parser) {
         return parser //
                 .acceptsAll(Arrays.asList("source", "s"), "source resource path") //
                 .withRequiredArg() //
                 .describedAs("path") //
-                .ofType(String.class) //
+                .withValuesConvertedBy(new ResourceConverter()) //
                 .required();
     }
 
@@ -185,12 +188,13 @@ abstract class AbstractCommand implements Command {
                 .accepts("trust-ssl", "don't validate SSL");
     }
 
-    protected final OptionSpec<Integer> createStartRevisionOption(final OptionParser parser) {
+    protected final OptionSpec<Revision> createStartRevisionOption(final OptionParser parser) {
         return parser //
                 .acceptsAll(Arrays.asList("start"), "start version") //
                 .withRequiredArg() //
                 .describedAs("version") //
-                .ofType(Integer.class);
+                .withValuesConvertedBy(new RevisionConverter()) //
+                .defaultsTo(Revision.HEAD);
     }
 
     protected final OptionSpecBuilder createStealLockOption(final OptionParser parser) {
@@ -198,20 +202,21 @@ abstract class AbstractCommand implements Command {
                 .accepts("steal-lock", "steal existing lock");
     }
 
-    protected final OptionSpec<Integer> createStopRevisionOption(final OptionParser parser) {
+    protected final OptionSpec<Revision> createStopRevisionOption(final OptionParser parser) {
         return parser //
                 .acceptsAll(Arrays.asList("stop"), "stop version") //
                 .withRequiredArg() //
                 .describedAs("version") //
-                .ofType(Integer.class);
+                .withValuesConvertedBy(new RevisionConverter()) //
+                .defaultsTo(Revision.INITIAL);
     }
 
-    protected final OptionSpec<String> createTargetResourceOption(final OptionParser parser) {
+    protected final OptionSpec<Resource> createTargetResourceOption(final OptionParser parser) {
         return parser //
                 .acceptsAll(Arrays.asList("target", "t"), "target resource path") //
                 .withRequiredArg() //
                 .describedAs("path") //
-                .ofType(String.class) //
+                .withValuesConvertedBy(new ResourceConverter()) //
                 .required();
     }
 

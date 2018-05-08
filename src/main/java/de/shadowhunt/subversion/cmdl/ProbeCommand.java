@@ -47,7 +47,8 @@ public class ProbeCommand extends AbstractCommand {
 
         final String username = usernameOption.value(options);
         final String password = passwordOption.value(options);
-        try (CloseableHttpClient client = createHttpClient(username, password, options.has(sslOption))) {
+        final boolean allowAllSsl = options.has(sslOption);
+        try (CloseableHttpClient client = createHttpClient(username, password, allowAllSsl)) {
             final RepositoryFactory factory = RepositoryFactory.getInstance();
 
             final HttpContext context = createHttpContext();

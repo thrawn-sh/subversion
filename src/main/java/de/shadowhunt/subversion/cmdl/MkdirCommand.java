@@ -39,7 +39,7 @@ public class MkdirCommand extends AbstractCommand {
     public boolean call(final PrintStream output, final PrintStream error, final String... args) throws Exception {
         final OptionParser parser = createParser();
         final OptionSpec<URI> baseOption = createBaseOption(parser);
-        final OptionSpec<String> resourceOption = createResourceOption(parser);
+        final OptionSpec<Resource> resourceOption = createResourceOption(parser);
         final OptionSpec<String> usernameOption = createUsernameOption(parser);
         final OptionSpec<String> passwordOption = createPasswordOption(parser);
         final OptionSpecBuilder sslOption = createSslOption(parser);
@@ -51,11 +51,10 @@ public class MkdirCommand extends AbstractCommand {
             return false;
         }
 
-        final Resource resource = Resource.create(resourceOption.value(options));
-
         final String username = usernameOption.value(options);
         final String password = passwordOption.value(options);
-        try (CloseableHttpClient client = createHttpClient(username, password, options.has(sslOption))) {
+        final boolean allowAllSsl = options.has(sslOption);
+        try (CloseableHttpClient client = createHttpClient(username, password, allowAllSsl)) {
             final RepositoryFactory factory = RepositoryFactory.getInstance();
 
             final HttpContext context = createHttpContext();
@@ -64,7 +63,9 @@ public class MkdirCommand extends AbstractCommand {
 
             final Transaction transaction = repository.createTransaction();
             try {
-                repository.mkdir(transaction, resource, options.has(parentsOption));
+                final Resource resource = resourceOption.value(options);
+                final boolean parents = options.has(parentsOption);
+                repository.mkdir(transaction, resource, parents);
 
                 final String message = commitMessageOption.value(options);
                 repository.commit(transaction, message, true);
