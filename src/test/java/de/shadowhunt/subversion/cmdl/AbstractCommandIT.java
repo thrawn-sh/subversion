@@ -75,6 +75,11 @@ public abstract class AbstractCommandIT {
         Assert.assertFalse("command must not succeed", success);
     }
 
+    @Test
+    public void testToString() throws Exception {
+        Assert.assertNotNull("toString must not be null", command.toString());
+    }
+
     protected void upload(final TemporaryFolder folder, final String resource) throws Exception {
         final File file = folder.newFile("input.txt");
         final String parents = "--parents";
