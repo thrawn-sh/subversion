@@ -161,8 +161,7 @@ abstract class AbstractCommand implements Command {
                 .acceptsAll(Arrays.asList("password", "p"), "login password") //
                 .withRequiredArg() //
                 .describedAs("password") //
-                .ofType(String.class) //
-                .required();
+                .ofType(String.class);
     }
 
     protected final OptionSpec<Resource> createResourceOption(final OptionParser parser) {
@@ -244,13 +243,12 @@ abstract class AbstractCommand implements Command {
                 .acceptsAll(Arrays.asList("username", "u"), "login username") //
                 .withRequiredArg() //
                 .describedAs("username") //
-                .ofType(String.class) //
-                .required();
+                .ofType(String.class);
     }
 
     protected final OptionSpec<File> createWireLogOption(final OptionParser parser) {
         return parser //
-                .acceptsAll(Arrays.asList("wirelog"), "dump all communication to") //
+                .acceptsAll(Arrays.asList("wirelog", "w"), "dump all communication to") //
                 .withRequiredArg() //
                 .describedAs("file") //
                 .ofType(File.class);
