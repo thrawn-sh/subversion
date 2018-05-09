@@ -15,11 +15,13 @@
  */
 package de.shadowhunt.subversion.cmdl;
 
+import java.io.File;
 import java.io.PrintStream;
 
 import org.apache.commons.io.output.NullOutputStream;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public abstract class AbstractCommandIT {
 
@@ -71,5 +73,15 @@ public abstract class AbstractCommandIT {
     public void noArgumentsTest() throws Exception {
         final boolean success = command.call(TEST_OUT, TEST_ERR);
         Assert.assertFalse("command must not succeed", success);
+    }
+
+    protected void upload(final TemporaryFolder folder, final String resource) throws Exception {
+        final File file = folder.newFile("input.txt");
+        final String parents = "--parents";
+        final String message = "--message=test";
+        final String input = "--input=" + file;
+        final CheckinCommand checkin = new CheckinCommand();
+        final boolean success = checkin.call(TEST_OUT, TEST_ERR, BASE, resource, USERNAME, PASSWORD, TRUST_SSL, parents, message, input);
+        Assert.assertTrue("command must succeed", success);
     }
 }

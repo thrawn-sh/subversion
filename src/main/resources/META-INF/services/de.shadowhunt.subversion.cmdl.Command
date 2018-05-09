@@ -1,3 +1,4 @@
+de.shadowhunt.subversion.cmdl.CheckinCommand
 de.shadowhunt.subversion.cmdl.CopyCommand
 de.shadowhunt.subversion.cmdl.DeleteCommand
 de.shadowhunt.subversion.cmdl.DownloadCommand

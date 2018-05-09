@@ -127,6 +127,15 @@ abstract class AbstractCommand implements Command {
         return new BasicHttpContext();
     }
 
+    protected final OptionSpec<File> createInputOption(final OptionParser parser) {
+        return parser //
+                .acceptsAll(Arrays.asList("input", "i"), "input file") //
+                .withRequiredArg() //
+                .describedAs("file") //
+                .ofType(File.class) //
+                .required();
+    }
+
     protected final OptionSpec<File> createOutputOption(final OptionParser parser) {
         return parser //
                 .acceptsAll(Arrays.asList("output", "o"), "output file") //
