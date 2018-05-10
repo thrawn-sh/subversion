@@ -11,38 +11,38 @@ Its API is based on the command-lines client.
 *Usage*
 
 ```java
- File file = new File("/tmp/coverage_report.txt");
+File file = new File("/tmp/coverage_report.txt");
 
- CredentialsProvider cp = new BasicCredentialsProvider();
- Credentials credentials = new UsernamePasswordCredentials("svnuser", "secret");
- cp.setCredentials(AuthScope.ANY, credentials);
+CredentialsProvider cp = new BasicCredentialsProvider();
+Credentials credentials = new UsernamePasswordCredentials("svnuser", "secret");
+cp.setCredentials(AuthScope.ANY, credentials);
 
- HttpContext context = new BasicHttpContext();
+HttpContext context = new BasicHttpContext();
 
- HttpClientBuilder httpBuilder = HttpClientBuilder.create();
- httpBuilder.setDefaultCredentialsProvider(cp);
- httpBuilder.setRetryHandler(new SubversionRequestRetryHandler());
+HttpClientBuilder httpBuilder = HttpClientBuilder.create();
+httpBuilder.setDefaultCredentialsProvider(cp);
+httpBuilder.setRetryHandler(new SubversionRequestRetryHandler());
 
- URIBuilder uriBuilder = new URIBuilder();
- URI uri = uriBuilder //
-    .setScheme("https") //
-    .setHost("subversion.example.net") //
-    .setPath("/repository/test") //
-    .build();
+URIBuilder uriBuilder = new URIBuilder();
+URI uri = uriBuilder //
+   .setScheme("https") //
+   .setHost("subversion.example.net") //
+   .setPath("/repository/test") //
+   .build();
 
- RepositoryFactory factory = RepositoryFactory.getInstance();
+RepositoryFactory factory = RepositoryFactory.getInstance();
 
- try (ClosableHttpClient client = httpBuilder.build()) {
-    Repository repository = factory.createRepository(uri, client, context, true);
+try (ClosableHttpClient client = httpBuilder.build()) {
+   Repository repository = factory.createRepository(uri, client, context, true);
 
-    Transaction transaction = repository.createTransaction();
-    try (InputStream input = new FileInputStream(file)) {
-        repository.add(transaction, Resource.create("/release/test_report.txt"), true, input);
-        repository.commit(transaction, "upload new test report");
-    } finally {
-        repository.rollbackIfNotCommitted(transaction);
-    }
- }
+   Transaction transaction = repository.createTransaction();
+   try (InputStream input = new FileInputStream(file)) {
+       repository.add(transaction, Resource.create("/release/test_report.txt"), true, input);
+       repository.commit(transaction, "upload new test report");
+   } finally {
+       repository.rollbackIfNotCommitted(transaction);
+   }
+}
 ```
 
 The full documentation is located at https://dev.shadowhunt.de/subversion/
