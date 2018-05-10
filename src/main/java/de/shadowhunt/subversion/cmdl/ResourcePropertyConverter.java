@@ -1,5 +1,7 @@
 package de.shadowhunt.subversion.cmdl;
 
+import java.util.regex.Pattern;
+
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.ResourceProperty.Type;
 import joptsimple.ValueConverter;
@@ -8,7 +10,8 @@ public class ResourcePropertyConverter implements ValueConverter<ResourcePropert
 
     @Override
     public ResourceProperty convert(final String value) {
-        final String[] parts = value.split("|");
+        final String regex = Pattern.quote("|");
+        final String[] parts = value.split(regex);
         if (parts.length != 2) {
             return null;
         }

@@ -101,7 +101,7 @@ public final class ResourceProperty {
 
         @Override
         public String toString() {
-            return "Key{type=" + type + ", name='" + name + "'}";
+            return type + "|" + name;
         }
     }
 
