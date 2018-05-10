@@ -21,13 +21,13 @@
 
     <groupId>de.shadowhunt</groupId>
     <artifactId>subversion</artifactId>
-    <version>3.0.4-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <!-- project information {{{1 -->
     <name>Shadowhunt Subversion</name>
     <description>Streaming subversion library without the need for a local sandbox</description>
-    <url>https://dev.shadowhunt.de/subversion</url>
+    <url>https://github.com/thrawn-sh/subversion</url>
     <inceptionYear>2013</inceptionYear>
 
     <organization>
@@ -55,7 +55,7 @@
 
     <!-- environment information {{{1 -->
     <scm>
-        <connection>scm:git:https://scm.shadowhunt.de/subversion.git</connection>
+        <connection>scm:git:https://github.com/thrawn-sh/subversion.git</connection>
         <developerConnection>scm:git:https://scm.shadowhunt.de/subversion.git</developerConnection>
         <tag>HEAD</tag>
         <url>https://github.com/thrawn-sh/subversion</url>
@@ -72,10 +72,6 @@
             <name>Shadowhunt Local Snapshot Repository</name>
             <url>https://maven.shadowhunt.de/local-snapshot</url>
         </snapshotRepository>
-        <site>
-            <id>shadowhunt.site</id>
-            <url>scp://dev.shadowhunt.de/sites/subversion</url>
-        </site>
     </distributionManagement>
     <!-- }}}1 -->
 
@@ -761,80 +757,4 @@
         </plugins>
         <!-- }}}1 -->
     </build>
-
-    <!-- reporting {{{1 -->
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.17</version>
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>checkstyle</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-                <configuration>
-                    <configLocation>assets/dev/checkstyle.xml</configLocation>
-                    <headerLocation>LICENSE</headerLocation>
-                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                    <suppressionsLocation>assets/dev/checkstyle-suppressions.xml</suppressionsLocation>
-                    <violationSeverity>warning</violationSeverity>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-plugin-plugin</artifactId>
-                <version>3.5.1</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.9</version>
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>summary</report>
-                            <report>scm</report>
-                            <report>dependency-info</report>
-                            <report>dependencies</report>
-                            <report>plugins</report>
-                            <report>license</report>
-
-                            <report>dependency-convergence</report>
-                            <report>dependency-management</report>
-                            <report>modules</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-                <configuration>
-                    <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
-                    <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>2.21.0</version>
-                <configuration>
-                    <linkXRef>false</linkXRef>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>3.0.3</version>
-                <configuration>
-                    <effort>Max</effort>
-                    <excludeFilterFile>assets/dev/findbugs-exclude.xml</excludeFilterFile>
-                    <onlyAnalyze>de.shadowhunt.subversion.-</onlyAnalyze>
-                    <threshold>Low</threshold>
-                    <xmlOutput>true</xmlOutput>
-                </configuration>
-            </plugin>
-        </plugins>
-    </reporting>
-    <!-- }}}1 -->
 </project>
