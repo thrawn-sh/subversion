@@ -11,9 +11,10 @@ Its API is based on the command-lines client.
 *Usage*
 
 ```java
+ File file = new File("/tmp/coverage_report.txt");
 
  CredentialsProvider cp = new BasicCredentialsProvider();
- Credentials credentials = new UsernamePasswordCredentials(USERNAME, PASSWORD);
+ Credentials credentials = new UsernamePasswordCredentials("svnuser", "secret");
  cp.setCredentials(AuthScope.ANY, credentials);
 
  HttpContext context = new BasicHttpContext();
@@ -24,10 +25,9 @@ Its API is based on the command-lines client.
 
  URIBuilder uriBuilder = new URIBuilder();
  URI uri = uriBuilder //
-    .setScheme("http")//
-    .setHost("scm.example.net") //
-    .setPort(8080)
-    .setPath("/svn/test-repo/trunk") //
+    .setScheme("https") //
+    .setHost("subversion.example.net") //
+    .setPath("/repository/test") //
     .build();
 
  RepositoryFactory factory = RepositoryFactory.getInstance();
@@ -36,16 +36,9 @@ Its API is based on the command-lines client.
     Repository repository = factory.createRepository(uri, client, context, true);
 
     Transaction transaction = repository.createTransaction();
-    try { // adding new files
-        InputStream file1 = ...;
-        repository.add(transaction, Resource.create("/folder/file1.txt"), true, file1);
-        InputStream file2 = ...;
-        repository.add(transaction, Resource.create("/folder/file2.txt"), true, file2);
-        Resource sourceFile = Resource.create("/folder/source.txt");
-        if (repository.exists(sourceFile, Revision.HEAD)) {
-            repository.move(transaction, sourceFile, Resource.create("/folder/target.txt"), false);
-        }
-        repository.commit(transaction, "adding 2 files, renaming 1");
+    try (InputStream input = new FileInputStream(file)) {
+        repository.add(transaction, Resource.create("/release/test_report.txt"), true, input);
+        repository.commit(transaction, "upload new test report");
     } finally {
         repository.rollbackIfNotCommitted(transaction);
     }
