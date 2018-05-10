@@ -37,7 +37,6 @@ import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import joptsimple.OptionSpecBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
@@ -127,7 +126,7 @@ abstract class AbstractCommand implements Command {
         return new BasicHttpContext();
     }
 
-    protected final OptionSpecBuilder createNoUnlockOption(final OptionParser parser) {
+    protected final OptionSpec<Void> createNoUnlockOption(final OptionParser parser) {
         return parser //
                 .accepts("no-unlock", "don't unlock the resources");
     }
@@ -140,7 +139,7 @@ abstract class AbstractCommand implements Command {
                 .ofType(File.class);
     }
 
-    protected final OptionSpecBuilder createParentsOption(final OptionParser parser) {
+    protected final OptionSpec<Void> createParentsOption(final OptionParser parser) {
         return parser //
                 .accepts("parents", "create missing parent folders");
     }
@@ -188,7 +187,7 @@ abstract class AbstractCommand implements Command {
                 .required();
     }
 
-    protected final OptionSpecBuilder createSslOption(final OptionParser parser) {
+    protected final OptionSpec<Void> createSslOption(final OptionParser parser) {
         return parser //
                 .accepts("trust-ssl", "don't validate SSL");
     }
@@ -202,7 +201,7 @@ abstract class AbstractCommand implements Command {
                 .defaultsTo(Revision.HEAD);
     }
 
-    protected final OptionSpecBuilder createStealLockOption(final OptionParser parser) {
+    protected final OptionSpec<Void> createStealLockOption(final OptionParser parser) {
         return parser //
                 .accepts("steal-lock", "steal existing lock");
     }

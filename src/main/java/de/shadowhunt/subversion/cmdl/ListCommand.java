@@ -28,7 +28,6 @@ import de.shadowhunt.subversion.Revision;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import joptsimple.OptionSpecBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.protocol.HttpContext;
 
@@ -45,7 +44,7 @@ public class ListCommand extends AbstractCommand {
         final OptionSpec<Resource> resourceOption = createResourceOption(parser);
         final OptionSpec<String> usernameOption = createUsernameOption(parser);
         final OptionSpec<String> passwordOption = createPasswordOption(parser);
-        final OptionSpecBuilder sslOption = createSslOption(parser);
+        final OptionSpec<Void> sslOption = createSslOption(parser);
         final OptionSpec<Revision> revisionOption = createRevisionOption(parser);
 
         final OptionSet options = parse(output, error, parser, args);

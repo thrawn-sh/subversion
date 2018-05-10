@@ -23,7 +23,6 @@ import de.shadowhunt.subversion.RepositoryFactory;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import joptsimple.OptionSpecBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.protocol.HttpContext;
 
@@ -38,7 +37,7 @@ public class ProbeCommand extends AbstractCommand {
         final OptionParser parser = createParser();
         final OptionSpec<String> usernameOption = createUsernameOption(parser);
         final OptionSpec<String> passwordOption = createPasswordOption(parser);
-        final OptionSpecBuilder sslOption = createSslOption(parser);
+        final OptionSpec<Void> sslOption = createSslOption(parser);
         final OptionSpec<URI> urlOption = createUrlOption(parser);
 
         final OptionSet options = parse(output, error, parser, args);

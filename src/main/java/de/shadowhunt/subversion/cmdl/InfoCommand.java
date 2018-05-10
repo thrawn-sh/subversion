@@ -29,7 +29,6 @@ import de.shadowhunt.subversion.Revision;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import joptsimple.OptionSpecBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.protocol.HttpContext;
 
@@ -46,7 +45,7 @@ public class InfoCommand extends AbstractCommand {
         final OptionSpec<Resource> resourceOption = createResourceOption(parser);
         final OptionSpec<String> usernameOption = createUsernameOption(parser);
         final OptionSpec<String> passwordOption = createPasswordOption(parser);
-        final OptionSpecBuilder sslOption = createSslOption(parser);
+        final OptionSpec<Void> sslOption = createSslOption(parser);
         final OptionSpec<Revision> revisionOption = createRevisionOption(parser);
 
         final OptionSet options = parse(output, error, parser, args);
@@ -97,7 +96,7 @@ public class InfoCommand extends AbstractCommand {
             output.println("Properties:");
             final ResourceProperty[] properties = info.getProperties();
             for (final ResourceProperty property : properties) {
-                output.println("  " + property.getName() + ": " + property.getValue());
+                output.println("  " + property.getName() + " = " + property.getValue());
             }
         }
         return true;

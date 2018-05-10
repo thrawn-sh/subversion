@@ -26,7 +26,6 @@ import de.shadowhunt.subversion.Transaction;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import joptsimple.OptionSpecBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.protocol.HttpContext;
 
@@ -44,11 +43,11 @@ public class CopyCommand extends AbstractCommand {
         final OptionSpec<Resource> targetOption = createTargetResourceOption(parser);
         final OptionSpec<String> usernameOption = createUsernameOption(parser);
         final OptionSpec<String> passwordOption = createPasswordOption(parser);
-        final OptionSpecBuilder sslOption = createSslOption(parser);
-        final OptionSpecBuilder parentsOption = createParentsOption(parser);
+        final OptionSpec<Void> sslOption = createSslOption(parser);
+        final OptionSpec<Void> parentsOption = createParentsOption(parser);
         final OptionSpec<String> commitMessageOption = createCommitMessageOption(parser);
         final OptionSpec<Revision> revisionOption = createRevisionOption(parser);
-        final OptionSpecBuilder noUnlockOption = createNoUnlockOption(parser);
+        final OptionSpec<Void> noUnlockOption = createNoUnlockOption(parser);
 
         final OptionSet options = parse(output, error, parser, args);
         if (options == null) {
