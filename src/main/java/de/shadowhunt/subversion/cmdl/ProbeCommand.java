@@ -57,6 +57,7 @@ public class ProbeCommand extends AbstractCommand {
             output.println("complete uri: " + uri);
             output.println("    base uri: " + repository.getBaseUri());
             output.println("    resource: " + repository.getBasePath());
+            output.println("    protocol: " + repository.getProtocolVersion());
         }
         return true;
     }
