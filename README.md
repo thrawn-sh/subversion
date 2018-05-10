@@ -65,3 +65,25 @@ docker run                                      \
     --mount type=tmpfs,destination=/var/www/svn \
     shadowhunt/subversion:<VERSION>
 ```
+
+Starting with version 4.0.0, a command line mode is included, which allows you
+to execute various commands against a Subversion server without having the
+Subverion client tools installed on the machine or a local copy checked out.
+
+```sh
+# listing all available commands
+java -jar subversion-jar-with-dependencies.jar help
+
+# to get a list of all parameters for a command
+java -jar subversion-jar-with-dependencies.jar <COMMAND> --help
+
+# example checkin
+java -jar subversion-jar-with-dependencies.jar checkin    \
+    --base=https://subversion.example.net/repository/test \
+    --username=svnuser                                    \
+    --password=secret                                     \
+    --parents                                             \
+    --resource=/release/test_report.txt                   \
+    --message="upload new test report"                    \
+    --input=/tmp/coverage_report.txt
+```
