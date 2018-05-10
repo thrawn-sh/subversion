@@ -142,7 +142,7 @@ commit() { #{{{1
     local message="${1}"; shift
     message=`echo "${message}" | sed "s:${LOCAL}::g"`
 
-    "${SVN}" commit --message "${message}" "${LOCAL}"
+    "${SVN}" commit --message "${message}" --no-unlock "${LOCAL}"
 
     local version=`"${SVN}" info "file://${REPO}" | grep ^Revision: | awk '{print $2}'`
     local src
