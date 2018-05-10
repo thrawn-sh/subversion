@@ -26,8 +26,8 @@ public class ProbeCommandIT extends AbstractCommandIT {
 
     @Test
     public void test() throws Exception {
-        final String uri = getUri("/trunk/00000000-0000-0000-0000-000000000000/exists");
-        final boolean success = command.call(TEST_OUT, TEST_ERR, USERNAME, PASSWORD, TRUST_SSL, uri);
+        final String url = "--url=" + BASE_URI + "/trunk/00000000-0000-0000-0000-000000000000/exists";
+        final boolean success = command.call(TEST_OUT, TEST_ERR, USERNAME, PASSWORD, TRUST_SSL, url);
         Assert.assertTrue("command must succeed", success);
     }
 }

@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.URI;
+import java.util.Arrays;
 
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.RepositoryFactory;
@@ -84,6 +85,15 @@ public class CheckinCommand extends AbstractCommand {
             }
         }
         return true;
+    }
+
+    protected final OptionSpec<File> createInputOption(final OptionParser parser) {
+        return parser //
+                .acceptsAll(Arrays.asList("input", "i"), "input file") //
+                .withRequiredArg() //
+                .describedAs("file") //
+                .ofType(File.class) //
+                .required();
     }
 
 }

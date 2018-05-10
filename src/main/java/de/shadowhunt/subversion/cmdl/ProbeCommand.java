@@ -39,6 +39,7 @@ public class ProbeCommand extends AbstractCommand {
         final OptionSpec<String> usernameOption = createUsernameOption(parser);
         final OptionSpec<String> passwordOption = createPasswordOption(parser);
         final OptionSpecBuilder sslOption = createSslOption(parser);
+        final OptionSpec<URI> urlOption = createUrlOption(parser);
 
         final OptionSet options = parse(output, error, parser, args);
         if (options == null) {
@@ -52,15 +53,22 @@ public class ProbeCommand extends AbstractCommand {
             final RepositoryFactory factory = RepositoryFactory.getInstance();
 
             final HttpContext context = createHttpContext();
-            for (final Object argument : options.nonOptionArguments()) {
-                final URI uri = URI.create(argument.toString());
-                final Repository repository = factory.createRepository(uri, client, context, true);
-                output.println("complete uri: " + uri);
-                output.println("    base uri: " + repository.getBaseUri());
-                output.println("    resource: " + repository.getBasePath());
-            }
+            final URI uri = urlOption.value(options);
+            final Repository repository = factory.createRepository(uri, client, context, true);
+            output.println("complete uri: " + uri);
+            output.println("    base uri: " + repository.getBaseUri());
+            output.println("    resource: " + repository.getBasePath());
         }
         return true;
+    }
+
+    protected final OptionSpec<URI> createUrlOption(final OptionParser parser) {
+        return parser //
+                .accepts("url", "URL to resource") //
+                .withRequiredArg() //
+                .describedAs("url") //
+                .ofType(URI.class) //
+                .required();
     }
 
 }

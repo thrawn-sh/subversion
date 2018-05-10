@@ -27,7 +27,7 @@ public abstract class AbstractCommandIT {
 
     public static final String BASE;
 
-    private static final String BASE_URI;
+    public static final String BASE_URI;
 
     public static final String PASSWORD;
 
@@ -57,10 +57,6 @@ public abstract class AbstractCommandIT {
 
     protected AbstractCommandIT(final Command command) {
         this.command = command;
-    }
-
-    protected String getUri(final String suffix) {
-        return BASE_URI + suffix;
     }
 
     @Test

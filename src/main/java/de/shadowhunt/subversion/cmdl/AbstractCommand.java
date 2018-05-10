@@ -127,15 +127,6 @@ abstract class AbstractCommand implements Command {
         return new BasicHttpContext();
     }
 
-    protected final OptionSpec<File> createInputOption(final OptionParser parser) {
-        return parser //
-                .acceptsAll(Arrays.asList("input", "i"), "input file") //
-                .withRequiredArg() //
-                .describedAs("file") //
-                .ofType(File.class) //
-                .required();
-    }
-
     protected final OptionSpecBuilder createNoUnlockOption(final OptionParser parser) {
         return parser //
                 .accepts("no-unlock", "don't unlock the resources");
@@ -164,6 +155,7 @@ abstract class AbstractCommand implements Command {
     protected final OptionSpec<String> createPasswordOption(final OptionParser parser) {
         return parser //
                 .acceptsAll(Arrays.asList("password", "p"), "login password") //
+                .requiredIf("username") // only require password if username is given
                 .withRequiredArg() //
                 .describedAs("password") //
                 .ofType(String.class);
