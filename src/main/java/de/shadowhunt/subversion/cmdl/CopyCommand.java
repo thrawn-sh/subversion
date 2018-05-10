@@ -48,6 +48,7 @@ public class CopyCommand extends AbstractCommand {
         final OptionSpecBuilder parentsOption = createParentsOption(parser);
         final OptionSpec<String> commitMessageOption = createCommitMessageOption(parser);
         final OptionSpec<Revision> revisionOption = createRevisionOption(parser);
+        final OptionSpecBuilder noUnlockOption = createNoUnlockOption(parser);
 
         final OptionSet options = parse(output, error, parser, args);
         if (options == null) {
@@ -73,7 +74,8 @@ public class CopyCommand extends AbstractCommand {
                 repository.copy(transaction, source, sourceRevision, target, parents);
 
                 final String message = commitMessageOption.value(options);
-                repository.commit(transaction, message, true);
+                final boolean releaseLocks = !options.has(noUnlockOption);
+                repository.commit(transaction, message, releaseLocks);
             } finally {
                 repository.rollbackIfNotCommitted(transaction);
             }

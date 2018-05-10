@@ -46,6 +46,7 @@ public class MoveCommand extends AbstractCommand {
         final OptionSpecBuilder sslOption = createSslOption(parser);
         final OptionSpecBuilder parentsOption = createParentsOption(parser);
         final OptionSpec<String> commitMessageOption = createCommitMessageOption(parser);
+        final OptionSpecBuilder noUnlockOption = createNoUnlockOption(parser);
 
         final OptionSet options = parse(output, error, parser, args);
         if (options == null) {
@@ -70,7 +71,8 @@ public class MoveCommand extends AbstractCommand {
                 repository.move(transaction, source, target, parents);
 
                 final String message = commitMessageOption.value(options);
-                repository.commit(transaction, message, true);
+                final boolean releaseLocks = !options.has(noUnlockOption);
+                repository.commit(transaction, message, releaseLocks);
             } finally {
                 repository.rollbackIfNotCommitted(transaction);
             }

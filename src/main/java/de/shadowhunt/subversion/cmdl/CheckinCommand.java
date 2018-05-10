@@ -49,6 +49,7 @@ public class CheckinCommand extends AbstractCommand {
         final OptionSpec<String> commitMessageOption = createCommitMessageOption(parser);
         final OptionSpecBuilder parentsOption = createParentsOption(parser);
         final OptionSpec<File> inputOption = createInputOption(parser);
+        final OptionSpecBuilder noUnlockOption = createNoUnlockOption(parser);
 
         final OptionSet options = parse(output, error, parser, args);
         if (options == null) {
@@ -75,7 +76,8 @@ public class CheckinCommand extends AbstractCommand {
                     repository.add(transaction, resource, parents, content);
 
                     final String message = commitMessageOption.value(options);
-                    repository.commit(transaction, message, true);
+                    final boolean releaseLocks = !options.has(noUnlockOption);
+                    repository.commit(transaction, message, releaseLocks);
                 }
             } finally {
                 repository.rollbackIfNotCommitted(transaction);

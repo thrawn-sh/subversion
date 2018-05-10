@@ -136,6 +136,11 @@ abstract class AbstractCommand implements Command {
                 .required();
     }
 
+    protected final OptionSpecBuilder createNoUnlockOption(final OptionParser parser) {
+        return parser //
+                .accepts("no-unlock", "don't unlock the resources");
+    }
+
     protected final OptionSpec<File> createOutputOption(final OptionParser parser) {
         return parser //
                 .acceptsAll(Arrays.asList("output", "o"), "output file") //
