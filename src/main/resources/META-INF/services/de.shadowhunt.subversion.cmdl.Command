@@ -11,4 +11,6 @@ de.shadowhunt.subversion.cmdl.LogCommand
 de.shadowhunt.subversion.cmdl.MkdirCommand
 de.shadowhunt.subversion.cmdl.MoveCommand
 de.shadowhunt.subversion.cmdl.ProbeCommand
+de.shadowhunt.subversion.cmdl.PropertiesDeleteCommand
+de.shadowhunt.subversion.cmdl.PropertiesSetCommand
 de.shadowhunt.subversion.cmdl.UnlockCommand

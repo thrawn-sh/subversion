@@ -29,6 +29,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.http.client.SubversionRequestRetryHandler;
@@ -158,6 +159,16 @@ abstract class AbstractCommand implements Command {
                 .withRequiredArg() //
                 .describedAs("password") //
                 .ofType(String.class);
+    }
+
+    protected OptionSpec<ResourceProperty> createPropertiesOption(final OptionParser parser) {
+        return parser //
+                .acceptsAll(Arrays.asList("property", "p"), "property") //
+                .withRequiredArg() //
+                .describedAs("property") //
+                .withValuesConvertedBy(new ResourcePropertyConverter()) //
+                .withValuesSeparatedBy(",") //
+                .required();
     }
 
     protected final OptionSpec<Resource> createResourceOption(final OptionParser parser) {
