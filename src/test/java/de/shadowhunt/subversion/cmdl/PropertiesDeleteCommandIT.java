@@ -43,8 +43,8 @@ public class PropertiesDeleteCommandIT extends AbstractCommandIT {
     @Test
     public void test() throws Exception {
         final String resource = "--resource=/trunk/" + testId + "/properties_set/file.txt";
-        final String properties = "--property=aaa|AAA";
-        prepare(resource, properties);
+        final String properties = "--property=aaa";
+        prepare(resource, properties + "|AAA");
         final String message = "--message=test";
         final boolean success = command.call(TEST_OUT, TEST_ERR, BASE, resource, USERNAME, PASSWORD, TRUST_SSL, message, properties);
         Assert.assertTrue("command must succeed", success);

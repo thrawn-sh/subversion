@@ -23,19 +23,25 @@ import joptsimple.ValueConverter;
 
 public class ResourcePropertyConverter implements ValueConverter<ResourceProperty> {
 
+    private final boolean onlyName;
+
+    public ResourcePropertyConverter(final boolean onlyName) {
+        this.onlyName = onlyName;
+    }
+
     @Override
     public ResourceProperty convert(final String value) {
         final String regex = Pattern.quote("|");
         final String[] parts = value.split(regex);
-        if (parts.length != 2) {
-            return null;
+        if (onlyName) {
+            return new ResourceProperty(Type.SUBVERSION_CUSTOM, parts[0], "");
         }
         return new ResourceProperty(Type.SUBVERSION_CUSTOM, parts[0], parts[1]);
     }
 
     @Override
     public String valuePattern() {
-        return "<NAME>|<VALUE>";
+        return null;
     }
 
     @Override

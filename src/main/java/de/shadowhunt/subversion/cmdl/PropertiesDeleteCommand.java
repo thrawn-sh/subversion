@@ -45,7 +45,7 @@ public class PropertiesDeleteCommand extends AbstractCommand {
         final OptionSpec<String> passwordOption = createPasswordOption(parser);
         final OptionSpec<Void> sslOption = createSslOption(parser);
         final OptionSpec<String> commitMessageOption = createCommitMessageOption(parser);
-        final OptionSpec<ResourceProperty> propertiesOption = createPropertiesOption(parser);
+        final OptionSpec<ResourceProperty> propertiesOption = createPropertiesOption(parser, true);
         final OptionSpec<Void> noUnlockOption = createNoUnlockOption(parser);
 
         final OptionSet options = parse(output, error, parser, args);

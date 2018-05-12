@@ -161,12 +161,12 @@ abstract class AbstractCommand implements Command {
                 .ofType(String.class);
     }
 
-    protected OptionSpec<ResourceProperty> createPropertiesOption(final OptionParser parser) {
+    protected OptionSpec<ResourceProperty> createPropertiesOption(final OptionParser parser, final boolean onlyName) {
         return parser //
                 .acceptsAll(Arrays.asList("property", "p"), "property") //
                 .withRequiredArg() //
                 .describedAs("property") //
-                .withValuesConvertedBy(new ResourcePropertyConverter()) //
+                .withValuesConvertedBy(new ResourcePropertyConverter(onlyName)) //
                 .withValuesSeparatedBy(",") //
                 .required();
     }
