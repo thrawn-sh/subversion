@@ -41,7 +41,7 @@ public class InfoCommandIT extends AbstractCommandIT {
     }
 
     @Test
-    public void lockedFileTest() throws Exception { // FIXME why is file not locked
+    public void lockedFileTest() throws Exception {
         final String resource = "--resource=/trunk/00000000-0000-0000-0000-000000000000/lock/file.txt";
         final String version = "--version=HEAD";
         final boolean success = command.call(TEST_OUT, TEST_ERR, BASE, resource, USERNAME, PASSWORD, TRUST_SSL, version);
