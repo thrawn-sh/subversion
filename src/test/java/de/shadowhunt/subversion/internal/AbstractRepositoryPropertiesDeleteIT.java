@@ -19,20 +19,20 @@ package de.shadowhunt.subversion.internal;
 
 import java.util.UUID;
 
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
-
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
+import de.shadowhunt.subversion.ResourceProperty.Key;
 import de.shadowhunt.subversion.ResourceProperty.Type;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.View;
+import org.junit.Assert;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -70,12 +70,14 @@ public abstract class AbstractRepositoryPropertiesDeleteIT {
     @Test(expected = SubversionException.class)
     public void test00_invalid() throws Exception {
         final Resource resource = prefix.append(Resource.create("invalid.txt"));
-        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "test");
+        final Key key = new Key(Type.SUBVERSION_CUSTOM, "test");
+        final ResourceProperty property = new ResourceProperty(key, "test");
 
         final Transaction transaction = repository.createTransaction();
         try {
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            transaction.invalidate();
+            final TransactionInternal transactionInternal = TransactionInternal.from(transaction);
+            transactionInternal.invalidate();
             Assert.assertFalse("transaction must not be active", transaction.isActive());
             repository.propertiesDelete(transaction, resource, property);
             Assert.fail("must not complete");
@@ -87,7 +89,8 @@ public abstract class AbstractRepositoryPropertiesDeleteIT {
     @Test(expected = SubversionException.class)
     public void test00_NonExistingResource() throws Exception {
         final Resource resource = prefix.append(Resource.create("non_existing.txt"));
-        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "test");
+        final Key key = new Key(Type.SUBVERSION_CUSTOM, "test");
+        final ResourceProperty property = new ResourceProperty(key, "test");
         final View view = repository.createView();
         Assert.assertFalse(resource + " does already exist", repository.exists(view, resource, Revision.HEAD));
 
@@ -104,7 +107,8 @@ public abstract class AbstractRepositoryPropertiesDeleteIT {
     @Test(expected = SubversionException.class)
     public void test00_rollback() throws Exception {
         final Resource resource = prefix.append(Resource.create("rollback.txt"));
-        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "test");
+        final Key key = new Key(Type.SUBVERSION_CUSTOM, "test");
+        final ResourceProperty property = new ResourceProperty(key, "test");
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -121,7 +125,8 @@ public abstract class AbstractRepositoryPropertiesDeleteIT {
     @Test
     public void test01_deleteExistingProperties() throws Exception {
         final Resource resource = prefix.append(Resource.create("file.txt"));
-        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "test");
+        final Key key = new Key(Type.SUBVERSION_CUSTOM, "test");
+        final ResourceProperty property = new ResourceProperty(key, "test");
 
         AbstractRepositoryAddIT.file(repository, resource, "test", true);
         AbstractRepositoryPropertiesSetIT.setProperties(repository, resource, property);
@@ -133,7 +138,8 @@ public abstract class AbstractRepositoryPropertiesDeleteIT {
     @Test
     public void test01_deleteNonExistingProperties() throws Exception {
         final Resource resource = prefix.append(Resource.create("no_properties.txt"));
-        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "test");
+        final Key key = new Key(Type.SUBVERSION_CUSTOM, "test");
+        final ResourceProperty property = new ResourceProperty(key, "test");
 
         AbstractRepositoryAddIT.file(repository, resource, "test", true);
 

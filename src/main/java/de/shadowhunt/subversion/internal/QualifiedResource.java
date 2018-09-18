@@ -23,21 +23,11 @@ public final class QualifiedResource {
 
     private final Resource base;
 
-    private final Resource resource;
+    private final Resource suffix;
 
-    public QualifiedResource(final Resource resource) {
-        this(Resource.ROOT, resource);
-    }
-
-    public QualifiedResource(final Resource base, final Resource resource) {
+    public QualifiedResource(final Resource base, final Resource suffix) {
         this.base = base;
-        this.resource = resource;
-    }
-
-    public QualifiedResource append(final QualifiedResource suffix) {
-        Resource newResource = resource.append(suffix.base);
-        newResource = newResource.append(suffix.resource);
-        return new QualifiedResource(base, newResource);
+        this.suffix = suffix;
     }
 
     @Override
@@ -59,11 +49,11 @@ public final class QualifiedResource {
         } else if (!base.equals(other.base)) {
             return false;
         }
-        if (resource == null) {
-            if (other.resource != null) {
+        if (suffix == null) {
+            if (other.suffix != null) {
                 return false;
             }
-        } else if (!resource.equals(other.resource)) {
+        } else if (!suffix.equals(other.suffix)) {
             return false;
         }
         return true;
@@ -73,17 +63,12 @@ public final class QualifiedResource {
         return base;
     }
 
-    public QualifiedResource getParent() {
-        final Resource parent = resource.getParent();
-        return new QualifiedResource(base, parent);
-    }
-
-    public Resource getResource() {
-        return resource;
+    public Resource getSuffix() {
+        return suffix;
     }
 
     public String getValue() {
-        final Resource fullResource = base.append(resource);
+        final Resource fullResource = toResource();
         return fullResource.getValue();
     }
 
@@ -92,8 +77,12 @@ public final class QualifiedResource {
         final int prime = 31;
         int result = 1;
         result = (prime * result) + ((base == null) ? 0 : base.hashCode());
-        result = (prime * result) + ((resource == null) ? 0 : resource.hashCode());
+        result = (prime * result) + ((suffix == null) ? 0 : suffix.hashCode());
         return result;
+    }
+
+    public Resource toResource() {
+        return base.append(suffix);
     }
 
     @Override

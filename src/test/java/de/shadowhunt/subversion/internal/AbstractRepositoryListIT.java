@@ -19,21 +19,21 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.File;
 import java.util.Iterator;
+import java.util.NavigableSet;
 import java.util.Set;
 
+import de.shadowhunt.subversion.Depth;
+import de.shadowhunt.subversion.Info;
+import de.shadowhunt.subversion.ReadOnlyRepository;
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.SubversionException;
+import de.shadowhunt.subversion.View;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
-import de.shadowhunt.subversion.Depth;
-import de.shadowhunt.subversion.Info;
-import de.shadowhunt.subversion.Repository;
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.Revision;
-import de.shadowhunt.subversion.SubversionException;
-import de.shadowhunt.subversion.View;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -54,11 +54,11 @@ public abstract class AbstractRepositoryListIT {
 
     private final ListLoader listLoader;
 
-    private final Repository repository;
+    private final ReadOnlyRepository repository;
 
     private View view;
 
-    protected AbstractRepositoryListIT(final Repository repository, final File root) {
+    protected AbstractRepositoryListIT(final ReadOnlyRepository repository, final File root) {
         this.repository = repository;
         listLoader = new ListLoader(root, repository.getBasePath());
     }
@@ -109,9 +109,10 @@ public abstract class AbstractRepositoryListIT {
         final Revision revision = Revision.create(64);
 
         for (final Depth depth : Depth.values()) {
-            final Set<Info> expected = listLoader.load(resource, revision, depth);
+            final NavigableSet<Info> expected = listLoader.load(resource, revision, depth);
             final String message = createMessage(resource, revision, depth);
-            assertListEquals(message, expected, repository.list(view, resource, revision, depth));
+            final NavigableSet<Info> actual = repository.list(view, resource, revision, depth);
+            assertListEquals(message, expected, actual);
         }
     }
 

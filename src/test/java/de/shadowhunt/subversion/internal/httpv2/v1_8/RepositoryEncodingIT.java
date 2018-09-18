@@ -17,9 +17,8 @@
  */
 package de.shadowhunt.subversion.internal.httpv2.v1_8;
 
-import org.junit.BeforeClass;
-
 import de.shadowhunt.subversion.internal.AbstractRepositoryEncodingIT;
+import org.junit.BeforeClass;
 
 public class RepositoryEncodingIT extends AbstractRepositoryEncodingIT {
 

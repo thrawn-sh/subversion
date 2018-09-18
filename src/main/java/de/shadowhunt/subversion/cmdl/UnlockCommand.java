@@ -58,7 +58,7 @@ public class UnlockCommand extends AbstractCommand {
 
             final HttpContext context = createHttpContext();
             final URI base = baseOption.value(options);
-            final Repository repository = factory.createRepository(base, client, context, true);
+            final Repository repository = factory.createRepository(base, client, context);
 
             final Resource resource = resourceOption.value(options);
             final boolean force = options.has(stealLockOption);

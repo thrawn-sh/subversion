@@ -20,17 +20,17 @@ package de.shadowhunt.subversion.internal;
 import java.io.File;
 import java.util.UUID;
 
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
-
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
+import de.shadowhunt.subversion.ResourceProperty.Key;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.View;
+import org.junit.Assert;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -38,9 +38,15 @@ public abstract class AbstractRepositoryNamespacePropertiesIT {
 
     private static final ResourceProperty[] EMPTY = new ResourceProperty[0];
 
-    private static final ResourceProperty[] NAMESPACE_PROPERTIES = { new ResourceProperty(ResourceProperty.Type.SUBVERSION_CUSTOM, "namespace:name", "value") };
+    private static final ResourceProperty[] NAMESPACE_PROPERTIES;
 
     public static final Resource READ_PREFIX = Resource.create("/00000000-0000-0000-0000-000000000000/namespace_properties");
+
+    static {
+        final Key key = new Key(ResourceProperty.Type.SUBVERSION_CUSTOM, "namespace:name");
+        final ResourceProperty property = new ResourceProperty(key, "value");
+        NAMESPACE_PROPERTIES = new ResourceProperty[] { property };
+    }
 
     private final InfoLoader infoLoader;
 

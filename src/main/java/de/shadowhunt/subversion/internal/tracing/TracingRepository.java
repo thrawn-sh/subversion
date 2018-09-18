@@ -19,13 +19,12 @@ package de.shadowhunt.subversion.internal.tracing;
 
 import java.io.InputStream;
 
-import org.apache.commons.lang3.time.StopWatch;
-
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
+import org.apache.commons.lang3.time.StopWatch;
 
 public class TracingRepository extends TracingReadOnlyRepository implements Repository {
 
@@ -39,7 +38,8 @@ public class TracingRepository extends TracingReadOnlyRepository implements Repo
     @Override
     public final void add(final Transaction transaction, final Resource resource, final boolean parents, final InputStream content) {
         final String method = "add";
-        final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, transaction, resource, parents, content.getClass());
+        final Class<? extends InputStream> contentClass = content.getClass();
+        final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, transaction, resource, parents, contentClass);
         try {
             delegate.add(transaction, resource, parents, content);
         } finally {

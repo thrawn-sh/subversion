@@ -24,20 +24,19 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import de.shadowhunt.subversion.Depth;
+import de.shadowhunt.subversion.Info;
+import de.shadowhunt.subversion.LogEntry;
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.ResourceProperty;
+import de.shadowhunt.subversion.ResourceProperty.Key;
+import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.Transaction;
+import de.shadowhunt.subversion.View;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
-import de.shadowhunt.subversion.Depth;
-import de.shadowhunt.subversion.Info;
-import de.shadowhunt.subversion.Log;
-import de.shadowhunt.subversion.Repository;
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.ResourceProperty;
-import de.shadowhunt.subversion.Revision;
-import de.shadowhunt.subversion.Transaction;
-import de.shadowhunt.subversion.View;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -53,11 +52,11 @@ public abstract class AbstractRepositoryEncodingIT {
 
     private final Resource read;
 
-    private final Repository repository;
+    private final RepositoryInternal repository;
 
     private final Resource write;
 
-    protected AbstractRepositoryEncodingIT(final Repository repository, final UUID testId, final File root) {
+    protected AbstractRepositoryEncodingIT(final RepositoryInternal repository, final UUID testId, final File root) {
         this.repository = repository;
         read = Resource.create("/00000000-0000-0000-0000-000000000000/encoding");
         write = Resource.create("/" + testId + "/encoding");
@@ -487,9 +486,8 @@ public abstract class AbstractRepositoryEncodingIT {
 
     private void testDownloadUri(final Resource resource, final Revision revision) {
         final View view = repository.createView();
-        final AbstractBaseRepository ar = (AbstractBaseRepository) repository;
         final QualifiedResource qualifiedResource = new QualifiedResource(repository.getBasePath(), resource);
-        final URI expected = URIUtils.appendResources(repository.getBaseUri(), ar.config.getVersionedResource(qualifiedResource, view.getHeadRevision()));
+        final URI expected = URIUtils.appendResources(repository.getBaseUri(), repository.getQualifiedVersionedResource(qualifiedResource, view.getHeadRevision()));
         final String message = resource + ": @" + revision;
         Assert.assertEquals(message, expected, repository.downloadURI(view, resource, revision));
     }
@@ -515,7 +513,7 @@ public abstract class AbstractRepositoryEncodingIT {
     }
 
     private void testLog(final Resource resource, final Revision start, final Revision end) throws Exception {
-        final List<Log> expected = logLoader.load(resource, start, end, 0);
+        final List<LogEntry> expected = logLoader.load(resource, start, end, 0);
         final String message = resource + ": " + start + " -> " + end + " (" + 0 + ")";
         final View view = repository.createView();
         Assert.assertEquals(message, expected, repository.log(view, resource, start, end, 0, false));
@@ -553,7 +551,8 @@ public abstract class AbstractRepositoryEncodingIT {
     }
 
     private void testPropertiesDelete(final Resource resource) throws Exception {
-        final ResourceProperty property = new ResourceProperty(ResourceProperty.Type.SUBVERSION_CUSTOM, "test", "test");
+        final Key key = new Key(ResourceProperty.Type.SUBVERSION_CUSTOM, "test");
+        final ResourceProperty property = new ResourceProperty(key, "test");
         testPropertiesSet(resource);
 
         deleteProperties(resource, property);
@@ -563,7 +562,8 @@ public abstract class AbstractRepositoryEncodingIT {
     private void testPropertiesSet(final Resource resource) throws Exception {
         AbstractRepositoryAddIT.file(repository, resource, "A", true);
 
-        final ResourceProperty property = new ResourceProperty(ResourceProperty.Type.SUBVERSION_CUSTOM, "test", "test");
+        final Key key = new Key(ResourceProperty.Type.SUBVERSION_CUSTOM, "test");
+        final ResourceProperty property = new ResourceProperty(key, "test");
         AbstractRepositoryPropertiesSetIT.setProperties(repository, resource, property);
     }
 }

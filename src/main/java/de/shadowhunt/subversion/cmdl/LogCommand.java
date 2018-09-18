@@ -22,7 +22,7 @@ import java.net.URI;
 import java.util.Date;
 import java.util.List;
 
-import de.shadowhunt.subversion.Log;
+import de.shadowhunt.subversion.LogEntry;
 import de.shadowhunt.subversion.ReadOnlyRepository;
 import de.shadowhunt.subversion.RepositoryFactory;
 import de.shadowhunt.subversion.Resource;
@@ -64,14 +64,14 @@ public class LogCommand extends AbstractCommand {
 
             final HttpContext context = createHttpContext();
             final URI base = baseOption.value(options);
-            final ReadOnlyRepository repository = factory.createReadOnlyRepository(base, client, context, true);
+            final ReadOnlyRepository repository = factory.createReadOnlyRepository(base, client, context);
             final View view = repository.createView();
 
             final Resource resource = resourceOption.value(options);
             final Revision startRevision = startRevisionOption.value(options);
             final Revision stopRevision = stopRevisionOption.value(options);
-            final List<Log> logs = repository.log(view, resource, startRevision, stopRevision, Integer.MAX_VALUE, false);
-            for (final Log log : logs) {
+            final List<LogEntry> logs = repository.log(view, resource, startRevision, stopRevision, Integer.MAX_VALUE, false);
+            for (final LogEntry log : logs) {
                 output.println("------------------------------------------------------------------------");
                 final Revision revision = log.getRevision();
                 output.print(revision);

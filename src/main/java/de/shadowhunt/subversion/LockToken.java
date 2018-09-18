@@ -35,16 +35,22 @@ public final class LockToken {
     }
 
     @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (!(o instanceof LockToken)) {
+        if (obj == null) {
             return false;
         }
-
-        final LockToken lockToken = (LockToken) o;
-        if (!token.equals(lockToken.token)) {
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final LockToken other = (LockToken) obj;
+        if (token == null) {
+            if (other.token != null) {
+                return false;
+            }
+        } else if (!token.equals(other.token)) {
             return false;
         }
         return true;
@@ -52,7 +58,10 @@ public final class LockToken {
 
     @Override
     public int hashCode() {
-        return token.hashCode();
+        final int prime = 31;
+        int result = 1;
+        result = (prime * result) + ((token == null) ? 0 : token.hashCode());
+        return result;
     }
 
     @Override

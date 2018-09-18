@@ -18,6 +18,7 @@
 package de.shadowhunt.subversion.internal;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
@@ -31,10 +32,10 @@ public class ResourcePropertyUtilsTest {
     public void testEscapedInputStream_emptyTag() throws Exception {
         final String xml = "<C:foo:bar/>";
         final String expected = "<C:foo" + MARKER + "bar/>";
-        final InputStream stream = IOUtils.toInputStream(xml, ResourcePropertyUtils.UTF8);
+        final InputStream stream = IOUtils.toInputStream(xml, StandardCharsets.UTF_8);
 
         final InputStream escapedStream = ResourcePropertyUtils.escapedInputStream(stream);
-        final String escapedXml = IOUtils.toString(escapedStream, ResourcePropertyUtils.UTF8);
+        final String escapedXml = IOUtils.toString(escapedStream, StandardCharsets.UTF_8);
 
         Assert.assertEquals(expected, escapedXml);
     }
@@ -43,10 +44,10 @@ public class ResourcePropertyUtilsTest {
     public void testEscapedInputStream_emptyTagInHierarchy() throws Exception {
         final String xml = "<A><svn:B><C:foo:bar/></svn:B></A>";
         final String expected = "<A><svn:B><C:foo" + MARKER + "bar/></svn:B></A>";
-        final InputStream stream = IOUtils.toInputStream(xml, ResourcePropertyUtils.UTF8);
+        final InputStream stream = IOUtils.toInputStream(xml, StandardCharsets.UTF_8);
 
         final InputStream escapedStream = ResourcePropertyUtils.escapedInputStream(stream);
-        final String escapedXml = IOUtils.toString(escapedStream, ResourcePropertyUtils.UTF8);
+        final String escapedXml = IOUtils.toString(escapedStream, StandardCharsets.UTF_8);
 
         Assert.assertEquals(expected, escapedXml);
     }
@@ -55,10 +56,10 @@ public class ResourcePropertyUtilsTest {
     public void testEscapedInputStream_tagWithTagText() throws Exception {
         final String xml = "<C:foo:bar>text >/C:foo:bar</C:foo:bar>";
         final String expected = "<C:foo" + MARKER + "bar>text >/C:foo:bar</C:foo" + MARKER + "bar>";
-        final InputStream stream = IOUtils.toInputStream(xml, ResourcePropertyUtils.UTF8);
+        final InputStream stream = IOUtils.toInputStream(xml, StandardCharsets.UTF_8);
 
         final InputStream escapedStream = ResourcePropertyUtils.escapedInputStream(stream);
-        final String escapedXml = IOUtils.toString(escapedStream, ResourcePropertyUtils.UTF8);
+        final String escapedXml = IOUtils.toString(escapedStream, StandardCharsets.UTF_8);
 
         Assert.assertEquals(expected, escapedXml);
     }
@@ -67,10 +68,10 @@ public class ResourcePropertyUtilsTest {
     public void testEscapedInputStream_tagWithText() throws Exception {
         final String xml = "<C:foo:bar>text</C:foo:bar>";
         final String expected = "<C:foo" + MARKER + "bar>text</C:foo" + MARKER + "bar>";
-        final InputStream stream = IOUtils.toInputStream(xml, ResourcePropertyUtils.UTF8);
+        final InputStream stream = IOUtils.toInputStream(xml, StandardCharsets.UTF_8);
 
         final InputStream escapedStream = ResourcePropertyUtils.escapedInputStream(stream);
-        final String escapedXml = IOUtils.toString(escapedStream, ResourcePropertyUtils.UTF8);
+        final String escapedXml = IOUtils.toString(escapedStream, StandardCharsets.UTF_8);
 
         Assert.assertEquals(expected, escapedXml);
     }

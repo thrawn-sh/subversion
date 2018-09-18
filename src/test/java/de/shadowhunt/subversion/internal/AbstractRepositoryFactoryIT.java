@@ -17,12 +17,12 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import de.shadowhunt.subversion.ReadOnlyRepository;
+import de.shadowhunt.subversion.Repository;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
-import de.shadowhunt.subversion.Repository;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -58,7 +58,7 @@ public abstract class AbstractRepositoryFactoryIT {
 
     @Test
     public void test02_createReadOnly() {
-        final Repository repository = helper.getRepositoryReadOnly();
+        final ReadOnlyRepository repository = helper.getRepositoryReadOnly();
         Assert.assertNotNull("repository must not be null", repository);
 
         Assert.assertEquals("base uri must match", helper.getRepositoryReadOnlyBaseUri(), repository.getBaseUri());

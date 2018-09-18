@@ -20,18 +20,17 @@ package de.shadowhunt.subversion.internal;
 import java.io.File;
 import java.util.List;
 
+import de.shadowhunt.subversion.LogEntry;
+import de.shadowhunt.subversion.ReadOnlyRepository;
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.SubversionException;
+import de.shadowhunt.subversion.View;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
-import de.shadowhunt.subversion.Log;
-import de.shadowhunt.subversion.Repository;
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.Revision;
-import de.shadowhunt.subversion.SubversionException;
-import de.shadowhunt.subversion.View;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -43,11 +42,11 @@ public abstract class AbstractRepositoryLogIT {
 
     private final LogLoader logLoader;
 
-    private final Repository repository;
+    private final ReadOnlyRepository repository;
 
     private View view;
 
-    protected AbstractRepositoryLogIT(final Repository repository, final File root) {
+    protected AbstractRepositoryLogIT(final ReadOnlyRepository repository, final File root) {
         this.repository = repository;
         logLoader = new LogLoader(root, repository.getBasePath());
     }
@@ -104,7 +103,7 @@ public abstract class AbstractRepositoryLogIT {
         final Revision end = Revision.HEAD;
         final int limit = UNLIMITED;
 
-        final List<Log> expected = logLoader.load(resource, start, end, limit);
+        final List<LogEntry> expected = logLoader.load(resource, start, end, limit);
         final String message = createMessage(resource, start, end, limit);
         Assert.assertEquals(message, expected, repository.log(view, resource, start, end, limit, false));
     }
@@ -116,7 +115,7 @@ public abstract class AbstractRepositoryLogIT {
         final Revision end = Revision.INITIAL;
         final int limit = UNLIMITED;
 
-        final List<Log> expected = logLoader.load(resource, start, end, limit);
+        final List<LogEntry> expected = logLoader.load(resource, start, end, limit);
         final String message = createMessage(resource, start, end, limit);
         Assert.assertEquals(message, expected, repository.log(view, resource, start, end, limit, false));
     }
@@ -128,7 +127,7 @@ public abstract class AbstractRepositoryLogIT {
         final Revision end = Revision.HEAD;
         final int limit = 2;
 
-        final List<Log> expected = logLoader.load(resource, start, end, limit);
+        final List<LogEntry> expected = logLoader.load(resource, start, end, limit);
         final String message = createMessage(resource, start, end, limit);
         Assert.assertEquals(message, limit, expected.size());
         Assert.assertEquals(message, expected, repository.log(view, resource, start, end, limit, false));
@@ -141,7 +140,7 @@ public abstract class AbstractRepositoryLogIT {
         final Revision end = Revision.INITIAL;
         final int limit = 2;
 
-        final List<Log> expected = logLoader.load(resource, start, end, limit);
+        final List<LogEntry> expected = logLoader.load(resource, start, end, limit);
         final String message = createMessage(resource, start, end, limit);
         Assert.assertEquals(message, limit, expected.size());
         Assert.assertEquals(message, expected, repository.log(view, resource, start, end, limit, false));
@@ -154,7 +153,7 @@ public abstract class AbstractRepositoryLogIT {
         final Revision end = Revision.create(82);
         final int limit = UNLIMITED;
 
-        final List<Log> expected = logLoader.load(resource, start, end, limit);
+        final List<LogEntry> expected = logLoader.load(resource, start, end, limit);
         final String message = createMessage(resource, start, end, limit);
         Assert.assertEquals(message, expected, repository.log(view, resource, start, end, limit, false));
     }
@@ -166,7 +165,7 @@ public abstract class AbstractRepositoryLogIT {
         final Revision end = Revision.INITIAL;
         final int limit = UNLIMITED;
 
-        final List<Log> expected = logLoader.load(resource, start, end, limit);
+        final List<LogEntry> expected = logLoader.load(resource, start, end, limit);
         final String message = createMessage(resource, start, end, limit);
         Assert.assertEquals(message, expected, repository.log(view, resource, start, end, limit, false));
     }
@@ -178,7 +177,7 @@ public abstract class AbstractRepositoryLogIT {
         final Revision end = Revision.create(85);
         final int limit = UNLIMITED;
 
-        final List<Log> expected = logLoader.load(resource, start, end, limit);
+        final List<LogEntry> expected = logLoader.load(resource, start, end, limit);
         final String message = createMessage(resource, start, end, limit);
         Assert.assertEquals(message, expected, repository.log(view, resource, start, end, limit, false));
     }
@@ -191,7 +190,7 @@ public abstract class AbstractRepositoryLogIT {
         final int limit = UNLIMITED;
 
         // NOTE: determine last existing revision for loader
-        final List<Log> expected = logLoader.load(resource, start, Revision.create(86), limit);
+        final List<LogEntry> expected = logLoader.load(resource, start, Revision.create(86), limit);
         final String message = createMessage(resource, start, end, limit);
         Assert.assertEquals(message, expected, repository.log(view, resource, start, end, limit, false));
     }

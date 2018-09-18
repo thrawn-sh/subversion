@@ -18,7 +18,7 @@
 package de.shadowhunt.subversion;
 
 /**
- * {@link Depth} defines the recursion level for the listing call {@link Repository #list(Resource, Revision, Depth)}.
+ * {@link Depth} defines the recursion level for the listing call {@link Repository #list(View, Resource, Revision, Depth)}.
  */
 public enum Depth {
 

@@ -19,18 +19,17 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.File;
 
+import de.shadowhunt.subversion.Info;
+import de.shadowhunt.subversion.ReadOnlyRepository;
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.SubversionException;
+import de.shadowhunt.subversion.View;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
-import de.shadowhunt.subversion.Info;
-import de.shadowhunt.subversion.Repository;
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.Revision;
-import de.shadowhunt.subversion.SubversionException;
-import de.shadowhunt.subversion.View;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -58,11 +57,11 @@ public abstract class AbstractRepositoryInfoIT {
 
     private final InfoLoader infoLoader;
 
-    private final Repository repository;
+    private final ReadOnlyRepository repository;
 
     private View view;
 
-    protected AbstractRepositoryInfoIT(final Repository repository, final File root) {
+    protected AbstractRepositoryInfoIT(final ReadOnlyRepository repository, final File root) {
         this.repository = repository;
         infoLoader = new InfoLoader(root, repository.getBasePath());
     }

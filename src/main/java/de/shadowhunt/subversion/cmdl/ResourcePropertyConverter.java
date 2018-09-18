@@ -20,6 +20,7 @@ package de.shadowhunt.subversion.cmdl;
 import java.util.regex.Pattern;
 
 import de.shadowhunt.subversion.ResourceProperty;
+import de.shadowhunt.subversion.ResourceProperty.Key;
 import de.shadowhunt.subversion.ResourceProperty.Type;
 import joptsimple.ValueConverter;
 
@@ -35,10 +36,11 @@ public class ResourcePropertyConverter implements ValueConverter<ResourcePropert
     public ResourceProperty convert(final String value) {
         final String regex = Pattern.quote("|");
         final String[] parts = value.split(regex);
+        final Key key = new Key(Type.SUBVERSION_CUSTOM, parts[0]);
         if (onlyName) {
-            return new ResourceProperty(Type.SUBVERSION_CUSTOM, parts[0], "");
+            return new ResourceProperty(key, "");
         }
-        return new ResourceProperty(Type.SUBVERSION_CUSTOM, parts[0], parts[1]);
+        return new ResourceProperty(key, parts[1]);
     }
 
     @Override

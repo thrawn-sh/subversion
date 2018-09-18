@@ -27,71 +27,80 @@ import de.shadowhunt.subversion.LockToken;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.SubversionException;
 
-/**
- * Default implementation for {@link Info}.
- */
-final class InfoImpl implements Info {
+public final class InfoImpl implements Info {
 
-    private static final ResourceProperty[] EMPTY = new ResourceProperty[0];
+    private Date creationDate;
 
-    private Date creationDate = null;
+    private boolean directory;
 
-    private boolean directory = false;
+    private Date lastModifiedDate;
 
-    private Date lastModifiedDate = null;
-
-    // NOTE: not part of xml response but determined by a response header
     private String lockOwner;
 
     private LockToken lockToken;
 
     private String md5;
 
-    private ResourceProperty[] properties = EMPTY;
+    private ResourceProperty[] properties = new ResourceProperty[0];
 
-    private UUID repositoryId = null;
+    private UUID repositoryId;
 
-    private Resource resource = null;
+    private Resource resource;
 
-    private Revision revision = null;
-
-    InfoImpl() {
-        // prevent direct instantiation
-    }
+    private Revision revision;
 
     @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (!(o instanceof InfoImpl)) {
+        if (obj == null) {
             return false;
         }
-
-        final InfoImpl info = (InfoImpl) o;
-
-        if (!repositoryId.equals(info.repositoryId)) {
+        if (getClass() != obj.getClass()) {
             return false;
         }
-        if (!resource.equals(info.resource)) {
+        final InfoImpl other = (InfoImpl) obj;
+        if (repositoryId == null) {
+            if (other.repositoryId != null) {
+                return false;
+            }
+        } else if (!repositoryId.equals(other.repositoryId)) {
             return false;
         }
-        if (!revision.equals(info.revision)) {
+        if (resource == null) {
+            if (other.resource != null) {
+                return false;
+            }
+        } else if (!resource.equals(other.resource)) {
             return false;
         }
-
+        if (revision == null) {
+            if (other.revision != null) {
+                return false;
+            }
+        } else if (!revision.equals(other.revision)) {
+            return false;
+        }
         return true;
     }
 
     @Override
     public Date getCreationDate() {
+        if (creationDate == null) {
+            throw new SubversionException("access to incomplete Info");
+        }
         final long time = creationDate.getTime();
         return new Date(time);
     }
 
     @Override
     public Date getLastModifiedDate() {
+        if (lastModifiedDate == null) {
+            throw new SubversionException("access to incomplete Info");
+        }
         final long time = lastModifiedDate.getTime();
         return new Date(time);
     }
@@ -118,24 +127,35 @@ final class InfoImpl implements Info {
 
     @Override
     public UUID getRepositoryId() {
+        if (repositoryId == null) {
+            throw new SubversionException("access to incomplete Info");
+        }
         return repositoryId;
     }
 
     @Override
     public Resource getResource() {
+        if (resource == null) {
+            throw new SubversionException("access to incomplete Info");
+        }
         return resource;
     }
 
     @Override
     public Revision getRevision() {
+        if (revision == null) {
+            throw new SubversionException("access to incomplete Info");
+        }
         return revision;
     }
 
     @Override
     public int hashCode() {
-        int result = repositoryId.hashCode();
-        result = (31 * result) + resource.hashCode();
-        result = (31 * result) + revision.hashCode();
+        final int prime = 31;
+        int result = 1;
+        result = (prime * result) + ((repositoryId == null) ? 0 : repositoryId.hashCode());
+        result = (prime * result) + ((resource == null) ? 0 : resource.hashCode());
+        result = (prime * result) + ((revision == null) ? 0 : revision.hashCode());
         return result;
     }
 
@@ -154,47 +174,45 @@ final class InfoImpl implements Info {
         return lockToken != null;
     }
 
-    void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
+    public void setCreationDate(final Date creationDate) {
+        final long time = creationDate.getTime();
+        this.creationDate = new Date(time);
     }
 
-    void setDirectory(final boolean directory) {
+    public void setDirectory(final boolean directory) {
         this.directory = directory;
     }
 
-    void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        final long time = lastModifiedDate.getTime();
+        this.lastModifiedDate = new Date(time);
     }
 
-    void setLockOwner(final String lockOwner) {
+    public void setLockOwner(final String lockOwner) {
         this.lockOwner = lockOwner;
     }
 
-    void setLockToken(final LockToken lockToken) {
+    public void setLockToken(final LockToken lockToken) {
         this.lockToken = lockToken;
     }
 
-    void setMd5(final String md5) {
+    public void setMd5(final String md5) {
         this.md5 = md5;
     }
 
-    void setProperties(final ResourceProperty... properties) {
-        if (properties.length == 0) {
-            this.properties = EMPTY;
-        } else {
-            this.properties = Arrays.copyOf(properties, properties.length);
-        }
+    public void setProperties(final ResourceProperty... properties) {
+        this.properties = Arrays.copyOf(properties, properties.length);
     }
 
-    void setRepositoryId(final UUID repositoryId) {
+    public void setRepositoryId(final UUID repositoryId) {
         this.repositoryId = repositoryId;
     }
 
-    void setResource(final Resource resource) {
+    public void setResource(final Resource resource) {
         this.resource = resource;
     }
 
-    void setRevision(final Revision revision) {
+    public void setRevision(final Revision revision) {
         this.revision = revision;
     }
 

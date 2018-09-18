@@ -69,8 +69,8 @@ public final class URIUtils {
      */
     public static URI appendResources(final URI repository, final QualifiedResource resource) {
         final Resource base = resource.getBase();
-        final Resource baseResource = resource.getResource();
-        return appendResources(repository, base, baseResource);
+        final Resource suffix = resource.getSuffix();
+        return appendResources(repository, base, suffix);
     }
 
     /**

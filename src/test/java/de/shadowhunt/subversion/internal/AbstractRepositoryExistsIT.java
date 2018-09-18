@@ -17,17 +17,15 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import de.shadowhunt.subversion.ReadOnlyRepository;
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.View;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
-import de.shadowhunt.subversion.Repository;
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.Revision;
-import de.shadowhunt.subversion.SubversionException;
-import de.shadowhunt.subversion.View;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -35,11 +33,11 @@ public abstract class AbstractRepositoryExistsIT {
 
     public static final Resource PREFIX = Resource.create("/00000000-0000-0000-0000-000000000000/exists");
 
-    private final Repository repository;
+    private final ReadOnlyRepository repository;
 
     private View view;
 
-    protected AbstractRepositoryExistsIT(final Repository repository) {
+    protected AbstractRepositoryExistsIT(final ReadOnlyRepository repository) {
         this.repository = repository;
     }
 
@@ -61,14 +59,14 @@ public abstract class AbstractRepositoryExistsIT {
         Assert.assertFalse(message, repository.exists(view, resource, revision));
     }
 
-    @Test(expected = SubversionException.class)
+    @Test
     public void test00_NonExistingRevision() throws Exception {
         final Resource resource = PREFIX.append(Resource.create("/file.txt"));
         // there should not be a such high revision
         final Revision revision = Revision.create(Integer.MAX_VALUE);
 
-        repository.exists(view, resource, revision);
-        Assert.fail("exists must not complete");
+        final String message = createMessage(resource, revision);
+        Assert.assertFalse(message, repository.exists(view, resource, revision));
     }
 
     @Test

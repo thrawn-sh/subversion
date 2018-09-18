@@ -20,7 +20,7 @@ package de.shadowhunt.subversion.internal;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.NavigableSet;
 import java.util.TreeSet;
 
 import de.shadowhunt.subversion.Depth;
@@ -50,10 +50,10 @@ public final class ListLoader extends AbstractBaseLoader {
         infoLoader = new InfoLoader(root, base);
     }
 
-    public Set<Info> load(final Resource resource, final Revision revision, final Depth depth) throws Exception {
+    public NavigableSet<Info> load(final Resource resource, final Revision revision, final Depth depth) throws Exception {
         final File base = new File(root, resolve(revision) + this.base.getValue() + resource.getValue());
 
-        final Set<Info> result = new TreeSet<>(Info.RESOURCE_COMPARATOR);
+        final NavigableSet<Info> result = new TreeSet<>(Info.RESOURCE_COMPARATOR);
         result.add(infoLoader.load(resource, revision));
 
         if ((depth != Depth.EMPTY) && base.isDirectory()) {
@@ -61,7 +61,7 @@ public final class ListLoader extends AbstractBaseLoader {
 
             for (final File child : base.listFiles(NO_META)) {
                 final Resource childResource = resource.append(Resource.create(child.getName()));
-                final Set<Info> childInfo = load(childResource, revision, childDepth);
+                final NavigableSet<Info> childInfo = load(childResource, revision, childDepth);
 
                 if (Depth.FILES == depth) {
                     final Iterator<Info> it = childInfo.iterator();

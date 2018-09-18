@@ -67,7 +67,7 @@ public class DownloadCommand extends AbstractCommand {
 
             final HttpContext context = createHttpContext();
             final URI base = baseOption.value(options);
-            final ReadOnlyRepository repository = factory.createReadOnlyRepository(base, client, context, true);
+            final ReadOnlyRepository repository = factory.createReadOnlyRepository(base, client, context);
             final View view = repository.createView();
 
             final File file = outputOption.value(options);

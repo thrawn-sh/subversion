@@ -31,6 +31,10 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import de.shadowhunt.subversion.Repository;
+import de.shadowhunt.subversion.RepositoryFactory;
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.http.client.SubversionRequestRetryHandler;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -46,11 +50,6 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
-
-import de.shadowhunt.subversion.Repository;
-import de.shadowhunt.subversion.RepositoryFactory;
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.http.client.SubversionRequestRetryHandler;
 
 public abstract class AbstractHelper {
 
@@ -80,9 +79,9 @@ public abstract class AbstractHelper {
 
     private final URI md5Uri;
 
-    private Repository repositoryA;
+    private RepositoryInternal repositoryA;
 
-    private Repository repositoryB;
+    private RepositoryInternal repositoryB;
 
     private final URI repositoryBaseUri;
 
@@ -98,7 +97,7 @@ public abstract class AbstractHelper {
 
     private final URI repositoryPathUri;
 
-    private Repository repositoryReadOnly;
+    private ReadOnlyRepositoryInternal repositoryReadOnly;
 
     private final URI repositoryReadOnlyBaseUri;
 
@@ -193,24 +192,24 @@ public abstract class AbstractHelper {
         return new BasicHttpContext();
     }
 
-    public Repository getRepositoryA(final HttpRequestInterceptor... interceptors) {
+    public RepositoryInternal getRepositoryA(final HttpRequestInterceptor... interceptors) {
         if (repositoryA == null) {
             final HttpContext context = getHttpContext();
             final HttpClient client = getHttpClient(USERNAME_A, interceptors);
 
-            final RepositoryFactory factory = RepositoryFactory.getInstance();
-            repositoryA = factory.createRepository(repositoryUri, client, context, true);
+            final ReposiotryFactoryInternal factory = (ReposiotryFactoryInternal) RepositoryFactory.getInstance();
+            repositoryA = factory.createRepositoryInternal(repositoryUri, client, context);
         }
         return repositoryA;
     }
 
-    public Repository getRepositoryB(final HttpRequestInterceptor... interceptors) {
+    public RepositoryInternal getRepositoryB(final HttpRequestInterceptor... interceptors) {
         if (repositoryB == null) {
             final HttpContext context = getHttpContext();
             final HttpClient client = getHttpClient(USERNAME_B, interceptors);
 
-            final RepositoryFactory factory = RepositoryFactory.getInstance();
-            repositoryB = factory.createRepository(repositoryUri, client, context, true);
+            final ReposiotryFactoryInternal factory = (ReposiotryFactoryInternal) RepositoryFactory.getInstance();
+            repositoryB = factory.createRepositoryInternal(repositoryUri, client, context);
         }
         return repositoryB;
     }
@@ -229,7 +228,7 @@ public abstract class AbstractHelper {
             final HttpClient client = getHttpClient(null, interceptors);
 
             final RepositoryFactory factory = RepositoryFactory.getInstance();
-            repositoryDeep = factory.createRepository(repositoryDeepUri, client, context, false);
+            repositoryDeep = factory.createRepository(repositoryDeepUri, client, context);
         }
         return repositoryDeep;
     }
@@ -244,7 +243,7 @@ public abstract class AbstractHelper {
             final HttpClient client = getHttpClient(USERNAME_A, interceptors);
 
             final RepositoryFactory factory = RepositoryFactory.getInstance();
-            repositoryPath = factory.createRepository(repositoryPathUri, client, context, true);
+            repositoryPath = factory.createRepository(repositoryPathUri, client, context);
         }
         return repositoryPath;
     }
@@ -253,13 +252,13 @@ public abstract class AbstractHelper {
         return repositoryPathBaseUri;
     }
 
-    public Repository getRepositoryReadOnly(final HttpRequestInterceptor... interceptors) {
+    public ReadOnlyRepositoryInternal getRepositoryReadOnly(final HttpRequestInterceptor... interceptors) {
         if (repositoryReadOnly == null) {
             final HttpContext context = getHttpContext();
             final HttpClient client = getHttpClient(null, interceptors);
 
-            final RepositoryFactory factory = RepositoryFactory.getInstance();
-            repositoryReadOnly = factory.createRepository(repositoryReadOnlyUri, client, context, false);
+            final ReposiotryFactoryInternal factory = (ReposiotryFactoryInternal) RepositoryFactory.getInstance();
+            repositoryReadOnly = factory.createRepositoryInternal(repositoryReadOnlyUri, client, context);
         }
         return repositoryReadOnly;
     }

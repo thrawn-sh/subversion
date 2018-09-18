@@ -20,17 +20,16 @@ package de.shadowhunt.subversion.internal;
 import java.util.Map;
 import java.util.UUID;
 
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
-
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.Transaction.Status;
+import org.junit.Assert;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -76,7 +75,8 @@ public abstract class AbstractRepositoryMkdirIT {
         final Transaction transaction = repository.createTransaction();
         try {
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            transaction.invalidate();
+            final TransactionInternal transactionInternal = TransactionInternal.from(transaction);
+            transactionInternal.invalidate();
             Assert.assertFalse("transaction must not be active", transaction.isActive());
             repository.mkdir(transaction, resource, false);
             Assert.fail("must not complete");

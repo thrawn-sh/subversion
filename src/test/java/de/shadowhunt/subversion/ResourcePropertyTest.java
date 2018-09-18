@@ -17,10 +17,10 @@
  */
 package de.shadowhunt.subversion;
 
+import de.shadowhunt.subversion.ResourceProperty.Key;
+import de.shadowhunt.subversion.ResourceProperty.Type;
 import org.junit.Assert;
 import org.junit.Test;
-
-import de.shadowhunt.subversion.ResourceProperty.Type;
 
 public class ResourcePropertyTest {
 
@@ -28,11 +28,12 @@ public class ResourcePropertyTest {
     public void createCustomPropertyTest() {
         final String name = "testName";
         final String value = "testValue";
-        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, name, value);
+        final Key key = new Key(Type.SUBVERSION_CUSTOM, name);
+        Assert.assertEquals("type is not SUBVERSION_CUSTOM", Type.SUBVERSION_CUSTOM, key.getType());
+        Assert.assertEquals("name does not match", name, key.getName());
+        final ResourceProperty property = new ResourceProperty(key, value);
 
         Assert.assertNotNull("property must not be null", property);
-        Assert.assertEquals("type is not SUBVERSION_CUSTOM", Type.SUBVERSION_CUSTOM, property.getType());
-        Assert.assertEquals("name does not match", name, property.getName());
         Assert.assertEquals("value does not match", value, property.getValue());
     }
 }

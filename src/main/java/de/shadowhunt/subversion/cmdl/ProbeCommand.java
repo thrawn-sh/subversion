@@ -59,7 +59,7 @@ public class ProbeCommand extends AbstractCommand {
 
             final HttpContext context = createHttpContext();
             final URI uri = urlOption.value(options);
-            final ReadOnlyRepository repository = factory.createReadOnlyRepository(uri, client, context, true);
+            final ReadOnlyRepository repository = factory.createReadOnlyRepository(uri, client, context);
             output.println("complete uri: " + uri);
             final URI baseUri = repository.getBaseUri();
             output.println("    base uri: " + baseUri);

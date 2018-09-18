@@ -115,7 +115,14 @@ public final class Resource implements Comparable<Resource>, Serializable {
             return false;
         }
         final Resource other = (Resource) obj;
-        return value.equals(other.value);
+        if (value == null) {
+            if (other.value != null) {
+                return false;
+            }
+        } else if (!value.equals(other.value)) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -155,7 +162,10 @@ public final class Resource implements Comparable<Resource>, Serializable {
 
     @Override
     public int hashCode() {
-        return value.hashCode();
+        final int prime = 31;
+        int result = 1;
+        result = (prime * result) + ((value == null) ? 0 : value.hashCode());
+        return result;
     }
 
     /**

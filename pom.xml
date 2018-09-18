@@ -620,13 +620,13 @@
                         <version>1.0.1</version>
                     </dependency>
                 </dependencies>
-                <!--executions>
+                <executions>
                     <execution>
                         <goals>
                             <goal>check</goal>
                         </goals>
                     </execution>
-                </executions-->
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

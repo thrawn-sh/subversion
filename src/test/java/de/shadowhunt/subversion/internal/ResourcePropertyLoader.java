@@ -23,19 +23,19 @@ import java.util.TreeSet;
 
 import javax.xml.parsers.SAXParser;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
+import de.shadowhunt.subversion.ResourceProperty.Key;
 import de.shadowhunt.subversion.ResourceProperty.Type;
 import de.shadowhunt.subversion.Revision;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 
 public final class ResourcePropertyLoader extends AbstractBaseLoader {
 
     static class ResourcePropertyHandler extends BasicHandler {
 
-        private final Set<ResourceProperty> properties = new TreeSet<>(ResourceProperty.TYPE_NAME_COMPARATOR);
+        private final Set<ResourceProperty> properties = new TreeSet<>(ResourcePropertyUtils.TYPE_NAME_COMPARATOR);
 
         private String propertyName;
 
@@ -43,9 +43,9 @@ public final class ResourcePropertyLoader extends AbstractBaseLoader {
 
         @Override
         public void endElement(final String uri, final String localName, final String qName) throws SAXException {
-
             if ("property".equals(localName)) {
-                properties.add(new ResourceProperty(propertyType, propertyName, getText()));
+                final Key key = new Key(propertyType, propertyName);
+                properties.add(new ResourceProperty(key, getText()));
             }
         }
 

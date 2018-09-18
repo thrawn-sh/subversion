@@ -19,11 +19,14 @@ package de.shadowhunt.subversion;
 
 import java.io.Serializable;
 
+import javax.annotation.concurrent.Immutable;
+
 import org.apache.commons.lang3.Validate;
 
 /**
  * {@link Revision} defines the revision of a repository or a resource in that repository.
  */
+@Immutable
 public final class Revision implements Comparable<Revision>, Serializable {
 
     /**
@@ -79,26 +82,29 @@ public final class Revision implements Comparable<Revision>, Serializable {
     }
 
     @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (!(o instanceof Revision)) {
+        if (obj == null) {
             return false;
         }
-
-        final Revision revision = (Revision) o;
-
-        if (version != revision.version) {
+        if (getClass() != obj.getClass()) {
             return false;
         }
-
+        final Revision other = (Revision) obj;
+        if (version != other.version) {
+            return false;
+        }
         return true;
     }
 
     @Override
     public int hashCode() {
-        return (int) (version ^ (version >>> 32));
+        final int prime = 31;
+        int result = 1;
+        result = (prime * result) + (int) (version ^ (version >>> 32));
+        return result;
     }
 
     @Override

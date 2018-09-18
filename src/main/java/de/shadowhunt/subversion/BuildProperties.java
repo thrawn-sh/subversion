@@ -17,11 +17,14 @@
  */
 package de.shadowhunt.subversion;
 
+import javax.annotation.concurrent.Immutable;
+
 import org.apache.commons.lang3.StringUtils;
 
 /**
  * Provides information about the subversion client lib.
  */
+@Immutable
 public final class BuildProperties {
 
     public static final String UNDEFINED = "UNDEFINED";
@@ -41,19 +44,10 @@ public final class BuildProperties {
     /**
      * Returns the build version ({MAJOR}.{MINOR}.{PATCH} with -SNAPSHOT suffix, if it's an internal release).
      *
-     * @return version or UNDEFINED if the version could not be determined
+     * @return version or {@code UNDEFINED} if the version could not be determined
      */
     public static String getBuildVersion() {
         return VERSION;
-    }
-
-    /**
-     * Returns the User-Agent identifier that is sent by each request to the server.
-     *
-     * @return User-Agent identifier
-     */
-    public static String getUserAgent() {
-        return "SVN/" + VERSION + " (https://dev.shadowhunt.de/subversion)";
     }
 
     private BuildProperties() {

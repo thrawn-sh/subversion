@@ -22,23 +22,23 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
-
 import de.shadowhunt.subversion.Info;
-import de.shadowhunt.subversion.Log;
+import de.shadowhunt.subversion.LogEntry;
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
+import de.shadowhunt.subversion.ResourceProperty.Key;
 import de.shadowhunt.subversion.ResourceProperty.Type;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.Transaction.Status;
 import de.shadowhunt.subversion.View;
+import org.apache.commons.io.IOUtils;
+import org.junit.Assert;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -312,7 +312,8 @@ public abstract class AbstractRepositoryLockingIT {
     @Test
     public void test04_DeletePropertiesOfLocked() throws Exception {
         final Resource resource = prefix.append(Resource.create("file_delete_properties_locked.txt"));
-        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "A");
+        final Key key = new Key(Type.SUBVERSION_CUSTOM, "test");
+        final ResourceProperty property = new ResourceProperty(key, "A");
 
         AbstractRepositoryAddIT.file(repositoryA, resource, "resource", true);
         AbstractRepositoryPropertiesSetIT.setProperties(repositoryA, resource, property);
@@ -361,8 +362,8 @@ public abstract class AbstractRepositoryLockingIT {
         final Info tInfo = repositoryA.info(view, target, Revision.HEAD);
         Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
 
-        final List<Log> sLog = repositoryA.log(view, source, Revision.INITIAL, Revision.HEAD, 0, false);
-        final List<Log> tLog = repositoryA.log(view, target, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<LogEntry> sLog = repositoryA.log(view, source, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<LogEntry> tLog = repositoryA.log(view, target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
     }
@@ -401,7 +402,7 @@ public abstract class AbstractRepositoryLockingIT {
 
         final View beforeView = repositoryA.createView();
         final Info sInfo = repositoryA.info(beforeView, source, Revision.HEAD);
-        final List<Log> sLog = repositoryA.log(beforeView, source, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<LogEntry> sLog = repositoryA.log(beforeView, source, Revision.INITIAL, Revision.HEAD, 0, false);
 
         final Transaction transaction = repositoryA.createTransaction();
         try {
@@ -423,7 +424,7 @@ public abstract class AbstractRepositoryLockingIT {
         final Info tInfo = repositoryA.info(afterView, target, Revision.HEAD);
         Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
 
-        final List<Log> tLog = repositoryA.log(afterView, target, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<LogEntry> tLog = repositoryA.log(afterView, target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
     }
@@ -453,8 +454,9 @@ public abstract class AbstractRepositoryLockingIT {
     @Test
     public void test04_SetPropertiesOfLocked() throws Exception {
         final Resource resource = prefix.append(Resource.create("file_set_properties_locked.txt"));
-        final ResourceProperty propertyA = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "A");
-        final ResourceProperty propertyB = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "B");
+        final Key key = new Key(Type.SUBVERSION_CUSTOM, "test");
+        final ResourceProperty propertyA = new ResourceProperty(key, "A");
+        final ResourceProperty propertyB = new ResourceProperty(key, "B");
 
         AbstractRepositoryAddIT.file(repositoryA, resource, "resource", true);
         AbstractRepositoryPropertiesSetIT.setProperties(repositoryA, resource, propertyA);

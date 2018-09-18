@@ -21,18 +21,17 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
+import de.shadowhunt.subversion.ReadOnlyRepository;
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.SubversionException;
+import de.shadowhunt.subversion.View;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
-import de.shadowhunt.subversion.Repository;
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.Revision;
-import de.shadowhunt.subversion.SubversionException;
-import de.shadowhunt.subversion.View;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -48,11 +47,11 @@ public abstract class AbstractRepositoryDownloadIT {
 
     private final DownloadLoader downloadLoader;
 
-    private final Repository repository;
+    private final ReadOnlyRepository repository;
 
     private View view;
 
-    protected AbstractRepositoryDownloadIT(final Repository repository, final File root) {
+    protected AbstractRepositoryDownloadIT(final ReadOnlyRepository repository, final File root) {
         this.repository = repository;
         downloadLoader = new DownloadLoader(root, repository.getBasePath());
     }

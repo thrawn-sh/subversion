@@ -19,17 +19,15 @@ package de.shadowhunt.subversion.internal;
 
 import java.net.URI;
 
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.SubversionException;
+import de.shadowhunt.subversion.View;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
-import de.shadowhunt.subversion.Repository;
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.Revision;
-import de.shadowhunt.subversion.SubversionException;
-import de.shadowhunt.subversion.View;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -37,11 +35,11 @@ public abstract class AbstractRepositoryDownloadUriIT {
 
     public static final Resource PREFIX = Resource.create("/00000000-0000-0000-0000-000000000000/download");
 
-    private final Repository repository;
+    private final ReadOnlyRepositoryInternal repository;
 
     private View view;
 
-    protected AbstractRepositoryDownloadUriIT(final Repository repository) {
+    protected AbstractRepositoryDownloadUriIT(final ReadOnlyRepositoryInternal repository) {
         this.repository = repository;
     }
 
@@ -78,11 +76,11 @@ public abstract class AbstractRepositoryDownloadUriIT {
         final Resource resource = PREFIX.append(Resource.create("/file.txt"));
         final Revision revision = Revision.HEAD;
 
-        final AbstractBaseRepository ar = (AbstractBaseRepository) repository;
         final QualifiedResource qualifiedResource = new QualifiedResource(repository.getBasePath(), resource);
-        final URI expected = URIUtils.appendResources(repository.getBaseUri(), ar.config.getVersionedResource(qualifiedResource, view.getHeadRevision()));
+        final URI expected = URIUtils.appendResources(repository.getBaseUri(), repository.getQualifiedVersionedResource(qualifiedResource, view.getHeadRevision()));
         final String message = createMessage(resource, revision);
-        Assert.assertEquals(message, expected, repository.downloadURI(view, resource, revision));
+        final URI actual = repository.downloadURI(view, resource, revision);
+        Assert.assertEquals(message, expected, actual);
     }
 
     @Test
@@ -90,11 +88,11 @@ public abstract class AbstractRepositoryDownloadUriIT {
         final Resource resource = PREFIX.append(Resource.create("/file_delete.txt"));
         final Revision revision = Revision.create(22);
 
-        final AbstractBaseRepository ar = (AbstractBaseRepository) repository;
         final QualifiedResource qualifiedResource = new QualifiedResource(repository.getBasePath(), resource);
-        final URI expected = URIUtils.appendResources(repository.getBaseUri(), ar.config.getVersionedResource(qualifiedResource, revision));
+        final URI expected = URIUtils.appendResources(repository.getBaseUri(), repository.getQualifiedVersionedResource(qualifiedResource, revision));
         final String message = createMessage(resource, revision);
-        Assert.assertEquals(message, expected, repository.downloadURI(view, resource, revision));
+        final URI actual = repository.downloadURI(view, resource, revision);
+        Assert.assertEquals(message, expected, actual);
     }
 
     @Test
@@ -102,11 +100,11 @@ public abstract class AbstractRepositoryDownloadUriIT {
         final Resource resource = PREFIX.append(Resource.create("/file_copy.txt"));
         final Revision revision = Revision.create(25);
 
-        final AbstractBaseRepository ar = (AbstractBaseRepository) repository;
         final QualifiedResource qualifiedResource = new QualifiedResource(repository.getBasePath(), resource);
-        final URI expected = URIUtils.appendResources(repository.getBaseUri(), ar.config.getVersionedResource(qualifiedResource, revision));
+        final URI expected = URIUtils.appendResources(repository.getBaseUri(), repository.getQualifiedVersionedResource(qualifiedResource, revision));
         final String message = createMessage(resource, revision);
-        Assert.assertEquals(message, expected, repository.downloadURI(view, resource, revision));
+        final URI actual = repository.downloadURI(view, resource, revision);
+        Assert.assertEquals(message, expected, actual);
     }
 
     @Test
@@ -114,9 +112,8 @@ public abstract class AbstractRepositoryDownloadUriIT {
         final Resource resource = PREFIX.append(Resource.create("/file_move.txt"));
         final Revision revision = Revision.create(27);
 
-        final AbstractBaseRepository ar = (AbstractBaseRepository) repository;
         final QualifiedResource qualifiedResource = new QualifiedResource(repository.getBasePath(), resource);
-        final URI expected = URIUtils.appendResources(repository.getBaseUri(), ar.config.getVersionedResource(qualifiedResource, revision));
+        final URI expected = URIUtils.appendResources(repository.getBaseUri(), repository.getQualifiedVersionedResource(qualifiedResource, revision));
         final String message = createMessage(resource, revision);
         Assert.assertEquals(message, expected, repository.downloadURI(view, resource, revision));
     }

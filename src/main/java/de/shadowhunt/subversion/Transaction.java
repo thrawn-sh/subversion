@@ -19,9 +19,12 @@ package de.shadowhunt.subversion;
 
 import java.util.Map;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * {@link Transaction} allows the application to define units of work, it can be created via {@link Repository#createTransaction()}.
  */
+@Immutable
 public interface Transaction extends View {
 
     /**
@@ -63,13 +66,6 @@ public interface Transaction extends View {
     String getId();
 
     /**
-     * After {@link Repository#commit(Transaction, String, boolean)} or {@link Repository#rollback(Transaction)} the {@link Transaction} is invalidated.
-     *
-     * For internal usage only. Use {@link Repository#commit(Transaction, String, boolean)} or {@link Repository#rollback(Transaction)} instead
-     */
-    void invalidate();
-
-    /**
      * Determines whether the {@link Transaction} can still be used. It cannot be used after {@link Repository#commit(Transaction, String, boolean)} or {@link Repository#rollback(Transaction)} where called.
      *
      * @return {@code true} if the {@link Transaction} can still be used otherwise {@code false}
@@ -84,20 +80,4 @@ public interface Transaction extends View {
      */
     boolean isChangeSetEmpty();
 
-    /**
-     * Tell the {@link Transaction} the specified {@link Resource} will be affected during {@link Repository#commit(Transaction, String, boolean)}.
-     *
-     * For internal usage only. Use the methods from {@link Repository} instead
-     *
-     * @param resource
-     *            {@link Resource} to register to the {@link Transaction}
-     * @param status
-     *            {@link Status} of the registered {@link Resource}
-     *
-     * @return {@code true} if the registration modified the change set, otherwise {@code false}
-     *
-     * @throws NullPointerException
-     *             if any parameter is {@code null}
-     */
-    boolean register(Resource resource, Status status);
 }

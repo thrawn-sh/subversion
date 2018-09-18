@@ -31,12 +31,11 @@ import java.util.TimeZone;
 
 import javax.xml.parsers.SAXParser;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-
-import de.shadowhunt.subversion.Log;
+import de.shadowhunt.subversion.LogEntry;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 
 public final class LogLoader extends AbstractBaseLoader {
 
@@ -44,11 +43,11 @@ public final class LogLoader extends AbstractBaseLoader {
 
         private static TimeZone ZULU = TimeZone.getTimeZone("ZULU");
 
-        private LogImpl current = null;
+        private LogEntryImpl current = null;
 
         private final DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US);
 
-        private final List<Log> logs = new ArrayList<>();
+        private final List<LogEntry> logs = new ArrayList<>();
 
         @Override
         public void endElement(final String uri, final String localName, final String qName) throws SAXException {
@@ -84,7 +83,7 @@ public final class LogLoader extends AbstractBaseLoader {
             }
         }
 
-        List<Log> getLogs() {
+        List<LogEntry> getLogs() {
             return logs;
         }
 
@@ -93,7 +92,7 @@ public final class LogLoader extends AbstractBaseLoader {
             clearText();
 
             if ("logentry".equals(localName)) {
-                current = new LogImpl();
+                current = new LogEntryImpl();
                 final String revision = attributes.getValue("revision");
                 current.setRevision(Revision.create(Integer.parseInt(revision)));
                 return;
@@ -107,7 +106,7 @@ public final class LogLoader extends AbstractBaseLoader {
         super(root, base);
     }
 
-    public List<Log> load(final Resource resource, final Revision start, final Revision end, final int limit) throws Exception {
+    public List<LogEntry> load(final Resource resource, final Revision start, final Revision end, final int limit) throws Exception {
         final Revision high;
         final Revision low;
         final boolean reverse;
@@ -127,10 +126,10 @@ public final class LogLoader extends AbstractBaseLoader {
         final LogHandler handler = new LogHandler();
 
         saxParser.parse(file, handler);
-        final List<Log> logs = handler.getLogs();
-        final Iterator<Log> it = logs.iterator();
+        final List<LogEntry> logs = handler.getLogs();
+        final Iterator<LogEntry> it = logs.iterator();
         while (it.hasNext()) {
-            final Log log = it.next();
+            final LogEntry log = it.next();
             final Revision revision = log.getRevision();
             if ((high.compareTo(revision) < 0) || (low.compareTo(revision) > 0)) {
                 it.remove();

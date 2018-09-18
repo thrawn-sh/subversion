@@ -82,9 +82,6 @@ abstract class AbstractCommand implements Command {
         this.name = name;
     }
 
-    @Override
-    public abstract boolean call(final PrintStream output, final PrintStream error, final String... args) throws Exception;
-
     protected final OptionSpec<URI> createBaseOption(final OptionParser parser) {
         final List<String> options = Arrays.asList("base", "b");
         final OptionSpecBuilder builder = parser.acceptsAll(options, "repository base");

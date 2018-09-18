@@ -41,9 +41,9 @@ public interface Repository extends ReadOnlyRepository {
      *
      * @throws java.lang.NullPointerException
      *             if any parameter is {@code null}
-     * @throws de.shadowhunt.subversion.SubversionException
+     * @throws SubversionException
      *             if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException
+     * @throws TransmissionException
      *             if an error occurs in the underlining communication with the server
      */
     void add(Transaction transaction, Resource resource, boolean parents, InputStream content);
@@ -62,9 +62,9 @@ public interface Repository extends ReadOnlyRepository {
      *             if the transaction parameter is {@code null}
      * @throws java.lang.NullPointerException
      *             if the message parameter is {@code null}
-     * @throws de.shadowhunt.subversion.SubversionException
+     * @throws SubversionException
      *             if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException
+     * @throws TransmissionException
      *             if an error occurs in the underlining communication with the server
      */
     void commit(Transaction transaction, String message, boolean releaseLocks);
@@ -85,9 +85,9 @@ public interface Repository extends ReadOnlyRepository {
      *
      * @throws java.lang.NullPointerException
      *             if any parameter is {@code null}
-     * @throws de.shadowhunt.subversion.SubversionException
+     * @throws SubversionException
      *             if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException
+     * @throws TransmissionException
      *             if an error occurs in the underlining communication with the server
      */
     void copy(Transaction transaction, Resource sourceResource, Revision sourceRevision, Resource targetResource, boolean parents);
@@ -97,9 +97,9 @@ public interface Repository extends ReadOnlyRepository {
      *
      * @return the new {@link Transaction}
      *
-     * @throws de.shadowhunt.subversion.SubversionException
+     * @throws SubversionException
      *             if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException
+     * @throws TransmissionException
      *             if an error occurs in the underlining communication with the server
      */
     Transaction createTransaction();
@@ -114,9 +114,9 @@ public interface Repository extends ReadOnlyRepository {
      *
      * @throws java.lang.NullPointerException
      *             if any parameter is {@code null}
-     * @throws de.shadowhunt.subversion.SubversionException
+     * @throws SubversionException
      *             if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException
+     * @throws TransmissionException
      *             if an error occurs in the underlining communication with the server
      */
     void delete(Transaction transaction, Resource resource);
@@ -131,9 +131,9 @@ public interface Repository extends ReadOnlyRepository {
      *
      * @throws java.lang.NullPointerException
      *             if the resource parameter is {@code null}
-     * @throws de.shadowhunt.subversion.SubversionException
+     * @throws SubversionException
      *             if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException
+     * @throws TransmissionException
      *             if an error occurs in the underlining communication with the server
      */
     void lock(Resource resource, boolean steal);
@@ -150,9 +150,9 @@ public interface Repository extends ReadOnlyRepository {
      *
      * @throws java.lang.NullPointerException
      *             if any parameter is {@code null}
-     * @throws de.shadowhunt.subversion.SubversionException
+     * @throws SubversionException
      *             if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException
+     * @throws TransmissionException
      *             if an error occurs in the underlining communication with the server
      */
     void mkdir(Transaction transaction, Resource resource, boolean parents);
@@ -171,9 +171,9 @@ public interface Repository extends ReadOnlyRepository {
      *
      * @throws java.lang.NullPointerException
      *             if any parameter is {@code null}
-     * @throws de.shadowhunt.subversion.SubversionException
+     * @throws SubversionException
      *             if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException
+     * @throws TransmissionException
      *             if an error occurs in the underlining communication with the server
      */
     void move(Transaction transaction, Resource sourceResource, Resource targetResource, boolean parents);
@@ -192,9 +192,9 @@ public interface Repository extends ReadOnlyRepository {
      *             if properties contain {@code null} elements
      * @throws java.lang.NullPointerException
      *             if any parameter is {@code null}
-     * @throws de.shadowhunt.subversion.SubversionException
+     * @throws SubversionException
      *             if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException
+     * @throws TransmissionException
      *             if an error occurs in the underlining communication with the server
      */
     void propertiesDelete(Transaction transaction, Resource resource, ResourceProperty... properties);
@@ -213,9 +213,9 @@ public interface Repository extends ReadOnlyRepository {
      *             if properties contain {@code null} elements
      * @throws java.lang.NullPointerException
      *             if any parameter is {@code null}
-     * @throws de.shadowhunt.subversion.SubversionException
+     * @throws SubversionException
      *             if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException
+     * @throws TransmissionException
      *             if an error occurs in the underlining communication with the server
      */
     void propertiesSet(Transaction transaction, Resource resource, ResourceProperty... properties);
@@ -228,9 +228,9 @@ public interface Repository extends ReadOnlyRepository {
      *
      * @throws java.lang.NullPointerException
      *             if the transaction parameter is {@code null}
-     * @throws de.shadowhunt.subversion.SubversionException
+     * @throws SubversionException
      *             if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException
+     * @throws TransmissionException
      *             if an error occurs in the underlining communication with the server
      */
     void rollback(Transaction transaction);
@@ -243,9 +243,9 @@ public interface Repository extends ReadOnlyRepository {
      *
      * @throws java.lang.NullPointerException
      *             if the transaction parameter is {@code null}
-     * @throws de.shadowhunt.subversion.SubversionException
+     * @throws SubversionException
      *             if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException
+     * @throws TransmissionException
      *             if an error occurs in the underlining communication with the server
      */
     void rollbackIfNotCommitted(Transaction transaction);
@@ -261,9 +261,9 @@ public interface Repository extends ReadOnlyRepository {
      *
      * @throws java.lang.NullPointerException
      *             if the resource parameter is {@code null}
-     * @throws de.shadowhunt.subversion.SubversionException
+     * @throws SubversionException
      *             if an error occurs while operating on the repository
-     * @throws de.shadowhunt.subversion.TransmissionException
+     * @throws TransmissionException
      *             if an error occurs in the underlining communication with the server
      */
     void unlock(Resource resource, boolean force);

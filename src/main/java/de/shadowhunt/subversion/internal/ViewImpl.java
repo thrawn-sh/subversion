@@ -20,16 +20,15 @@ package de.shadowhunt.subversion.internal;
 import java.util.UUID;
 
 import de.shadowhunt.subversion.Revision;
-import de.shadowhunt.subversion.View;
 import org.apache.commons.lang3.Validate;
 
-final class ViewImpl implements View {
+public class ViewImpl implements ViewInternal {
 
-    private final Revision headRevision;
+    protected final Revision headRevision;
 
-    private final UUID repositoryId;
+    protected final UUID repositoryId;
 
-    ViewImpl(final UUID repositoryId, final Revision headRevision) {
+    public ViewImpl(final UUID repositoryId, final Revision headRevision) {
         Validate.notNull(repositoryId, "repositoryId must not be null");
         Validate.notNull(headRevision, "headRevision must not be null");
 
@@ -38,12 +37,20 @@ final class ViewImpl implements View {
     }
 
     @Override
-    public Revision getHeadRevision() {
+    public final Revision getConcreteRevision(final Revision revision) {
+        if (Revision.HEAD.equals(revision)) {
+            return getHeadRevision();
+        }
+        return revision;
+    }
+
+    @Override
+    public final Revision getHeadRevision() {
         return headRevision;
     }
 
     @Override
-    public UUID getRepositoryId() {
+    public final UUID getRepositoryId() {
         return repositoryId;
     }
 }

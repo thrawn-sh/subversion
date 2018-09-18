@@ -21,6 +21,14 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.UUID;
 
+import de.shadowhunt.subversion.Depth;
+import de.shadowhunt.subversion.Repository;
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.ResourceProperty;
+import de.shadowhunt.subversion.ResourceProperty.Key;
+import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.Transaction;
+import de.shadowhunt.subversion.View;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.protocol.HttpContext;
@@ -29,14 +37,6 @@ import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
-import de.shadowhunt.subversion.Depth;
-import de.shadowhunt.subversion.Repository;
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.ResourceProperty;
-import de.shadowhunt.subversion.Revision;
-import de.shadowhunt.subversion.Transaction;
-import de.shadowhunt.subversion.View;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -272,14 +272,16 @@ public abstract class AbstractRepositoryPerformanceIT {
     @Test
     public void test12_propertiesDelete() throws Exception {
         final Resource resource = prefix.append(Resource.create("/properties_delete.txt"));
-        final ResourceProperty a = new ResourceProperty(ResourceProperty.Type.SUBVERSION_CUSTOM, "a", "a");
-        final ResourceProperty b = new ResourceProperty(ResourceProperty.Type.SUBVERSION_CUSTOM, "b", "b");
-        prepare(resource, a, b);
+        final Key keyA = new Key(ResourceProperty.Type.SUBVERSION_CUSTOM, "a");
+        final ResourceProperty propertyA = new ResourceProperty(keyA, "a");
+        final Key keyB = new Key(ResourceProperty.Type.SUBVERSION_CUSTOM, "b");
+        final ResourceProperty propertyB = new ResourceProperty(keyB, "b");
+        prepare(resource, propertyA, propertyB);
 
         final Transaction transaction = repository.createTransaction();
         counter.reset();
 
-        repository.propertiesDelete(transaction, resource, a, b);
+        repository.propertiesDelete(transaction, resource, propertyA, propertyB);
         Assert.assertEquals("number of requests must match", 2, counter.getTotalRequestCount());
 
         repository.commit(transaction, "commit", true);
@@ -293,9 +295,11 @@ public abstract class AbstractRepositoryPerformanceIT {
         final Transaction transaction = repository.createTransaction();
         counter.reset();
 
-        final ResourceProperty a = new ResourceProperty(ResourceProperty.Type.SUBVERSION_CUSTOM, "a", "a");
-        final ResourceProperty b = new ResourceProperty(ResourceProperty.Type.SUBVERSION_CUSTOM, "b", "b");
-        repository.propertiesSet(transaction, resource, a, b);
+        final Key keyA = new Key(ResourceProperty.Type.SUBVERSION_CUSTOM, "a");
+        final ResourceProperty propertyA = new ResourceProperty(keyA, "a");
+        final Key keyB = new Key(ResourceProperty.Type.SUBVERSION_CUSTOM, "b");
+        final ResourceProperty propertyB = new ResourceProperty(keyB, "b");
+        repository.propertiesSet(transaction, resource, propertyA, propertyB);
         Assert.assertEquals("number of requests must match", 2, counter.getTotalRequestCount());
 
         repository.commit(transaction, "commit", true);

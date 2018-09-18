@@ -20,19 +20,17 @@ package de.shadowhunt.subversion.internal.tracing;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
-import java.util.Set;
+import java.util.NavigableSet;
 import java.util.UUID;
-
-import org.apache.commons.lang3.time.StopWatch;
 
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Info;
-import de.shadowhunt.subversion.Log;
+import de.shadowhunt.subversion.LogEntry;
 import de.shadowhunt.subversion.ReadOnlyRepository;
 import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.ResourceProperty.Key;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.View;
+import org.apache.commons.lang3.time.StopWatch;
 
 public class TracingReadOnlyRepository implements ReadOnlyRepository {
 
@@ -101,29 +99,29 @@ public class TracingReadOnlyRepository implements ReadOnlyRepository {
     }
 
     @Override
-    public final Info info(final View view, final Resource resource, final Revision revision, final Key... keys) {
+    public final Info info(final View view, final Resource resource, final Revision revision) {
         final String method = "info";
-        final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, view, resource, revision, keys);
+        final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, view, resource, revision);
         try {
-            return delegate.info(view, resource, revision, keys);
+            return delegate.info(view, resource, revision);
         } finally {
             StopWatchLogger.INSTANCE.logStop(method, stopWatch);
         }
     }
 
     @Override
-    public final Set<Info> list(final View view, final Resource resource, final Revision revision, final Depth depth, final Key... keys) {
+    public final NavigableSet<Info> list(final View view, final Resource resource, final Revision revision, final Depth depth) {
         final String method = "list";
-        final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, view, resource, revision, depth, keys);
+        final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, view, resource, revision, depth);
         try {
-            return delegate.list(view, resource, revision, depth, keys);
+            return delegate.list(view, resource, revision, depth);
         } finally {
             StopWatchLogger.INSTANCE.logStop(method, stopWatch);
         }
     }
 
     @Override
-    public final List<Log> log(final View view, final Resource resource, final Revision startRevision, final Revision endRevision, final int limit, final boolean stopOnCopy) {
+    public final List<LogEntry> log(final View view, final Resource resource, final Revision startRevision, final Revision endRevision, final int limit, final boolean stopOnCopy) {
         final String method = "log";
         final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, view, resource, startRevision, endRevision, limit, stopOnCopy);
         try {

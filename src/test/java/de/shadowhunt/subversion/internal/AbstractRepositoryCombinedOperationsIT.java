@@ -22,23 +22,23 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
-
 import de.shadowhunt.subversion.Info;
-import de.shadowhunt.subversion.Log;
+import de.shadowhunt.subversion.LogEntry;
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
+import de.shadowhunt.subversion.ResourceProperty.Key;
 import de.shadowhunt.subversion.ResourceProperty.Type;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.Transaction.Status;
 import de.shadowhunt.subversion.View;
+import org.apache.commons.io.IOUtils;
+import org.junit.Assert;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -81,7 +81,8 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
     public void test01_AddFileAndSetProperties() throws Exception {
         final String content = "test";
         final Resource resource = prefix.append(Resource.create("file_and_properties.txt"));
-        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "foo", "bar");
+        final Key key = new Key(Type.SUBVERSION_CUSTOM, "foo");
+        final ResourceProperty property = new ResourceProperty(key, "bar");
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -185,9 +186,12 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
         final String content = "test";
         final Resource resource = prefix.append(Resource.create("override.txt"));
 
-        final ResourceProperty propertyA = new ResourceProperty(Type.SUBVERSION_CUSTOM, "propertyA", "a");
-        final ResourceProperty propertyB = new ResourceProperty(Type.SUBVERSION_CUSTOM, "propertyB", "b");
-        final ResourceProperty propertyC = new ResourceProperty(Type.SUBVERSION_CUSTOM, "propertyC", "c");
+        final Key keyA = new Key(Type.SUBVERSION_CUSTOM, "propertyA");
+        final ResourceProperty propertyA = new ResourceProperty(keyA, "a");
+        final Key keyB = new Key(Type.SUBVERSION_CUSTOM, "propertyB");
+        final ResourceProperty propertyB = new ResourceProperty(keyB, "b");
+        final Key keyC = new Key(Type.SUBVERSION_CUSTOM, "propertyC");
+        final ResourceProperty propertyC = new ResourceProperty(keyC, "c");
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -267,7 +271,7 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
         repository.lock(resourceB, true);
 
         final View view = repository.createView();
-        final List<Log> logs = repository.log(view, resourceB, Revision.HEAD, Revision.INITIAL, 0, false);
+        final List<LogEntry> logs = repository.log(view, resourceB, Revision.HEAD, Revision.INITIAL, 0, false);
         Assert.assertEquals("there must be 2 log entries", 2, logs.size());
 
         final Revision revisionB = logs.get(0).getRevision();

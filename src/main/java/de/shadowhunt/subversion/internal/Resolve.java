@@ -17,98 +17,16 @@
  */
 package de.shadowhunt.subversion.internal;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Optional;
-
-import javax.xml.namespace.QName;
-import javax.xml.parsers.ParserConfigurationException;
-
-import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
-import de.shadowhunt.subversion.SubversionException;
-import de.shadowhunt.subversion.xml.AbstractSaxExpression;
-import de.shadowhunt.subversion.xml.AbstractSaxExpressionHandler;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 
-final class Resolve {
+public final class Resolve {
 
-    private static class ResolveExpression extends AbstractSaxExpression<Resolve> {
-
-        private static final QName[] PATH = { //
-                new QName(XmlConstants.SVN_NAMESPACE, "get-locations-report"), //
-                new QName(XmlConstants.SVN_NAMESPACE, "location") //
-        };
-
-        private Resolve entry;
-
-        ResolveExpression() {
-            super(PATH);
-        }
-
-        @Override
-        public Optional<Resolve> getValue() {
-            return Optional.ofNullable(entry);
-        }
-
-        @Override
-        protected void processStart(final String nameSpaceUri, final String localName, final Attributes attributes) {
-            final String path = attributes.getValue("path");
-            final Resource resource = Resource.create(path);
-
-            final String version = attributes.getValue("rev");
-            final int intVersion = Integer.parseInt(version);
-            final Revision revision = Revision.create(intVersion);
-
-            entry = new Resolve(resource, revision);
-        }
-
-        @Override
-        public void resetHandler() {
-            super.resetHandler();
-            entry = null;
-        }
-    }
-
-    private static class ResolveHandler extends AbstractSaxExpressionHandler<Resolve> {
-
-        ResolveHandler() {
-            super(new ResolveExpression());
-        }
-
-        @Override
-        public Optional<Resolve> getValue() {
-            return ((ResolveExpression) expressions[0]).getValue();
-        }
-    }
-
-    /**
-     * Reads log information for a resource from the given {@link InputStream}.
-     *
-     * @param inputStream
-     *            {@link InputStream} from which the status information is read (Note: will not be closed)
-     *
-     * @return {@link LogImpl} for the resource
-     */
-    static Resolve read(final InputStream inputStream) throws IOException {
-        final ResolveHandler handler = new ResolveHandler();
-        final Optional<Resolve> resolve;
-        try {
-            resolve = handler.parse(inputStream);
-        } catch (final ParserConfigurationException | SAXException e) {
-            throw new SubversionException("Invalid server response: could not parse response", e);
-        }
-
-        return resolve.orElseThrow(() -> new SubversionException("Invalid server response: could not parse response"));
-    }
-
-    private final Resource resource;
+    private final QualifiedResource qualifiedResource;
 
     private final Revision revision;
 
-    private Resolve(final Resource resource, final Revision revision) {
-        this.resource = resource;
+    public Resolve(final QualifiedResource qualifiedResource, final Revision revision) {
+        this.qualifiedResource = qualifiedResource;
         this.revision = revision;
     }
 
@@ -124,11 +42,11 @@ final class Resolve {
             return false;
         }
         final Resolve other = (Resolve) obj;
-        if (resource == null) {
-            if (other.resource != null) {
+        if (qualifiedResource == null) {
+            if (other.qualifiedResource != null) {
                 return false;
             }
-        } else if (!resource.equals(other.resource)) {
+        } else if (!qualifiedResource.equals(other.qualifiedResource)) {
             return false;
         }
         if (revision == null) {
@@ -141,8 +59,8 @@ final class Resolve {
         return true;
     }
 
-    public Resource getResource() {
-        return resource;
+    public QualifiedResource getQualifiedResource() {
+        return qualifiedResource;
     }
 
     public Revision getRevision() {
@@ -153,7 +71,7 @@ final class Resolve {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = (prime * result) + ((resource == null) ? 0 : resource.hashCode());
+        result = (prime * result) + ((qualifiedResource == null) ? 0 : qualifiedResource.hashCode());
         result = (prime * result) + ((revision == null) ? 0 : revision.hashCode());
         return result;
     }
@@ -161,8 +79,8 @@ final class Resolve {
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        builder.append("Resolve [resource=");
-        builder.append(resource);
+        builder.append("Resolve [qualifiedResource=");
+        builder.append(qualifiedResource);
         builder.append(", revision=");
         builder.append(revision);
         builder.append(']');

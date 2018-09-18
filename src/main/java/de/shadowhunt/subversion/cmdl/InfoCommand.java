@@ -29,6 +29,7 @@ import de.shadowhunt.subversion.ReadOnlyRepository;
 import de.shadowhunt.subversion.RepositoryFactory;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
+import de.shadowhunt.subversion.ResourceProperty.Key;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.View;
 import joptsimple.OptionParser;
@@ -66,7 +67,7 @@ public class InfoCommand extends AbstractCommand {
 
             final HttpContext context = createHttpContext();
             final URI base = baseOption.value(options);
-            final ReadOnlyRepository repository = factory.createReadOnlyRepository(base, client, context, true);
+            final ReadOnlyRepository repository = factory.createReadOnlyRepository(base, client, context);
             final View view = repository.createView();
 
             final Resource resource = resourceOption.value(options);
@@ -112,9 +113,9 @@ public class InfoCommand extends AbstractCommand {
             output.println("Properties:");
             final ResourceProperty[] properties = info.getProperties();
             for (final ResourceProperty property : properties) {
-                final String name = property.getName();
+                final Key key = property.getKey();
                 final String value = property.getValue();
-                output.println("  " + name + " = " + value);
+                output.println("  " + key + " = " + value);
             }
         }
         return true;

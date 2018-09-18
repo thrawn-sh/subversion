@@ -19,20 +19,20 @@ package de.shadowhunt.subversion.internal;
 
 import java.util.UUID;
 
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
-
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
+import de.shadowhunt.subversion.ResourceProperty.Key;
 import de.shadowhunt.subversion.ResourceProperty.Type;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.View;
+import org.junit.Assert;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -69,12 +69,14 @@ public abstract class AbstractRepositoryPropertiesSetIT {
     @Test(expected = SubversionException.class)
     public void test00_invalid() throws Exception {
         final Resource resource = prefix.append(Resource.create("invalid.txt"));
-        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "test");
+        final Key key = new Key(Type.SUBVERSION_CUSTOM, "test");
+        final ResourceProperty property = new ResourceProperty(key, "test");
 
         final Transaction transaction = repository.createTransaction();
         try {
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            transaction.invalidate();
+            final TransactionInternal transactionInternal = TransactionInternal.from(transaction);
+            transactionInternal.invalidate();
             Assert.assertFalse("transaction must not be active", transaction.isActive());
             repository.propertiesSet(transaction, resource, property);
             Assert.fail("must not complete");
@@ -86,7 +88,8 @@ public abstract class AbstractRepositoryPropertiesSetIT {
     @Test(expected = SubversionException.class)
     public void test00_NonExistingResource() throws Exception {
         final Resource resource = prefix.append(Resource.create("non_existing.txt"));
-        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "test");
+        final Key key = new Key(Type.SUBVERSION_CUSTOM, "test");
+        final ResourceProperty property = new ResourceProperty(key, "test");
         final View view = repository.createView();
         Assert.assertFalse(resource + " does already exist", repository.exists(view, resource, Revision.HEAD));
 
@@ -103,7 +106,8 @@ public abstract class AbstractRepositoryPropertiesSetIT {
     @Test(expected = SubversionException.class)
     public void test00_rollback() throws Exception {
         final Resource resource = prefix.append(Resource.create("rollback.txt"));
-        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "test");
+        final Key key = new Key(Type.SUBVERSION_CUSTOM, "test");
+        final ResourceProperty property = new ResourceProperty(key, "test");
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -120,7 +124,8 @@ public abstract class AbstractRepositoryPropertiesSetIT {
     @Test
     public void test01_setProperties() throws Exception {
         final Resource resource = prefix.append(Resource.create("file.txt"));
-        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "test");
+        final Key key = new Key(Type.SUBVERSION_CUSTOM, "test");
+        final ResourceProperty property = new ResourceProperty(key, "test");
 
         AbstractRepositoryAddIT.file(repository, resource, "test", true);
         setProperties(repository, resource, property);
@@ -131,11 +136,12 @@ public abstract class AbstractRepositoryPropertiesSetIT {
         final Resource resource = prefix.append(Resource.create("update.txt"));
 
         AbstractRepositoryAddIT.file(repository, resource, "test", true);
-        final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "A");
+        final Key key = new Key(Type.SUBVERSION_CUSTOM, "test");
+        final ResourceProperty property = new ResourceProperty(key, "test");
         setProperties(repository, resource, property);
-
-        final ResourceProperty newProperty = new ResourceProperty(Type.SUBVERSION_CUSTOM, "new", "new");
-        final ResourceProperty existingProperty = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "B");
+        final Key keyNew = new Key(Type.SUBVERSION_CUSTOM, "new");
+        final ResourceProperty newProperty = new ResourceProperty(keyNew, "new");
+        final ResourceProperty existingProperty = new ResourceProperty(key, "B");
         setProperties(repository, resource, newProperty, existingProperty);
     }
 
@@ -144,10 +150,10 @@ public abstract class AbstractRepositoryPropertiesSetIT {
         final Resource resource = prefix.append(Resource.create("subversion_properties.txt"));
 
         AbstractRepositoryAddIT.file(repository, resource, "test", true);
-        final ResourceProperty eolProperty = new ResourceProperty(Type.SUBVERSION_SVN, "eol-style", "native");
-        final ResourceProperty executableProperty = new ResourceProperty(Type.SUBVERSION_SVN, "executable", "*");
-        final ResourceProperty keywordsProperty = new ResourceProperty(Type.SUBVERSION_SVN, "keywords", "Author Id");
-        final ResourceProperty mimeProperty = new ResourceProperty(Type.SUBVERSION_SVN, "mime-type", "text/plain");
+        final ResourceProperty eolProperty = new ResourceProperty(ResourceProperty.Key.EOL_SYTLE, "native");
+        final ResourceProperty executableProperty = new ResourceProperty(ResourceProperty.Key.EXECUTABLE, "*");
+        final ResourceProperty keywordsProperty = new ResourceProperty(ResourceProperty.Key.KEYWORDS, "Author Id");
+        final ResourceProperty mimeProperty = new ResourceProperty(ResourceProperty.Key.MIME_TYPE, "text/plain");
 
         setProperties(repository, resource, eolProperty, executableProperty, keywordsProperty, mimeProperty);
     }

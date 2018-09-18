@@ -20,13 +20,8 @@ package de.shadowhunt.subversion.internal;
 import java.util.List;
 import java.util.UUID;
 
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
-
 import de.shadowhunt.subversion.Info;
-import de.shadowhunt.subversion.Log;
+import de.shadowhunt.subversion.LogEntry;
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
@@ -34,6 +29,10 @@ import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.Transaction.Status;
 import de.shadowhunt.subversion.View;
+import org.junit.Assert;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -56,7 +55,8 @@ public abstract class AbstractRepositoryMoveIT {
         final Transaction transaction = repository.createTransaction();
         try {
             Assert.assertTrue("transaction must be active", transaction.isActive());
-            transaction.invalidate();
+            final TransactionInternal transactionInternal = TransactionInternal.from(transaction);
+            transactionInternal.invalidate();
             Assert.assertFalse("transaction must not be active", transaction.isActive());
             repository.move(transaction, source, target, true);
             Assert.fail("must not complete");
@@ -93,7 +93,7 @@ public abstract class AbstractRepositoryMoveIT {
 
         final View beforeView = repository.createView();
         final Info sInfo = repository.info(beforeView, source, Revision.HEAD);
-        final List<Log> sLog = repository.log(beforeView, source, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<LogEntry> sLog = repository.log(beforeView, source, Revision.INITIAL, Revision.HEAD, 0, false);
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -114,7 +114,7 @@ public abstract class AbstractRepositoryMoveIT {
         final Info tInfo = repository.info(afterView, target, Revision.HEAD);
         Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
 
-        final List<Log> tLog = repository.log(afterView, target, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<LogEntry> tLog = repository.log(afterView, target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
     }
@@ -145,7 +145,7 @@ public abstract class AbstractRepositoryMoveIT {
 
         final View beforeView = repository.createView();
         final Info sInfo = repository.info(beforeView, source, Revision.HEAD);
-        final List<Log> sLog = repository.log(beforeView, source, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<LogEntry> sLog = repository.log(beforeView, source, Revision.INITIAL, Revision.HEAD, 0, false);
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -166,7 +166,7 @@ public abstract class AbstractRepositoryMoveIT {
         final Info tInfo = repository.info(afterView, target, Revision.HEAD);
         Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
 
-        final List<Log> tLog = repository.log(afterView, target, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<LogEntry> tLog = repository.log(afterView, target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
     }
@@ -202,7 +202,7 @@ public abstract class AbstractRepositoryMoveIT {
 
         final View beforeView = repository.createView();
         final Info sInfo = repository.info(beforeView, source, Revision.HEAD);
-        final List<Log> sLog = repository.log(beforeView, source, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<LogEntry> sLog = repository.log(beforeView, source, Revision.INITIAL, Revision.HEAD, 0, false);
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -223,7 +223,7 @@ public abstract class AbstractRepositoryMoveIT {
         final Info tInfo = repository.info(afterView, target, Revision.HEAD);
         Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
 
-        final List<Log> tLog = repository.log(afterView, target, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<LogEntry> tLog = repository.log(afterView, target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
 
@@ -241,7 +241,7 @@ public abstract class AbstractRepositoryMoveIT {
 
         final View beforeView = repository.createView();
         final Info sInfo = repository.info(beforeView, source, Revision.HEAD);
-        final List<Log> sLog = repository.log(beforeView, source, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<LogEntry> sLog = repository.log(beforeView, source, Revision.INITIAL, Revision.HEAD, 0, false);
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -263,7 +263,7 @@ public abstract class AbstractRepositoryMoveIT {
         final Info tInfo = repository.info(afterView, target, Revision.HEAD);
         Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
 
-        final List<Log> tLog = repository.log(afterView, target, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<LogEntry> tLog = repository.log(afterView, target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
     }
@@ -278,7 +278,7 @@ public abstract class AbstractRepositoryMoveIT {
 
         final View beforeView = repository.createView();
         final Info sInfo = repository.info(beforeView, source, Revision.HEAD);
-        final List<Log> sLog = repository.log(beforeView, source, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<LogEntry> sLog = repository.log(beforeView, source, Revision.INITIAL, Revision.HEAD, 0, false);
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -300,7 +300,7 @@ public abstract class AbstractRepositoryMoveIT {
         final Info tInfo = repository.info(afterView, target, Revision.HEAD);
         Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
 
-        final List<Log> tLog = repository.log(afterView, target, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<LogEntry> tLog = repository.log(afterView, target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
     }

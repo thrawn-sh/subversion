@@ -22,15 +22,18 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.annotation.concurrent.Immutable;
+
 import org.apache.commons.lang3.Validate;
 
 /**
  * {@link Info} holds all status information for a single {@link Revision} of a {@link Resource}.
  */
+@Immutable
 public interface Info {
 
     /**
-     * {@link java.util.Comparator} orders {@link de.shadowhunt.subversion.Info} s by their relative {@link Resource}.
+     * {@link Comparator} orders {@link Info} s by their relative {@link Resource}.
      */
     Comparator<Info> RESOURCE_COMPARATOR = (i1, i2) -> {
         Validate.notNull(i1, "i1 must not be null");

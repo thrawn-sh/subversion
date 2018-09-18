@@ -60,7 +60,7 @@ public class MkdirCommand extends AbstractCommand {
 
             final HttpContext context = createHttpContext();
             final URI base = baseOption.value(options);
-            final Repository repository = factory.createRepository(base, client, context, true);
+            final Repository repository = factory.createRepository(base, client, context);
 
             final Transaction transaction = repository.createTransaction();
             try {
