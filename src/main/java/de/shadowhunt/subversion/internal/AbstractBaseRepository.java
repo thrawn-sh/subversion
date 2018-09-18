@@ -27,6 +27,12 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 
+import org.apache.commons.lang3.Validate;
+import org.apache.http.client.HttpClient;
+import org.apache.http.protocol.HttpContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.LockToken;
@@ -39,11 +45,6 @@ import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.Transaction.Status;
 import de.shadowhunt.subversion.View;
-import org.apache.commons.lang3.Validate;
-import org.apache.http.client.HttpClient;
-import org.apache.http.protocol.HttpContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Base for all {@link de.shadowhunt.subversion.Repository}.
@@ -633,8 +634,8 @@ public abstract class AbstractBaseRepository implements Repository {
     protected void validateView(final View view) {
         Validate.notNull(view, "view must not be null");
 
-        final UUID transactionRepositoryId = view.getRepositoryId();
-        if (!repositoryId.equals(transactionRepositoryId)) {
+        final UUID viewRepositoryId = view.getRepositoryId();
+        if (!repositoryId.equals(viewRepositoryId)) {
             throw new SubversionException("Transaction/View invalid: does not belong to this repository");
         }
     }

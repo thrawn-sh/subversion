@@ -74,9 +74,9 @@ public interface Repository extends ReadOnlyRepository {
      *
      * @param transaction
      *            the current running {@link Transaction}
-     * @param srcResource
+     * @param sourceResource
      *            the {@link Resource} of the source resource (relative to the repository root)
-     * @param srcRevision
+     * @param sourceRevision
      *            {@link Revision} of the resource to copy
      * @param targetResource
      *            the {@link Resource} of the target resource (relative to the repository root)
@@ -90,7 +90,7 @@ public interface Repository extends ReadOnlyRepository {
      * @throws de.shadowhunt.subversion.TransmissionException
      *             if an error occurs in the underlining communication with the server
      */
-    void copy(Transaction transaction, Resource srcResource, Revision srcRevision, Resource targetResource, boolean parents);
+    void copy(Transaction transaction, Resource sourceResource, Revision sourceRevision, Resource targetResource, boolean parents);
 
     /**
      * Create a new {@link Transaction} to make modifications within.
@@ -162,7 +162,7 @@ public interface Repository extends ReadOnlyRepository {
      *
      * @param transaction
      *            the current running {@link Transaction}
-     * @param srcResource
+     * @param sourceResource
      *            the {@link Resource} of the source resource (relative to the repository root)
      * @param targetResource
      *            the {@link Resource} of the target resource (relative to the repository root)
@@ -176,7 +176,7 @@ public interface Repository extends ReadOnlyRepository {
      * @throws de.shadowhunt.subversion.TransmissionException
      *             if an error occurs in the underlining communication with the server
      */
-    void move(Transaction transaction, Resource srcResource, Resource targetResource, boolean parents);
+    void move(Transaction transaction, Resource sourceResource, Resource targetResource, boolean parents);
 
     /**
      * Remove the given properties form the resource.

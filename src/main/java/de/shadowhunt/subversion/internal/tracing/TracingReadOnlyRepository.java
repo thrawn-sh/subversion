@@ -43,12 +43,12 @@ public class TracingReadOnlyRepository implements ReadOnlyRepository {
     }
 
     @Override
-    public View createView() {
+    public final View createView() {
         return delegate.createView();
     }
 
     @Override
-    public InputStream download(final View view, final Resource resource, final Revision revision) {
+    public final InputStream download(final View view, final Resource resource, final Revision revision) {
         final String method = "download";
         final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, view, resource, revision);
         try {
@@ -59,7 +59,7 @@ public class TracingReadOnlyRepository implements ReadOnlyRepository {
     }
 
     @Override
-    public URI downloadURI(final View view, final Resource resource, final Revision revision) {
+    public final URI downloadURI(final View view, final Resource resource, final Revision revision) {
         final String method = "downloadURI";
         final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, view, resource, revision);
         try {
@@ -70,7 +70,7 @@ public class TracingReadOnlyRepository implements ReadOnlyRepository {
     }
 
     @Override
-    public boolean exists(final View view, final Resource resource, final Revision revision) {
+    public final boolean exists(final View view, final Resource resource, final Revision revision) {
         final String method = "exists";
         final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, view, resource, revision);
         try {
@@ -81,27 +81,27 @@ public class TracingReadOnlyRepository implements ReadOnlyRepository {
     }
 
     @Override
-    public Resource getBasePath() {
+    public final Resource getBasePath() {
         return delegate.getBasePath();
     }
 
     @Override
-    public URI getBaseUri() {
+    public final URI getBaseUri() {
         return delegate.getBaseUri();
     }
 
     @Override
-    public ProtocolVersion getProtocolVersion() {
+    public final ProtocolVersion getProtocolVersion() {
         return delegate.getProtocolVersion();
     }
 
     @Override
-    public UUID getRepositoryId() {
+    public final UUID getRepositoryId() {
         return delegate.getRepositoryId();
     }
 
     @Override
-    public Info info(final View view, final Resource resource, final Revision revision, final Key... keys) {
+    public final Info info(final View view, final Resource resource, final Revision revision, final Key... keys) {
         final String method = "info";
         final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, view, resource, revision, keys);
         try {
@@ -112,7 +112,7 @@ public class TracingReadOnlyRepository implements ReadOnlyRepository {
     }
 
     @Override
-    public Set<Info> list(final View view, final Resource resource, final Revision revision, final Depth depth, final Key... keys) {
+    public final Set<Info> list(final View view, final Resource resource, final Revision revision, final Depth depth, final Key... keys) {
         final String method = "list";
         final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, view, resource, revision, depth, keys);
         try {
@@ -123,7 +123,7 @@ public class TracingReadOnlyRepository implements ReadOnlyRepository {
     }
 
     @Override
-    public List<Log> log(final View view, final Resource resource, final Revision startRevision, final Revision endRevision, final int limit, final boolean stopOnCopy) {
+    public final List<Log> log(final View view, final Resource resource, final Revision startRevision, final Revision endRevision, final int limit, final boolean stopOnCopy) {
         final String method = "log";
         final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, view, resource, startRevision, endRevision, limit, stopOnCopy);
         try {

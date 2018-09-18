@@ -27,7 +27,7 @@ import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
 
-public class TracingRepository extends TracingReadOnlyRepository {
+public class TracingRepository extends TracingReadOnlyRepository implements Repository {
 
     private final Repository delegate;
 
@@ -36,7 +36,8 @@ public class TracingRepository extends TracingReadOnlyRepository {
         this.delegate = delegate;
     }
 
-    public void add(final Transaction transaction, final Resource resource, final boolean parents, final InputStream content) {
+    @Override
+    public final void add(final Transaction transaction, final Resource resource, final boolean parents, final InputStream content) {
         final String method = "add";
         final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, transaction, resource, parents, content.getClass());
         try {
@@ -46,7 +47,8 @@ public class TracingRepository extends TracingReadOnlyRepository {
         }
     }
 
-    public void commit(final Transaction transaction, final String message, final boolean releaseLocks) {
+    @Override
+    public final void commit(final Transaction transaction, final String message, final boolean releaseLocks) {
         final String method = "commit";
         final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, transaction, message, releaseLocks);
         try {
@@ -56,21 +58,24 @@ public class TracingRepository extends TracingReadOnlyRepository {
         }
     }
 
-    public void copy(final Transaction transaction, final Resource srcResource, final Revision srcRevision, final Resource targetResource, final boolean parents) {
+    @Override
+    public final void copy(final Transaction transaction, final Resource sourceResource, final Revision sourceRevision, final Resource targetResource, final boolean parents) {
         final String method = "copy";
-        final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, transaction, srcResource, srcRevision, targetResource, parents);
+        final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, transaction, sourceResource, sourceRevision, targetResource, parents);
         try {
-            delegate.copy(transaction, srcResource, srcRevision, targetResource, parents);
+            delegate.copy(transaction, sourceResource, sourceRevision, targetResource, parents);
         } finally {
             StopWatchLogger.INSTANCE.logStop(method, stopWatch);
         }
     }
 
-    public Transaction createTransaction() {
+    @Override
+    public final Transaction createTransaction() {
         return delegate.createTransaction();
     }
 
-    public void delete(final Transaction transaction, final Resource resource) {
+    @Override
+    public final void delete(final Transaction transaction, final Resource resource) {
         final String method = "delete";
         final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, transaction, resource);
         try {
@@ -80,7 +85,8 @@ public class TracingRepository extends TracingReadOnlyRepository {
         }
     }
 
-    public void lock(final Resource resource, final boolean steal) {
+    @Override
+    public final void lock(final Resource resource, final boolean steal) {
         final String method = "lock";
         final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, resource, steal);
         try {
@@ -90,7 +96,8 @@ public class TracingRepository extends TracingReadOnlyRepository {
         }
     }
 
-    public void mkdir(final Transaction transaction, final Resource resource, final boolean parents) {
+    @Override
+    public final void mkdir(final Transaction transaction, final Resource resource, final boolean parents) {
         final String method = "mkdir";
         final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, transaction, resource, parents);
         try {
@@ -100,17 +107,19 @@ public class TracingRepository extends TracingReadOnlyRepository {
         }
     }
 
-    public void move(final Transaction transaction, final Resource srcResource, final Resource targetResource, final boolean parents) {
+    @Override
+    public final void move(final Transaction transaction, final Resource sourceResource, final Resource targetResource, final boolean parents) {
         final String method = "move";
-        final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, transaction, srcResource, targetResource, parents);
+        final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, transaction, sourceResource, targetResource, parents);
         try {
-            delegate.move(transaction, srcResource, targetResource, parents);
+            delegate.move(transaction, sourceResource, targetResource, parents);
         } finally {
             StopWatchLogger.INSTANCE.logStop(method, stopWatch);
         }
     }
 
-    public void propertiesDelete(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
+    @Override
+    public final void propertiesDelete(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
         final String method = "propertiesDelete";
         final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, transaction, resource, properties);
         try {
@@ -120,7 +129,8 @@ public class TracingRepository extends TracingReadOnlyRepository {
         }
     }
 
-    public void propertiesSet(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
+    @Override
+    public final void propertiesSet(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
         final String method = "propertiesSet";
         final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, transaction, resource, properties);
         try {
@@ -130,7 +140,8 @@ public class TracingRepository extends TracingReadOnlyRepository {
         }
     }
 
-    public void rollback(final Transaction transaction) {
+    @Override
+    public final void rollback(final Transaction transaction) {
         final String method = "rollback";
         final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, transaction);
         try {
@@ -140,7 +151,8 @@ public class TracingRepository extends TracingReadOnlyRepository {
         }
     }
 
-    public void rollbackIfNotCommitted(final Transaction transaction) {
+    @Override
+    public final void rollbackIfNotCommitted(final Transaction transaction) {
         final String method = "rollbackIfNotCommitted";
         final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, transaction);
         try {
@@ -150,7 +162,8 @@ public class TracingRepository extends TracingReadOnlyRepository {
         }
     }
 
-    public void unlock(final Resource resource, final boolean force) {
+    @Override
+    public final void unlock(final Resource resource, final boolean force) {
         final String method = "unlock";
         final StopWatch stopWatch = StopWatchLogger.INSTANCE.logStart(method, resource, force);
         try {
