@@ -67,7 +67,9 @@ public class CommitMessageOperation extends AbstractVoidOperation {
 
         final URI uri = URIUtils.appendResources(repository, resource);
         final DavTemplateRequest request = new DavTemplateRequest("PROPPATCH", uri);
-        request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
+        final String payload = body.toString();
+        final StringEntity entity = new StringEntity(payload, CONTENT_TYPE_XML);
+        request.setEntity(entity);
         return request;
     }
 

@@ -25,6 +25,7 @@ import de.shadowhunt.subversion.internal.AbstractOperation;
 import de.shadowhunt.subversion.internal.QualifiedResource;
 import de.shadowhunt.subversion.internal.TransactionImpl;
 import de.shadowhunt.subversion.internal.URIUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -71,7 +72,8 @@ class CreateTransactionOperation extends AbstractOperation<TransactionImpl> {
 
     @Override
     protected TransactionImpl processResponse(final HttpResponse response) {
-        final String transactionId = response.getFirstHeader(TRANSACTION_ID_HEADER).getValue();
+        final Header header = response.getFirstHeader(TRANSACTION_ID_HEADER);
+        final String transactionId = header.getValue();
         return new TransactionImpl(transactionId, repositoryId, headRevision);
     }
 }

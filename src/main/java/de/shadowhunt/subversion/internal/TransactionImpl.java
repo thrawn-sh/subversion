@@ -53,20 +53,31 @@ public final class TransactionImpl implements Transaction, View {
     }
 
     @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (!(o instanceof TransactionImpl)) {
+        if (obj == null) {
             return false;
         }
-
-        final TransactionImpl that = (TransactionImpl) o;
-
-        if (!id.equals(that.id)) {
+        if (getClass() != obj.getClass()) {
             return false;
         }
-
+        final TransactionImpl other = (TransactionImpl) obj;
+        if (id == null) {
+            if (other.id != null) {
+                return false;
+            }
+        } else if (!id.equals(other.id)) {
+            return false;
+        }
+        if (repositoryId == null) {
+            if (other.repositoryId != null) {
+                return false;
+            }
+        } else if (!repositoryId.equals(other.repositoryId)) {
+            return false;
+        }
         return true;
     }
 
@@ -92,8 +103,10 @@ public final class TransactionImpl implements Transaction, View {
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = (31 * result) + getRepositoryId().hashCode();
+        final int prime = 31;
+        int result = 1;
+        result = (prime * result) + ((id == null) ? 0 : id.hashCode());
+        result = (prime * result) + ((repositoryId == null) ? 0 : repositoryId.hashCode());
         return result;
     }
 
@@ -158,9 +171,12 @@ public final class TransactionImpl implements Transaction, View {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Transaction [");
-        sb.append("id=").append(id);
-        sb.append(", repositoryId=").append(getRepositoryId());
-        sb.append(", active=").append(active);
+        sb.append("id=");
+        sb.append(id);
+        sb.append(", repositoryId=");
+        sb.append(repositoryId);
+        sb.append(", active=");
+        sb.append(active);
         sb.append(']');
         return sb.toString();
     }

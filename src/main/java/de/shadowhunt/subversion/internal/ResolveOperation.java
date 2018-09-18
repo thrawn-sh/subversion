@@ -18,6 +18,7 @@
 package de.shadowhunt.subversion.internal;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
 import java.net.URI;
 import java.util.Optional;
@@ -25,6 +26,7 @@ import java.util.Optional;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.internal.AbstractBaseRepository.ResourceMapper;
@@ -62,10 +64,12 @@ class ResolveOperation extends AbstractOperation<Optional<QualifiedResource>> {
             writer.writeDefaultNamespace(XmlConstants.SVN_NAMESPACE);
             writer.writeEmptyElement("path");
             writer.writeStartElement("peg-revision");
-            writer.writeCharacters(revision.toString());
+            final String revisionValue = revision.toString();
+            writer.writeCharacters(revisionValue);
             writer.writeEndElement(); // peg-revision
             writer.writeStartElement("location-revision");
-            writer.writeCharacters(expected.toString());
+            final String expectedValue = expected.toString();
+            writer.writeCharacters(expectedValue);
             writer.writeEndElement(); // location-revision
             writer.writeEndElement(); // get-locations
             writer.writeEndDocument();
@@ -76,7 +80,9 @@ class ResolveOperation extends AbstractOperation<Optional<QualifiedResource>> {
 
         final URI uri = URIUtils.appendResources(repository, resource);
         final DavTemplateRequest request = new DavTemplateRequest("REPORT", uri);
-        request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
+        final String payload = body.toString();
+        final StringEntity entity = new StringEntity(payload, CONTENT_TYPE_XML);
+        request.setEntity(entity);
         return request;
     }
 
@@ -92,7 +98,11 @@ class ResolveOperation extends AbstractOperation<Optional<QualifiedResource>> {
             return Optional.empty();
         }
 
-        final Resolve resolve = Resolve.read(getContent(response));
-        return Optional.of(config.getVersionedResource(new QualifiedResource(resolve.getResource()), expected));
+        final InputStream content = getContent(response);
+        final Resolve resolve = Resolve.read(content);
+        final Resource resolvedResource = resolve.getResource();
+        final QualifiedResource qualifiedResolvedResource = new QualifiedResource(resolvedResource);
+        final QualifiedResource qualifiedVersionedResource = config.getVersionedResource(qualifiedResolvedResource, expected);
+        return Optional.of(qualifiedVersionedResource);
     }
 }

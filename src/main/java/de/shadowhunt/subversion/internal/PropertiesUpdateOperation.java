@@ -53,7 +53,7 @@ class PropertiesUpdateOperation extends AbstractVoidOperation {
 
     private final Type type;
 
-    PropertiesUpdateOperation(final URI repository, final QualifiedResource resource, final Type type, final Optional<LockToken> lockToken, final ResourceProperty[] properties) {
+    PropertiesUpdateOperation(final URI repository, final QualifiedResource resource, final Type type, final Optional<LockToken> lockToken, final ResourceProperty... properties) {
         super(repository);
         this.resource = resource;
         this.type = type;
@@ -83,13 +83,17 @@ class PropertiesUpdateOperation extends AbstractVoidOperation {
             writer.writeStartElement(type.action);
             writer.writeStartElement("prop");
             for (final ResourceProperty property : properties) {
-                final String prefix = property.getType().getPrefix();
+                final ResourceProperty.Type propertyType = property.getType();
+                final String prefix = propertyType.getPrefix();
+                final String propertyName = property.getName();
                 if (type == Type.SET) {
-                    writer.writeStartElement(prefix, ResourcePropertyUtils.escapedKeyNameXml(property.getName()));
-                    writer.writeCharacters(property.getValue());
+                    final String escapedPropertyName = ResourcePropertyUtils.escapedKeyNameXml(propertyName);
+                    writer.writeStartElement(prefix, escapedPropertyName);
+                    final String propertyValue = property.getValue();
+                    writer.writeCharacters(propertyValue);
                     writer.writeEndElement();
                 } else {
-                    writer.writeEmptyElement(prefix, property.getName());
+                    writer.writeEmptyElement(prefix, propertyName);
                 }
             }
             writer.writeEndElement(); // prop
@@ -103,7 +107,8 @@ class PropertiesUpdateOperation extends AbstractVoidOperation {
 
         final String bodyWithMakers = body.toString();
         final String bodyWithoutMakers = ResourcePropertyUtils.filterMarker(bodyWithMakers);
-        request.setEntity(new StringEntity(bodyWithoutMakers, CONTENT_TYPE_XML));
+        final StringEntity entity = new StringEntity(bodyWithoutMakers, CONTENT_TYPE_XML);
+        request.setEntity(entity);
         return request;
     }
 

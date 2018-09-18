@@ -18,6 +18,7 @@
 package de.shadowhunt.subversion.internal;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
 import java.net.URI;
 import java.util.List;
@@ -64,17 +65,20 @@ class LogOperation extends AbstractOperation<List<Log>> {
             writer.writeStartElement("log-report");
             writer.writeDefaultNamespace(XmlConstants.SVN_NAMESPACE);
             writer.writeStartElement("start-revision");
-            writer.writeCharacters(start.toString());
+            final String stringString = start.toString();
+            writer.writeCharacters(stringString);
             writer.writeEndElement(); // start-revision
             writer.writeStartElement("end-revision");
-            writer.writeCharacters(end.toString());
+            final String endString = end.toString();
+            writer.writeCharacters(endString);
             writer.writeEndElement(); // end-revision
             if (stopOnCopy) {
                 writer.writeEmptyElement("strict-node-history");
             }
             if (limit > 0) {
                 writer.writeStartElement("limit");
-                writer.writeCharacters(Integer.toString(limit));
+                final String limitValue = Integer.toString(limit);
+                writer.writeCharacters(limitValue);
                 writer.writeEndElement(); // limit
             }
             writer.writeEmptyElement("discover-changed-paths");
@@ -89,7 +93,9 @@ class LogOperation extends AbstractOperation<List<Log>> {
 
         final URI uri = URIUtils.appendResources(repository, resource);
         final DavTemplateRequest request = new DavTemplateRequest("REPORT", uri);
-        request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
+        final String payload = body.toString();
+        final StringEntity entity = new StringEntity(payload, CONTENT_TYPE_XML);
+        request.setEntity(entity);
         return request;
     }
 
@@ -100,6 +106,7 @@ class LogOperation extends AbstractOperation<List<Log>> {
 
     @Override
     protected List<Log> processResponse(final HttpResponse response) throws IOException {
-        return LogImplReader.read(getContent(response));
+        final InputStream content = getContent(response);
+        return LogImplReader.read(content);
     }
 }

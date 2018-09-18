@@ -43,7 +43,8 @@ class ProbeServerOperation extends AbstractOperation<Repository> {
 
     private static ProtocolVersion determineVersion(final Header... headers) {
         for (final Header header : headers) {
-            if (header.getName().startsWith("SVN")) {
+            final String name = header.getName();
+            if (name.startsWith("SVN")) {
                 return ProtocolVersion.HTTP_V2;
             }
         }
@@ -67,11 +68,13 @@ class ProbeServerOperation extends AbstractOperation<Repository> {
             writer.writeEndDocument();
             writer.close();
         } catch (final XMLStreamException e) {
-            throw new SubversionException("could not create request body: " + e.getMessage(), e);
+            throw new SubversionException("could not create request body", e);
         }
 
         final DavTemplateRequest request = new DavTemplateRequest("OPTIONS", repository);
-        request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
+        final String payload = body.toString();
+        final StringEntity entity = new StringEntity(payload, CONTENT_TYPE_XML);
+        request.setEntity(entity);
         return request;
     }
 
@@ -86,7 +89,8 @@ class ProbeServerOperation extends AbstractOperation<Repository> {
             try (final InputStream in = getContent(response)) {
                 check(response);
 
-                version = determineVersion(response.getAllHeaders());
+                final Header[] headers = response.getAllHeaders();
+                version = determineVersion(headers);
                 probe = ProbeReader.read(in, version);
             }
         } catch (final IOException e) {

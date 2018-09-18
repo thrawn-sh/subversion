@@ -99,7 +99,7 @@ public abstract class AbstractBaseRepository implements Repository {
 
         this.repository = repository;
         this.base = base;
-        this.repositoryId = id;
+        repositoryId = id;
         this.config = config;
         this.client = client;
         this.context = context;
@@ -111,16 +111,20 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.notNull(resource, "resource must not be null");
         Validate.notNull(content, "content must not be null");
 
-        LOGGER.trace("adding resource {} during transaction {} (parents: {})", resource, transaction.getId(), parents);
+        final String transactionId = transaction.getId();
+        LOGGER.trace("adding resource {} during transaction {} (parents: {})", resource, transactionId, parents);
         if (parents) {
-            mkdir(transaction, resource.getParent(), true);
+            final Resource parent = resource.getParent();
+            mkdir(transaction, parent, true);
         }
 
         final QualifiedResource qualifiedResource = new QualifiedResource(base, resource);
-        final Optional<Info> info = info0(transaction, qualifiedResource, transaction.getHeadRevision(), false, LOCKING);
+        final Revision transactionHeadRevision = transaction.getHeadRevision();
+        final Optional<Info> info = info0(transaction, qualifiedResource, transactionHeadRevision, false, LOCKING);
         final Optional<LockToken> lockToken = info.flatMap(Info::getLockToken);
 
-        final QualifiedResource uploadResource = config.getWorkingResource(transaction).append(qualifiedResource);
+        final QualifiedResource workingResource = config.getWorkingResource(transaction);
+        final QualifiedResource uploadResource = workingResource.append(qualifiedResource);
         final UploadOperation operation = new UploadOperation(repository, uploadResource, lockToken, content);
         operation.execute(client, context);
         if (info.isPresent()) {
@@ -139,66 +143,83 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.notNull(targetResource, "targetResource must not be null");
         validateRevision(transaction, sourceRevision);
 
-        LOGGER.trace("copying resource from {}@{} to {} during transaction {} (parents: {})", sourceResource, sourceRevision, targetResource, transaction.getId(), parents);
-        copy0(transaction, new QualifiedResource(base, sourceResource), sourceRevision, new QualifiedResource(base, targetResource), parents, true);
+        final String transactionId = transaction.getId();
+        LOGGER.trace("copying resource from {}@{} to {} during transaction {} (parents: {})", sourceResource, sourceRevision, targetResource, transactionId, parents);
+        final QualifiedResource qualifiedSourceResource = new QualifiedResource(base, sourceResource);
+        final QualifiedResource qualifiedTargetResource = new QualifiedResource(base, targetResource);
+        copy0(transaction, qualifiedSourceResource, sourceRevision, qualifiedTargetResource, parents, true);
     }
 
-    private void copy0(final Transaction transaction, final QualifiedResource sourceResource, final Revision sourceRevision, final QualifiedResource targetResource, final boolean parents, final boolean resolveSource) {
+    private void copy0(final Transaction transaction, final QualifiedResource qualifiedSourceResource, final Revision sourceRevision, final QualifiedResource qualifiedTargetResource, final boolean parents, final boolean resolveSource) {
+        final QualifiedResource qualifiedParentResource = qualifiedTargetResource.getParent();
+        final Revision transactionHeadRevision = transaction.getHeadRevision();
         if (parents) {
-            createFolder(transaction, targetResource.getParent(), true);
+            createFolder(transaction, qualifiedParentResource, true);
         } else {
-            registerResource(transaction, targetResource.getParent().getResource(), transaction.getHeadRevision());
+            final Resource parentResource = qualifiedParentResource.getResource();
+            registerResource(transaction, parentResource, transactionHeadRevision);
         }
 
-        final Optional<Info> sourceInfo = info0(transaction, sourceResource, sourceRevision, resolveSource, REVISION);
-        final Info sourceInfoValue = sourceInfo.orElseThrow(() -> new SubversionException("Can't resolve: " + sourceResource + '@' + sourceRevision));
+        final Optional<Info> sourceInfo = info0(transaction, qualifiedSourceResource, sourceRevision, resolveSource, REVISION);
+        final Info sourceInfoValue = sourceInfo.orElseThrow(() -> new SubversionException("Can't resolve: " + qualifiedSourceResource + '@' + sourceRevision));
 
-        final Optional<Info> targetInfo = info0(transaction, targetResource, transaction.getHeadRevision(), false, LOCKING);
+        final Optional<Info> targetInfo = info0(transaction, qualifiedTargetResource, transactionHeadRevision, false, LOCKING);
         final Optional<LockToken> lockToken = targetInfo.flatMap(Info::getLockToken);
 
-        final QualifiedResource source = config.getVersionedResource(new QualifiedResource(base, sourceInfoValue.getResource()), sourceInfoValue.getRevision());
-        final QualifiedResource target = config.getWorkingResource(transaction).append(targetResource);
+        final Resource sourceResource = sourceInfoValue.getResource();
+        final QualifiedResource resource = new QualifiedResource(base, sourceResource);
+        final Revision sourceInfoRevision = sourceInfoValue.getRevision();
+        final QualifiedResource source = config.getVersionedResource(resource, sourceInfoRevision);
+        final QualifiedResource workingResource = config.getWorkingResource(transaction);
+        final QualifiedResource target = workingResource.append(qualifiedTargetResource);
 
         final CopyOperation operation = new CopyOperation(repository, source, target, lockToken);
         operation.execute(client, context);
 
+        final Resource targetResource = qualifiedTargetResource.getResource();
         if (targetInfo.isPresent()) {
-            transaction.register(targetResource.getResource(), Status.MODIFIED);
+            transaction.register(targetResource, Status.MODIFIED);
         } else {
-            transaction.register(targetResource.getResource(), Status.ADDED);
+            transaction.register(targetResource, Status.ADDED);
         }
     }
 
-    private void createFolder(final Transaction transaction, final QualifiedResource resource, final boolean parents) {
+    private void createFolder(final Transaction transaction, final QualifiedResource qualifiedResource, final boolean parents) {
         final Revision headRevision = transaction.getHeadRevision();
-        final Optional<Info> info = info0(transaction, resource, headRevision, false, TYPE);
+        final Optional<Info> info = info0(transaction, qualifiedResource, headRevision, false, TYPE);
 
-        if (parents && !info.isPresent() && !Resource.ROOT.equals(resource.getResource())) {
-            createFolder(transaction, resource.getParent(), true);
+        final Resource resource = qualifiedResource.getResource();
+        final QualifiedResource qualifiedParent = qualifiedResource.getParent();
+        if (parents && !info.isPresent() && !Resource.ROOT.equals(resource)) {
+            createFolder(transaction, qualifiedParent, true);
         }
 
         if (info.isPresent()) {
-            if (info.get().isFile()) {
-                throw new SubversionException("Can not create folder. File with same name already exists: " + resource);
+            final Info infoElement = info.get();
+            if (infoElement.isFile()) {
+                throw new SubversionException("Can not create folder. File with same name already exists: " + qualifiedResource);
             }
             final Map<Resource, Status> changeSet = transaction.getChangeSet();
-            final Status status = changeSet.get(resource.getResource());
+            final Status status = changeSet.get(resource);
             if (status == null) {
-                registerResource(transaction, resource.getResource(), headRevision);
+                registerResource(transaction, resource, headRevision);
             }
         } else {
-            final QualifiedResource folder = config.getWorkingResource(transaction).append(resource);
+            final QualifiedResource workingResource = config.getWorkingResource(transaction);
+            final QualifiedResource folder = workingResource.append(qualifiedResource);
             final CreateFolderOperation operation = new CreateFolderOperation(repository, folder);
             operation.execute(client, context);
-            transaction.register(resource.getResource(), Status.ADDED);
+            transaction.register(resource, Status.ADDED);
         }
 
-        QualifiedResource current = resource.getParent();
-        while (!Resource.ROOT.equals(current.getResource())) {
-            if (!transaction.register(current.getResource(), Status.EXISTS)) {
+        QualifiedResource currentQualifiedResource = qualifiedParent;
+        Resource currentResource = currentQualifiedResource.getResource();
+        while (!Resource.ROOT.equals(currentResource)) {
+            if (!transaction.register(currentResource, Status.EXISTS)) {
                 break;
             }
-            current = current.getParent();
+            currentQualifiedResource = currentQualifiedResource.getParent();
+            currentResource = currentQualifiedResource.getResource();
         }
     }
 
@@ -214,30 +235,44 @@ public abstract class AbstractBaseRepository implements Repository {
         validateTransaction(transaction);
         Validate.notNull(resource, "resource must not be null");
 
-        LOGGER.trace("deleting resource {} during transaction {}", resource, transaction.getId());
-        delete0(transaction, new QualifiedResource(base, resource));
+        final String transactionId = transaction.getId();
+        LOGGER.trace("deleting resource {} during transaction {}", resource, transactionId);
+        final QualifiedResource qualifiedResource = new QualifiedResource(base, resource);
+        delete0(transaction, qualifiedResource);
     }
 
-    private void delete0(final Transaction transaction, final QualifiedResource resource) {
-        final Optional<Info> info = info0(transaction, resource, transaction.getHeadRevision(), false, LOCKING);
-        info.orElseThrow(() -> new SubversionException("Can't resolve: " + resource + '@' + Revision.HEAD));
+    private void delete0(final Transaction transaction, final QualifiedResource qualifiedResource) {
+        final Revision transactionHeadRevision = transaction.getHeadRevision();
+        final Optional<Info> info = info0(transaction, qualifiedResource, transactionHeadRevision, false, LOCKING);
+        if (!info.isPresent()) {
+            throw new SubversionException("Can't resolve: " + qualifiedResource + '@' + Revision.HEAD);
+        }
 
-        final QualifiedResource deleteResource = config.getWorkingResource(transaction).append(resource);
+        final QualifiedResource workingResource = config.getWorkingResource(transaction);
+        final QualifiedResource deleteResource = workingResource.append(qualifiedResource);
         final Optional<LockToken> lockToken = info.flatMap(Info::getLockToken);
         final DeleteOperation operation = new DeleteOperation(repository, deleteResource, lockToken);
         operation.execute(client, context);
-        transaction.register(resource.getResource(), Status.DELETED);
+        final Resource resource = qualifiedResource.getResource();
+        transaction.register(resource, Status.DELETED);
     }
 
     protected Revision determineHeadRevision() {
-        final InfoOperation operation = new InfoOperation(repository, base, new QualifiedResource(base, Resource.ROOT), config.getPrefix(), REVISION);
+        final QualifiedResource qualifiedRoot = new QualifiedResource(base, Resource.ROOT);
+        final Resource prefix = config.getPrefix();
+        final InfoOperation operation = new InfoOperation(repository, base, qualifiedRoot, prefix, REVISION);
         final Optional<Info> info = operation.execute(client, context);
-        return info.orElseThrow(() -> new SubversionException("can not determine HEAD revision")).getRevision();
+        if (!info.isPresent()) {
+            throw new SubversionException("can not determine HEAD revision");
+        }
+        final Info infoElement = info.get();
+        return infoElement.getRevision();
     }
 
     @Override
     public InputStream download(final Resource resource, final Revision revision) {
-        return download(createView(), resource, revision);
+        final View view = createView();
+        return download(view, resource, revision);
     }
 
     @Override
@@ -248,7 +283,8 @@ public abstract class AbstractBaseRepository implements Repository {
         validateRevision(view, revision);
 
         LOGGER.trace("downloading resource {}@{}", resource, revision);
-        return download0(view, new QualifiedResource(base, resource), revision);
+        final QualifiedResource qualifiedResource = new QualifiedResource(base, resource);
+        return download0(view, qualifiedResource, revision);
     }
 
     private InputStream download0(final View view, final QualifiedResource resource, final Revision revision) {
@@ -260,7 +296,8 @@ public abstract class AbstractBaseRepository implements Repository {
 
     @Override
     public URI downloadURI(final Resource resource, final Revision revision) {
-        return downloadURI(createView(), resource, revision);
+        final View view = createView();
+        return downloadURI(view, resource, revision);
     }
 
     @Override
@@ -271,7 +308,8 @@ public abstract class AbstractBaseRepository implements Repository {
         validateRevision(view, revision);
 
         LOGGER.trace("creating download uri for resource {}@{}", resource, revision);
-        return downloadURI0(view, new QualifiedResource(base, resource), revision);
+        final QualifiedResource qualifiedResource = new QualifiedResource(base, resource);
+        return downloadURI0(view, qualifiedResource, revision);
     }
 
     private URI downloadURI0(final View view, final QualifiedResource resource, final Revision revision) {
@@ -284,7 +322,8 @@ public abstract class AbstractBaseRepository implements Repository {
 
     @Override
     public boolean exists(final Resource resource, final Revision revision) {
-        return exists(createView(), resource, revision);
+        final View view = createView();
+        return exists(view, resource, revision);
     }
 
     @Override
@@ -295,13 +334,15 @@ public abstract class AbstractBaseRepository implements Repository {
         validateRevision(view, revision);
 
         LOGGER.trace("checking existence for resource {}@{}", resource, revision);
-        return exists0(view, new QualifiedResource(base, resource), revision);
+        final QualifiedResource qualifiedResource = new QualifiedResource(base, resource);
+        return exists0(view, qualifiedResource, revision);
     }
 
     private boolean exists0(final View view, final QualifiedResource resource, final Revision revision) {
         // ask the server
         final QualifiedResource resolved = resolve(view, resource, revision, false);
-        final ExistsOperation operation = new ExistsOperation(repository, resolved, config.getPrefix());
+        final Resource prefix = config.getPrefix();
+        final ExistsOperation operation = new ExistsOperation(repository, resolved, prefix);
         return operation.execute(client, context);
     }
 
@@ -337,10 +378,15 @@ public abstract class AbstractBaseRepository implements Repository {
                 continue;
             }
 
-            final QualifiedResource resource = new QualifiedResource(base, entry.getKey());
-            final Optional<Info> info = info0(transaction, resource, transaction.getHeadRevision(), false, LOCKING);
-            if (info.isPresent() && info.get().isLocked()) {
-                infoSet.add(info.get());
+            final Resource resource = entry.getKey();
+            final QualifiedResource qualifiedResource = new QualifiedResource(base, resource);
+            final Revision transactionHeadRevision = transaction.getHeadRevision();
+            final Optional<Info> info = info0(transaction, qualifiedResource, transactionHeadRevision, false, LOCKING);
+            if (info.isPresent()) {
+                final Info infoElement = info.get();
+                if (infoElement.isLocked()) {
+                    infoSet.add(infoElement);
+                }
             }
         }
         return infoSet;
@@ -353,7 +399,8 @@ public abstract class AbstractBaseRepository implements Repository {
 
     @Override
     public Info info(final Resource resource, final Revision revision, final ResourceProperty.Key... keys) {
-        return info(createView(), resource, revision, keys);
+        final View view = createView();
+        return info(view, resource, revision, keys);
     }
 
     @Override
@@ -365,19 +412,22 @@ public abstract class AbstractBaseRepository implements Repository {
         validateRevision(view, revision);
 
         LOGGER.trace("retrieving info for resource {}@{}", resource, revision);
-        final Optional<Info> info = info0(view, new QualifiedResource(base, resource), revision, true, keys);
+        final QualifiedResource qualifiedResource = new QualifiedResource(base, resource);
+        final Optional<Info> info = info0(view, qualifiedResource, revision, true, keys);
         return info.orElseThrow(() -> new SubversionException("Can't resolve: " + resource + '@' + revision));
     }
 
-    private Optional<Info> info0(final View view, final QualifiedResource resource, final Revision revision, final boolean resolve, final ResourceProperty.Key[] keys) {
+    private Optional<Info> info0(final View view, final QualifiedResource resource, final Revision revision, final boolean resolve, final ResourceProperty.Key... keys) {
         final QualifiedResource resolved = resolve(view, resource, revision, resolve);
-        final InfoOperation operation = new InfoOperation(repository, base, resolved, config.getPrefix(), keys);
+        final Resource prefix = config.getPrefix();
+        final InfoOperation operation = new InfoOperation(repository, base, resolved, prefix, keys);
         return operation.execute(client, context);
     }
 
     @Override
     public Set<Info> list(final Resource resource, final Revision revision, final Depth depth, final ResourceProperty.Key... keys) {
-        return list(createView(), resource, revision, depth, keys);
+        final View view = createView();
+        return list(view, resource, revision, depth, keys);
     }
 
     @Override
@@ -390,10 +440,11 @@ public abstract class AbstractBaseRepository implements Repository {
         validateRevision(view, revision);
 
         LOGGER.trace("listing info for resource {}@{} and depth {}", resource, revision, depth);
-        return list0(view, new QualifiedResource(base, resource), revision, depth, keys);
+        final QualifiedResource qualifedResource = new QualifiedResource(base, resource);
+        return list0(view, qualifedResource, revision, depth, keys);
     }
 
-    private Set<Info> list0(final View view, final QualifiedResource resource, final Revision revision, final Depth depth, final ResourceProperty.Key[] keys) {
+    private Set<Info> list0(final View view, final QualifiedResource resource, final Revision revision, final Depth depth, final ResourceProperty.Key... keys) {
         if (Depth.INFINITY == depth) {
             final Set<Info> result = new TreeSet<>(Info.RESOURCE_COMPARATOR);
             listRecursively0(view, resource, revision, result, keys);
@@ -401,19 +452,23 @@ public abstract class AbstractBaseRepository implements Repository {
         }
 
         final QualifiedResource resolved = resolve(view, resource, revision, true);
-        final ListOperation operation = new ListOperation(repository, base, resolved, config.getPrefix(), depth, keys);
+        final Resource prefix = config.getPrefix();
+        final ListOperation operation = new ListOperation(repository, base, resolved, prefix, depth, keys);
         final Optional<Set<Info>> infoSet = operation.execute(client, context);
         return infoSet.orElseThrow(() -> new SubversionException("Can't resolve: " + resource + '@' + revision));
     }
 
-    private void listRecursively0(final View view, final QualifiedResource resource, final Revision revision, final Set<Info> result, final ResourceProperty.Key[] keys) {
-        for (final Info info : list0(view, resource, revision, Depth.IMMEDIATES, keys)) {
+    private void listRecursively0(final View view, final QualifiedResource qualifiedResource, final Revision revision, final Set<Info> result, final ResourceProperty.Key... keys) {
+        for (final Info info : list0(view, qualifiedResource, revision, Depth.IMMEDIATES, keys)) {
             if (!result.add(info)) {
                 continue;
             }
 
-            if (info.isDirectory() && !resource.getResource().equals(info.getResource())) {
-                listRecursively0(view, new QualifiedResource(base, info.getResource()), revision, result, keys);
+            final Resource resource = qualifiedResource.getResource();
+            final Resource infoResource = info.getResource();
+            if (info.isDirectory() && !resource.equals(infoResource)) {
+                final QualifiedResource qualifiedResourceNext = new QualifiedResource(base, infoResource);
+                listRecursively0(view, qualifiedResourceNext, revision, result, keys);
             }
         }
     }
@@ -423,13 +478,15 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.notNull(resource, "resource must not be null");
 
         LOGGER.trace("locking resource {} (steal: {})", resource, steal);
-        final LockOperation operation = new LockOperation(repository, new QualifiedResource(base, resource), steal);
+        final QualifiedResource qualifiedResource = new QualifiedResource(base, resource);
+        final LockOperation operation = new LockOperation(repository, qualifiedResource, steal);
         operation.execute(client, context);
     }
 
     @Override
     public List<Log> log(final Resource resource, final Revision startRevision, final Revision endRevision, final int limit, final boolean stopOnCopy) {
-        return log(createView(), resource, startRevision, endRevision, limit, stopOnCopy);
+        final View view = createView();
+        return log(view, resource, startRevision, endRevision, limit, stopOnCopy);
     }
 
     @Override
@@ -442,7 +499,8 @@ public abstract class AbstractBaseRepository implements Repository {
         validateRevision(view, endRevision);
 
         LOGGER.trace("retrieving log for resource {} from {} to {} (limit: {})", resource, startRevision, endRevision, limit);
-        return log0(view, new QualifiedResource(base, resource), startRevision, endRevision, limit, stopOnCopy);
+        final QualifiedResource qualifiedResource = new QualifiedResource(base, resource);
+        return log0(view, qualifiedResource, startRevision, endRevision, limit, stopOnCopy);
     }
 
     private List<Log> log0(final View view, final QualifiedResource resource, final Revision startRevision, final Revision endRevision, final int limit, final boolean stopOnCopy) {
@@ -461,8 +519,10 @@ public abstract class AbstractBaseRepository implements Repository {
         validateTransaction(transaction);
         Validate.notNull(resource, "resource must not be null");
 
-        LOGGER.trace("creating folder for resource {} during {} (parent: {})", resource, transaction.getId(), parent);
-        createFolder(transaction, new QualifiedResource(base, resource), parent);
+        final String transactionId = transaction.getId();
+        LOGGER.trace("creating folder for resource {} during {} (parent: {})", resource, transactionId, parent);
+        final QualifiedResource qualifiedResource = new QualifiedResource(base, resource);
+        createFolder(transaction, qualifiedResource, parent);
     }
 
     @Override
@@ -471,62 +531,75 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.notNull(srcResource, "srcResource must not be null");
         Validate.notNull(targetResource, "targetResource must not be null");
 
-        LOGGER.trace("moving {} to {} during {} (parents: {})", srcResource, targetResource, transaction.getId(), parents);
+        final String transactionId = transaction.getId();
+        LOGGER.trace("moving {} to {} during {} (parents: {})", srcResource, targetResource, transactionId, parents);
         final QualifiedResource qualifiedSourceResource = new QualifiedResource(base, srcResource);
-        copy0(transaction, qualifiedSourceResource, transaction.getHeadRevision(), new QualifiedResource(base, targetResource), parents, false);
+        final Revision transactionHeadRevision = transaction.getHeadRevision();
+        final QualifiedResource qualifiedTargetResource = new QualifiedResource(base, targetResource);
+        copy0(transaction, qualifiedSourceResource, transactionHeadRevision, qualifiedTargetResource, parents, false);
         delete0(transaction, qualifiedSourceResource);
     }
 
     @Override
     public void propertiesDelete(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
-        propertiesUpdate(transaction, new QualifiedResource(base, resource), PropertiesUpdateOperation.Type.DELETE, properties);
+        final QualifiedResource qualifiedResource = new QualifiedResource(base, resource);
+        propertiesUpdate(transaction, qualifiedResource, PropertiesUpdateOperation.Type.DELETE, properties);
     }
 
     @Override
     public void propertiesSet(final Transaction transaction, final Resource resource, final ResourceProperty... properties) {
-        propertiesUpdate(transaction, new QualifiedResource(base, resource), PropertiesUpdateOperation.Type.SET, properties);
+        final QualifiedResource qualifiedResource = new QualifiedResource(base, resource);
+        propertiesUpdate(transaction, qualifiedResource, PropertiesUpdateOperation.Type.SET, properties);
     }
 
-    protected void propertiesUpdate(final Transaction transaction, final QualifiedResource resource, final PropertiesUpdateOperation.Type type, final ResourceProperty... properties) {
+    protected void propertiesUpdate(final Transaction transaction, final QualifiedResource qualifiedResource, final PropertiesUpdateOperation.Type type, final ResourceProperty... properties) {
         validateTransaction(transaction);
-        Validate.notNull(resource, "resource must not be null");
+        Validate.notNull(qualifiedResource, "resource must not be null");
         Validate.noNullElements(properties, "properties must not contain null elements");
 
-        LOGGER.trace("updating properties {} on {} during {}", properties, resource.getResource(), transaction.getId());
+        final Resource resource = qualifiedResource.getResource();
+        final String transactionId = transaction.getId();
+        LOGGER.trace("updating properties {} on {} during {}", properties, resource, transactionId);
 
         // there can only be a lock token if the file is already in the
         // repository
-        final Optional<Info> info = info0(transaction, resource, transaction.getHeadRevision(), false, LOCKING);
+        final Revision transactionHeadRevision = transaction.getHeadRevision();
+        final Optional<Info> info = info0(transaction, qualifiedResource, transactionHeadRevision, false, LOCKING);
         final Optional<LockToken> lockToken = info.flatMap(Info::getLockToken);
 
-        final QualifiedResource r = config.getWorkingResource(transaction).append(resource);
+        final QualifiedResource workingResource = config.getWorkingResource(transaction);
+        final QualifiedResource r = workingResource.append(qualifiedResource);
         final PropertiesUpdateOperation operation = new PropertiesUpdateOperation(repository, r, type, lockToken, properties);
         operation.execute(client, context);
-        transaction.register(resource.getResource(), Status.MODIFIED);
+        transaction.register(resource, Status.MODIFIED);
     }
 
     protected abstract void registerResource(Transaction transaction, Resource resource, Revision revision);
 
     protected QualifiedResource resolve(final View view, final QualifiedResource resource, final Revision revision, final boolean resolve) {
+        final Revision viewHeadRevision = view.getHeadRevision();
         if (Revision.HEAD.equals(revision)) {
             if (resolve) {
-                return config.getVersionedResource(resource, view.getHeadRevision());
+                return config.getVersionedResource(resource, viewHeadRevision);
             }
             return resource;
         }
 
+        final QualifiedResource versionedResource = config.getVersionedResource(resource, revision);
         if (resolve) {
-            final ResolveOperation r = new ResolveOperation(repository, resource, view.getHeadRevision(), revision, config);
-            return r.execute(client, context).orElse(config.getVersionedResource(resource, revision));
+            final ResolveOperation r = new ResolveOperation(repository, resource, viewHeadRevision, revision, config);
+            final Optional<QualifiedResource> result = r.execute(client, context);
+            return result.orElse(versionedResource);
         }
-        return config.getVersionedResource(resource, revision);
+        return versionedResource;
     }
 
     @Override
     public void rollback(final Transaction transaction) {
         validateTransaction(transaction);
 
-        LOGGER.trace("rolling transaction {} back", transaction.getId());
+        final String transactionId = transaction.getId();
+        LOGGER.trace("rolling transaction {} back", transactionId);
         try {
             final QualifiedResource resource = config.getTransactionResource(transaction);
             final Optional<LockToken> token = Optional.empty();
@@ -551,17 +624,25 @@ public abstract class AbstractBaseRepository implements Repository {
         Validate.notNull(resource, "resource must not be null");
 
         LOGGER.trace("unlocking {} (force: {})", resource, force);
-        unlock0(createView(), new QualifiedResource(base, resource), force);
+        final View view = createView();
+        final QualifiedResource qualifiedResource = new QualifiedResource(base, resource);
+        unlock0(view, qualifiedResource, force);
     }
 
     private void unlock0(final View view, final QualifiedResource resource, final boolean force) {
-        final Optional<Info> info = info0(view, resource, view.getHeadRevision(), true, LOCKING);
-        final Optional<LockToken> lockToken = info.orElseThrow(() -> new SubversionException("Can't resolve: " + resource + '@' + view.getHeadRevision())).getLockToken();
+        final Revision viewHeadRevision = view.getHeadRevision();
+        final Optional<Info> info = info0(view, resource, viewHeadRevision, true, LOCKING);
+        if (!info.isPresent()) {
+            throw new SubversionException("Can't resolve: " + resource + '@' + viewHeadRevision);
+        }
+        final Info infoElement = info.get();
+        final Optional<LockToken> lockToken = infoElement.getLockToken();
 
         if (!lockToken.isPresent()) {
             return;
         }
-        final UnlockOperation operation = new UnlockOperation(repository, resource, lockToken.get(), force);
+        final LockToken lockTokenValue = lockToken.get();
+        final UnlockOperation operation = new UnlockOperation(repository, resource, lockTokenValue, force);
         operation.execute(client, context);
     }
 

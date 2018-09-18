@@ -36,7 +36,9 @@ public interface Info {
         Validate.notNull(i1, "i1 must not be null");
         Validate.notNull(i2, "i2 must not be null");
 
-        return i1.getResource().compareTo(i2.getResource());
+        final Resource resource1 = i1.getResource();
+        final Resource resource2 = i2.getResource();
+        return resource1.compareTo(resource2);
     };
 
     /**

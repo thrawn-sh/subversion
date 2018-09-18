@@ -38,8 +38,10 @@ public class Probe {
 
     public Resource getBasePath(final URI server) {
         final String completePath = server.getPath();
-        final String repoPath = getBaseUri(server).getPath();
-        final String suffix = completePath.substring(repoPath.length());
+        final URI baseUri = getBaseUri(server);
+        final String repoPath = baseUri.getPath();
+        final int length = repoPath.length();
+        final String suffix = completePath.substring(length);
         return Resource.create(suffix);
     }
 

@@ -18,11 +18,12 @@
 package de.shadowhunt.subversion.cmdl;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.RepositoryFactory;
@@ -68,7 +69,8 @@ public class DownloadCommand extends AbstractCommand {
             final Repository repository = factory.createRepository(base, client, context, true);
 
             final File file = outputOption.value(options);
-            try (OutputStream os = new FileOutputStream(file)) {
+            final Path path = file.toPath();
+            try (OutputStream os = Files.newOutputStream(path)) {
                 final Resource resource = resourceOption.value(options);
                 final Revision revision = revisionOption.value(options);
                 try (InputStream download = repository.download(resource, revision)) {

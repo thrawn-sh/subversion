@@ -56,7 +56,7 @@ public interface Transaction extends View {
     Map<Resource, Status> getChangeSet();
 
     /**
-     * Returns the identifier of the {@link Transaction} (unique for each {@link Repository}.
+     * Returns the identifier of the {@link Transaction} (unique for each {@link Repository}).
      *
      * @return the identifier of the {@link Transaction}
      */
@@ -89,12 +89,15 @@ public interface Transaction extends View {
      *
      * For internal usage only. Use the methods from {@link Repository} instead
      *
-     * @param resource {@link Resource} to register to the {@link Transaction}
-     * @param status {@link Status} of the registered {@link Resource}
+     * @param resource
+     *            {@link Resource} to register to the {@link Transaction}
+     * @param status
+     *            {@link Status} of the registered {@link Resource}
      *
      * @return {@code true} if the registration modified the change set, otherwise {@code false}
      *
-     * @throws NullPointerException if any parameter is {@code null}
+     * @throws NullPointerException
+     *             if any parameter is {@code null}
      */
     boolean register(Resource resource, Status status);
 }

@@ -18,19 +18,23 @@
 package de.shadowhunt.subversion.cmdl;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.List;
 
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.RepositoryFactory;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Transaction;
+import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
+import joptsimple.OptionSpecBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.protocol.HttpContext;
 
@@ -71,7 +75,8 @@ public class CheckinCommand extends AbstractCommand {
             final Transaction transaction = repository.createTransaction();
             try {
                 final File input = inputOption.value(options);
-                try (InputStream content = new FileInputStream(input)) {
+                final Path path = input.toPath();
+                try (InputStream content = Files.newInputStream(path)) {
                     final Resource resource = resourceOption.value(options);
                     final boolean parents = options.has(parentsOption);
 
@@ -89,12 +94,12 @@ public class CheckinCommand extends AbstractCommand {
     }
 
     protected final OptionSpec<File> createInputOption(final OptionParser parser) {
-        return parser //
-                .acceptsAll(Arrays.asList("input", "i"), "input file") //
-                .withRequiredArg() //
-                .describedAs("file") //
-                .ofType(File.class) //
-                .required();
+        final List<String> options = Arrays.asList("input", "i");
+        final OptionSpecBuilder builder = parser.acceptsAll(options, "input file");
+        ArgumentAcceptingOptionSpec<String> optionSpec = builder.withRequiredArg();
+        optionSpec = optionSpec.describedAs("file");
+        optionSpec = optionSpec.required();
+        return optionSpec.ofType(File.class);
     }
 
 }

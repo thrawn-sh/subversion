@@ -35,7 +35,9 @@ public final class QualifiedResource {
     }
 
     public QualifiedResource append(final QualifiedResource suffix) {
-        return new QualifiedResource(base, resource.append(suffix.base).append(suffix.resource));
+        Resource newResource = resource.append(suffix.base);
+        newResource = newResource.append(suffix.resource);
+        return new QualifiedResource(base, newResource);
     }
 
     @Override
@@ -72,7 +74,8 @@ public final class QualifiedResource {
     }
 
     public QualifiedResource getParent() {
-        return new QualifiedResource(base, resource.getParent());
+        final Resource parent = resource.getParent();
+        return new QualifiedResource(base, parent);
     }
 
     public Resource getResource() {
@@ -80,20 +83,21 @@ public final class QualifiedResource {
     }
 
     public String getValue() {
-        return base.append(resource).getValue();
+        final Resource fullResource = base.append(resource);
+        return fullResource.getValue();
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((base == null) ? 0 : base.hashCode());
-        result = prime * result + ((resource == null) ? 0 : resource.hashCode());
+        result = (prime * result) + ((base == null) ? 0 : base.hashCode());
+        result = (prime * result) + ((resource == null) ? 0 : resource.hashCode());
         return result;
     }
 
     @Override
     public String toString() {
-        return base.append(resource).toString();
+        return getValue();
     }
 }

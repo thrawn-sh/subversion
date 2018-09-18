@@ -53,7 +53,8 @@ class RepositoryImpl extends AbstractBaseRepository {
 
         @Override
         public QualifiedResource getCommitMessageResource(final Transaction transaction) {
-            final Resource suffix = Resource.create("/wbl/" + transaction.getId());
+            final String transactionId = transaction.getId();
+            final Resource suffix = Resource.create("/wbl/" + transactionId);
             return new QualifiedResource(prefix, suffix);
         }
 
@@ -72,7 +73,8 @@ class RepositoryImpl extends AbstractBaseRepository {
             if (Revision.HEAD.equals(revision)) {
                 throw new SubversionException("must not be HEAD revision");
             }
-            final Resource suffix = Resource.create("/ver/" + revision + Resource.SEPARATOR + resource.getValue());
+            final String resourceValue = resource.getValue();
+            final Resource suffix = Resource.create("/ver/" + revision + Resource.SEPARATOR + resourceValue);
             return new QualifiedResource(prefix, suffix);
         }
 
@@ -83,7 +85,8 @@ class RepositoryImpl extends AbstractBaseRepository {
 
         @Override
         public QualifiedResource getTransactionResource(final Transaction transaction) {
-            final Resource suffix = Resource.create("/act/" + transaction.getId());
+            final String transactionId = transaction.getId();
+            final Resource suffix = Resource.create("/act/" + transactionId);
             return new QualifiedResource(prefix, suffix);
         }
 
@@ -92,13 +95,15 @@ class RepositoryImpl extends AbstractBaseRepository {
             if (Revision.HEAD.equals(revision)) {
                 throw new SubversionException("must not be HEAD revision");
             }
-            final Resource suffix = Resource.create("/bc/" + revision + Resource.SEPARATOR + resource.getValue());
+            final String resourceValue = resource.getValue();
+            final Resource suffix = Resource.create("/bc/" + revision + Resource.SEPARATOR + resourceValue);
             return new QualifiedResource(prefix, suffix);
         }
 
         @Override
         public QualifiedResource getWorkingResource(final Transaction transaction) {
-            final Resource suffix = Resource.create("/wrk/" + transaction.getId());
+            final String transactionId = transaction.getId();
+            final Resource suffix = Resource.create("/wrk/" + transactionId);
             return new QualifiedResource(prefix, suffix);
         }
     }
@@ -114,7 +119,8 @@ class RepositoryImpl extends AbstractBaseRepository {
         validateTransaction(transaction);
         Validate.notNull(message, "message must not be null");
 
-        LOGGER.trace("committing {} with message {}", transaction.getId(), message);
+        final String transactionId = transaction.getId();
+        LOGGER.trace("committing {} with message {}", transactionId, message);
 
         if (transaction.isChangeSetEmpty()) {
             // empty change set => nothing to commit, release resources
@@ -123,9 +129,11 @@ class RepositoryImpl extends AbstractBaseRepository {
         }
 
         final Revision concreteRevision = transaction.getHeadRevision();
-        final Resource resource = Resource.create(concreteRevision.toString());
-        final QualifiedResource qualifiedResource = new QualifiedResource(resource);
-        final QualifiedResource messageResource = config.getCommitMessageResource(transaction).append(qualifiedResource);
+        final String concreteRevisionValue = concreteRevision.toString();
+        final Resource concreateRevisionResource = Resource.create(concreteRevisionValue);
+        final QualifiedResource qualifiedConcreateRevisionResource = new QualifiedResource(concreateRevisionResource);
+        final QualifiedResource commitMessageResource = config.getCommitMessageResource(transaction);
+        final QualifiedResource messageResource = commitMessageResource.append(qualifiedConcreateRevisionResource);
         final CommitMessageOperation cmo = new CommitMessageOperation(repository, messageResource, message);
         cmo.execute(client, context);
 
@@ -165,7 +173,8 @@ class RepositoryImpl extends AbstractBaseRepository {
         validateTransaction(transaction);
 
         final Revision concreteRevision = getConcreteRevision(transaction, revision);
-        final QualifiedResource existingResource = config.getRegisterResource(new QualifiedResource(base, resource), concreteRevision);
+        final QualifiedResource qualifiedResource = new QualifiedResource(base, resource);
+        final QualifiedResource existingResource = config.getRegisterResource(qualifiedResource, concreteRevision);
         final QualifiedResource transactionResource = config.getTransactionResource(transaction);
         final CheckoutOperation co = new CheckoutOperation(repository, existingResource, transactionResource);
         co.execute(client, context);

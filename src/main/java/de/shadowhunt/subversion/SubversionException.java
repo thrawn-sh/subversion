@@ -29,7 +29,8 @@ public class SubversionException extends RuntimeException {
     /**
      * Constructs a new SubversionException exception with the specified detail message. The cause is not initialized, and may subsequently be initialized by a call to {@link #initCause}
      *
-     * @param message the detail message. The detail message is saved for later retrieval by the {@link #getMessage()} method
+     * @param message
+     *            the detail message. The detail message is saved for later retrieval by the {@link #getMessage()} method
      */
     public SubversionException(final String message) {
         this(message, 0);
@@ -38,8 +39,10 @@ public class SubversionException extends RuntimeException {
     /**
      * Constructs a new SubversionException exception with the specified detail message. The cause is not initialized, and may subsequently be initialized by a call to {@link #initCause}
      *
-     * @param message the detail message. The detail message is saved for later retrieval by the {@link #getMessage()} method
-     * @param httpStatusCode for each error that is reported by the underlying subversion server, the HTTP status code is reported
+     * @param message
+     *            the detail message. The detail message is saved for later retrieval by the {@link #getMessage()} method
+     * @param httpStatusCode
+     *            for each error that is reported by the underlying subversion server, the HTTP status code is reported
      */
     public SubversionException(final String message, final int httpStatusCode) {
         super(message);
@@ -51,8 +54,10 @@ public class SubversionException extends RuntimeException {
      * <p>
      * Note that the detail message associated with {@code cause} is <i>not</i> automatically incorporated in this runtime exception's detail message.
      *
-     * @param message the detail message (which is saved for later retrieval by the {@link #getMessage()} method)
-     * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method). (A {@code null} value is permitted, and indicates that the cause is nonexistent or unknown.)
+     * @param message
+     *            the detail message (which is saved for later retrieval by the {@link #getMessage()} method)
+     * @param cause
+     *            the cause (which is saved for later retrieval by the {@link #getCause()} method). (A {@code null} value is permitted, and indicates that the cause is nonexistent or unknown.)
      */
     public SubversionException(final String message, final Throwable cause) {
         this(message, cause, 0);
@@ -63,9 +68,12 @@ public class SubversionException extends RuntimeException {
      * <p>
      * Note that the detail message associated with {@code cause} is <i>not</i> automatically incorporated in this runtime exception's detail message.
      *
-     * @param message the detail message (which is saved for later retrieval by the {@link #getMessage()} method).
-     * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method). (A {@code null} value is permitted, and indicates that the cause is nonexistent or unknown.)
-     * @param httpStatusCode for each error that is reported by the underlying subversion server, the HTTP status code is reported, for internal error this is {@code 0}
+     * @param message
+     *            the detail message (which is saved for later retrieval by the {@link #getMessage()} method).
+     * @param cause
+     *            the cause (which is saved for later retrieval by the {@link #getCause()} method). (A {@code null} value is permitted, and indicates that the cause is nonexistent or unknown.)
+     * @param httpStatusCode
+     *            for each error that is reported by the underlying subversion server, the HTTP status code is reported, for internal error this is {@code 0}
      */
     public SubversionException(final String message, final Throwable cause, final int httpStatusCode) {
         super(message, cause);

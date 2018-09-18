@@ -32,7 +32,8 @@ public class HelpCommand extends AbstractCommand {
     public boolean call(final PrintStream output, final PrintStream error, final String... args) throws Exception {
         final Set<String> names = new TreeSet<>();
         for (final Command command : ServiceLoader.load(Command.class)) {
-            names.add(command.getName());
+            final String name = command.getName();
+            names.add(name);
         }
 
         output.println("Available subcommands:");

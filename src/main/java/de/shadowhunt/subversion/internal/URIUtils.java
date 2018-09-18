@@ -29,43 +29,64 @@ import org.apache.http.client.utils.URIBuilder;
 public final class URIUtils {
 
     private static URI appendResource0(final URI repository, final Resource... resources) throws URISyntaxException {
-        final URIBuilder builder = new URIBuilder();
-        builder.setScheme(repository.getScheme());
-        builder.setHost(repository.getHost());
-        builder.setPort(repository.getPort());
-        final StringBuilder completePath = new StringBuilder(repository.getPath());
+        final URIBuilder uriBuilder = new URIBuilder();
+
+        final String scheme = repository.getScheme();
+        uriBuilder.setScheme(scheme);
+
+        final String host = repository.getHost();
+        uriBuilder.setHost(host);
+
+        final int port = repository.getPort();
+        uriBuilder.setPort(port);
+
+        final String path = repository.getPath();
+        final StringBuilder completePathBuilder = new StringBuilder(path);
         for (final Resource resource : resources) {
-            completePath.append(resource.getValue());
+            final String resourceValue = resource.getValue();
+            completePathBuilder.append(resourceValue);
         }
-        builder.setPath(completePath.toString());
-        return builder.build();
+        final String completePath = completePathBuilder.toString();
+        uriBuilder.setPath(completePath);
+
+        return uriBuilder.build();
     }
 
     /**
      * Combine repository {@link URI} and {@link QualifiedResource} to a valid {@link URI}.
      *
-     * @param repository base {@link URI}, {@link QualifiedResource} is appended to the path of the repository
-     * @param resource {@link QualifiedResource} to appended to the repository {@link URI}
+     * @param repository
+     *            base {@link URI}, {@link QualifiedResource} is appended to the path of the repository
+     * @param resource
+     *            {@link QualifiedResource} to appended to the repository {@link URI}
      *
      * @return combination of repository {@link URI} and {@link QualifiedResource}
      *
-     * @throws IllegalArgumentException if resource contain {@code null} elements
-     * @throws NullPointerException if repository is {@code null}
+     * @throws IllegalArgumentException
+     *             if resource contain {@code null} elements
+     * @throws NullPointerException
+     *             if repository is {@code null}
      */
     public static URI appendResources(final URI repository, final QualifiedResource resource) {
-        return appendResources(repository, resource.getBase(), resource.getResource());
+        final Resource base = resource.getBase();
+        final Resource baseResource = resource.getResource();
+        return appendResources(repository, base, baseResource);
     }
 
     /**
      * Combine repository {@link URI} and {@link Resource}s to a valid {@link URI}.
      *
-     * @param repository base {@link URI}, {@link Resource}s are appended to the path of the repository
-     * @param resources {@link Resource}s to appended to the repository {@link URI}
+     * @param repository
+     *            base {@link URI}, {@link Resource}s are appended to the path of the repository
+     * @param resources
+     *            {@link Resource}s to appended to the repository {@link URI}
      *
      * @return combination of repository {@link URI} and {@link Resource}s
      *
-     * @throws IllegalArgumentException if resources contain {@code null} elements
-     * @throws NullPointerException if repository is {@code null}
+     * @throws IllegalArgumentException
+     *             if resources contain {@code null} elements
+     * @throws NullPointerException
+     *             if repository is {@code null}
      */
     public static URI appendResources(final URI repository, final Resource... resources) {
         try {
@@ -78,13 +99,17 @@ public final class URIUtils {
     /**
      * Replace path elements from repository {@link URI} with {@link Resource}s to a valid {@link URI}.
      *
-     * @param repository base {@link URI}
-     * @param resources {@link Resource}s to replace the path of the repository {@link URI}
+     * @param repository
+     *            base {@link URI}
+     * @param resources
+     *            {@link Resource}s to replace the path of the repository {@link URI}
      *
      * @return replacement of path elements from repository {@link URI} with {@link Resource}s
      *
-     * @throws IllegalArgumentException if resources contain {@code null} elements
-     * @throws NullPointerException if repository is {@code null}
+     * @throws IllegalArgumentException
+     *             if resources contain {@code null} elements
+     * @throws NullPointerException
+     *             if repository is {@code null}
      */
     public static URI replacePathWithResources(final URI repository, final Resource... resources) {
         try {
@@ -95,16 +120,26 @@ public final class URIUtils {
     }
 
     private static URI replacePathWithResources0(final URI repository, final Resource... resources) throws URISyntaxException {
-        final URIBuilder builder = new URIBuilder();
-        builder.setScheme(repository.getScheme());
-        builder.setHost(repository.getHost());
-        builder.setPort(repository.getPort());
-        final StringBuilder completePath = new StringBuilder();
+        final URIBuilder uriBuilder = new URIBuilder();
+
+        final String scheme = repository.getScheme();
+        uriBuilder.setScheme(scheme);
+
+        final String host = repository.getHost();
+        uriBuilder.setHost(host);
+
+        final int port = repository.getPort();
+        uriBuilder.setPort(port);
+
+        final StringBuilder completePathBuilder = new StringBuilder();
         for (final Resource resource : resources) {
-            completePath.append(resource.getValue());
+            final String resourceValue = resource.getValue();
+            completePathBuilder.append(resourceValue);
         }
-        builder.setPath(completePath.toString());
-        return builder.build();
+        final String completePath = completePathBuilder.toString();
+        uriBuilder.setPath(completePath);
+
+        return uriBuilder.build();
     }
 
     private URIUtils() {

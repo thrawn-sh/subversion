@@ -20,6 +20,7 @@ package de.shadowhunt.subversion.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -46,24 +47,36 @@ final class InfoImplReader {
 
     private static class InfoExpression extends AbstractSaxExpression<List<Info>> {
 
-        private static final QName[] PATH = { //
-                new QName(XmlConstants.DAV_NAMESPACE, "multistatus"), //
-                new QName(XmlConstants.DAV_NAMESPACE, "response") //
-        };
+        private static final QName[] PATH;
+
+        static {
+            final QName multistatusQName = new QName(XmlConstants.DAV_NAMESPACE, "multistatus");
+            final QName resopnseQName = new QName(XmlConstants.DAV_NAMESPACE, "response");
+            PATH = new QName[] { multistatusQName, resopnseQName };
+        }
 
         private static SaxExpression<?>[] createExpressions(final Resource basePath) {
-            return new SaxExpression[] { //
-                    new StringExpression(new QName(XmlConstants.DAV_NAMESPACE, "creationdate")), //
-                    new ResourceTypeExpression(), new StringExpression(new QName(XmlConstants.DAV_NAMESPACE, "getlastmodified")), //
-                    new StringExpression(new QName(XmlConstants.DAV_NAMESPACE, "lockdiscovery"), new QName(XmlConstants.DAV_NAMESPACE, "activelock"), new QName(XmlConstants.DAV_NAMESPACE, "locktoken"), new QName(XmlConstants.DAV_NAMESPACE, "href")),
-                    new StringExpression(new QName(XmlConstants.SUBVERSION_DAV_NAMESPACE, "md5-checksum")), //
-                    new PropertyExpression(), //
-                    new StringExpression(new QName(XmlConstants.SUBVERSION_DAV_NAMESPACE, "repository-uuid")), //
-                    new ResourceExpression(basePath), //
-                    new StringExpression(new QName(XmlConstants.DAV_NAMESPACE, "version-name")), //
+            final QName creatationDateQName = new QName(XmlConstants.DAV_NAMESPACE, "creationdate");
+            final QName lastModifiedQName = new QName(XmlConstants.DAV_NAMESPACE, "getlastmodified");
+            final QName lockDiscoveryQName = new QName(XmlConstants.DAV_NAMESPACE, "lockdiscovery");
+            final QName activeLockQName = new QName(XmlConstants.DAV_NAMESPACE, "activelock");
+            final QName lockTokenQName = new QName(XmlConstants.DAV_NAMESPACE, "locktoken");
+            final QName hrefQName = new QName(XmlConstants.DAV_NAMESPACE, "href");
+            final QName md5ChecksumQName = new QName(XmlConstants.SUBVERSION_DAV_NAMESPACE, "md5-checksum");
+            final QName reposiotryUuidQName = new QName(XmlConstants.SUBVERSION_DAV_NAMESPACE, "repository-uuid");
+            final QName versionNameQName = new QName(XmlConstants.DAV_NAMESPACE, "version-name");
 
-                    new StatusExpression(), // throws exception on error
-            };
+            final StringExpression creatationDateExpression = new StringExpression(creatationDateQName);
+            final ResourceTypeExpression resourceTypeExpression = new ResourceTypeExpression();
+            final StringExpression lastModifiedExpression = new StringExpression(lastModifiedQName);
+            final StringExpression lockExpression = new StringExpression(lockDiscoveryQName, activeLockQName, lockTokenQName, hrefQName);
+            final StringExpression md5ChecksumExpression = new StringExpression(md5ChecksumQName);
+            final PropertyExpression propertyExpression = new PropertyExpression();
+            final StringExpression repositoryUuidExpression = new StringExpression(reposiotryUuidQName);
+            final ResourceExpression resourceExpression = new ResourceExpression(basePath);
+            final StringExpression versionNameExpression = new StringExpression(versionNameQName);
+            final StatusExpression statusExpression = new StatusExpression(); // throws exception on error
+            return new SaxExpression[] { creatationDateExpression, resourceTypeExpression, lastModifiedExpression, lockExpression, md5ChecksumExpression, propertyExpression, repositoryUuidExpression, resourceExpression, versionNameExpression, statusExpression, };
         }
 
         private final List<Info> entries = new ArrayList<>();
@@ -82,29 +95,49 @@ final class InfoImplReader {
             final InfoImpl info = new InfoImpl();
 
             final Optional<String> creationDate = ((StringExpression) children[0]).getValue();
-            creationDate.ifPresent(x -> info.setCreationDate(DateUtils.parseCreatedDate(x)));
+            creationDate.ifPresent(x -> {
+                final Date createdDate = DateUtils.parseCreatedDate(x);
+                info.setCreationDate(createdDate);
+            });
 
-            info.setDirectory(((ResourceTypeExpression) children[1]).getValue().get());
+            final Optional<Boolean> directory = ((ResourceTypeExpression) children[1]).getValue();
+            final Boolean directoryValue = directory.get();
+            info.setDirectory(directoryValue);
 
             final Optional<String> modificationDate = ((StringExpression) children[2]).getValue();
-            modificationDate.ifPresent(x -> info.setLastModifiedDate(DateUtils.parseLastModifiedDate(x)));
+            modificationDate.ifPresent(x -> {
+                final Date lastModifiedDate = DateUtils.parseLastModifiedDate(x);
+                info.setLastModifiedDate(lastModifiedDate);
+            });
 
             final Optional<String> token = ((StringExpression) children[3]).getValue();
-            token.ifPresent(x -> info.setLockToken(new LockToken(x)));
+            token.ifPresent(x -> {
+                final LockToken lockToken = new LockToken(x);
+                info.setLockToken(lockToken);
+            });
 
             final Optional<String> hash = ((StringExpression) children[4]).getValue();
             hash.ifPresent(info::setMd5);
 
-            info.setProperties(((PropertyExpression) children[5]).getValue().get());
+            final Optional<ResourceProperty[]> properties = ((PropertyExpression) children[5]).getValue();
+            final ResourceProperty[] propertiesValue = properties.get();
+            info.setProperties(propertiesValue);
 
             final Optional<String> uuid = ((StringExpression) children[6]).getValue();
-            uuid.ifPresent(x -> info.setRepositoryId(UUID.fromString(x)));
+            uuid.ifPresent(x -> {
+                final UUID repositoryId = UUID.fromString(x);
+                info.setRepositoryId(repositoryId);
+            });
 
             final Optional<Resource> resource = ((ResourceExpression) children[7]).getValue();
             resource.ifPresent(info::setResource);
 
             final Optional<String> revision = ((StringExpression) children[8]).getValue();
-            revision.ifPresent(x -> info.setRevision(Revision.create(Integer.parseInt(x))));
+            revision.ifPresent(x -> {
+                final int intRevision = Integer.parseInt(x);
+                final Revision create = Revision.create(intRevision);
+                info.setRevision(create);
+            });
 
             entries.add(info);
 
@@ -156,12 +189,14 @@ final class InfoImplReader {
         protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
             final String propertyName = ResourcePropertyUtils.unescapedKeyNameXml(localName);
             if (XmlConstants.SUBVERSION_CUSTOM_NAMESPACE.equals(nameSpaceUri)) {
-                properties.add(new ResourceProperty(ResourceProperty.Type.SUBVERSION_CUSTOM, propertyName, text));
+                final ResourceProperty property = new ResourceProperty(ResourceProperty.Type.SUBVERSION_CUSTOM, propertyName, text);
+                properties.add(property);
                 return;
             }
 
             if (XmlConstants.SUBVERSION_SVN_NAMESPACE.equals(nameSpaceUri)) {
-                properties.add(new ResourceProperty(ResourceProperty.Type.SUBVERSION_SVN, propertyName, text));
+                final ResourceProperty property = new ResourceProperty(ResourceProperty.Type.SUBVERSION_SVN, propertyName, text);
+                properties.add(property);
                 return;
             }
         }
@@ -192,8 +227,11 @@ final class InfoImplReader {
         @Override
         protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
             final Resource qualifiedResource = Resource.create(text);
-            final String relative = StringUtils.removeStart(qualifiedResource.getValue(), basePath.getValue());
-            resource = Optional.of(Resource.create(relative));
+            final String base = basePath.getValue();
+            final String value = qualifiedResource.getValue();
+            final String relative = StringUtils.removeStart(value, base);
+            final Resource result = Resource.create(relative);
+            resource = Optional.of(result);
         }
 
         @Override
@@ -299,7 +337,8 @@ final class InfoImplReader {
     /**
      * Reads status information for a single revision of a resource from the given {@link java.io.InputStream}.
      *
-     * @param in {@link java.io.InputStream} from which the status information is read (Note: will not be closed)
+     * @param in
+     *            {@link java.io.InputStream} from which the status information is read (Note: will not be closed)
      *
      * @return {@link InfoImpl} for the resource
      */
@@ -314,7 +353,8 @@ final class InfoImplReader {
     /**
      * Reads a {@link java.util.SortedSet} of status information for a single revision of various resources from the given {@link java.io.InputStream}.
      *
-     * @param inputStream {@link java.io.InputStream} from which the status information is read (Note: will not be closed)
+     * @param inputStream
+     *            {@link java.io.InputStream} from which the status information is read (Note: will not be closed)
      *
      * @return {@link InfoImpl} for the resources
      */

@@ -603,10 +603,27 @@
                 <configuration>
                     <linkXRef>false</linkXRef>
                     <printFailingErrors>true</printFailingErrors>
+                    <excludeRoots>
+                        <excludeRoot>target</excludeRoot>
+                    </excludeRoots>
                     <rulesets>
                         <ruleset>assets/dev/pmd.xml</ruleset>
                     </rulesets>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>de.shadowhunt</groupId>
+                        <artifactId>pmd-rulesets</artifactId>
+                        <version>1.0.1</version>
+                    </dependency>
+                </dependencies>
+                <!--executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions-->
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

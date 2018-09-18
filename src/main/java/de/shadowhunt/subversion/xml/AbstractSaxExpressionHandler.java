@@ -19,6 +19,7 @@ package de.shadowhunt.subversion.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Optional;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -47,7 +48,7 @@ public abstract class AbstractSaxExpressionHandler<V> extends DefaultHandler {
     protected final SaxExpression<?>[] expressions;
 
     protected AbstractSaxExpressionHandler(final SaxExpression<?>... expressions) {
-        this.expressions = expressions;
+        this.expressions = Arrays.copyOf(expressions, expressions.length);
     }
 
     @Override
@@ -75,7 +76,8 @@ public abstract class AbstractSaxExpressionHandler<V> extends DefaultHandler {
     }
 
     protected String getText() {
-        return StringEscapeUtils.unescapeXml(buffer.toString());
+        final String bufferContent = buffer.toString();
+        return StringEscapeUtils.unescapeXml(bufferContent);
     }
 
     public abstract Optional<V> getValue();

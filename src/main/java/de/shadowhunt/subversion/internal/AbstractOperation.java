@@ -49,8 +49,10 @@ public abstract class AbstractOperation<T> implements ResponseHandler<T> {
         /**
          * Create a new {@link DavTemplateRequest}.
          *
-         * @param method HTTP method name
-         * @param uri full qualified {@link URI} this {@link DavTemplateRequest} is directed to
+         * @param method
+         *            HTTP method name
+         * @param uri
+         *            full qualified {@link URI} this {@link DavTemplateRequest} is directed to
          */
         public DavTemplateRequest(final String method, final URI uri) {
             this.method = method;
@@ -111,6 +113,7 @@ public abstract class AbstractOperation<T> implements ResponseHandler<T> {
                 break;
             default:
                 message = "Unexpected server response";
+                break;
         }
 
         throw new SubversionException(message, statusCode);
@@ -129,8 +132,10 @@ public abstract class AbstractOperation<T> implements ResponseHandler<T> {
     /**
      * Run the {@link AbstractOperation} against the server.
      *
-     * @param client {@link HttpClient} to use for this {@link AbstractOperation}
-     * @param context {@link HttpContext} to use for this {@link AbstractOperation}
+     * @param client
+     *            {@link HttpClient} to use for this {@link AbstractOperation}
+     * @param context
+     *            {@link HttpContext} to use for this {@link AbstractOperation}
      *
      * @return expected return value or {@code Void} if non is expected
      */

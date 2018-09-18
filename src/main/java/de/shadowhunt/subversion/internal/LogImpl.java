@@ -89,7 +89,8 @@ final class LogImpl implements Log {
 
     @Override
     public Date getDate() {
-        return new Date(date.getTime());
+        final long time = date.getTime();
+        return new Date(time);
     }
 
     @Override
@@ -118,7 +119,8 @@ final class LogImpl implements Log {
     }
 
     void setDate(final Date date) {
-        this.date = new Date(date.getTime());
+        final long time = date.getTime();
+        this.date = new Date(time);
     }
 
     void setMessage(final String message) {

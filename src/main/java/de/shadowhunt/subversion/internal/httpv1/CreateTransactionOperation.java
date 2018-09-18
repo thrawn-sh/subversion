@@ -49,7 +49,11 @@ class CreateTransactionOperation extends AbstractOperation<TransactionImpl> {
 
     @Override
     protected HttpUriRequest createRequest() {
-        final URI uri = URIUtils.appendResources(repository, resource.getBase(), resource.getResource(), Resource.create(transactionId.toString()));
+        final Resource base = resource.getBase();
+        final Resource baseResource = resource.getResource();
+        final String transactionIdValue = transactionId.toString();
+        final Resource transactionResource = Resource.create(transactionIdValue);
+        final URI uri = URIUtils.appendResources(repository, base, baseResource, transactionResource);
         return new DavTemplateRequest("MKACTIVITY", uri);
     }
 
@@ -60,6 +64,7 @@ class CreateTransactionOperation extends AbstractOperation<TransactionImpl> {
 
     @Override
     protected TransactionImpl processResponse(final HttpResponse response) {
-        return new TransactionImpl(transactionId.toString(), repositoryId, headRevision);
+        final String transactionIdValue = transactionId.toString();
+        return new TransactionImpl(transactionIdValue, repositoryId, headRevision);
     }
 }

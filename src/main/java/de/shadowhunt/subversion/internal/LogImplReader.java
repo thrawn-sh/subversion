@@ -108,7 +108,8 @@ final class LogImplReader {
 
         @Override
         protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
-            date = Optional.of(DateUtils.parseCreatedDate(text));
+            final Date createdDate = DateUtils.parseCreatedDate(text);
+            date = Optional.of(createdDate);
         }
 
         @Override
@@ -119,17 +120,20 @@ final class LogImplReader {
 
     private static class LogExpression extends AbstractSaxExpression<List<Log>> {
 
-        private static final QName[] PATH = { //
-                new QName(XmlConstants.SVN_NAMESPACE, "log-report"), //
-                new QName(XmlConstants.SVN_NAMESPACE, "log-item") //
-        };
+        private static final QName[] PATH;
+
+        static {
+            final QName logReportQname = new QName(XmlConstants.SVN_NAMESPACE, "log-report");
+            final QName logItemQname = new QName(XmlConstants.SVN_NAMESPACE, "log-item");
+            PATH = new QName[] { logReportQname, logItemQname };
+        }
 
         private static SaxExpression<?>[] createExpressions() {
-            return new SaxExpression[] { new CommentExpression(), //
-                    new CreatorExpression(), //
-                    new DateExpression(), //
-                    new RevisionExpression() //
-            };
+            final CommentExpression commentExpression = new CommentExpression();
+            final CreatorExpression creatorExpression = new CreatorExpression();
+            final DateExpression dateExpression = new DateExpression();
+            final RevisionExpression revisionExpression = new RevisionExpression();
+            return new SaxExpression[] { commentExpression, creatorExpression, dateExpression, revisionExpression };
         }
 
         private List<Log> entries = new ArrayList<>();
@@ -151,10 +155,18 @@ final class LogImplReader {
         @Override
         protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
             final LogImpl log = new LogImpl();
-            log.setMessage(((CommentExpression) children[0]).getValue().get());
-            log.setAuthor(((CreatorExpression) children[1]).getValue().get());
-            log.setDate(((DateExpression) children[2]).getValue().get());
-            log.setRevision(((RevisionExpression) children[3]).getValue().get());
+            final Optional<String> comment = ((CommentExpression) children[0]).getValue();
+            final String message = comment.get();
+            log.setMessage(message);
+            final Optional<String> creator = ((CreatorExpression) children[1]).getValue();
+            final String author = creator.get();
+            log.setAuthor(author);
+            final Optional<Date> date = ((DateExpression) children[2]).getValue();
+            final Date dateValue = date.get();
+            log.setDate(dateValue);
+            final Optional<Revision> revision = ((RevisionExpression) children[3]).getValue();
+            final Revision revisionValue = revision.get();
+            log.setRevision(revisionValue);
             entries.add(log);
         }
     }
@@ -176,7 +188,12 @@ final class LogImplReader {
 
     private static class RevisionExpression extends AbstractSaxExpression<Revision> {
 
-        public static final QName[] PATH = { new QName(XmlConstants.DAV_NAMESPACE, "version-name") };
+        public static final QName[] PATH;
+
+        static {
+            final QName versioNameQName = new QName(XmlConstants.DAV_NAMESPACE, "version-name");
+            PATH = new QName[] { versioNameQName };
+        }
 
         private Optional<Revision> revision = Optional.empty();
 
@@ -192,7 +209,8 @@ final class LogImplReader {
         @Override
         protected void processEnd(final String nameSpaceUri, final String localName, final String text) {
             final int version = Integer.parseInt(text);
-            revision = Optional.of(Revision.create(version));
+            final Revision create = Revision.create(version);
+            revision = Optional.of(create);
         }
 
         @Override
@@ -204,7 +222,8 @@ final class LogImplReader {
     /**
      * Reads log information for a resource from the given {@link java.io.InputStream}.
      *
-     * @param inputStream {@link java.io.InputStream} from which the status information is read (Note: will not be closed)
+     * @param inputStream
+     *            {@link java.io.InputStream} from which the status information is read (Note: will not be closed)
      *
      * @return {@link Log} for the resource
      */

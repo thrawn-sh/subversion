@@ -24,6 +24,7 @@ import java.net.URI;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.annotation.CheckForNull;
 import javax.net.ssl.SSLContext;
@@ -35,11 +36,13 @@ import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.http.client.SubversionRequestRetryHandler;
+import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.BuiltinHelpFormatter;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
+import joptsimple.OptionSpecBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
@@ -83,27 +86,27 @@ abstract class AbstractCommand implements Command {
     public abstract boolean call(final PrintStream output, final PrintStream error, final String... args) throws Exception;
 
     protected final OptionSpec<URI> createBaseOption(final OptionParser parser) {
-        return parser //
-                .acceptsAll(Arrays.asList("base", "b"), "repository base") //
-                .withRequiredArg() //
-                .describedAs("url") //
-                .ofType(URI.class) //
-                .required();
+        final List<String> options = Arrays.asList("base", "b");
+        final OptionSpecBuilder builder = parser.acceptsAll(options, "repository base");
+        ArgumentAcceptingOptionSpec<String> optionSpec = builder.withRequiredArg();
+        optionSpec = optionSpec.describedAs("url");
+        optionSpec = optionSpec.required();
+        return optionSpec.ofType(URI.class);
     }
 
     protected final OptionSpec<String> createCommitMessageOption(final OptionParser parser) {
-        return parser //
-                .acceptsAll(Arrays.asList("message", "m"), "commit message") //
-                .withRequiredArg() //
-                .describedAs("commit message") //
-                .ofType(String.class) //
-                .required();
+        final List<String> options = Arrays.asList("message", "m");
+        final OptionSpecBuilder builder = parser.acceptsAll(options, "commit message");
+        ArgumentAcceptingOptionSpec<String> optionSpec = builder.withRequiredArg();
+        optionSpec = optionSpec.describedAs("commit message");
+        optionSpec = optionSpec.required();
+        return optionSpec.ofType(String.class);
     }
 
     private OptionSpec<Void> createHelpOption(final OptionParser parser) {
-        return parser //
-                .acceptsAll(Arrays.asList("help", "h", "?"), "show this command help") //
-                .forHelp();
+        final List<String> options = Arrays.asList("help", "h", "?");
+        final OptionSpecBuilder builder = parser.acceptsAll(options, "show this command help");
+        return builder.forHelp();
     }
 
     protected final CloseableHttpClient createHttpClient(final String username, final String password, final boolean allowAllSsl) {
@@ -117,11 +120,13 @@ abstract class AbstractCommand implements Command {
         }
 
         if (allowAllSsl) {
-            builder.setSSLContext(createUnsaveSslContext());
+            final SSLContext sslContext = createUnsaveSslContext();
+            builder.setSSLContext(sslContext);
             builder.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
         }
 
-        builder.setRetryHandler(new SubversionRequestRetryHandler());
+        final SubversionRequestRetryHandler retryHandler = new SubversionRequestRetryHandler();
+        builder.setRetryHandler(retryHandler);
         return builder.build();
     }
 
@@ -130,117 +135,120 @@ abstract class AbstractCommand implements Command {
     }
 
     protected final OptionSpec<Void> createNoUnlockOption(final OptionParser parser) {
-        return parser //
-                .accepts("no-unlock", "don't unlock the resources");
+        return parser.accepts("no-unlock", "don't unlock the resources");
     }
 
     protected final OptionSpec<File> createOutputOption(final OptionParser parser) {
-        return parser //
-                .acceptsAll(Arrays.asList("output", "o"), "output file") //
-                .withRequiredArg() //
-                .describedAs("file") //
-                .ofType(File.class);
+        final List<String> options = Arrays.asList("output", "o");
+        final OptionSpecBuilder builder = parser.acceptsAll(options, "output file");
+        ArgumentAcceptingOptionSpec<String> optionSpec = builder.withRequiredArg();
+        optionSpec = optionSpec.describedAs("file");
+        return optionSpec.ofType(File.class);
     }
 
     protected final OptionSpec<Void> createParentsOption(final OptionParser parser) {
-        return parser //
-                .accepts("parents", "create missing parent folders");
+        return parser.accepts("parents", "create missing parent folders");
     }
 
     protected final OptionParser createParser() {
         final OptionParser parser = new OptionParser(false);
-        parser.formatHelpWith(new BuiltinHelpFormatter(160, 2));
+        final BuiltinHelpFormatter formatter = new BuiltinHelpFormatter(160, 2);
+        parser.formatHelpWith(formatter);
         parser.posixlyCorrect(true);
         return parser;
     }
 
     protected final OptionSpec<String> createPasswordOption(final OptionParser parser) {
-        return parser //
-                .acceptsAll(Arrays.asList("password", "p"), "login password") //
-                .requiredIf("username") // only require password if username is given
-                .withRequiredArg() //
-                .describedAs("password") //
-                .ofType(String.class);
+        final List<String> options = Arrays.asList("password", "p");
+        OptionSpecBuilder builder = parser.acceptsAll(options, "login password");
+        builder = builder.requiredIf("username"); // only final require password if final username is given
+        ArgumentAcceptingOptionSpec<String> optionSpec = builder.withRequiredArg();
+        optionSpec = optionSpec.describedAs("password");
+        return optionSpec.ofType(String.class);
     }
 
     protected OptionSpec<ResourceProperty> createPropertiesOption(final OptionParser parser, final boolean onlyName) {
-        return parser //
-                .acceptsAll(Arrays.asList("property", "p"), "property") //
-                .withRequiredArg() //
-                .describedAs("property") //
-                .withValuesConvertedBy(new ResourcePropertyConverter(onlyName)) //
-                .withValuesSeparatedBy(",") //
-                .required();
+        final List<String> options = Arrays.asList("property", "p");
+        final OptionSpecBuilder builder = parser.acceptsAll(options, "property");
+        ArgumentAcceptingOptionSpec<String> optionSpec = builder.withRequiredArg();
+        optionSpec = optionSpec.describedAs("property");
+        optionSpec = optionSpec.required();
+        optionSpec = optionSpec.withValuesSeparatedBy(",");
+        final ResourcePropertyConverter converter = new ResourcePropertyConverter(onlyName);
+        return optionSpec.withValuesConvertedBy(converter);
     }
 
     protected final OptionSpec<Resource> createResourceOption(final OptionParser parser) {
-        return parser //
-                .acceptsAll(Arrays.asList("resource", "r"), "resource path") //
-                .withRequiredArg() //
-                .describedAs("path") //
-                .withValuesConvertedBy(new ResourceConverter()) //
-                .required();
+        final List<String> options = Arrays.asList("resource", "r");
+        final OptionSpecBuilder builder = parser.acceptsAll(options, "resource path");
+        ArgumentAcceptingOptionSpec<String> optionSpec = builder.withRequiredArg();
+        optionSpec = optionSpec.describedAs("path");
+        optionSpec = optionSpec.required();
+        final ResourceConverter converter = new ResourceConverter();
+        return optionSpec.withValuesConvertedBy(converter);
     }
 
     protected final OptionSpec<Revision> createRevisionOption(final OptionParser parser) {
-        return parser //
-                .acceptsAll(Arrays.asList("version", "v"), "resource version") //
-                .withRequiredArg() //
-                .describedAs("version") //
-                .withValuesConvertedBy(new RevisionConverter()) //
-                .defaultsTo(Revision.HEAD);
+        final List<String> options = Arrays.asList("version", "v");
+        final OptionSpecBuilder builder = parser.acceptsAll(options, "resource version");
+        ArgumentAcceptingOptionSpec<String> optionSpec = builder.withRequiredArg();
+        optionSpec = optionSpec.describedAs("version");
+        final RevisionConverter converter = new RevisionConverter();
+        final ArgumentAcceptingOptionSpec<Revision> typedOptionSpec = optionSpec.withValuesConvertedBy(converter);
+        return typedOptionSpec.defaultsTo(Revision.HEAD);
     }
 
     protected final OptionSpec<Resource> createSourceResourceOption(final OptionParser parser) {
-        return parser //
-                .acceptsAll(Arrays.asList("source", "s"), "source resource path") //
-                .withRequiredArg() //
-                .describedAs("path") //
-                .withValuesConvertedBy(new ResourceConverter()) //
-                .required();
+        final List<String> options = Arrays.asList("source", "s");
+        final OptionSpecBuilder builder = parser.acceptsAll(options, "source resource path");
+        ArgumentAcceptingOptionSpec<String> optionSpec = builder.withRequiredArg();
+        optionSpec = optionSpec.describedAs("path");
+        optionSpec = optionSpec.required();
+        final ResourceConverter converter = new ResourceConverter();
+        return optionSpec.withValuesConvertedBy(converter);
     }
 
     protected final OptionSpec<Void> createSslOption(final OptionParser parser) {
-        return parser //
-                .accepts("trust-ssl", "don't validate SSL");
+        return parser.accepts("trust-ssl", "don't validate SSL");
     }
 
     protected final OptionSpec<Revision> createStartRevisionOption(final OptionParser parser) {
-        return parser //
-                .acceptsAll(Arrays.asList("start"), "start version") //
-                .withRequiredArg() //
-                .describedAs("version") //
-                .withValuesConvertedBy(new RevisionConverter()) //
-                .defaultsTo(Revision.HEAD);
+        final OptionSpecBuilder builder = parser.accepts("start", "start version");
+        ArgumentAcceptingOptionSpec<String> optionSpec = builder.withRequiredArg();
+        optionSpec = optionSpec.describedAs("version");
+        final RevisionConverter converter = new RevisionConverter();
+        final ArgumentAcceptingOptionSpec<Revision> typedOptionSpec = optionSpec.withValuesConvertedBy(converter);
+        return typedOptionSpec.defaultsTo(Revision.HEAD);
     }
 
     protected final OptionSpec<Void> createStealLockOption(final OptionParser parser) {
-        return parser //
-                .accepts("steal-lock", "steal existing lock");
+        return parser.accepts("steal-lock", "steal existing lock");
     }
 
     protected final OptionSpec<Revision> createStopRevisionOption(final OptionParser parser) {
-        return parser //
-                .acceptsAll(Arrays.asList("stop"), "stop version") //
-                .withRequiredArg() //
-                .describedAs("version") //
-                .withValuesConvertedBy(new RevisionConverter()) //
-                .defaultsTo(Revision.INITIAL);
+        final OptionSpecBuilder builder = parser.accepts("stop", "stop version");
+        ArgumentAcceptingOptionSpec<String> optionSpec = builder.withRequiredArg();
+        optionSpec = optionSpec.describedAs("version");
+        final RevisionConverter converter = new RevisionConverter();
+        final ArgumentAcceptingOptionSpec<Revision> typedOptionSpec = optionSpec.withValuesConvertedBy(converter);
+        return typedOptionSpec.defaultsTo(Revision.INITIAL);
     }
 
     protected final OptionSpec<Resource> createTargetResourceOption(final OptionParser parser) {
-        return parser //
-                .acceptsAll(Arrays.asList("target", "t"), "target resource path") //
-                .withRequiredArg() //
-                .describedAs("path") //
-                .withValuesConvertedBy(new ResourceConverter()) //
-                .required();
+        final List<String> options = Arrays.asList("target", "t");
+        final OptionSpecBuilder builder = parser.acceptsAll(options, "target resource path");
+        ArgumentAcceptingOptionSpec<String> optionSpec = builder.withRequiredArg();
+        optionSpec = optionSpec.describedAs("path");
+        optionSpec = optionSpec.required();
+        final ResourceConverter converter = new ResourceConverter();
+        return optionSpec.withValuesConvertedBy(converter);
     }
 
     private SSLContext createUnsaveSslContext() {
         try {
             final SSLContext sc = SSLContext.getInstance("TLS");
-            sc.init(null, new TrustManager[] { TRUST_ALL_MANAGER }, new SecureRandom());
+            final SecureRandom random = new SecureRandom();
+            sc.init(null, new TrustManager[] { TRUST_ALL_MANAGER }, random);
             return sc;
         } catch (final Exception e) {
             throw new SubversionException("can not create unsave SSLContext", e);
@@ -248,19 +256,19 @@ abstract class AbstractCommand implements Command {
     }
 
     protected final OptionSpec<String> createUsernameOption(final OptionParser parser) {
-        return parser //
-                .acceptsAll(Arrays.asList("username", "u"), "login username") //
-                .withRequiredArg() //
-                .describedAs("username") //
-                .ofType(String.class);
+        final List<String> options = Arrays.asList("username", "u");
+        final OptionSpecBuilder builder = parser.acceptsAll(options, "login username");
+        ArgumentAcceptingOptionSpec<String> optionSpec = builder.withRequiredArg();
+        optionSpec = optionSpec.describedAs("username");
+        return optionSpec.ofType(String.class);
     }
 
     protected final OptionSpec<File> createWireLogOption(final OptionParser parser) {
-        return parser //
-                .acceptsAll(Arrays.asList("wirelog", "w"), "dump all communication to") //
-                .withRequiredArg() //
-                .describedAs("file") //
-                .ofType(File.class);
+        final List<String> options = Arrays.asList("wirelog", "w");
+        final OptionSpecBuilder builder = parser.acceptsAll(options, "dump all communication to");
+        ArgumentAcceptingOptionSpec<String> optionSpec = builder.withRequiredArg();
+        optionSpec = optionSpec.describedAs("file");
+        return optionSpec.ofType(File.class);
     }
 
     @Override
@@ -291,7 +299,8 @@ abstract class AbstractCommand implements Command {
             System.setProperty(SimpleLogger.DATE_TIME_FORMAT_KEY, "[yyyy-MM-dd HH:mm:ss.SSS]");
             System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "error");
             System.setProperty(SimpleLogger.LEVEL_IN_BRACKETS_KEY, "true");
-            System.setProperty(SimpleLogger.LOG_FILE_KEY, log.getAbsolutePath());
+            final String absolutePath = log.getAbsolutePath();
+            System.setProperty(SimpleLogger.LOG_FILE_KEY, absolutePath);
             System.setProperty(SimpleLogger.LOG_KEY_PREFIX + "org.apache.http.wire", "debug");
             System.setProperty(SimpleLogger.SHOW_DATE_TIME_KEY, "true");
             System.setProperty(SimpleLogger.SHOW_LOG_NAME_KEY, "false");

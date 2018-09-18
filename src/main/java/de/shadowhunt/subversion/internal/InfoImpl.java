@@ -86,12 +86,14 @@ final class InfoImpl implements Info {
 
     @Override
     public Date getCreationDate() {
-        return new Date(creationDate.getTime());
+        final long time = creationDate.getTime();
+        return new Date(time);
     }
 
     @Override
     public Date getLastModifiedDate() {
-        return new Date(lastModifiedDate.getTime());
+        final long time = lastModifiedDate.getTime();
+        return new Date(time);
     }
 
     @Override
@@ -132,8 +134,8 @@ final class InfoImpl implements Info {
     @Override
     public int hashCode() {
         int result = repositoryId.hashCode();
-        result = 31 * result + resource.hashCode();
-        result = 31 * result + revision.hashCode();
+        result = (31 * result) + resource.hashCode();
+        result = (31 * result) + revision.hashCode();
         return result;
     }
 
@@ -208,7 +210,8 @@ final class InfoImpl implements Info {
         builder.append(", md5=");
         builder.append(md5);
         builder.append(", properties=");
-        builder.append(Arrays.toString(properties));
+        final String propertiesArray = Arrays.toString(properties);
+        builder.append(propertiesArray);
         builder.append(", repositoryId=");
         builder.append(repositoryId);
         builder.append(", resource=");

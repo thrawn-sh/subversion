@@ -19,6 +19,7 @@ package de.shadowhunt.subversion.cmdl;
 
 import java.io.PrintStream;
 import java.net.URI;
+import java.util.Date;
 import java.util.List;
 
 import de.shadowhunt.subversion.Log;
@@ -70,13 +71,17 @@ public class LogCommand extends AbstractCommand {
             final List<Log> logs = repository.log(resource, startRevision, stopRevision, Integer.MAX_VALUE, false);
             for (final Log log : logs) {
                 output.println("------------------------------------------------------------------------");
-                output.print(log.getRevision());
+                final Revision revision = log.getRevision();
+                output.print(revision);
                 output.print(" | ");
-                output.print(log.getAuthor());
+                final String author = log.getAuthor();
+                output.print(author);
                 output.print(" | ");
-                output.println(log.getDate());
+                final Date date = log.getDate();
+                output.println(date);
                 output.println();
-                output.println(log.getMessage());
+                final String message = log.getMessage();
+                output.println(message);
             }
         }
         return true;

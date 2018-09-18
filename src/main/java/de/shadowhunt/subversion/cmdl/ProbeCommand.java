@@ -21,10 +21,14 @@ import java.io.PrintStream;
 import java.net.URI;
 
 import de.shadowhunt.subversion.Repository;
+import de.shadowhunt.subversion.Repository.ProtocolVersion;
 import de.shadowhunt.subversion.RepositoryFactory;
+import de.shadowhunt.subversion.Resource;
+import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
+import joptsimple.OptionSpecBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.protocol.HttpContext;
 
@@ -57,20 +61,22 @@ public class ProbeCommand extends AbstractCommand {
             final URI uri = urlOption.value(options);
             final Repository repository = factory.createRepository(uri, client, context, true);
             output.println("complete uri: " + uri);
-            output.println("    base uri: " + repository.getBaseUri());
-            output.println("    resource: " + repository.getBasePath());
-            output.println("    protocol: " + repository.getProtocolVersion());
+            final URI baseUri = repository.getBaseUri();
+            output.println("    base uri: " + baseUri);
+            final Resource basePath = repository.getBasePath();
+            output.println("    resource: " + basePath);
+            final ProtocolVersion protocolVersion = repository.getProtocolVersion();
+            output.println("    protocol: " + protocolVersion);
         }
         return true;
     }
 
     protected final OptionSpec<URI> createUrlOption(final OptionParser parser) {
-        return parser //
-                .accepts("url", "URL to resource") //
-                .withRequiredArg() //
-                .describedAs("url") //
-                .ofType(URI.class) //
-                .required();
+        final OptionSpecBuilder builder = parser.accepts("url", "URL to resource");
+        ArgumentAcceptingOptionSpec<String> optionSpec = builder.withRequiredArg();
+        optionSpec = optionSpec.describedAs("url");
+        optionSpec = optionSpec.required();
+        return optionSpec.ofType(URI.class);
     }
 
 }

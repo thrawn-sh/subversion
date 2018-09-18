@@ -68,7 +68,9 @@ class LockOperation extends AbstractVoidOperation {
             throw new SubversionException("could not create request body", e);
         }
 
-        request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
+        final String payload = body.toString();
+        final StringEntity entity = new StringEntity(payload, CONTENT_TYPE_XML);
+        request.setEntity(entity);
         return request;
     }
 

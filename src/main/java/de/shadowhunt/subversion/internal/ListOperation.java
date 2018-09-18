@@ -18,6 +18,7 @@
 package de.shadowhunt.subversion.internal;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +48,8 @@ class ListOperation extends AbstractPropfindOperation<Optional<Set<Info>>> {
         }
 
         final Set<Info> result = new TreeSet<>(Info.RESOURCE_COMPARATOR);
-        final List<Info> infoList = InfoImplReader.readAll(getContent(response), basePath);
+        final InputStream content = getContent(response);
+        final List<Info> infoList = InfoImplReader.readAll(content, basePath);
         result.addAll(infoList);
         return Optional.of(result);
     }

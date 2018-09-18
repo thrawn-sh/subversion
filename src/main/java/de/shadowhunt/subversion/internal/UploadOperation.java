@@ -50,7 +50,8 @@ class UploadOperation extends AbstractVoidOperation {
 
         lockToken.ifPresent(x -> request.addHeader("If", "<" + uri + "> (<" + x + ">)"));
 
-        request.setEntity(new InputStreamEntity(content, STREAM_WHOLE_CONTENT));
+        final InputStreamEntity entity = new InputStreamEntity(content, STREAM_WHOLE_CONTENT);
+        request.setEntity(entity);
         return request;
     }
 

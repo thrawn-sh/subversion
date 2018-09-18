@@ -68,7 +68,9 @@ public class ListCommand extends AbstractCommand {
             final Revision revision = revisionOption.value(options);
             final Set<Info> infos = repository.list(resource, revision, Depth.FILES);
             for (final Info info : infos) {
-                output.format("%5s %s%n", info.getRevision(), info.getResource());
+                final Revision infoRevision = info.getRevision();
+                final Resource infoResource = info.getResource();
+                output.format("%5s %s%n", infoRevision, infoResource);
             }
         }
         return true;

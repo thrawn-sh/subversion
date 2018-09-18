@@ -46,11 +46,13 @@ public final class Revision implements Comparable<Revision>, Serializable {
     /**
      * Create a new {@link Revision} instance for the given value.
      *
-     * @param revision value of the {@link Revision} must be greater or equal than {@code 1}
+     * @param revision
+     *            value of the {@link Revision} must be greater or equal than {@code 1}
      *
      * @return the new {@link Revision} instance with the given value
      *
-     * @throws IllegalArgumentException if revision is smaller than {@code 1}
+     * @throws IllegalArgumentException
+     *             if revision is smaller than {@code 1}
      */
     public static Revision create(final int revision) {
         Validate.isTrue((revision >= 0), "Value must be greater or equal than 0, was {0}", revision);

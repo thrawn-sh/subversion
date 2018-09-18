@@ -18,6 +18,7 @@
 package de.shadowhunt.subversion.internal;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.Optional;
 
@@ -46,10 +47,12 @@ class InfoOperation extends AbstractPropfindOperation<Optional<Info>> {
             return Optional.empty();
         }
 
-        final Info info = InfoImplReader.read(getContent(response), basePath);
+        final InputStream content = getContent(response);
+        final Info info = InfoImplReader.read(content, basePath);
         if (info.isLocked()) {
             final Header header = response.getFirstHeader(LOCK_OWNER_HEADER);
-            ((InfoImpl) info).setLockOwner(header.getValue());
+            final String value = header.getValue();
+            ((InfoImpl) info).setLockOwner(value);
         }
         return Optional.of(info);
     }

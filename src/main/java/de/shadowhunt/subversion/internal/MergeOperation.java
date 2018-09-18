@@ -68,7 +68,9 @@ public class MergeOperation extends AbstractVoidOperation {
             writer.writeDefaultNamespace(XmlConstants.DAV_NAMESPACE);
             writer.writeStartElement("source");
             writer.writeStartElement("href");
-            writer.writeCData(repository.getPath() + resource.getValue());
+            final String path = repository.getPath();
+            final String resourceValue = resource.getValue();
+            writer.writeCData(path + resourceValue);
             writer.writeEndElement(); // href
             writer.writeEndElement(); // source
             writer.writeEmptyElement("no-auto-merge");
@@ -92,13 +94,18 @@ public class MergeOperation extends AbstractVoidOperation {
                         writer.writeStartElement(XmlConstants.SVN_NAMESPACE, "lock");
                         writer.writeStartElement(XmlConstants.SVN_NAMESPACE, "lock-path");
                         if (Resource.ROOT.equals(base)) {
-                            writer.writeCData(infoResource.getValueWithoutLeadingSeparator());
+                            final String valueWithoutLeadingSeparator = infoResource.getValueWithoutLeadingSeparator();
+                            writer.writeCData(valueWithoutLeadingSeparator);
                         } else {
-                            writer.writeCData(base.getValueWithoutLeadingSeparator() + infoResource.getValue());
+                            final String valueWithoutLeadingSeparator = base.getValueWithoutLeadingSeparator();
+                            final String value = infoResource.getValue();
+                            writer.writeCData(valueWithoutLeadingSeparator + value);
                         }
                         writer.writeEndElement(); // lock-path
                         writer.writeStartElement(XmlConstants.SVN_NAMESPACE, "lock-token");
-                        writer.writeCharacters(lockToken.get().toString());
+                        final LockToken token = lockToken.get();
+                        final String tokenValue = token.toString();
+                        writer.writeCharacters(tokenValue);
                         writer.writeEndElement(); // lock-token
                         writer.writeEndElement(); // lock
                     }
@@ -112,7 +119,9 @@ public class MergeOperation extends AbstractVoidOperation {
             throw new SubversionException("could not create request body", e);
         }
 
-        request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
+        final String payload = body.toString();
+        final StringEntity entity = new StringEntity(payload, CONTENT_TYPE_XML);
+        request.setEntity(entity);
         return request;
     }
 

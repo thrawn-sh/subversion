@@ -97,7 +97,7 @@ public final class ResourceProperty {
         @Override
         public int hashCode() {
             int result = name.hashCode();
-            result = 31 * result + type.hashCode();
+            result = (31 * result) + type.hashCode();
             return result;
         }
 
@@ -152,7 +152,9 @@ public final class ResourceProperty {
         Validate.notNull(rp1, "rp1 must not be null");
         Validate.notNull(rp2, "rp2 must not be null");
 
-        return rp1.getKey().compareTo(rp2.getKey());
+        final Key key1 = rp1.getKey();
+        final Key key2 = rp2.getKey();
+        return key1.compareTo(key2);
     };
 
     public static final Key VERSION = new Key(Type.DAV, "version-name");
@@ -164,16 +166,20 @@ public final class ResourceProperty {
     /**
      * Create a new {@link ResourceProperty} with the given {@link Type}, name and value.
      *
-     * @param type {@link Type} of the {@link ResourceProperty}
-     * @param name name of the {@link ResourceProperty}
-     * @param value value of the {@link ResourceProperty}
+     * @param type
+     *            {@link Type} of the {@link ResourceProperty}
+     * @param name
+     *            name of the {@link ResourceProperty}
+     * @param value
+     *            value of the {@link ResourceProperty}
      *
-     * @throws NullPointerException if any parameter is {@code null}
+     * @throws NullPointerException
+     *             if any parameter is {@code null}
      */
     public ResourceProperty(final Type type, final String name, final String value) {
         Validate.notNull(value, "value must not be null");
 
-        this.key = new Key(type, name);
+        key = new Key(type, name);
         this.value = value;
     }
 
@@ -237,7 +243,7 @@ public final class ResourceProperty {
     @Override
     public int hashCode() {
         int result = value.hashCode();
-        result = 31 * result + key.hashCode();
+        result = (31 * result) + key.hashCode();
         return result;
     }
 

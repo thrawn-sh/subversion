@@ -47,8 +47,10 @@ public class SubversionRequestRetryHandler extends DefaultHttpRequestRetryHandle
     /**
      * Create a {@link SubversionRequestRetryHandler}.
      *
-     * @param retryCount number of times a method will be retried
-     * @param requestSentRetryEnabled whether or not methods that have successfully sent their request will be retried
+     * @param retryCount
+     *            number of times a method will be retried
+     * @param requestSentRetryEnabled
+     *            whether or not methods that have successfully sent their request will be retried
      */
     public SubversionRequestRetryHandler(final int retryCount, final boolean requestSentRetryEnabled) {
         super(retryCount, requestSentRetryEnabled);

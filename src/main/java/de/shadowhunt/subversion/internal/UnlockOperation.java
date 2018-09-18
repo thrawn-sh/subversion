@@ -42,7 +42,8 @@ class UnlockOperation extends AbstractVoidOperation {
     protected HttpUriRequest createRequest() {
         final URI uri = URIUtils.appendResources(repository, resource);
         final DavTemplateRequest request = new DavTemplateRequest("UNLOCK", uri);
-        request.addHeader("Lock-Token", '<' + lockToken.toString() + '>');
+        final String lockTokenValue = lockToken.toString();
+        request.addHeader("Lock-Token", '<' + lockTokenValue + '>');
         if (force) {
             request.addHeader("X-SVN-Options", "lock-break");
         }

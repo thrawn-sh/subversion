@@ -51,7 +51,8 @@ class RepositoryImpl extends AbstractBaseRepository {
 
         @Override
         public QualifiedResource getCommitMessageResource(final Transaction transaction) {
-            final Resource suffix = Resource.create("/txn/" + transaction.getId());
+            final String transactionId = transaction.getId();
+            final Resource suffix = Resource.create("/txn/" + transactionId);
             return new QualifiedResource(prefix, suffix);
         }
 
@@ -85,13 +86,15 @@ class RepositoryImpl extends AbstractBaseRepository {
             if (Revision.HEAD.equals(revision)) {
                 throw new SubversionException("must not be HEAD revision");
             }
-            final Resource suffix = Resource.create("/rvr/" + revision + Resource.SEPARATOR + resource.getValue());
+            final String resourceValue = resource.getValue();
+            final Resource suffix = Resource.create("/rvr/" + revision + Resource.SEPARATOR + resourceValue);
             return new QualifiedResource(prefix, suffix);
         }
 
         @Override
         public QualifiedResource getWorkingResource(final Transaction transaction) {
-            final Resource suffix = Resource.create("/txr/" + transaction.getId());
+            final String transactionId = transaction.getId();
+            final Resource suffix = Resource.create("/txr/" + transactionId);
             return new QualifiedResource(prefix, suffix);
         }
     }
@@ -107,7 +110,8 @@ class RepositoryImpl extends AbstractBaseRepository {
         validateTransaction(transaction);
         Validate.notNull(message, "message must not be null");
 
-        LOGGER.trace("committing {} with message {}", transaction.getId(), message);
+        final String transactionId = transaction.getId();
+        LOGGER.trace("committing {} with message {}", transactionId, message);
 
         if (transaction.isChangeSetEmpty()) {
             // empty change set => nothing to commit, release resources

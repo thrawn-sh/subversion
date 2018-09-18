@@ -56,14 +56,19 @@ public abstract class RepositoryFactory {
 
     private static URI sanitise(final URI uri, final Resource path) {
         try {
-            return new URI(uri.getScheme(), DEFAULT_USER_INFO, uri.getHost(), uri.getPort(), path.getValue(), DEFAULT_QUERY, DEFAULT_FRAGMENT);
+            final String scheme = uri.getScheme();
+            final String host = uri.getHost();
+            final int port = uri.getPort();
+            final String pathValue = path.getValue();
+            return new URI(scheme, DEFAULT_USER_INFO, host, port, pathValue, DEFAULT_QUERY, DEFAULT_FRAGMENT);
         } catch (final URISyntaxException e) {
-            throw new IllegalArgumentException(e.getMessage(), e);
+            final String message = e.getMessage();
+            throw new IllegalArgumentException(message, e);
         }
     }
 
     /**
-     * Create a new {@link Repository} for given {@link URI} and use the given {@link HttpClient} with the {@link HttpClient} to connect to the server.
+     * Create a new {@link Repository} for given {@link URI} and use the given {@link HttpClient} with the {@link HttpContext} to connect to the server.
      *
      * @param uri
      *            {@link URI} to the root of the repository (e.g: http://repository.example.net/svn/test_repo/trunk/folder)
@@ -80,7 +85,7 @@ public abstract class RepositoryFactory {
      *             if any parameter is {@code null}
      * @throws SubversionException
      *             if no {@link Repository} can be created
-     * @throws de.shadowhunt.subversion.TransmissionException
+     * @throws TransmissionException
      *             if an error occurs in the underlining communication with the server
      */
     public final Repository createRepository(final URI uri, final HttpClient client, final HttpContext context, final boolean validate) {
@@ -88,7 +93,9 @@ public abstract class RepositoryFactory {
         Validate.notNull(client, "client must not be null");
         Validate.notNull(context, "context must not be null");
 
-        final URI saneUri = sanitise(uri, Resource.create(uri.getPath()));
+        final String path = uri.getPath();
+        final Resource resource = Resource.create(path);
+        final URI saneUri = sanitise(uri, resource);
         return createRepository0(saneUri, client, context, validate);
     }
 

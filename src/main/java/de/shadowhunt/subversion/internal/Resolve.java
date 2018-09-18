@@ -58,7 +58,8 @@ final class Resolve {
             final Resource resource = Resource.create(path);
 
             final String version = attributes.getValue("rev");
-            final Revision revision = Revision.create(Integer.parseInt(version));
+            final int intVersion = Integer.parseInt(version);
+            final Revision revision = Revision.create(intVersion);
 
             entry = new Resolve(resource, revision);
         }
@@ -85,7 +86,8 @@ final class Resolve {
     /**
      * Reads log information for a resource from the given {@link InputStream}.
      *
-     * @param inputStream {@link InputStream} from which the status information is read (Note: will not be closed)
+     * @param inputStream
+     *            {@link InputStream} from which the status information is read (Note: will not be closed)
      *
      * @return {@link LogImpl} for the resource
      */

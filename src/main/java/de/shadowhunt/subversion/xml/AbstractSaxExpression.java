@@ -56,7 +56,7 @@ public abstract class AbstractSaxExpression<V> implements SaxExpression<V> {
 
     protected AbstractSaxExpression(final QName[] path, final SaxExpression<?>... children) {
         this.path = Arrays.copyOf(path, path.length);
-        this.children = children;
+        this.children = Arrays.copyOf(children, children.length);
     }
 
     @Override

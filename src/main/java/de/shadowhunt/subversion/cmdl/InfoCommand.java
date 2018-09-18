@@ -19,7 +19,9 @@ package de.shadowhunt.subversion.cmdl;
 
 import java.io.PrintStream;
 import java.net.URI;
+import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.LockToken;
@@ -68,37 +70,49 @@ public class InfoCommand extends AbstractCommand {
             final Resource resource = resourceOption.value(options);
             final Revision revision = revisionOption.value(options);
             final Info info = repository.info(resource, revision);
-            output.println("Reource: " + info.getResource());
-            output.println("URL: " + repository.getBaseUri() + info.getResource());
-            output.println("Repository Root: " + repository.getBaseUri());
-            output.println("Repository UUID: " + info.getRepositoryId());
+
+            final Resource infoResource = info.getResource();
+            output.println("Reource: " + infoResource);
+            final URI baseUri = repository.getBaseUri();
+            output.println("URL: " + baseUri + infoResource);
+            output.println("Repository Root: " + baseUri);
+            final UUID repositoryId = info.getRepositoryId();
+            output.println("Repository UUID: " + repositoryId);
             output.println("Revision: " + revision);
             if (info.isDirectory()) {
                 output.println("Node Kind: directory");
             } else {
                 output.println("Node Kind: file");
             }
-            output.println("Creation Date: " + info.getCreationDate());
-            output.println("Last Changed Rev: " + info.getRevision());
-            output.println("Last Changed Date: " + info.getLastModifiedDate());
+            final Date creationDate = info.getCreationDate();
+            output.println("Creation Date: " + creationDate);
+            final Revision lastRevison = info.getRevision();
+            output.println("Last Changed Rev: " + lastRevison);
+            final Date lastModifiedDate = info.getLastModifiedDate();
+            output.println("Last Changed Date: " + lastModifiedDate);
             final Optional<LockToken> lockToken = info.getLockToken();
             if (lockToken.isPresent()) {
-                output.println("Lock Token: opaquelocktoken: " + lockToken.get());
+                final LockToken lockTokenValue = lockToken.get();
+                output.println("Lock Token: opaquelocktoken: " + lockTokenValue);
             }
             final Optional<String> lockOwner = info.getLockOwner();
             if (lockOwner.isPresent()) {
-                output.println("Lock Owner: " + lockOwner.get());
+                final String lockOwnerValue = lockOwner.get();
+                output.println("Lock Owner: " + lockOwnerValue);
             }
             final Optional<String> md5 = info.getMd5();
             if (md5.isPresent()) {
-                output.println("Checksum: " + md5.get());
+                final String md5Value = md5.get();
+                output.println("Checksum: " + md5Value);
             }
             output.println();
 
             output.println("Properties:");
             final ResourceProperty[] properties = info.getProperties();
             for (final ResourceProperty property : properties) {
-                output.println("  " + property.getName() + " = " + property.getValue());
+                final String name = property.getName();
+                final String value = property.getValue();
+                output.println("  " + name + " = " + value);
             }
         }
         return true;

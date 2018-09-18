@@ -28,6 +28,7 @@ import javax.xml.stream.XMLStreamWriter;
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
+import de.shadowhunt.subversion.ResourceProperty.Type;
 import de.shadowhunt.subversion.SubversionException;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.http.HttpStatus;
@@ -38,7 +39,9 @@ abstract class AbstractPropfindOperation<T> extends AbstractOperation<T> {
 
     private static boolean contains(final ResourceProperty.Key[] propertyKeys, final String namespace) {
         for (final ResourceProperty.Key requestedProperty : propertyKeys) {
-            if (namespace.equals(requestedProperty.getType().getPrefix())) {
+            final Type type = requestedProperty.getType();
+            final String prefix = type.getPrefix();
+            if (namespace.equals(prefix)) {
                 return true;
             }
         }
@@ -54,7 +57,8 @@ abstract class AbstractPropfindOperation<T> extends AbstractOperation<T> {
         int w = 0;
         int r = 0;
         while (r < keys.length) {
-            if (ResourceProperty.Type.SUBVERSION_CUSTOM.equals(keys[r].getType())) {
+            final Type type = keys[r].getType();
+            if (ResourceProperty.Type.SUBVERSION_CUSTOM.equals(type)) {
                 r++;
                 continue;
             }
@@ -113,7 +117,10 @@ abstract class AbstractPropfindOperation<T> extends AbstractOperation<T> {
                         writer.setPrefix(XmlConstants.SUBVERSION_SVN_PREFIX, XmlConstants.SUBVERSION_SVN_NAMESPACE);
                     }
                     for (final ResourceProperty.Key requestedProperty : propertyKeys) {
-                        writer.writeEmptyElement(requestedProperty.getType().getPrefix(), requestedProperty.getName());
+                        final Type type = requestedProperty.getType();
+                        final String prefix = type.getPrefix();
+                        final String name = requestedProperty.getName();
+                        writer.writeEmptyElement(prefix, name);
                     }
                     writer.writeEndElement(); // prop
                 }
@@ -127,13 +134,15 @@ abstract class AbstractPropfindOperation<T> extends AbstractOperation<T> {
             throw new SubversionException("could not create request body", e);
         }
 
-        request.setEntity(new StringEntity(body.toString(), CONTENT_TYPE_XML));
+        final String payload = body.toString();
+        final StringEntity entity = new StringEntity(payload, CONTENT_TYPE_XML);
+        request.setEntity(entity);
         return request;
     }
 
     @Override
     protected boolean isExpectedStatusCode(final int statusCode) {
-        return HttpStatus.SC_MULTI_STATUS == statusCode || HttpStatus.SC_NOT_FOUND == statusCode;
+        return (HttpStatus.SC_MULTI_STATUS == statusCode) || (HttpStatus.SC_NOT_FOUND == statusCode);
     }
 
 }
