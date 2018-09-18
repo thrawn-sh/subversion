@@ -23,10 +23,11 @@ import java.util.Date;
 import java.util.List;
 
 import de.shadowhunt.subversion.Log;
-import de.shadowhunt.subversion.Repository;
+import de.shadowhunt.subversion.ReadOnlyRepository;
 import de.shadowhunt.subversion.RepositoryFactory;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.View;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -63,12 +64,13 @@ public class LogCommand extends AbstractCommand {
 
             final HttpContext context = createHttpContext();
             final URI base = baseOption.value(options);
-            final Repository repository = factory.createRepository(base, client, context, true);
+            final ReadOnlyRepository repository = factory.createReadOnlyRepository(base, client, context, true);
+            final View view = repository.createView();
 
             final Resource resource = resourceOption.value(options);
             final Revision startRevision = startRevisionOption.value(options);
             final Revision stopRevision = stopRevisionOption.value(options);
-            final List<Log> logs = repository.log(resource, startRevision, stopRevision, Integer.MAX_VALUE, false);
+            final List<Log> logs = repository.log(view, resource, startRevision, stopRevision, Integer.MAX_VALUE, false);
             for (final Log log : logs) {
                 output.println("------------------------------------------------------------------------");
                 final Revision revision = log.getRevision();

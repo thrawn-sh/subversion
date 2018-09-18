@@ -19,16 +19,17 @@ package de.shadowhunt.subversion.internal;
 
 import java.util.UUID;
 
+import org.junit.Assert;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
+
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction;
-
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import de.shadowhunt.subversion.View;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -61,10 +62,10 @@ public abstract class AbstractRepositoryDeleteIT {
 
     @Test(expected = SubversionException.class)
     public void test00_noExisting() throws Exception {
-        Assert.assertFalse(prefix + " does already exist", repository.exists(prefix, Revision.HEAD));
-        final Resource resource = prefix.append(Resource.create("non_existing.txt"));
-
         final Transaction transaction = repository.createTransaction();
+
+        Assert.assertFalse(prefix + " does already exist", repository.exists(transaction, prefix, Revision.HEAD));
+        final Resource resource = prefix.append(Resource.create("non_existing.txt"));
         try {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             repository.delete(transaction, resource);
@@ -89,7 +90,8 @@ public abstract class AbstractRepositoryDeleteIT {
         } finally {
             repository.rollbackIfNotCommitted(transaction);
         }
-        Assert.assertTrue(resource + " must still exist", repository.exists(resource, Revision.HEAD));
+        final View view = repository.createView();
+        Assert.assertTrue(resource + " must still exist", repository.exists(view, resource, Revision.HEAD));
     }
 
     @Test
@@ -107,7 +109,8 @@ public abstract class AbstractRepositoryDeleteIT {
         } finally {
             repository.rollbackIfNotCommitted(transaction);
         }
-        Assert.assertFalse(resource + " must not exist", repository.exists(resource, Revision.HEAD));
+        final View view = repository.createView();
+        Assert.assertFalse(resource + " must not exist", repository.exists(view, resource, Revision.HEAD));
     }
 
     @Test
@@ -125,7 +128,8 @@ public abstract class AbstractRepositoryDeleteIT {
         } finally {
             repository.rollbackIfNotCommitted(transaction);
         }
-        Assert.assertFalse(resource + " must not exist", repository.exists(resource, Revision.HEAD));
+        final View view = repository.createView();
+        Assert.assertFalse(resource + " must not exist", repository.exists(view, resource, Revision.HEAD));
     }
 
     @Test
@@ -149,6 +153,7 @@ public abstract class AbstractRepositoryDeleteIT {
         } finally {
             repository.rollbackIfNotCommitted(transaction);
         }
-        Assert.assertFalse(root + " must not exist", repository.exists(root, Revision.HEAD));
+        final View view = repository.createView();
+        Assert.assertFalse(root + " must not exist", repository.exists(view, root, Revision.HEAD));
     }
 }

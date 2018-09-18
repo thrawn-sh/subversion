@@ -17,9 +17,9 @@
  */
 package de.shadowhunt.subversion.internal.httpv1.v1_3;
 
-import de.shadowhunt.subversion.internal.AbstractRepositoryDownloadIT;
-
 import org.junit.BeforeClass;
+
+import de.shadowhunt.subversion.internal.AbstractRepositoryDownloadIT;
 
 public class RepositoryDownloadReadOnlyIT extends AbstractRepositoryDownloadIT {
 

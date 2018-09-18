@@ -22,6 +22,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.io.IOUtils;
+import org.junit.Assert;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
+
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Log;
 import de.shadowhunt.subversion.Repository;
@@ -32,12 +38,7 @@ import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.Transaction.Status;
-
-import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import de.shadowhunt.subversion.View;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -67,11 +68,12 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
             repository.rollbackIfNotCommitted(transaction);
         }
 
+        final View view = repository.createView();
         final InputStream expected = IOUtils.toInputStream(content, StandardCharsets.UTF_8);
-        final InputStream actual = repository.download(file, Revision.HEAD);
+        final InputStream actual = repository.download(view, file, Revision.HEAD);
         AbstractRepositoryDownloadIT.assertEquals("content must match", expected, actual);
 
-        final Info info = repository.info(folder, Revision.HEAD);
+        final Info info = repository.info(view, folder, Revision.HEAD);
         Assert.assertTrue("folder exists", info.isDirectory());
     }
 
@@ -91,11 +93,12 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
             repository.rollbackIfNotCommitted(transaction);
         }
 
+        final View view = repository.createView();
         final InputStream expected = IOUtils.toInputStream(content, StandardCharsets.UTF_8);
-        final InputStream actual = repository.download(resource, Revision.HEAD);
+        final InputStream actual = repository.download(view, resource, Revision.HEAD);
         AbstractRepositoryDownloadIT.assertEquals("content must match", expected, actual);
 
-        final Info info = repository.info(resource, Revision.HEAD);
+        final Info info = repository.info(view, resource, Revision.HEAD);
         final ResourceProperty[] actualProperties = info.getProperties();
         Assert.assertEquals("expected number of properties", 1, actualProperties.length);
         Assert.assertEquals("property must match", property, actualProperties[0]);
@@ -116,12 +119,13 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
             repository.rollbackIfNotCommitted(transaction);
         }
 
+        final View view = repository.createView();
         final InputStream expectedA = IOUtils.toInputStream(content, StandardCharsets.UTF_8);
-        final InputStream actualA = repository.download(resourceA, Revision.HEAD);
+        final InputStream actualA = repository.download(view, resourceA, Revision.HEAD);
         AbstractRepositoryDownloadIT.assertEquals("content must match", expectedA, actualA);
 
         final InputStream expectedB = IOUtils.toInputStream(content, StandardCharsets.UTF_8);
-        final InputStream actualB = repository.download(resourceB, Revision.HEAD);
+        final InputStream actualB = repository.download(view, resourceB, Revision.HEAD);
         AbstractRepositoryDownloadIT.assertEquals("content must match", expectedB, actualB);
     }
 
@@ -146,12 +150,13 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
             repository.rollbackIfNotCommitted(transaction);
         }
 
+        final View view = repository.createView();
         final InputStream expectedA = IOUtils.toInputStream(content, StandardCharsets.UTF_8);
-        final InputStream actualA = repository.download(resourceA, Revision.HEAD);
+        final InputStream actualA = repository.download(view, resourceA, Revision.HEAD);
         AbstractRepositoryDownloadIT.assertEquals("content must match", expectedA, actualA);
 
         final InputStream expectedB = IOUtils.toInputStream(content, StandardCharsets.UTF_8);
-        final InputStream actualB = repository.download(resourceB, Revision.HEAD);
+        final InputStream actualB = repository.download(view, resourceB, Revision.HEAD);
         AbstractRepositoryDownloadIT.assertEquals("content must match", expectedB, actualB);
     }
 
@@ -169,8 +174,9 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
             repository.rollbackIfNotCommitted(transaction);
         }
 
+        final View view = repository.createView();
         final InputStream expected = IOUtils.toInputStream(content, StandardCharsets.UTF_8);
-        final InputStream actual = repository.download(resource, Revision.HEAD);
+        final InputStream actual = repository.download(view, resource, Revision.HEAD);
         AbstractRepositoryDownloadIT.assertEquals("content must match", expected, actual);
     }
 
@@ -194,11 +200,12 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
             repository.rollbackIfNotCommitted(transaction);
         }
 
+        final View view = repository.createView();
         final InputStream expected = IOUtils.toInputStream(content, StandardCharsets.UTF_8);
-        final InputStream actual = repository.download(resource, Revision.HEAD);
+        final InputStream actual = repository.download(view, resource, Revision.HEAD);
         AbstractRepositoryDownloadIT.assertEquals("content must match", expected, actual);
 
-        final Info info = repository.info(resource, Revision.HEAD);
+        final Info info = repository.info(view, resource, Revision.HEAD);
         final ResourceProperty[] actualProperties = info.getProperties();
         Assert.assertEquals("expected number of properties", 2, actualProperties.length);
         final ResourceProperty[] expectedProperties = new ResourceProperty[] { propertyA, propertyC };
@@ -238,7 +245,8 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
             repository.rollbackIfNotCommitted(transaction);
         }
 
-        Assert.assertFalse("must not exist", repository.exists(resource, Revision.HEAD));
+        final View view = repository.createView();
+        Assert.assertFalse("must not exist", repository.exists(view, resource, Revision.HEAD));
     }
 
     @Test
@@ -258,15 +266,16 @@ public abstract class AbstractRepositoryCombinedOperationsIT {
 
         repository.lock(resourceB, true);
 
-        final List<Log> logs = repository.log(resourceB, Revision.HEAD, Revision.INITIAL, 0, false);
+        final View view = repository.createView();
+        final List<Log> logs = repository.log(view, resourceB, Revision.HEAD, Revision.INITIAL, 0, false);
         Assert.assertEquals("there must be 2 log entries", 2, logs.size());
 
         final Revision revisionB = logs.get(0).getRevision();
         final Revision revisionA = logs.get(1).getRevision();
 
-        final Info infoB = repository.info(resourceB, revisionB);
+        final Info infoB = repository.info(view, resourceB, revisionB);
         Assert.assertEquals("resource must match", resourceB, infoB.getResource());
-        final Info infoA = repository.info(resourceB, revisionA);
+        final Info infoA = repository.info(view, resourceB, revisionA);
         Assert.assertEquals("resource must match", resourceA, infoA.getResource());
     }
 }

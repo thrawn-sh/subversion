@@ -20,8 +20,8 @@ package de.shadowhunt.subversion.internal.httpv2;
 import java.net.URI;
 import java.util.UUID;
 
+import de.shadowhunt.subversion.ReadOnlyRepository.ProtocolVersion;
 import de.shadowhunt.subversion.Repository;
-import de.shadowhunt.subversion.Repository.ProtocolVersion;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.internal.AbstractRepositoryLocator;
 import de.shadowhunt.subversion.internal.Probe;

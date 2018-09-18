@@ -21,6 +21,12 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
+import org.apache.commons.io.IOUtils;
+import org.junit.Assert;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
+
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
@@ -28,22 +34,17 @@ import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.Transaction.Status;
 
-import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
-
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class AbstractRepositoryAddIT {
 
     public static void file(final Repository repository, final Resource resource, final String content, final boolean initial) throws Exception {
+        final Transaction transaction = repository.createTransaction();
+
         if (!initial) {
-            Assert.assertTrue(resource + " must not exist", repository.exists(resource, Revision.HEAD));
+            Assert.assertTrue(resource + " must not exist", repository.exists(transaction, resource, Revision.HEAD));
         }
 
-        final Transaction transaction = repository.createTransaction();
         try {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             repository.add(transaction, resource, true, IOUtils.toInputStream(content, StandardCharsets.UTF_8));
@@ -58,7 +59,7 @@ public abstract class AbstractRepositoryAddIT {
         }
 
         final InputStream expected = IOUtils.toInputStream(content, StandardCharsets.UTF_8);
-        final InputStream actual = repository.download(resource, Revision.HEAD);
+        final InputStream actual = repository.download(transaction, resource, Revision.HEAD);
         AbstractRepositoryDownloadIT.assertEquals("content must match", expected, actual);
     }
 
@@ -89,10 +90,11 @@ public abstract class AbstractRepositoryAddIT {
 
     @Test(expected = SubversionException.class)
     public void test00_noParents() throws Exception {
-        Assert.assertFalse(prefix + " does already exist", repository.exists(prefix, Revision.HEAD));
+        final Transaction transaction = repository.createTransaction();
+
+        Assert.assertFalse(prefix + " does already exist", repository.exists(transaction, prefix, Revision.HEAD));
         final Resource resource = prefix.append(Resource.create("no_parents.txt"));
 
-        final Transaction transaction = repository.createTransaction();
         try {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             repository.add(transaction, resource, false, IOUtils.toInputStream("test", StandardCharsets.UTF_8));

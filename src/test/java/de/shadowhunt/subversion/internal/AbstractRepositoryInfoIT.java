@@ -19,16 +19,18 @@ package de.shadowhunt.subversion.internal;
 
 import java.io.File;
 
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
+
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
-
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import de.shadowhunt.subversion.View;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -58,9 +60,16 @@ public abstract class AbstractRepositoryInfoIT {
 
     private final Repository repository;
 
+    private View view;
+
     protected AbstractRepositoryInfoIT(final Repository repository, final File root) {
         this.repository = repository;
         infoLoader = new InfoLoader(root, repository.getBasePath());
+    }
+
+    @Before
+    public void before() throws Exception {
+        view = repository.createView();
     }
 
     @Test(expected = SubversionException.class)
@@ -68,7 +77,7 @@ public abstract class AbstractRepositoryInfoIT {
         final Resource resource = PREFIX.append(Resource.create("/non_existing.txt"));
         final Revision revision = Revision.HEAD;
 
-        repository.info(resource, revision);
+        repository.info(view, resource, revision);
         Assert.fail("info must not complete");
     }
 
@@ -78,7 +87,7 @@ public abstract class AbstractRepositoryInfoIT {
         // there should not be a such high revision
         final Revision revision = Revision.create(Integer.MAX_VALUE);
 
-        repository.info(resource, revision);
+        repository.info(view, resource, revision);
         Assert.fail("info must not complete");
     }
 
@@ -89,7 +98,7 @@ public abstract class AbstractRepositoryInfoIT {
 
         final Info expected = infoLoader.load(resource, revision);
         final String message = createMessage(resource, revision);
-        assertInfoEquals(message, expected, repository.info(resource, revision));
+        assertInfoEquals(message, expected, repository.info(view, resource, revision));
     }
 
     @Test
@@ -99,7 +108,7 @@ public abstract class AbstractRepositoryInfoIT {
 
         final Info expected = infoLoader.load(resource, revision);
         final String message = createMessage(resource, revision);
-        assertInfoEquals(message, expected, repository.info(resource, revision));
+        assertInfoEquals(message, expected, repository.info(view, resource, revision));
     }
 
     @Test
@@ -109,7 +118,7 @@ public abstract class AbstractRepositoryInfoIT {
 
         final Info expected = infoLoader.load(resource, revision);
         final String message = createMessage(resource, revision);
-        assertInfoEquals(message, expected, repository.info(resource, revision));
+        assertInfoEquals(message, expected, repository.info(view, resource, revision));
     }
 
     @Test
@@ -119,7 +128,7 @@ public abstract class AbstractRepositoryInfoIT {
 
         final Info expected = infoLoader.load(resource, revision);
         final String message = createMessage(resource, revision);
-        assertInfoEquals(message, expected, repository.info(resource, revision));
+        assertInfoEquals(message, expected, repository.info(view, resource, revision));
     }
 
     @Test
@@ -129,7 +138,7 @@ public abstract class AbstractRepositoryInfoIT {
 
         final Info expected = infoLoader.load(resource, revision);
         final String message = createMessage(resource, revision);
-        assertInfoEquals(message, expected, repository.info(resource, revision));
+        assertInfoEquals(message, expected, repository.info(view, resource, revision));
     }
 
     @Test
@@ -139,7 +148,7 @@ public abstract class AbstractRepositoryInfoIT {
 
         final Info expected = infoLoader.load(resource, revision);
         final String message = createMessage(resource, revision);
-        assertInfoEquals(message, expected, repository.info(resource, revision));
+        assertInfoEquals(message, expected, repository.info(view, resource, revision));
     }
 
     @Test
@@ -149,7 +158,7 @@ public abstract class AbstractRepositoryInfoIT {
 
         final Info expected = infoLoader.load(resource, revision);
         final String message = createMessage(resource, revision);
-        assertInfoEquals(message, expected, repository.info(resource, revision));
+        assertInfoEquals(message, expected, repository.info(view, resource, revision));
     }
 
     @Test
@@ -159,6 +168,6 @@ public abstract class AbstractRepositoryInfoIT {
 
         final Info expected = infoLoader.load(resource, revision);
         final String message = createMessage(resource, revision);
-        assertInfoEquals(message, expected, repository.info(resource, revision));
+        assertInfoEquals(message, expected, repository.info(view, resource, revision));
     }
 }

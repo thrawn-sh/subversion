@@ -26,8 +26,8 @@ import java.util.ServiceLoader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import de.shadowhunt.subversion.ReadOnlyRepository.ProtocolVersion;
 import de.shadowhunt.subversion.Repository;
-import de.shadowhunt.subversion.Repository.ProtocolVersion;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.TransmissionException;
 import org.apache.commons.io.output.StringBuilderWriter;

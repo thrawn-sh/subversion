@@ -21,15 +21,18 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
+import org.apache.commons.io.IOUtils;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
+
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
-import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import de.shadowhunt.subversion.View;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -47,9 +50,16 @@ public abstract class AbstractRepositoryDownloadIT {
 
     private final Repository repository;
 
+    private View view;
+
     protected AbstractRepositoryDownloadIT(final Repository repository, final File root) {
         this.repository = repository;
         downloadLoader = new DownloadLoader(root, repository.getBasePath());
+    }
+
+    @Before
+    public void before() throws Exception {
+        view = repository.createView();
     }
 
     private String createMessage(final Resource resource, final Revision revision) {
@@ -61,7 +71,7 @@ public abstract class AbstractRepositoryDownloadIT {
         final Resource resource = PREFIX.append(Resource.create("/non_existing.txt"));
         final Revision revision = Revision.HEAD;
 
-        repository.download(resource, revision);
+        repository.download(view, resource, revision);
         Assert.fail("download must not complete");
     }
 
@@ -71,7 +81,7 @@ public abstract class AbstractRepositoryDownloadIT {
         // there should not be a such high revision
         final Revision revision = Revision.create(Integer.MAX_VALUE);
 
-        repository.download(resource, revision);
+        repository.download(view, resource, revision);
         Assert.fail("download must not complete");
     }
 
@@ -82,7 +92,7 @@ public abstract class AbstractRepositoryDownloadIT {
 
         final String message = createMessage(resource, revision);
         try (InputStream expected = downloadLoader.load(resource, revision)) {
-            try (InputStream actual = repository.download(resource, revision)) {
+            try (InputStream actual = repository.download(view, resource, revision)) {
                 assertEquals(message, expected, actual);
             }
         }
@@ -95,7 +105,7 @@ public abstract class AbstractRepositoryDownloadIT {
 
         final InputStream expected = downloadLoader.load(resource, revision);
         final String message = createMessage(resource, revision);
-        assertEquals(message, expected, repository.download(resource, revision));
+        assertEquals(message, expected, repository.download(view, resource, revision));
     }
 
     @Test
@@ -105,7 +115,7 @@ public abstract class AbstractRepositoryDownloadIT {
 
         final InputStream expected = downloadLoader.load(resource, revision);
         final String message = createMessage(resource, revision);
-        assertEquals(message, expected, repository.download(resource, revision));
+        assertEquals(message, expected, repository.download(view, resource, revision));
     }
 
     @Test
@@ -115,6 +125,6 @@ public abstract class AbstractRepositoryDownloadIT {
 
         final InputStream expected = downloadLoader.load(resource, revision);
         final String message = createMessage(resource, revision);
-        assertEquals(message, expected, repository.download(resource, revision));
+        assertEquals(message, expected, repository.download(view, resource, revision));
     }
 }

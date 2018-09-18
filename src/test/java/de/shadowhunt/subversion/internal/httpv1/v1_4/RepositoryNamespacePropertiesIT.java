@@ -17,9 +17,9 @@
  */
 package de.shadowhunt.subversion.internal.httpv1.v1_4;
 
-import de.shadowhunt.subversion.internal.AbstractRepositoryNamespacePropertiesIT;
-
 import org.junit.BeforeClass;
+
+import de.shadowhunt.subversion.internal.AbstractRepositoryNamespacePropertiesIT;
 
 public class RepositoryNamespacePropertiesIT extends AbstractRepositoryNamespacePropertiesIT {
 

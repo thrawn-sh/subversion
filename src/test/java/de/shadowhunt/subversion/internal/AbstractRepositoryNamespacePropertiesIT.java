@@ -20,16 +20,17 @@ package de.shadowhunt.subversion.internal;
 import java.io.File;
 import java.util.UUID;
 
+import org.junit.Assert;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
+
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.Revision;
-
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import de.shadowhunt.subversion.View;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -60,7 +61,8 @@ public abstract class AbstractRepositoryNamespacePropertiesIT {
 
         final Info expected = infoLoader.load(resource, revision);
         final String message = AbstractRepositoryInfoIT.createMessage(resource, revision);
-        AbstractRepositoryInfoIT.assertInfoEquals(message, expected, repository.info(resource, revision));
+        final View view = repository.createView();
+        AbstractRepositoryInfoIT.assertInfoEquals(message, expected, repository.info(view, resource, revision));
     }
 
     @Test
@@ -69,11 +71,13 @@ public abstract class AbstractRepositoryNamespacePropertiesIT {
         final Revision revision = Revision.HEAD;
 
         AbstractRepositoryAddIT.file(repository, resource, "namespace_properties", true);
-        final Info before = repository.info(resource, revision);
+        final View beforeView = repository.createView();
+        final Info before = repository.info(beforeView, resource, revision);
         Assert.assertArrayEquals("must not contain properties", EMPTY, before.getProperties());
 
         AbstractRepositoryPropertiesSetIT.setProperties(repository, resource, NAMESPACE_PROPERTIES);
-        final Info after = repository.info(resource, revision);
+        final View afterView = repository.createView();
+        final Info after = repository.info(afterView, resource, revision);
         Assert.assertArrayEquals("must contain properties", NAMESPACE_PROPERTIES, after.getProperties());
     }
 }

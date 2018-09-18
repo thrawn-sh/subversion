@@ -19,16 +19,17 @@ package de.shadowhunt.subversion.internal;
 
 import java.util.UUID;
 
+import org.junit.Assert;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
+
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
-
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import de.shadowhunt.subversion.View;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -48,7 +49,8 @@ public abstract class AbstractRepositoryResolveIT {
         final Resource resource = prefix.append(Resource.create("file_delete.txt"));
 
         AbstractRepositoryAddIT.file(repository, resource, "test", true);
-        final Info sInfo = repository.info(resource, Revision.HEAD);
+        final View beforeView = repository.createView();
+        final Info sInfo = repository.info(beforeView, resource, Revision.HEAD);
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -58,9 +60,10 @@ public abstract class AbstractRepositoryResolveIT {
             repository.rollbackIfNotCommitted(transaction);
         }
 
-        Assert.assertFalse("source must not exist", repository.exists(resource, Revision.HEAD));
+        final View afterView = repository.createView();
+        Assert.assertFalse("source must not exist", repository.exists(afterView, resource, Revision.HEAD));
 
-        final Info targetWithOld = repository.info(resource, sInfo.getRevision());
+        final Info targetWithOld = repository.info(afterView, resource, sInfo.getRevision());
         AbstractRepositoryInfoIT.assertInfoEquals("info must match", sInfo, targetWithOld);
     }
 
@@ -69,7 +72,8 @@ public abstract class AbstractRepositoryResolveIT {
         final Resource resource = prefix.append(Resource.create("folder_delete/file.txt"));
 
         AbstractRepositoryAddIT.file(repository, resource, "test", true);
-        final Info sInfo = repository.info(resource, Revision.HEAD);
+        final View beforeView = repository.createView();
+        final Info sInfo = repository.info(beforeView, resource, Revision.HEAD);
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -79,9 +83,10 @@ public abstract class AbstractRepositoryResolveIT {
             repository.rollbackIfNotCommitted(transaction);
         }
 
-        Assert.assertFalse("source must not exist", repository.exists(resource, Revision.HEAD));
+        final View afterView = repository.createView();
+        Assert.assertFalse("source must not exist", repository.exists(afterView, resource, Revision.HEAD));
 
-        final Info targetWithOld = repository.info(resource, sInfo.getRevision());
+        final Info targetWithOld = repository.info(afterView, resource, sInfo.getRevision());
         AbstractRepositoryInfoIT.assertInfoEquals("info must match", sInfo, targetWithOld);
     }
 }

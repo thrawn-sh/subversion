@@ -213,6 +213,7 @@
                         <exclude>assets/setup/mime.types</exclude>
                         <exclude>assets/setup/passwd.basic</exclude>
                         <exclude>assets/setup/svnpath.auth</exclude>
+                        <exclude>.mvn</exclude>
                         <exclude>mvnw.cmd</exclude>
                         <exclude>mvnw</exclude>
                         <exclude>src/test/resources/dump/**</exclude>

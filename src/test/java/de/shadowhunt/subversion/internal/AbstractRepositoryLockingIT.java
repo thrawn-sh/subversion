@@ -22,6 +22,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.io.IOUtils;
+import org.junit.Assert;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
+
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Log;
 import de.shadowhunt.subversion.Repository;
@@ -32,12 +38,7 @@ import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.Transaction.Status;
-
-import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import de.shadowhunt.subversion.View;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -78,13 +79,16 @@ public abstract class AbstractRepositoryLockingIT {
         AbstractRepositoryAddIT.file(repositoryA, resource, "test", true);
         for (final boolean force : new boolean[] { true, false }) {
             for (final boolean steal : new boolean[] { true, false }) {
-                final Info before = repositoryA.info(resource, Revision.HEAD);
+                final View beforeView = repositoryA.createView();
+                final Info before = repositoryA.info(beforeView, resource, Revision.HEAD);
                 Assert.assertFalse(resource + " must not be locked", before.isLocked());
                 repositoryA.lock(resource, steal);
-                final Info afterLock = repositoryA.info(resource, Revision.HEAD);
+                final View afterLockView = repositoryA.createView();
+                final Info afterLock = repositoryA.info(afterLockView, resource, Revision.HEAD);
                 Assert.assertTrue(resource + " must be locked", afterLock.isLocked());
                 repositoryA.unlock(resource, force);
-                final Info afterUnlock = repositoryA.info(resource, Revision.HEAD);
+                final View afterUnlockView = repositoryA.createView();
+                final Info afterUnlock = repositoryA.info(afterUnlockView, resource, Revision.HEAD);
                 Assert.assertFalse(resource + " must not be locked", afterUnlock.isLocked());
             }
         }
@@ -95,15 +99,18 @@ public abstract class AbstractRepositoryLockingIT {
         final Resource resource = prefix.append(Resource.create("/relock_with.txt"));
 
         AbstractRepositoryAddIT.file(repositoryA, resource, "test", true);
-        final Info before = repositoryA.info(resource, Revision.HEAD);
+        final View beforeView = repositoryA.createView();
+        final Info before = repositoryA.info(beforeView, resource, Revision.HEAD);
         Assert.assertFalse(resource + " must not be locked", before.isLocked());
 
         try {
             repositoryA.lock(resource, true);
-            final Info afterFirst = repositoryA.info(resource, Revision.HEAD);
+            final View afterLockView = repositoryA.createView();
+            final Info afterFirst = repositoryA.info(afterLockView, resource, Revision.HEAD);
             Assert.assertTrue(resource + " must be locked", afterFirst.isLocked());
             repositoryA.lock(resource, true);
-            final Info afterSecond = repositoryA.info(resource, Revision.HEAD);
+            final View afterSecondView = repositoryA.createView();
+            final Info afterSecond = repositoryA.info(afterSecondView, resource, Revision.HEAD);
             Assert.assertTrue(resource + " must be locked", afterSecond.isLocked());
             Assert.assertEquals("owner must not change", afterFirst.getLockOwner(), afterSecond.getLockOwner());
             Assert.assertNotEquals("token must change", afterFirst.getLockToken(), afterSecond.getLockToken());
@@ -117,12 +124,14 @@ public abstract class AbstractRepositoryLockingIT {
         final Resource resource = prefix.append(Resource.create("/relock_without.txt"));
 
         AbstractRepositoryAddIT.file(repositoryA, resource, "test", true);
-        final Info before = repositoryA.info(resource, Revision.HEAD);
+        final View beforeView = repositoryA.createView();
+        final Info before = repositoryA.info(beforeView, resource, Revision.HEAD);
         Assert.assertFalse(resource + " must not be locked", before.isLocked());
 
         try {
             repositoryA.lock(resource, true);
-            final Info after = repositoryA.info(resource, Revision.HEAD);
+            final View afterView = repositoryA.createView();
+            final Info after = repositoryA.info(afterView, resource, Revision.HEAD);
             Assert.assertTrue(resource + " must be locked", after.isLocked());
             repositoryA.lock(resource, false);
             Assert.fail("relock without steal must fail");
@@ -137,10 +146,12 @@ public abstract class AbstractRepositoryLockingIT {
 
         AbstractRepositoryAddIT.file(repositoryA, resource, "test", true);
         for (final boolean force : new boolean[] { true, false }) {
-            final Info before = repositoryA.info(resource, Revision.HEAD);
+            final View beforeView = repositoryA.createView();
+            final Info before = repositoryA.info(beforeView, resource, Revision.HEAD);
             Assert.assertFalse(resource + " must not be locked", before.isLocked());
             repositoryA.unlock(resource, force);
-            final Info after = repositoryA.info(resource, Revision.HEAD);
+            final View afterView = repositoryA.createView();
+            final Info after = repositoryA.info(afterView, resource, Revision.HEAD);
             Assert.assertFalse(resource + " must not be locked", after.isLocked());
         }
     }
@@ -150,12 +161,14 @@ public abstract class AbstractRepositoryLockingIT {
         final Resource resource = prefix.append(Resource.create("/lock_fail.txt"));
 
         AbstractRepositoryAddIT.file(repositoryA, resource, "test", true);
-        final Info before = repositoryA.info(resource, Revision.HEAD);
+        final View beforeView = repositoryA.createView();
+        final Info before = repositoryA.info(beforeView, resource, Revision.HEAD);
         Assert.assertFalse(resource + " must not be locked", before.isLocked());
 
         try {
             repositoryA.lock(resource, false);
-            final Info afterFirst = repositoryA.info(resource, Revision.HEAD);
+            final View afterView = repositoryA.createView();
+            final Info afterFirst = repositoryA.info(afterView, resource, Revision.HEAD);
             Assert.assertTrue(resource + " must be locked", afterFirst.isLocked());
             repositoryB.lock(resource, false);
             Assert.fail("lock must not complete");
@@ -169,15 +182,18 @@ public abstract class AbstractRepositoryLockingIT {
         final Resource resource = prefix.append(Resource.create("/lock_steal.txt"));
 
         AbstractRepositoryAddIT.file(repositoryA, resource, "test", true);
-        final Info before = repositoryA.info(resource, Revision.HEAD);
+        final View beforeView = repositoryA.createView();
+        final Info before = repositoryA.info(beforeView, resource, Revision.HEAD);
         Assert.assertFalse(resource + " must not be locked", before.isLocked());
 
         try {
             repositoryA.lock(resource, false);
-            final Info afterFirst = repositoryA.info(resource, Revision.HEAD);
+            final View afterLockView = repositoryA.createView();
+            final Info afterFirst = repositoryA.info(afterLockView, resource, Revision.HEAD);
             Assert.assertTrue(resource + " must be locked", afterFirst.isLocked());
             repositoryB.lock(resource, true);
-            final Info afterSecond = repositoryA.info(resource, Revision.HEAD);
+            final View afterSecondView = repositoryA.createView();
+            final Info afterSecond = repositoryA.info(afterSecondView, resource, Revision.HEAD);
             Assert.assertTrue(resource + " must be locked", afterSecond.isLocked());
             Assert.assertNotEquals(resource + " must be locked", afterFirst.getLockOwner(), afterSecond.getLockOwner());
         } finally {
@@ -190,12 +206,14 @@ public abstract class AbstractRepositoryLockingIT {
         final Resource resource = prefix.append(Resource.create("/unlock_fail.txt"));
 
         AbstractRepositoryAddIT.file(repositoryA, resource, "test", true);
-        final Info before = repositoryA.info(resource, Revision.HEAD);
+        final View beforeView = repositoryA.createView();
+        final Info before = repositoryA.info(beforeView, resource, Revision.HEAD);
         Assert.assertFalse(resource + " must not be locked", before.isLocked());
 
         try {
             repositoryA.lock(resource, false);
-            final Info after = repositoryA.info(resource, Revision.HEAD);
+            final View afterView = repositoryA.createView();
+            final Info after = repositoryA.info(afterView, resource, Revision.HEAD);
             Assert.assertTrue(resource + " must be locked", after.isLocked());
             repositoryB.unlock(resource, false);
             Assert.fail("unlock must not complete");
@@ -209,15 +227,18 @@ public abstract class AbstractRepositoryLockingIT {
         final Resource resource = prefix.append(Resource.create("/unlock_force.txt"));
 
         AbstractRepositoryAddIT.file(repositoryA, resource, "test", true);
-        final Info before = repositoryA.info(resource, Revision.HEAD);
+        final View beforeView = repositoryA.createView();
+        final Info before = repositoryA.info(beforeView, resource, Revision.HEAD);
         Assert.assertFalse(resource + " must not be locked", before.isLocked());
 
         try {
             repositoryA.lock(resource, false);
-            final Info afterLock = repositoryA.info(resource, Revision.HEAD);
+            final View afterLockView = repositoryA.createView();
+            final Info afterLock = repositoryA.info(afterLockView, resource, Revision.HEAD);
             Assert.assertTrue(resource + " must be locked", afterLock.isLocked());
             repositoryB.unlock(resource, true);
-            final Info afterUnlock = repositoryA.info(resource, Revision.HEAD);
+            final View afterUnlockView = repositoryA.createView();
+            final Info afterUnlock = repositoryA.info(afterUnlockView, resource, Revision.HEAD);
             Assert.assertFalse(resource + " must not be locked", afterUnlock.isLocked());
         } finally {
             repositoryA.unlock(resource, false);
@@ -229,12 +250,14 @@ public abstract class AbstractRepositoryLockingIT {
         final Resource source = prefix.append(Resource.create("/file_copy_source.txt"));
 
         AbstractRepositoryAddIT.file(repositoryA, source, "test", true);
-        final Info before = repositoryA.info(source, Revision.HEAD);
+        final View beforeView = repositoryA.createView();
+        final Info before = repositoryA.info(beforeView, source, Revision.HEAD);
         Assert.assertFalse(source + " must not be locked", before.isLocked());
 
         try {
             repositoryA.lock(source, false);
-            final Info afterLock = repositoryA.info(source, Revision.HEAD);
+            final View afterView = repositoryA.createView();
+            final Info afterLock = repositoryA.info(afterView, source, Revision.HEAD);
             Assert.assertTrue(source + " must be locked", afterLock.isLocked());
         } finally {
             repositoryA.unlock(source, false);
@@ -249,7 +272,8 @@ public abstract class AbstractRepositoryLockingIT {
             repositoryA.rollbackIfNotCommitted(transaction);
         }
 
-        final Info after = repositoryA.info(target, Revision.HEAD);
+        final View afterView = repositoryA.createView();
+        final Info after = repositoryA.info(afterView, target, Revision.HEAD);
         Assert.assertFalse(target + " must not be locked", after.isLocked());
     }
 
@@ -258,12 +282,14 @@ public abstract class AbstractRepositoryLockingIT {
         final Resource source = prefix.append(Resource.create("/file_move_source.txt"));
 
         AbstractRepositoryAddIT.file(repositoryA, source, "test", true);
-        final Info before = repositoryA.info(source, Revision.HEAD);
+        final View beforeView = repositoryA.createView();
+        final Info before = repositoryA.info(beforeView, source, Revision.HEAD);
         Assert.assertFalse(source + " must not be locked", before.isLocked());
 
         try {
             repositoryA.lock(source, false);
-            final Info afterLock = repositoryA.info(source, Revision.HEAD);
+            final View afterView = repositoryA.createView();
+            final Info afterLock = repositoryA.info(afterView, source, Revision.HEAD);
             Assert.assertTrue(source + " must be locked", afterLock.isLocked());
         } finally {
             repositoryA.unlock(source, false);
@@ -278,7 +304,8 @@ public abstract class AbstractRepositoryLockingIT {
             repositoryA.rollbackIfNotCommitted(transaction);
         }
 
-        final Info after = repositoryA.info(target, Revision.HEAD);
+        final View afterView = repositoryA.createView();
+        final Info after = repositoryA.info(afterView, target, Revision.HEAD);
         Assert.assertFalse(target + " must not be locked", after.isLocked());
     }
 
@@ -299,7 +326,8 @@ public abstract class AbstractRepositoryLockingIT {
             repositoryA.rollbackIfNotCommitted(transaction);
         }
 
-        final Info info = repositoryA.info(resource, Revision.HEAD);
+        final View view = repositoryA.createView();
+        final Info info = repositoryA.info(view, resource, Revision.HEAD);
         final ResourceProperty[] actual = info.getProperties();
         Assert.assertEquals("expected number of properties", 0, actual.length);
     }
@@ -326,14 +354,15 @@ public abstract class AbstractRepositoryLockingIT {
             repositoryA.rollbackIfNotCommitted(transaction);
         }
 
-        Assert.assertTrue(target + " must exist", repositoryA.exists(target, Revision.HEAD));
+        final View view = repositoryA.createView();
+        Assert.assertTrue(target + " must exist", repositoryA.exists(view, target, Revision.HEAD));
 
-        final Info sInfo = repositoryA.info(source, Revision.HEAD);
-        final Info tInfo = repositoryA.info(target, Revision.HEAD);
+        final Info sInfo = repositoryA.info(view, source, Revision.HEAD);
+        final Info tInfo = repositoryA.info(view, target, Revision.HEAD);
         Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
 
-        final List<Log> sLog = repositoryA.log(source, Revision.INITIAL, Revision.HEAD, 0, false);
-        final List<Log> tLog = repositoryA.log(target, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<Log> sLog = repositoryA.log(view, source, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<Log> tLog = repositoryA.log(view, target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
     }
@@ -357,7 +386,8 @@ public abstract class AbstractRepositoryLockingIT {
             repositoryA.rollbackIfNotCommitted(transaction);
         }
 
-        Assert.assertFalse(resource + " must not exist", repositoryA.exists(resource, Revision.HEAD));
+        final View view = repositoryA.createView();
+        Assert.assertFalse(resource + " must not exist", repositoryA.exists(view, resource, Revision.HEAD));
     }
 
     @Test
@@ -369,8 +399,9 @@ public abstract class AbstractRepositoryLockingIT {
         AbstractRepositoryAddIT.file(repositoryA, target, "target", true);
         repositoryA.lock(target, false);
 
-        final Info sInfo = repositoryA.info(source, Revision.HEAD);
-        final List<Log> sLog = repositoryA.log(source, Revision.INITIAL, Revision.HEAD, 0, false);
+        final View beforeView = repositoryA.createView();
+        final Info sInfo = repositoryA.info(beforeView, source, Revision.HEAD);
+        final List<Log> sLog = repositoryA.log(beforeView, source, Revision.INITIAL, Revision.HEAD, 0, false);
 
         final Transaction transaction = repositoryA.createTransaction();
         try {
@@ -385,13 +416,14 @@ public abstract class AbstractRepositoryLockingIT {
             repositoryA.rollbackIfNotCommitted(transaction);
         }
 
-        Assert.assertFalse(source + " must not exist", repositoryA.exists(source, Revision.HEAD));
-        Assert.assertTrue(target + " must exist", repositoryA.exists(target, Revision.HEAD));
+        final View afterView = repositoryA.createView();
+        Assert.assertFalse(source + " must not exist", repositoryA.exists(afterView, source, Revision.HEAD));
+        Assert.assertTrue(target + " must exist", repositoryA.exists(afterView, target, Revision.HEAD));
 
-        final Info tInfo = repositoryA.info(target, Revision.HEAD);
+        final Info tInfo = repositoryA.info(afterView, target, Revision.HEAD);
         Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
 
-        final List<Log> tLog = repositoryA.log(target, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<Log> tLog = repositoryA.log(afterView, target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
     }
@@ -413,7 +445,8 @@ public abstract class AbstractRepositoryLockingIT {
         }
 
         final InputStream expected = IOUtils.toInputStream(content, StandardCharsets.UTF_8);
-        final InputStream actual = repositoryA.download(resource, Revision.HEAD);
+        final View view = repositoryA.createView();
+        final InputStream actual = repositoryA.download(view, resource, Revision.HEAD);
         AbstractRepositoryDownloadIT.assertEquals("content must match", expected, actual);
     }
 
@@ -435,7 +468,8 @@ public abstract class AbstractRepositoryLockingIT {
             repositoryA.rollbackIfNotCommitted(transaction);
         }
 
-        final Info info = repositoryA.info(resource, Revision.HEAD);
+        final View view = repositoryA.createView();
+        final Info info = repositoryA.info(view, resource, Revision.HEAD);
         final ResourceProperty[] actual = info.getProperties();
         Assert.assertEquals("expected number of properties", 1, actual.length);
         Assert.assertEquals("property must match", propertyB, actual[0]);
@@ -447,7 +481,8 @@ public abstract class AbstractRepositoryLockingIT {
 
         AbstractRepositoryAddIT.file(repositoryA, resource, "resource", true);
         repositoryA.lock(resource, false);
-        final Info afterLock = repositoryA.info(resource, Revision.HEAD);
+        final View beforeView = repositoryA.createView();
+        final Info afterLock = repositoryA.info(beforeView, resource, Revision.HEAD);
         Assert.assertTrue(resource + " must be locked", afterLock.isLocked());
 
         final Transaction transaction = repositoryA.createTransaction();
@@ -458,7 +493,8 @@ public abstract class AbstractRepositoryLockingIT {
             repositoryA.rollbackIfNotCommitted(transaction);
         }
 
-        final Info afterCommit = repositoryA.info(resource, Revision.HEAD);
+        final View afterView = repositoryA.createView();
+        final Info afterCommit = repositoryA.info(afterView, resource, Revision.HEAD);
         Assert.assertTrue(resource + " must be locked", afterCommit.isLocked());
     }
 
@@ -468,7 +504,8 @@ public abstract class AbstractRepositoryLockingIT {
 
         AbstractRepositoryAddIT.file(repositoryA, resource, "resource", true);
         repositoryA.lock(resource, false);
-        final Info afterLock = repositoryA.info(resource, Revision.HEAD);
+        final View beforeView = repositoryA.createView();
+        final Info afterLock = repositoryA.info(beforeView, resource, Revision.HEAD);
         Assert.assertTrue(resource + " must be locked", afterLock.isLocked());
 
         final Transaction transaction = repositoryA.createTransaction();
@@ -479,7 +516,8 @@ public abstract class AbstractRepositoryLockingIT {
             repositoryA.rollbackIfNotCommitted(transaction);
         }
 
-        final Info afterCommit = repositoryA.info(resource, Revision.HEAD);
+        final View afterView = repositoryA.createView();
+        final Info afterCommit = repositoryA.info(afterView, resource, Revision.HEAD);
         Assert.assertFalse(resource + " must not be locked", afterCommit.isLocked());
     }
 

@@ -31,10 +31,6 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import de.shadowhunt.subversion.Repository;
-import de.shadowhunt.subversion.RepositoryFactory;
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.http.client.SubversionRequestRetryHandler;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -50,6 +46,11 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+
+import de.shadowhunt.subversion.Repository;
+import de.shadowhunt.subversion.RepositoryFactory;
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.http.client.SubversionRequestRetryHandler;
 
 public abstract class AbstractHelper {
 

@@ -270,12 +270,6 @@ public abstract class AbstractBaseRepository implements Repository {
     }
 
     @Override
-    public InputStream download(final Resource resource, final Revision revision) {
-        final View view = createView();
-        return download(view, resource, revision);
-    }
-
-    @Override
     public final InputStream download(final View view, final Resource resource, final Revision revision) {
         Validate.notNull(view, "view must not be null");
         Validate.notNull(resource, "resource must not be null");
@@ -292,12 +286,6 @@ public abstract class AbstractBaseRepository implements Repository {
         final DownloadOperation operation = new DownloadOperation(repository, resolved);
         final Optional<InputStream> is = operation.execute(client, context);
         return is.orElseThrow(() -> new SubversionException("Can't resolve: " + resource + '@' + revision));
-    }
-
-    @Override
-    public URI downloadURI(final Resource resource, final Revision revision) {
-        final View view = createView();
-        return downloadURI(view, resource, revision);
     }
 
     @Override
@@ -318,12 +306,6 @@ public abstract class AbstractBaseRepository implements Repository {
         }
         final QualifiedResource resolved = resolve(view, resource, revision, true);
         return URIUtils.appendResources(repository, resolved);
-    }
-
-    @Override
-    public boolean exists(final Resource resource, final Revision revision) {
-        final View view = createView();
-        return exists(view, resource, revision);
     }
 
     @Override
@@ -398,12 +380,6 @@ public abstract class AbstractBaseRepository implements Repository {
     }
 
     @Override
-    public Info info(final Resource resource, final Revision revision, final ResourceProperty.Key... keys) {
-        final View view = createView();
-        return info(view, resource, revision, keys);
-    }
-
-    @Override
     public Info info(final View view, final Resource resource, final Revision revision, final ResourceProperty.Key... keys) {
         Validate.notNull(view, "view must not be null");
         Validate.notNull(resource, "resource must not be null");
@@ -422,12 +398,6 @@ public abstract class AbstractBaseRepository implements Repository {
         final Resource prefix = config.getPrefix();
         final InfoOperation operation = new InfoOperation(repository, base, resolved, prefix, keys);
         return operation.execute(client, context);
-    }
-
-    @Override
-    public Set<Info> list(final Resource resource, final Revision revision, final Depth depth, final ResourceProperty.Key... keys) {
-        final View view = createView();
-        return list(view, resource, revision, depth, keys);
     }
 
     @Override
@@ -481,12 +451,6 @@ public abstract class AbstractBaseRepository implements Repository {
         final QualifiedResource qualifiedResource = new QualifiedResource(base, resource);
         final LockOperation operation = new LockOperation(repository, qualifiedResource, steal);
         operation.execute(client, context);
-    }
-
-    @Override
-    public List<Log> log(final Resource resource, final Revision startRevision, final Revision endRevision, final int limit, final boolean stopOnCopy) {
-        final View view = createView();
-        return log(view, resource, startRevision, endRevision, limit, stopOnCopy);
     }
 
     @Override

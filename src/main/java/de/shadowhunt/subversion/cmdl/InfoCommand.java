@@ -25,11 +25,12 @@ import java.util.UUID;
 
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.LockToken;
-import de.shadowhunt.subversion.Repository;
+import de.shadowhunt.subversion.ReadOnlyRepository;
 import de.shadowhunt.subversion.RepositoryFactory;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.View;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -65,11 +66,12 @@ public class InfoCommand extends AbstractCommand {
 
             final HttpContext context = createHttpContext();
             final URI base = baseOption.value(options);
-            final Repository repository = factory.createRepository(base, client, context, true);
+            final ReadOnlyRepository repository = factory.createReadOnlyRepository(base, client, context, true);
+            final View view = repository.createView();
 
             final Resource resource = resourceOption.value(options);
             final Revision revision = revisionOption.value(options);
-            final Info info = repository.info(resource, revision);
+            final Info info = repository.info(view, resource, revision);
 
             final Resource infoResource = info.getResource();
             output.println("Reource: " + infoResource);

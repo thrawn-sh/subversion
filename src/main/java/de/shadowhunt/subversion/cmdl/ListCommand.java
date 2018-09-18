@@ -23,10 +23,11 @@ import java.util.Set;
 
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Info;
-import de.shadowhunt.subversion.Repository;
+import de.shadowhunt.subversion.ReadOnlyRepository;
 import de.shadowhunt.subversion.RepositoryFactory;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.View;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -62,11 +63,12 @@ public class ListCommand extends AbstractCommand {
 
             final HttpContext context = createHttpContext();
             final URI base = baseOption.value(options);
-            final Repository repository = factory.createRepository(base, client, context, true);
+            final ReadOnlyRepository repository = factory.createReadOnlyRepository(base, client, context, true);
+            final View view = repository.createView();
 
             final Resource resource = resourceOption.value(options);
             final Revision revision = revisionOption.value(options);
-            final Set<Info> infos = repository.list(resource, revision, Depth.FILES);
+            final Set<Info> infos = repository.list(view, resource, revision, Depth.FILES);
             for (final Info info : infos) {
                 final Revision infoRevision = info.getRevision();
                 final Resource infoResource = info.getResource();

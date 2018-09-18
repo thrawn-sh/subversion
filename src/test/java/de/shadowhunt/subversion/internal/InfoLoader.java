@@ -25,15 +25,16 @@ import java.util.UUID;
 
 import javax.xml.parsers.SAXParser;
 
-import de.shadowhunt.subversion.Info;
-import de.shadowhunt.subversion.LockToken;
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.Revision;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+
+import de.shadowhunt.subversion.Info;
+import de.shadowhunt.subversion.LockToken;
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.Revision;
 
 public final class InfoLoader extends AbstractBaseLoader {
 

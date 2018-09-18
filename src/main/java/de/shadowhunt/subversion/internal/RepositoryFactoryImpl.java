@@ -19,13 +19,19 @@ package de.shadowhunt.subversion.internal;
 
 import java.net.URI;
 
-import de.shadowhunt.subversion.Repository;
-import de.shadowhunt.subversion.RepositoryFactory;
-import de.shadowhunt.subversion.Transaction;
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 
+import de.shadowhunt.subversion.Repository;
+import de.shadowhunt.subversion.RepositoryFactory;
+import de.shadowhunt.subversion.Transaction;
+
 public class RepositoryFactoryImpl extends RepositoryFactory {
+
+    @Override
+    protected Repository createReadOnlyRepository0(final URI saneUri, final HttpClient client, final HttpContext context, final boolean validate) {
+        return createRepository0(saneUri, client, context, validate);
+    }
 
     @Override
     protected Repository createRepository0(final URI saneUri, final HttpClient client, final HttpContext context, final boolean validate) {

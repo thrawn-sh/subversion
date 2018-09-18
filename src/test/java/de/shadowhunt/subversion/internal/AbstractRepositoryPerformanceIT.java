@@ -21,13 +21,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.UUID;
 
-import de.shadowhunt.subversion.Depth;
-import de.shadowhunt.subversion.Repository;
-import de.shadowhunt.subversion.Resource;
-import de.shadowhunt.subversion.ResourceProperty;
-import de.shadowhunt.subversion.Revision;
-import de.shadowhunt.subversion.Transaction;
-import de.shadowhunt.subversion.View;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.protocol.HttpContext;
@@ -36,6 +29,14 @@ import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+
+import de.shadowhunt.subversion.Depth;
+import de.shadowhunt.subversion.Repository;
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.ResourceProperty;
+import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.Transaction;
+import de.shadowhunt.subversion.View;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -73,6 +74,12 @@ public abstract class AbstractRepositoryPerformanceIT {
         prefix = Resource.create("/" + testId + "/performance");
     }
 
+    @Before
+    public void before() throws Exception {
+        currentView = repository.createView();
+        counter.reset();
+    }
+
     private void prepare() {
         final Transaction transaction = repository.createTransaction();
         repository.mkdir(transaction, prefix, true);
@@ -96,12 +103,6 @@ public abstract class AbstractRepositoryPerformanceIT {
         repository.commit(transaction, "commit", true);
     }
 
-    @Before
-    public void setUp() throws Exception {
-        currentView = repository.createView();
-        counter.reset();
-    }
-
     @Test
     public void test00_createView() throws Exception {
         repository.createView();
@@ -112,28 +113,12 @@ public abstract class AbstractRepositoryPerformanceIT {
     public void test01_existingResource() throws Exception {
         final Resource resource = AbstractRepositoryExistsIT.PREFIX.append(Resource.create("/file.txt"));
 
-        repository.exists(resource, Revision.HEAD);
-        Assert.assertEquals("number of requests must match", 2, counter.getTotalRequestCount());
-    }
-
-    @Test
-    public void test01_existingResourceWithView() throws Exception {
-        final Resource resource = AbstractRepositoryExistsIT.PREFIX.append(Resource.create("/file.txt"));
-
         repository.exists(currentView, resource, Revision.HEAD);
         Assert.assertEquals("number of requests must match", 1, counter.getTotalRequestCount());
     }
 
     @Test
     public void test01_nonExistingResource() throws Exception {
-        final Resource resource = AbstractRepositoryExistsIT.PREFIX.append(Resource.create("/non_existing.txt"));
-
-        repository.exists(resource, Revision.HEAD);
-        Assert.assertEquals("number of requests must match", 2, counter.getTotalRequestCount());
-    }
-
-    @Test
-    public void test01_nonExistingResourceWithView() throws Exception {
         final Resource resource = AbstractRepositoryExistsIT.PREFIX.append(Resource.create("/non_existing.txt"));
 
         repository.exists(currentView, resource, Revision.HEAD);
@@ -144,8 +129,8 @@ public abstract class AbstractRepositoryPerformanceIT {
     public void test02_download() throws Exception {
         final Resource resource = AbstractRepositoryDownloadIT.PREFIX.append(Resource.create("/file.txt"));
 
-        try (InputStream is = repository.download(resource, Revision.HEAD)) {
-            Assert.assertEquals("number of requests must match", 2, counter.getTotalRequestCount());
+        try (final InputStream is = repository.download(currentView, resource, Revision.HEAD)) {
+            Assert.assertEquals("number of requests must match", 1, counter.getTotalRequestCount());
         }
     }
 
@@ -153,37 +138,12 @@ public abstract class AbstractRepositoryPerformanceIT {
     public void test02_downloadUri() throws Exception {
         final Resource resource = AbstractRepositoryDownloadUriIT.PREFIX.append(Resource.create("/file.txt"));
 
-        repository.downloadURI(resource, Revision.HEAD);
-        Assert.assertEquals("number of requests must match", 2, counter.getTotalRequestCount());
-    }
-
-    @Test
-    public void test02_downloadUriWithView() throws Exception {
-        final Resource resource = AbstractRepositoryDownloadUriIT.PREFIX.append(Resource.create("/file.txt"));
-
         repository.downloadURI(currentView, resource, Revision.HEAD);
         Assert.assertEquals("number of requests must match", 1, counter.getTotalRequestCount());
     }
 
     @Test
-    public void test02_downloadWithView() throws Exception {
-        final Resource resource = AbstractRepositoryDownloadIT.PREFIX.append(Resource.create("/file.txt"));
-
-        try (final InputStream is = repository.download(currentView, resource, Revision.HEAD)) {
-            Assert.assertEquals("number of requests must match", 1, counter.getTotalRequestCount());
-        }
-    }
-
-    @Test
     public void test02_info() throws Exception {
-        final Resource resource = AbstractRepositoryInfoIT.PREFIX.append(Resource.create("/file.txt"));
-
-        repository.info(resource, Revision.HEAD);
-        Assert.assertEquals("number of requests must match", 2, counter.getTotalRequestCount());
-    }
-
-    @Test
-    public void test02_infoWithView() throws Exception {
         final Resource resource = AbstractRepositoryInfoIT.PREFIX.append(Resource.create("/file.txt"));
 
         repository.info(currentView, resource, Revision.HEAD);
@@ -194,36 +154,12 @@ public abstract class AbstractRepositoryPerformanceIT {
     public void test02_list_Empty() throws Exception {
         final Resource resource = AbstractRepositoryListIT.PREFIX.append(Resource.create("/folder"));
 
-        repository.list(resource, Revision.HEAD, Depth.EMPTY);
-        Assert.assertEquals("number of requests must match", 2, counter.getTotalRequestCount());
-    }
-
-    @Test
-    public void test02_list_Immediate() throws Exception {
-        final Resource resource = AbstractRepositoryListIT.PREFIX.append(Resource.create("/folder"));
-
-        repository.list(resource, Revision.HEAD, Depth.IMMEDIATES);
-        Assert.assertEquals("number of requests must match", 2, counter.getTotalRequestCount());
-    }
-
-    @Test
-    public void test02_list_Infinity() throws Exception {
-        final Resource resource = AbstractRepositoryListIT.PREFIX.append(Resource.create("/folder"));
-
-        repository.list(resource, Revision.HEAD, Depth.INFINITY);
-        Assert.assertEquals("number of requests must match", 2, counter.getTotalRequestCount());
-    }
-
-    @Test
-    public void test02_listWithView_Empty() throws Exception {
-        final Resource resource = AbstractRepositoryListIT.PREFIX.append(Resource.create("/folder"));
-
         repository.list(currentView, resource, Revision.HEAD, Depth.EMPTY);
         Assert.assertEquals("number of requests must match", 1, counter.getTotalRequestCount());
     }
 
     @Test
-    public void test02_listWithView_Immediate() throws Exception {
+    public void test02_list_Immediate() throws Exception {
         final Resource resource = AbstractRepositoryListIT.PREFIX.append(Resource.create("/folder"));
 
         repository.list(currentView, resource, Revision.HEAD, Depth.IMMEDIATES);
@@ -231,7 +167,7 @@ public abstract class AbstractRepositoryPerformanceIT {
     }
 
     @Test
-    public void test02_listWithView_Infinity() throws Exception {
+    public void test02_list_Infinity() throws Exception {
         final Resource resource = AbstractRepositoryListIT.PREFIX.append(Resource.create("/folder"));
 
         repository.list(currentView, resource, Revision.HEAD, Depth.INFINITY);
@@ -240,14 +176,6 @@ public abstract class AbstractRepositoryPerformanceIT {
 
     @Test
     public void test03_log() throws Exception {
-        final Resource resource = AbstractRepositoryLogIT.PREFIX.append(Resource.create("/file.txt"));
-
-        repository.log(resource, Revision.INITIAL, Revision.HEAD, 0, false);
-        Assert.assertEquals("number of requests must match", 2, counter.getTotalRequestCount());
-    }
-
-    @Test
-    public void test03_logWithView() throws Exception {
         final Resource resource = AbstractRepositoryLogIT.PREFIX.append(Resource.create("/file.txt"));
 
         repository.log(currentView, resource, Revision.INITIAL, Revision.HEAD, 0, false);

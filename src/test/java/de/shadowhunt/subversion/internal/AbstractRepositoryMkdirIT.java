@@ -20,17 +20,17 @@ package de.shadowhunt.subversion.internal;
 import java.util.Map;
 import java.util.UUID;
 
+import org.junit.Assert;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
+
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.Transaction.Status;
-
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -87,10 +87,10 @@ public abstract class AbstractRepositoryMkdirIT {
 
     @Test(expected = SubversionException.class)
     public void test00_noParents() throws Exception {
-        Assert.assertFalse(prefix + " does already exist", repository.exists(prefix, Revision.HEAD));
-        final Resource resource = prefix.append(Resource.create("no_parents"));
-
         final Transaction transaction = repository.createTransaction();
+
+        Assert.assertFalse(prefix + " does already exist", repository.exists(transaction, prefix, Revision.HEAD));
+        final Resource resource = prefix.append(Resource.create("no_parents"));
         try {
             Assert.assertTrue("transaction must be active", transaction.isActive());
             repository.mkdir(transaction, resource, false);

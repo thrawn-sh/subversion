@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 
-import de.shadowhunt.subversion.Repository.ProtocolVersion;
+import de.shadowhunt.subversion.ReadOnlyRepository.ProtocolVersion;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.xml.AbstractSaxExpression;

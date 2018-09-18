@@ -17,12 +17,12 @@
  */
 package de.shadowhunt.subversion.internal;
 
-import de.shadowhunt.subversion.Repository;
-
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+
+import de.shadowhunt.subversion.Repository;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)

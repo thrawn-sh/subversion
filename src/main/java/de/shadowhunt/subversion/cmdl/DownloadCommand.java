@@ -25,10 +25,11 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import de.shadowhunt.subversion.Repository;
+import de.shadowhunt.subversion.ReadOnlyRepository;
 import de.shadowhunt.subversion.RepositoryFactory;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.View;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -66,14 +67,15 @@ public class DownloadCommand extends AbstractCommand {
 
             final HttpContext context = createHttpContext();
             final URI base = baseOption.value(options);
-            final Repository repository = factory.createRepository(base, client, context, true);
+            final ReadOnlyRepository repository = factory.createReadOnlyRepository(base, client, context, true);
+            final View view = repository.createView();
 
             final File file = outputOption.value(options);
             final Path path = file.toPath();
             try (OutputStream os = Files.newOutputStream(path)) {
                 final Resource resource = resourceOption.value(options);
                 final Revision revision = revisionOption.value(options);
-                try (InputStream download = repository.download(resource, revision)) {
+                try (InputStream download = repository.download(view, resource, revision)) {
                     IOUtils.copy(download, os);
                 }
             }

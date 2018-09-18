@@ -17,15 +17,17 @@
  */
 package de.shadowhunt.subversion.internal;
 
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
+
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
-
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import de.shadowhunt.subversion.View;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -35,8 +37,15 @@ public abstract class AbstractRepositoryExistsIT {
 
     private final Repository repository;
 
+    private View view;
+
     protected AbstractRepositoryExistsIT(final Repository repository) {
         this.repository = repository;
+    }
+
+    @Before
+    public void before() throws Exception {
+        view = repository.createView();
     }
 
     private String createMessage(final Resource resource, final Revision revision) {
@@ -49,7 +58,7 @@ public abstract class AbstractRepositoryExistsIT {
         final Revision revision = Revision.HEAD;
 
         final String message = createMessage(resource, revision);
-        Assert.assertFalse(message, repository.exists(resource, revision));
+        Assert.assertFalse(message, repository.exists(view, resource, revision));
     }
 
     @Test(expected = SubversionException.class)
@@ -58,7 +67,7 @@ public abstract class AbstractRepositoryExistsIT {
         // there should not be a such high revision
         final Revision revision = Revision.create(Integer.MAX_VALUE);
 
-        repository.exists(resource, revision);
+        repository.exists(view, resource, revision);
         Assert.fail("exists must not complete");
     }
 
@@ -68,7 +77,7 @@ public abstract class AbstractRepositoryExistsIT {
         final Revision revision = Revision.HEAD;
 
         final String message = createMessage(resource, revision);
-        Assert.assertTrue(message, repository.exists(resource, revision));
+        Assert.assertTrue(message, repository.exists(view, resource, revision));
     }
 
     @Test
@@ -77,7 +86,7 @@ public abstract class AbstractRepositoryExistsIT {
         final Revision revision = Revision.create(32);
 
         final String message = createMessage(resource, revision);
-        Assert.assertTrue(message, repository.exists(resource, revision));
+        Assert.assertTrue(message, repository.exists(view, resource, revision));
     }
 
     @Test
@@ -86,7 +95,7 @@ public abstract class AbstractRepositoryExistsIT {
         final Revision revision = Revision.HEAD;
 
         final String message = createMessage(resource, revision);
-        Assert.assertTrue(message, repository.exists(resource, revision));
+        Assert.assertTrue(message, repository.exists(view, resource, revision));
     }
 
     @Test
@@ -95,7 +104,7 @@ public abstract class AbstractRepositoryExistsIT {
         final Revision revision = Revision.create(39);
 
         final String message = createMessage(resource, revision);
-        Assert.assertTrue(message, repository.exists(resource, revision));
+        Assert.assertTrue(message, repository.exists(view, resource, revision));
     }
 
     @Test
@@ -104,7 +113,7 @@ public abstract class AbstractRepositoryExistsIT {
         final Revision revision = Revision.create(35);
 
         final String message = createMessage(resource, revision);
-        Assert.assertTrue(message, repository.exists(resource, revision));
+        Assert.assertTrue(message, repository.exists(view, resource, revision));
     }
 
     @Test
@@ -113,7 +122,7 @@ public abstract class AbstractRepositoryExistsIT {
         final Revision revision = Revision.create(37);
 
         final String message = createMessage(resource, revision);
-        Assert.assertTrue(message, repository.exists(resource, revision));
+        Assert.assertTrue(message, repository.exists(view, resource, revision));
     }
 
     @Test
@@ -122,7 +131,7 @@ public abstract class AbstractRepositoryExistsIT {
         final Revision revision = Revision.create(41);
 
         final String message = createMessage(resource, revision);
-        Assert.assertTrue(message, repository.exists(resource, revision));
+        Assert.assertTrue(message, repository.exists(view, resource, revision));
     }
 
     @Test
@@ -131,6 +140,6 @@ public abstract class AbstractRepositoryExistsIT {
         final Revision revision = Revision.create(43);
 
         final String message = createMessage(resource, revision);
-        Assert.assertTrue(message, repository.exists(resource, revision));
+        Assert.assertTrue(message, repository.exists(view, resource, revision));
     }
 }

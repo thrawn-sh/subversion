@@ -19,6 +19,11 @@ package de.shadowhunt.subversion.internal;
 
 import java.util.UUID;
 
+import org.junit.Assert;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
+
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
@@ -27,11 +32,7 @@ import de.shadowhunt.subversion.ResourceProperty.Type;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction;
-
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import de.shadowhunt.subversion.View;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -47,7 +48,8 @@ public abstract class AbstractRepositoryPropertiesDeleteIT {
     }
 
     private void assertNoPropertiesLeft(final Resource resource) {
-        final Info info = repository.info(resource, Revision.HEAD);
+        final View view = repository.createView();
+        final Info info = repository.info(view, resource, Revision.HEAD);
         final ResourceProperty[] properties = info.getProperties();
         Assert.assertEquals("expected number of properties", 0, properties.length);
     }
@@ -86,7 +88,8 @@ public abstract class AbstractRepositoryPropertiesDeleteIT {
     public void test00_NonExistingResource() throws Exception {
         final Resource resource = prefix.append(Resource.create("non_existing.txt"));
         final ResourceProperty property = new ResourceProperty(Type.SUBVERSION_CUSTOM, "test", "test");
-        Assert.assertFalse(resource + " does already exist", repository.exists(resource, Revision.HEAD));
+        final View view = repository.createView();
+        Assert.assertFalse(resource + " does already exist", repository.exists(view, resource, Revision.HEAD));
 
         final Transaction transaction = repository.createTransaction();
         try {

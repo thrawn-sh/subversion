@@ -20,8 +20,8 @@ package de.shadowhunt.subversion.cmdl;
 import java.io.PrintStream;
 import java.net.URI;
 
-import de.shadowhunt.subversion.Repository;
-import de.shadowhunt.subversion.Repository.ProtocolVersion;
+import de.shadowhunt.subversion.ReadOnlyRepository;
+import de.shadowhunt.subversion.ReadOnlyRepository.ProtocolVersion;
 import de.shadowhunt.subversion.RepositoryFactory;
 import de.shadowhunt.subversion.Resource;
 import joptsimple.ArgumentAcceptingOptionSpec;
@@ -59,7 +59,7 @@ public class ProbeCommand extends AbstractCommand {
 
             final HttpContext context = createHttpContext();
             final URI uri = urlOption.value(options);
-            final Repository repository = factory.createRepository(uri, client, context, true);
+            final ReadOnlyRepository repository = factory.createReadOnlyRepository(uri, client, context, true);
             output.println("complete uri: " + uri);
             final URI baseUri = repository.getBaseUri();
             output.println("    base uri: " + baseUri);

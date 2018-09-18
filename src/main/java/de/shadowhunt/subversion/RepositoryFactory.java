@@ -68,6 +68,40 @@ public abstract class RepositoryFactory {
     }
 
     /**
+     * Create a new {@link ReadOnlyRepository} for given {@link URI} and use the given {@link HttpClient} with the {@link HttpContext} to connect to the server.
+     *
+     * @param uri
+     *            {@link URI} to the root of the repository (e.g: http://repository.example.net/svn/test_repo/trunk/folder)
+     * @param client
+     *            {@link HttpClient} that will handle all requests for this repository
+     * @param context
+     *            {@link HttpContext} that will be used by all requests to this repository
+     * @param validate
+     *            {@code true} check the given parameters during creation, {@code false} check during first usage
+     *
+     * @return a new {@link Repository} for given {@link URI}
+     *
+     * @throws NullPointerException
+     *             if any parameter is {@code null}
+     * @throws SubversionException
+     *             if no {@link Repository} can be created
+     * @throws TransmissionException
+     *             if an error occurs in the underlining communication with the server
+     */
+    public final ReadOnlyRepository createReadOnlyRepository(final URI uri, final HttpClient client, final HttpContext context, final boolean validate) {
+        Validate.notNull(uri, "uri must not be null");
+        Validate.notNull(client, "client must not be null");
+        Validate.notNull(context, "context must not be null");
+
+        final String path = uri.getPath();
+        final Resource resource = Resource.create(path);
+        final URI saneUri = sanitise(uri, resource);
+        return createReadOnlyRepository0(saneUri, client, context, validate);
+    }
+
+    protected abstract Repository createReadOnlyRepository0(final URI saneUri, final HttpClient client, final HttpContext context, final boolean validate);
+
+    /**
      * Create a new {@link Repository} for given {@link URI} and use the given {@link HttpClient} with the {@link HttpContext} to connect to the server.
      *
      * @param uri

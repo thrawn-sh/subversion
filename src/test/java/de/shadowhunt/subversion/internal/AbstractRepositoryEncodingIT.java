@@ -24,6 +24,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.junit.Assert;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
+
 import de.shadowhunt.subversion.Depth;
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Log;
@@ -33,11 +38,6 @@ import de.shadowhunt.subversion.ResourceProperty;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.View;
-
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -59,8 +59,8 @@ public abstract class AbstractRepositoryEncodingIT {
 
     protected AbstractRepositoryEncodingIT(final Repository repository, final UUID testId, final File root) {
         this.repository = repository;
-        this.read = Resource.create("/00000000-0000-0000-0000-000000000000/encoding");
-        this.write = Resource.create("/" + testId + "/encoding");
+        read = Resource.create("/00000000-0000-0000-0000-000000000000/encoding");
+        write = Resource.create("/" + testId + "/encoding");
         final Resource basePath = repository.getBasePath();
         infoLoader = new InfoLoader(root, basePath);
         logLoader = new LogLoader(root, basePath);
@@ -69,7 +69,8 @@ public abstract class AbstractRepositoryEncodingIT {
     }
 
     private void checkProperties(final Resource resource) {
-        final Info info = repository.info(resource, Revision.HEAD);
+        final View view = repository.createView();
+        final Info info = repository.info(view, resource, Revision.HEAD);
         final ResourceProperty[] properties = info.getProperties();
         Assert.assertEquals("expected number of properties", 0, properties.length);
     }
@@ -449,8 +450,9 @@ public abstract class AbstractRepositoryEncodingIT {
     }
 
     private void testCopy(final Resource source, final Resource target) throws Exception {
+        final View beforeView = repository.createView();
         AbstractRepositoryAddIT.file(repository, source, "A", true);
-        Assert.assertFalse(target + " must not exist", repository.exists(target, Revision.HEAD));
+        Assert.assertFalse(target + " must not exist", repository.exists(beforeView, target, Revision.HEAD));
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -459,7 +461,8 @@ public abstract class AbstractRepositoryEncodingIT {
         } finally {
             repository.rollbackIfNotCommitted(transaction);
         }
-        Assert.assertTrue(target + " must exist", repository.exists(target, Revision.HEAD));
+        final View afterView = repository.createView();
+        Assert.assertTrue(target + " must exist", repository.exists(afterView, target, Revision.HEAD));
     }
 
     private void testDelete(final Resource resource) throws Exception {
@@ -471,13 +474,15 @@ public abstract class AbstractRepositoryEncodingIT {
         } finally {
             repository.rollbackIfNotCommitted(transaction);
         }
-        Assert.assertFalse(resource + " must not exist", repository.exists(resource, Revision.HEAD));
+        final View view = repository.createView();
+        Assert.assertFalse(resource + " must not exist", repository.exists(view, resource, Revision.HEAD));
     }
 
     private void testDownload(final Resource resource, final Revision revision) throws Exception {
         final InputStream expected = downloadLoader.load(resource, revision);
         final String message = resource + ": @" + revision;
-        AbstractRepositoryDownloadIT.assertEquals(message, expected, repository.download(resource, revision));
+        final View view = repository.createView();
+        AbstractRepositoryDownloadIT.assertEquals(message, expected, repository.download(view, resource, revision));
     }
 
     private void testDownloadUri(final Resource resource, final Revision revision) {
@@ -486,34 +491,39 @@ public abstract class AbstractRepositoryEncodingIT {
         final QualifiedResource qualifiedResource = new QualifiedResource(repository.getBasePath(), resource);
         final URI expected = URIUtils.appendResources(repository.getBaseUri(), ar.config.getVersionedResource(qualifiedResource, view.getHeadRevision()));
         final String message = resource + ": @" + revision;
-        Assert.assertEquals(message, expected, repository.downloadURI(resource, revision));
+        Assert.assertEquals(message, expected, repository.downloadURI(view, resource, revision));
     }
 
     private void testExists(final Resource resource, final Revision revision) throws Exception {
         final String message = resource + ": @" + revision;
-        Assert.assertTrue(message, repository.exists(resource, revision));
+        final View view = repository.createView();
+        Assert.assertTrue(message, repository.exists(view, resource, revision));
     }
 
     private void testInfo(final Resource resource, final Revision revision) throws Exception {
         final Info expected = infoLoader.load(resource, revision);
         final String message = resource + ": @" + revision;
-        AbstractRepositoryInfoIT.assertInfoEquals(message, expected, repository.info(resource, revision));
+        final View view = repository.createView();
+        AbstractRepositoryInfoIT.assertInfoEquals(message, expected, repository.info(view, resource, revision));
     }
 
     private void testList(final Resource resource, final Revision revision, final Depth depth) throws Exception {
         final Set<Info> expected = listLoader.load(resource, revision, depth);
         final String message = resource + ": @" + revision + " with depth: " + depth;
-        AbstractRepositoryListIT.assertListEquals(message, expected, repository.list(resource, revision, depth));
+        final View view = repository.createView();
+        AbstractRepositoryListIT.assertListEquals(message, expected, repository.list(view, resource, revision, depth));
     }
 
     private void testLog(final Resource resource, final Revision start, final Revision end) throws Exception {
         final List<Log> expected = logLoader.load(resource, start, end, 0);
         final String message = resource + ": " + start + " -> " + end + " (" + 0 + ")";
-        Assert.assertEquals(message, expected, repository.log(resource, start, end, 0, false));
+        final View view = repository.createView();
+        Assert.assertEquals(message, expected, repository.log(view, resource, start, end, 0, false));
     }
 
     private void testMkdir(final Resource resource) throws Exception {
-        Assert.assertFalse(resource + " must not exist", repository.exists(resource, Revision.HEAD));
+        final View beforeView = repository.createView();
+        Assert.assertFalse(resource + " must not exist", repository.exists(beforeView, resource, Revision.HEAD));
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -522,12 +532,14 @@ public abstract class AbstractRepositoryEncodingIT {
         } finally {
             repository.rollbackIfNotCommitted(transaction);
         }
-        Assert.assertTrue(resource + " must exist", repository.exists(resource, Revision.HEAD));
+        final View afterView = repository.createView();
+        Assert.assertTrue(resource + " must exist", repository.exists(afterView, resource, Revision.HEAD));
     }
 
     private void testMove(final Resource source, final Resource target) throws Exception {
+        final View beforeView = repository.createView();
         AbstractRepositoryAddIT.file(repository, source, "A", true);
-        Assert.assertFalse(target + " must not exist", repository.exists(target, Revision.HEAD));
+        Assert.assertFalse(target + " must not exist", repository.exists(beforeView, target, Revision.HEAD));
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -536,7 +548,8 @@ public abstract class AbstractRepositoryEncodingIT {
         } finally {
             repository.rollbackIfNotCommitted(transaction);
         }
-        Assert.assertTrue(target + " must exist", repository.exists(target, Revision.HEAD));
+        final View afterView = repository.createView();
+        Assert.assertTrue(target + " must exist", repository.exists(afterView, target, Revision.HEAD));
     }
 
     private void testPropertiesDelete(final Resource resource) throws Exception {

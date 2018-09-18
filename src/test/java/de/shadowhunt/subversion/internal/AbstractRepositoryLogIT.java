@@ -20,16 +20,18 @@ package de.shadowhunt.subversion.internal;
 import java.io.File;
 import java.util.List;
 
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
+
 import de.shadowhunt.subversion.Log;
 import de.shadowhunt.subversion.Repository;
 import de.shadowhunt.subversion.Resource;
 import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
-
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import de.shadowhunt.subversion.View;
 
 // Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -43,9 +45,16 @@ public abstract class AbstractRepositoryLogIT {
 
     private final Repository repository;
 
+    private View view;
+
     protected AbstractRepositoryLogIT(final Repository repository, final File root) {
         this.repository = repository;
         logLoader = new LogLoader(root, repository.getBasePath());
+    }
+
+    @Before
+    public void before() throws Exception {
+        view = repository.createView();
     }
 
     private String createMessage(final Resource resource, final Revision start, final Revision end, final int limit) {
@@ -60,7 +69,7 @@ public abstract class AbstractRepositoryLogIT {
         final Revision end = Revision.create(Integer.MAX_VALUE);
         final int limit = UNLIMITED;
 
-        repository.log(resource, start, end, limit, false);
+        repository.log(view, resource, start, end, limit, false);
         Assert.fail("log must not complete");
     }
 
@@ -71,7 +80,7 @@ public abstract class AbstractRepositoryLogIT {
         final Revision end = Revision.HEAD;
         final int limit = UNLIMITED;
 
-        repository.log(resource, start, end, limit, false);
+        repository.log(view, resource, start, end, limit, false);
         Assert.fail("log must not complete");
     }
 
@@ -84,7 +93,7 @@ public abstract class AbstractRepositoryLogIT {
         final Revision end = Revision.HEAD;
         final int limit = UNLIMITED;
 
-        repository.log(resource, start, end, limit, false);
+        repository.log(view, resource, start, end, limit, false);
         Assert.fail("log must not complete");
     }
 
@@ -97,7 +106,7 @@ public abstract class AbstractRepositoryLogIT {
 
         final List<Log> expected = logLoader.load(resource, start, end, limit);
         final String message = createMessage(resource, start, end, limit);
-        Assert.assertEquals(message, expected, repository.log(resource, start, end, limit, false));
+        Assert.assertEquals(message, expected, repository.log(view, resource, start, end, limit, false));
     }
 
     @Test
@@ -109,7 +118,7 @@ public abstract class AbstractRepositoryLogIT {
 
         final List<Log> expected = logLoader.load(resource, start, end, limit);
         final String message = createMessage(resource, start, end, limit);
-        Assert.assertEquals(message, expected, repository.log(resource, start, end, limit, false));
+        Assert.assertEquals(message, expected, repository.log(view, resource, start, end, limit, false));
     }
 
     @Test
@@ -122,7 +131,7 @@ public abstract class AbstractRepositoryLogIT {
         final List<Log> expected = logLoader.load(resource, start, end, limit);
         final String message = createMessage(resource, start, end, limit);
         Assert.assertEquals(message, limit, expected.size());
-        Assert.assertEquals(message, expected, repository.log(resource, start, end, limit, false));
+        Assert.assertEquals(message, expected, repository.log(view, resource, start, end, limit, false));
     }
 
     @Test
@@ -135,7 +144,7 @@ public abstract class AbstractRepositoryLogIT {
         final List<Log> expected = logLoader.load(resource, start, end, limit);
         final String message = createMessage(resource, start, end, limit);
         Assert.assertEquals(message, limit, expected.size());
-        Assert.assertEquals(message, expected, repository.log(resource, start, end, limit, false));
+        Assert.assertEquals(message, expected, repository.log(view, resource, start, end, limit, false));
     }
 
     @Test
@@ -147,7 +156,7 @@ public abstract class AbstractRepositoryLogIT {
 
         final List<Log> expected = logLoader.load(resource, start, end, limit);
         final String message = createMessage(resource, start, end, limit);
-        Assert.assertEquals(message, expected, repository.log(resource, start, end, limit, false));
+        Assert.assertEquals(message, expected, repository.log(view, resource, start, end, limit, false));
     }
 
     @Test
@@ -159,7 +168,7 @@ public abstract class AbstractRepositoryLogIT {
 
         final List<Log> expected = logLoader.load(resource, start, end, limit);
         final String message = createMessage(resource, start, end, limit);
-        Assert.assertEquals(message, expected, repository.log(resource, start, end, limit, false));
+        Assert.assertEquals(message, expected, repository.log(view, resource, start, end, limit, false));
     }
 
     @Test
@@ -171,7 +180,7 @@ public abstract class AbstractRepositoryLogIT {
 
         final List<Log> expected = logLoader.load(resource, start, end, limit);
         final String message = createMessage(resource, start, end, limit);
-        Assert.assertEquals(message, expected, repository.log(resource, start, end, limit, false));
+        Assert.assertEquals(message, expected, repository.log(view, resource, start, end, limit, false));
     }
 
     @Test
@@ -184,6 +193,6 @@ public abstract class AbstractRepositoryLogIT {
         // NOTE: determine last existing revision for loader
         final List<Log> expected = logLoader.load(resource, start, Revision.create(86), limit);
         final String message = createMessage(resource, start, end, limit);
-        Assert.assertEquals(message, expected, repository.log(resource, start, end, limit, false));
+        Assert.assertEquals(message, expected, repository.log(view, resource, start, end, limit, false));
     }
 }

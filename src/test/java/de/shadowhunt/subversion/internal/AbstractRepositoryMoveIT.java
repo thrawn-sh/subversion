@@ -20,6 +20,11 @@ package de.shadowhunt.subversion.internal;
 import java.util.List;
 import java.util.UUID;
 
+import org.junit.Assert;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
+
 import de.shadowhunt.subversion.Info;
 import de.shadowhunt.subversion.Log;
 import de.shadowhunt.subversion.Repository;
@@ -28,11 +33,7 @@ import de.shadowhunt.subversion.Revision;
 import de.shadowhunt.subversion.SubversionException;
 import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.Transaction.Status;
-
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import de.shadowhunt.subversion.View;
 
 //Tests are independent from each other but go from simple to more complex
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -90,8 +91,9 @@ public abstract class AbstractRepositoryMoveIT {
         AbstractRepositoryAddIT.file(repository, source, "A", true);
         AbstractRepositoryAddIT.file(repository, source, "B", false);
 
-        final Info sInfo = repository.info(source, Revision.HEAD);
-        final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0, false);
+        final View beforeView = repository.createView();
+        final Info sInfo = repository.info(beforeView, source, Revision.HEAD);
+        final List<Log> sLog = repository.log(beforeView, source, Revision.INITIAL, Revision.HEAD, 0, false);
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -105,13 +107,14 @@ public abstract class AbstractRepositoryMoveIT {
             repository.rollbackIfNotCommitted(transaction);
         }
 
-        Assert.assertFalse(source + " must not exist", repository.exists(source, Revision.HEAD));
-        Assert.assertTrue(target + " must exist", repository.exists(target, Revision.HEAD));
+        final View afterView = repository.createView();
+        Assert.assertFalse(source + " must not exist", repository.exists(afterView, source, Revision.HEAD));
+        Assert.assertTrue(target + " must exist", repository.exists(afterView, target, Revision.HEAD));
 
-        final Info tInfo = repository.info(target, Revision.HEAD);
+        final Info tInfo = repository.info(afterView, target, Revision.HEAD);
         Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
 
-        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<Log> tLog = repository.log(afterView, target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
     }
@@ -140,8 +143,9 @@ public abstract class AbstractRepositoryMoveIT {
 
         AbstractRepositoryMkdirIT.mkdir(repository, source, true);
 
-        final Info sInfo = repository.info(source, Revision.HEAD);
-        final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0, false);
+        final View beforeView = repository.createView();
+        final Info sInfo = repository.info(beforeView, source, Revision.HEAD);
+        final List<Log> sLog = repository.log(beforeView, source, Revision.INITIAL, Revision.HEAD, 0, false);
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -155,13 +159,14 @@ public abstract class AbstractRepositoryMoveIT {
             repository.rollbackIfNotCommitted(transaction);
         }
 
-        Assert.assertFalse(source + " must not exist", repository.exists(source, Revision.HEAD));
-        Assert.assertTrue(target + " must exist", repository.exists(target, Revision.HEAD));
+        final View afterView = repository.createView();
+        Assert.assertFalse(source + " must not exist", repository.exists(afterView, source, Revision.HEAD));
+        Assert.assertTrue(target + " must exist", repository.exists(afterView, target, Revision.HEAD));
 
-        final Info tInfo = repository.info(target, Revision.HEAD);
+        final Info tInfo = repository.info(afterView, target, Revision.HEAD);
         Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
 
-        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<Log> tLog = repository.log(afterView, target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
     }
@@ -195,8 +200,9 @@ public abstract class AbstractRepositoryMoveIT {
         final Resource subFolder = Resource.create("subFolder");
         AbstractRepositoryMkdirIT.mkdir(repository, source.append(subFolder), false);
 
-        final Info sInfo = repository.info(source, Revision.HEAD);
-        final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0, false);
+        final View beforeView = repository.createView();
+        final Info sInfo = repository.info(beforeView, source, Revision.HEAD);
+        final List<Log> sLog = repository.log(beforeView, source, Revision.INITIAL, Revision.HEAD, 0, false);
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -210,18 +216,19 @@ public abstract class AbstractRepositoryMoveIT {
             repository.rollbackIfNotCommitted(transaction);
         }
 
-        Assert.assertFalse(source + " must not exist", repository.exists(source, Revision.HEAD));
-        Assert.assertTrue(target + " must exist", repository.exists(target, Revision.HEAD));
+        final View afterView = repository.createView();
+        Assert.assertFalse(source + " must not exist", repository.exists(afterView, source, Revision.HEAD));
+        Assert.assertTrue(target + " must exist", repository.exists(afterView, target, Revision.HEAD));
 
-        final Info tInfo = repository.info(target, Revision.HEAD);
+        final Info tInfo = repository.info(afterView, target, Revision.HEAD);
         Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
 
-        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<Log> tLog = repository.log(afterView, target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
 
-        Assert.assertTrue("subFile must exist", repository.exists(target.append(subFile), Revision.HEAD));
-        Assert.assertTrue("subFolder must exist", repository.exists(target.append(subFolder), Revision.HEAD));
+        Assert.assertTrue("subFile must exist", repository.exists(afterView, target.append(subFile), Revision.HEAD));
+        Assert.assertTrue("subFolder must exist", repository.exists(afterView, target.append(subFolder), Revision.HEAD));
     }
 
     @Test
@@ -232,8 +239,9 @@ public abstract class AbstractRepositoryMoveIT {
         AbstractRepositoryAddIT.file(repository, source, "source", true);
         AbstractRepositoryAddIT.file(repository, target, "target", true);
 
-        final Info sInfo = repository.info(source, Revision.HEAD);
-        final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0, false);
+        final View beforeView = repository.createView();
+        final Info sInfo = repository.info(beforeView, source, Revision.HEAD);
+        final List<Log> sLog = repository.log(beforeView, source, Revision.INITIAL, Revision.HEAD, 0, false);
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -248,13 +256,14 @@ public abstract class AbstractRepositoryMoveIT {
             repository.rollbackIfNotCommitted(transaction);
         }
 
-        Assert.assertFalse(source + " must not exist", repository.exists(source, Revision.HEAD));
-        Assert.assertTrue(target + " must exist", repository.exists(target, Revision.HEAD));
+        final View afterView = repository.createView();
+        Assert.assertFalse(source + " must not exist", repository.exists(afterView, source, Revision.HEAD));
+        Assert.assertTrue(target + " must exist", repository.exists(afterView, target, Revision.HEAD));
 
-        final Info tInfo = repository.info(target, Revision.HEAD);
+        final Info tInfo = repository.info(afterView, target, Revision.HEAD);
         Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
 
-        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<Log> tLog = repository.log(afterView, target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
     }
@@ -267,8 +276,9 @@ public abstract class AbstractRepositoryMoveIT {
         AbstractRepositoryMkdirIT.mkdir(repository, source, true);
         AbstractRepositoryMkdirIT.mkdir(repository, target, true);
 
-        final Info sInfo = repository.info(source, Revision.HEAD);
-        final List<Log> sLog = repository.log(source, Revision.INITIAL, Revision.HEAD, 0, false);
+        final View beforeView = repository.createView();
+        final Info sInfo = repository.info(beforeView, source, Revision.HEAD);
+        final List<Log> sLog = repository.log(beforeView, source, Revision.INITIAL, Revision.HEAD, 0, false);
 
         final Transaction transaction = repository.createTransaction();
         try {
@@ -283,13 +293,14 @@ public abstract class AbstractRepositoryMoveIT {
             repository.rollbackIfNotCommitted(transaction);
         }
 
-        Assert.assertFalse(source + " must not exist", repository.exists(source, Revision.HEAD));
-        Assert.assertTrue(target + " must exist", repository.exists(target, Revision.HEAD));
+        final View afterView = repository.createView();
+        Assert.assertFalse(source + " must not exist", repository.exists(afterView, source, Revision.HEAD));
+        Assert.assertTrue(target + " must exist", repository.exists(afterView, target, Revision.HEAD));
 
-        final Info tInfo = repository.info(target, Revision.HEAD);
+        final Info tInfo = repository.info(afterView, target, Revision.HEAD);
         Assert.assertEquals("must be same file", sInfo.getMd5(), tInfo.getMd5());
 
-        final List<Log> tLog = repository.log(target, Revision.INITIAL, Revision.HEAD, 0, false);
+        final List<Log> tLog = repository.log(afterView, target, Revision.INITIAL, Revision.HEAD, 0, false);
         Assert.assertEquals("must be same file", sLog.size(), tLog.size() - 1);
         Assert.assertEquals("logs must match", sLog, tLog.subList(0, sLog.size()));
     }
