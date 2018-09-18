@@ -213,6 +213,8 @@
                         <exclude>assets/setup/mime.types</exclude>
                         <exclude>assets/setup/passwd.basic</exclude>
                         <exclude>assets/setup/svnpath.auth</exclude>
+                        <exclude>mvnw.cmd</exclude>
+                        <exclude>mvnw</exclude>
                         <exclude>src/test/resources/dump/**</exclude>
                     </excludes>
                     <header>com/mycila/maven/plugin/license/templates/GPL-3.txt</header>
