@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Shadowhunt Subversion - Streaming subversion library without the need for a local sandbox
-# Copyright © 2013-2018 shadowhunt (dev@shadowhunt.de)
+# Copyright © 2013-2019 shadowhunt (dev@shadowhunt.de)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
