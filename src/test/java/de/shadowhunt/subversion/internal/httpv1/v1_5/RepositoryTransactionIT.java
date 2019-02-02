@@ -17,7 +17,13 @@
  */
 package de.shadowhunt.subversion.internal.httpv1.v1_5;
 
+import java.util.UUID;
+
+import de.shadowhunt.subversion.Resource;
+import de.shadowhunt.subversion.Revision;
+import de.shadowhunt.subversion.Transaction;
 import de.shadowhunt.subversion.internal.AbstractRepositoryTransactionIT;
+import de.shadowhunt.subversion.internal.TransactionHttpv1;
 
 public class RepositoryTransactionIT extends AbstractRepositoryTransactionIT {
 
@@ -25,5 +31,11 @@ public class RepositoryTransactionIT extends AbstractRepositoryTransactionIT {
 
     public RepositoryTransactionIT() {
         super(HELPER.getRepositoryA());
+    }
+    
+    @Override
+    protected Transaction createInactiveTransaction(final UUID repositoryId) {
+        final Resource prefix = Resource.create("!svn");
+        return new TransactionHttpv1("1", repositoryId, Revision.HEAD, prefix);
     }
 }
